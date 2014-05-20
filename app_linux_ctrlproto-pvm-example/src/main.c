@@ -63,6 +63,7 @@ int main()
 	float actual_torque;			// mNm
 	int slave_number = 0;
 	int ack = 0;
+	int sdo_update = 1;             // 1- yes / 0 - no
 
 	/* Initialize Ethercat Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -71,7 +72,7 @@ int main()
 	initialize_torque(slave_number, slv_handles);
 
 	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
-	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES, sdo_update);
 
 	/* Initialize the node specified with slave_number with Profile Velocity(PV) configurations (specified under config/motor/)*/
 	set_operation_mode(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);

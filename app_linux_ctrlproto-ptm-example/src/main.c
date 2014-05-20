@@ -59,14 +59,14 @@ int main()
 	int actual_position = 0;		// ticks
 	int actual_velocity = 0;		// rpm
 	int ack = 0;
-
+	int sdo_update = 1;             // 1- yes / 0 - no
 	int slave_number = 0;
 
 	/* Initialize Ethercat Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
-	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES, sdo_update);
 
 	/* Initialize torque parameters */
 	initialize_torque(slave_number, slv_handles);

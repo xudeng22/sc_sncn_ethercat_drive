@@ -69,7 +69,7 @@ int main()
 	int ack;
 	int home_velocity = 250;      		// rpm
 	int home_acceleration = 250;		// rpm/s
-
+	int sdo_update = 1;                 // 1- yes / 0 - no
 	int slave_number = 0;
 
 	/* Initialize Ethercat Master */
@@ -79,7 +79,7 @@ int main()
 	initialize_torque(slave_number, slv_handles);
 
 	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
-	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES, sdo_update);
 
 	/* Initialize the node specified with slave_number with Homing configurations (specified under config/motor/)*/
 	set_operation_mode(HM, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);

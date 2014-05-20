@@ -46,7 +46,7 @@
  * Define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_1  					3//8		// Number of pole pairs
+#define POLE_PAIRS_1  					4//8		// Number of pole pairs
 #define MAX_NOMINAL_SPEED_1  			3000//4000	// rpm
 #define MAX_NOMINAL_CURRENT_1  			6			// A
 #define MOTOR_TORQUE_CONSTANT_1			112			// mNm/A

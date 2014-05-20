@@ -40,86 +40,72 @@ ctrl_proto_values_t init_ctrl_proto(void)
 void config_sdo_handler(chanend coe_out)
 {
 	int sdo_value;
-
-	GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_HOMING_METHOD, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(MOTOR_WINDING_TYPE, 0, sdo_value);
-	printintln(sdo_value);
-/*	GET_SDO_DATA(CIA402_QEI_OFFSET, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QEI_OFFSET, 2, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QEI_OFFSET, 3, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QEI_OFFSET, 4, sdo_value);
-	printintln(sdo_value);*/
+    GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, sdo_value);
+    printintln(sdo_value);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, sdo_value);  //motor tor const
 	printintln(sdo_value);
-
-	GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_CURRENT_GAIN, 3, sdo_value);
-	printintln(sdo_value);
-
+    GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(MOTOR_WINDING_TYPE, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_GEAR_RATIO, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(SENSOR_POLARITY, 0, sdo_value);
+    printintln(sdo_value);
 	GET_SDO_DATA(CIA402_MAX_TORQUE, 0, sdo_value);
 	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, sdo_value);
-	printintln(sdo_value);
-
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_POLARITY, 0, sdo_value);
-	printintln(sdo_value);  // -1 in 2'complement 255
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_POSITION_GAIN, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_POSITION_GAIN, 2, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_POSITION_GAIN, 3, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, sdo_value);
-	printintln(sdo_value);
-
+    GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_POLARITY, 0, sdo_value);
+    printintln(sdo_value);  // -1 in 2'complement 255
 	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, sdo_value);
 	printintln(sdo_value);
+    GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, sdo_value);
+    printintln(sdo_value);
 	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);
 	printintln(sdo_value);
-	GET_SDO_DATA(SENSOR_POLARITY, 0, sdo_value);
-	printintln(sdo_value);
-
+    GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_POSITION_GAIN, 1, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_POSITION_GAIN, 2, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_POSITION_GAIN, 3, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_CURRENT_GAIN, 3, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, sdo_value);
+    printintln(sdo_value);
+    GET_SDO_DATA(CIA402_HOMING_METHOD, 0, sdo_value);
+    printintln(sdo_value);
 }
 
 {int, int} homing_sdo_update(chanend coe_out)
@@ -283,10 +269,11 @@ int speed_sdo_update(chanend coe_out)
 	return {max_motor_speed, polarity, nominal_current, min, max, max_acc};
 }
 
-int sensor_select_sdo(chanend coe_out)
+int sensor_select_sdo(chanend coe_out, int sdo_update, int sensor_select)
 {
-	int sensor_select;
-	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sensor_select);
+    if(sdo_update == 1)
+        GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sensor_select);
+
 	if(sensor_select == 2 || sensor_select == 3)
 		sensor_select = 2; //qei
 	return sensor_select;

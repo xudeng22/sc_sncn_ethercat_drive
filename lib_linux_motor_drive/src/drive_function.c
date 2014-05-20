@@ -311,51 +311,57 @@ int target_torque_reached(int slave_number, float target_torque, float tolerance
 		return 0;
 }
 
-void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves) //int slave_number,
+void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves, int sdo_update) //int slave_number,
 {
 	//check if node settings are up
 	int i;
 	for(i = 0; i<total_no_of_slaves;i++)
 	{
-		set_controlword(6, i, slv_handles);
-		while(1)
-		{
-			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-			if(master_setup->op_flag)
-			{
-				if(slv_handles[i].operation_mode_disp == 105)
-					break;
-			}
-		}
-
+	    if(sdo_update == 1)
+	    {
+	        set_controlword(6, i, slv_handles);
+            while(1)
+            {
+                pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+                if(master_setup->op_flag)
+                {
+                    if(slv_handles[i].operation_mode_disp == 105)
+                        break;
+                }
+            }
+	    }
 
 		set_controlword(0, i, slv_handles);
-		printf("updating motor parameters for all connected nodes\n");
-		fflush(stdout);
+
 		/***** Set up Parameters *****/
 
-
-		slv_handles[i].motor_config_param.update_flag = 0;
-		while(1)
+		if(sdo_update == 1)
 		{
-			if(slv_handles[i].motor_config_param.update_flag == 1)
-			{
-				slv_handles[i].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
-				break;
-			}
+		    printf("updating motor parameters for all connected nodes\n");
+		    fflush(stdout);
+            slv_handles[i].motor_config_param.update_flag = 0;
+            while(1)
+            {
+                if(slv_handles[i].motor_config_param.update_flag == 1)
+                {
+                    slv_handles[i].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
+                    break;
+                }
 
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, i); // motor config update
-				//printf (".");
-				//fflush(stdout);
+                else
+                {
+                    sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, i); // motor config update(all configurations)
+                    //printf (".");
+                    //fflush(stdout);
 
-			}
+                }
+            }
+            printf ("\n");
+            fflush(stdout);
+
 		}
-		printf ("\n");
-		fflush(stdout);
-
 		set_controlword(5, i, slv_handles);
+
 	}
 }
 
@@ -369,54 +375,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	int actual_position;
 	int i = 0;
-	// Initial all target values to actual values to keep system stable on restart
-//	while(1)
-//	{
-//		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-//
-//		if(master_setup->op_flag)	//Check if the master is active
-//		{
-//			if(operation_mode == CSP)
-//			{
-//				actual_position = get_position_actual_degree(slave_number, slv_handles);
-//				set_profile_position_degree(actual_position, slave_number, slv_handles);
-//				printf("actual position %f\n", actual_position);
-//				i = i + 1;
-//				if(i > 3)
-//				{
-//					break;
-//				}
-//			}
-//		}
-//	}
 
-/*	set_controlword(0, slave_number, slv_handles);
-	printf("updating motor parameters\n");
-	fflush(stdout);
-	**** Set up Parameters ****
-
-
-	slv_handles[slave_number].motor_config_param.update_flag = 0;
-	while(1)
-	{
-		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-		{
-			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
-			break;
-		}
-
-		else
-		{
-			sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, slave_number); // motor config update
-			//printf (".");
-			//fflush(stdout);
-
-		}
-	}
-	printf ("\n");
-	fflush(stdout);
-
-	set_controlword(5, slave_number, slv_handles);*/
 
 	/**********************check ready***********************/
 	while(!ready)
@@ -480,7 +439,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	printf("updating control parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters *****/
+	/***** Set up Parameters ****
 
 	slv_handles[slave_number].motor_config_param.update_flag = 0;
 	if(operation_mode == CST || operation_mode == TQ)

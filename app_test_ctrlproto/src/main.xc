@@ -38,8 +38,9 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
 
 		i++;
-		if(i >= 999)
+		if(i >= 999) {
 			i = 100;
+                }
 
 		InOut.position_actual = i;
 		InOut.torque_actual = i;

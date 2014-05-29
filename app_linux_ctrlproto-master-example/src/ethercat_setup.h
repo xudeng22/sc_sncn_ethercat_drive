@@ -50,15 +50,14 @@ SOMANET_C22_CTRLPROTO_CSTRUCT();
 
 //Slave Handles Array
 static ctrlproto_slv_handle slv_handles[]=
-{												//ALIAS / POSITION / CONFIG_NUMBER
-		SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             0, 	1)
+{                                                    
+    SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0, 0, 1) /* ALIAS / POSITION / CONFIG_NUMBER */
 };
 
 //Domain entries for the pdos
 const static ec_pdo_entry_reg_t domain_regs[] = {
-												//ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES
-		SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,		0,			0),
-{0}
+    SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0, 0, 0),  /* ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES */
+    {0}
 };
 
 /*

@@ -1,11 +1,11 @@
 UNAME := $(shell uname)
 MASTER_INSTALLDIR := /opt/etherlab
 INCLUDE_DIRS = -I include
-INCLUDE_DIRS += -I ../app_linux_ctrlproto-master-example/config/motor
+INCLUDE_DIRS += -I ../app_demo_master_cyclic_position/config/motor
 INCLUDE_DIRS += -I ../inc_ctrlproto-common/
-INCLUDE_DIRS += -I ../../sc_sncn_ethercat/module_ethercat/src/canod/
-INCLUDE_DIRS += -I ../../sc_sncn_motorcontrol/module_common/include
-INCLUDE_DIRS += -I ../../sc_sncn_motorcontrol/module_profile/include
+INCLUDE_DIRS += -I ../module_ethercat/src/canod/
+INCLUDE_DIRS += -I ../module_motorcontrol_common/include
+INCLUDE_DIRS += -I ../module_profile/include
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 

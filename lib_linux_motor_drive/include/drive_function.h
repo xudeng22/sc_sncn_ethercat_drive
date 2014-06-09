@@ -84,13 +84,11 @@ extern "C" {
 /**
  * \brief Initialize all connected nodes with basic motor configurations via bldc_motor_config headers
  *
- * \param master_setup 			A struct containing the variables for the master
- * \param slv_handles 			The handle struct for the slaves
- * \param total_no_of_slaves 	Number of connected slaves to the master
- * \param sdo_update            1 - Enables motor configuration via EtherCAT,
- *                              0 - fetch motor configuration stored locally on node
+ * \param master_setup          A struct containing the variables for the master
+ * \param slv_handles           The handle struct for the slaves
+ * \param total_no_of_slaves    Number of connected slaves to the master
  */
-void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves, int sdo_update);
+void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
 /**
  * \brief Start Homing

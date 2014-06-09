@@ -86,7 +86,7 @@ void config_sdo_handler(chanend coe_out);
  * \return sensor_select HALL/QEI
  *
  */
-int sensor_select_sdo(chanend coe_out, int sdo_update, int sensor_select);
+int sensor_select_sdo(chanend coe_out);
 
 /**
  * \brief read qei params from Ethercat
@@ -240,44 +240,5 @@ int sensor_select_sdo(chanend coe_out, int sdo_update, int sensor_select);
  *
  */
 int speed_sdo_update(chanend coe_out);
-
-void init_sdo(chanend coe_out);
-
-
-static int sdo_array[] = {
-    CIA402_MOTOR_SPECIFIC, 3,
-    CIA402_MOTOR_SPECIFIC, 1,
-    CIA402_MOTOR_SPECIFIC, 6,
-    COMMUTATION_OFFSET_CLKWISE, 0,
-    COMMUTATION_OFFSET_CCLKWISE, 0,
-    MOTOR_WINDING_TYPE, 0,
-    CIA402_MOTOR_SPECIFIC, 4,
-    CIA402_SENSOR_SELECTION_CODE, 0,
-    CIA402_GEAR_RATIO, 0,
-    CIA402_POSITION_ENC_RESOLUTION, 0,
-    SENSOR_POLARITY, 0,
-    CIA402_MAX_TORQUE, 0,
-    CIA402_SOFTWARE_POSITION_LIMIT, 1,
-    CIA402_SOFTWARE_POSITION_LIMIT, 2,
-    CIA402_POLARITY, 0,
-    CIA402_MAX_PROFILE_VELOCITY, 0,
-    CIA402_PROFILE_VELOCITY, 0,
-    CIA402_MAX_ACCELERATION, 0,
-    CIA402_PROFILE_ACCELERATION, 0,
-    CIA402_PROFILE_DECELERATION, 0,
-    CIA402_QUICK_STOP_DECELERATION, 0,
-    CIA402_TORQUE_SLOPE, 0,
-    CIA402_POSITION_GAIN, 1,
-    CIA402_POSITION_GAIN, 2,
-    CIA402_POSITION_GAIN, 3,
-    CIA402_VELOCITY_GAIN, 1,
-    CIA402_VELOCITY_GAIN, 2,
-    CIA402_VELOCITY_GAIN, 3,
-    CIA402_CURRENT_GAIN, 1,
-    CIA402_CURRENT_GAIN, 2,
-    CIA402_CURRENT_GAIN, 3,
-    LIMIT_SWITCH_TYPE, 0,
-    CIA402_HOMING_METHOD, 0
-};
 
 #endif

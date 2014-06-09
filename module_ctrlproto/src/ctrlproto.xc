@@ -269,14 +269,13 @@ int speed_sdo_update(chanend coe_out)
 	return {max_motor_speed, polarity, nominal_current, min, max, max_acc};
 }
 
-int sensor_select_sdo(chanend coe_out, int sdo_update, int sensor_select)
+int sensor_select_sdo(chanend coe_out)
 {
-    if(sdo_update == 1)
-        GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sensor_select);
-
-	if(sensor_select == 2 || sensor_select == 3)
-		sensor_select = 2; //qei
-	return sensor_select;
+    int sensor_select;
+    GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sensor_select);
+    if(sensor_select == 2 || sensor_select == 3)
+        sensor_select = 2; //qei
+    return sensor_select;
 }
 {int, int, int} velocity_sdo_update(chanend coe_out)
 {

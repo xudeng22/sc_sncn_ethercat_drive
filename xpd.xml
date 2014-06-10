@@ -40,6 +40,7 @@
     <non_xmos_project>lib_linux_ctrlproto</non_xmos_project>
     <non_xmos_project>lib_linux_motor_drive</non_xmos_project>
     <partnumber>XM-005845-DH</partnumber>
+    <release parenthash = "29f2318733d62b30881f647772e19455e360b18e" version = "1.0.0beta0"></release>
     <subpartnumber>XM-005846-SM</subpartnumber>
     <vendor>XMOS</vendor>
     <version_defines></version_defines>

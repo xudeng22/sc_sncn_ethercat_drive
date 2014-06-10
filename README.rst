@@ -1,7 +1,7 @@
 SOMANET Control Protocol Software Component
 ...................................
 
-:Latest release: 1.0.0
+:Latest release: 1.0.0beta0
 :Maintainer: Synapticon
 :Description: Implementation of a communication protocol for SOMANET Motor Control applications
 
@@ -11,8 +11,6 @@ SOMANET Control Protocol Software Component
 
 Firmware Overview
 =================
-
-
 
 Known Issues
 ============
@@ -27,6 +25,5 @@ Issues may be submitted via the Issues tab in this github repo. Response to any 
 Required software (dependencies)
 ================================
 
-  * sc_somanet-base (git@github.com:synapticon/sc_somanet-base.git)
-  * sc_sncn_ethercat (git@github.com:synapticon/sc_sncn_ethercat.git)
+  * None
 

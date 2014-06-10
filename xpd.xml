@@ -1,27 +1,46 @@
 <?xml version="1.0" ?>
 <xpd>
-    <components></components>
-    <dependency repo = "sc_somanet-base">
-        <githash>db515aa8fe90eae3d37c39a7269042199a5401b1</githash>
-        <uri>git@github.com:djpwilk/sc_somanet-base.git</uri>
-        <version>1.0.1beta3</version>
-    </dependency>
-    <dependency repo = "sc_sncn_ethercat">
-        <githash>51368a08a35b472eeb405f11ce6497b029d63250</githash>
-        <uri>git@github.com:synapticon/sc_sncn_ethercat.git</uri>
-        <version>1.0.0beta4</version>
-    </dependency>
+    <components>
+        <component description = "Common CiA 402 definitions" type = "demoCode" scope = "General Use" path = "inc_ctrlproto-common" local = "false" id = "inc_ctrlproto-common" name = "SOMANET CiA 402 Definitions for Control Protocol">
+            <board>SOMANET COM-EtherCAT</board>
+            <board>SOMANET IFM-DC100</board>
+            <board>SOMANET IFM-DC300</board>
+            <keyword>SOMANET</keyword>
+            <keyword>EtherCAT</keyword>
+        </component>
+        <component description = "This library provides motor drive functions over EtherCAT" type = "demoCode" scope = "General Use" path = "lib_linux_motor_drive" local = "false" id = "lib_linux_motor_drive" name = "SOMANET Motor Drive Library">
+            <board>SOMANET COM-EtherCAT</board>
+            <board>SOMANET IFM-DC100</board>
+            <board>SOMANET IFM-DC300</board>
+            <keyword>SOMANET</keyword>
+            <keyword>EtherCAT</keyword>
+        </component>
+        <component description = "SOMANET specific control protocol over etherCAT" type = "demoCode" scope = "General Use" path = "module_ctrlproto" local = "false" id = "module_ctrlproto" name = "SOMANET Control Protocol">
+            <board></board>
+            <keyword>SOMANET</keyword>
+            <keyword>EtherCAT</keyword>
+            <keyword>CiA402</keyword>
+            <keyword>Motor Control</keyword>
+        </component>
+        <component description = "Motor Control communication library" type = "demoCode" scope = "General Use" path = "lib_linux_ctrlproto" local = "false" id = "lib_linux_ctrlproto" name = "SOMANET Protocol Library for Motor Control">
+            <board>SOMANET COM-EtherCAT</board>
+            <board>SOMANET IFM-DC100</board>
+            <board>SOMANET IFM-DC300</board>
+            <keyword>SOMANET</keyword>
+            <keyword>EtherCAT</keyword>
+        </component>
+    </components>
     <description>Implementation of a communication protocol for SOMANET Motor Control applications</description>
+    <exclude_dir>app_linux_ctrlproto-master-example</exclude_dir>
+    <exclude_dir>app_test_ctrlproto</exclude_dir>
     <location>https://github.com/synapticon/sc_sncn_ctrlproto.git</location>
     <name>sc_sncn_ctrlproto</name>
     <maintainer>Synapticon</maintainer>
-    <partnumber>XM-005845-DH</partnumber>
-    <subpartnumber>XM-005846-SM</subpartnumber>
-    <exclude_dir>app_linux_ctrlproto-master-example</exclude_dir>
-    <exclude_dir>app_test_ctrlproto</exclude_dir>
     <non_xmos_project>inc_ctrlproto-common</non_xmos_project>
     <non_xmos_project>lib_linux_ctrlproto</non_xmos_project>
     <non_xmos_project>lib_linux_motor_drive</non_xmos_project>
+    <partnumber>XM-005845-DH</partnumber>
+    <subpartnumber>XM-005846-SM</subpartnumber>
     <vendor>XMOS</vendor>
     <version_defines></version_defines>
     <xcore_repo>git://github.com/xcore/sc_sncn_ctrlproto.git</xcore_repo>

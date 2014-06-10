@@ -2,7 +2,7 @@ SOMANET Control Protocol
 ========================
 
 :scope: General Use
-:description:
+:description: SOMANET specific control protocol over etherCAT
 :keywords: SOMANET, EtherCAT, CiA402, Motor Control
 :boards: 
 

@@ -52,7 +52,7 @@ SOMANET_C22_CTRLPROTO_CSTRUCT();
 /* Slave Handles Array for single node
   Note: Each array entry defines handle struct for a node */
 static ctrlproto_slv_handle slv_handles[]=
-{                                                    
+{
     SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0, 0, 1) /* ALIAS / POSITION / CONFIG_NUMBER */
 };
 

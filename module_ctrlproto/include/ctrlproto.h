@@ -8,8 +8,6 @@
  * \date 10/04/2014
  */
 
-#ifndef CTRLPROTO_H_
-#define CTRLPROTO_H_
 #pragma once
 
 #include <stdint.h>
@@ -17,37 +15,41 @@
 #include <canod.h>
 
 
-/*internal qei single variable selection code*/
-#define QEI_WITH_INDEX				1
-#define QEI_WITH_NO_INDEX 			0
-#define QEI_SENSOR_TYPE  			QEI_WITH_INDEX//QEI_WITH_NO_INDEX
+/* internal qei single variable selection code */
+#define QEI_WITH_INDEX                          1
+#define QEI_WITH_NO_INDEX                       0
+#define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX
 
-/*Position Sensor Types*/
-#define HALL 						1
-#define QEI_INDEX  					2
-#define QEI_NO_INDEX				3
+/* Position Sensor Types */
+#define HALL                                    1
+#define QEI_INDEX                               2
+#define QEI_NO_INDEX                            3
 
-#define GET_SDO_DATA(index, sub_index, value) coe_out <: CAN_GET_OBJECT; coe_out <: CAN_OBJ_ADR(index, sub_index);	coe_out :> value;
+#define GET_SDO_DATA(index, sub_index, value) \
+    coe_out <: CAN_GET_OBJECT;                \
+    coe_out <: CAN_OBJ_ADR(index, sub_index); \
+    coe_out :> value;
+
 /**
  * \brief
- *		Struct for Tx, Rx PDOs
+ *  Struct for Tx, Rx PDOs
  */
 typedef struct
 {
-	uint8_t  operation_mode;			// 	Modes of Operation
-	uint16_t  control_word;			// 	Control Word
+    uint8_t operation_mode;    //      Modes of Operation
+    uint16_t control_word;     //      Control Word
 
-	int16_t  target_torque;
-	int32_t target_velocity;
-	int32_t target_position;
+    int16_t target_torque;
+    int32_t target_velocity;
+    int32_t target_position;
 
 
-	uint8_t operation_mode_display;	//	Modes of Operation Display
-	uint16_t status_word;			//  Status Word
+    uint8_t operation_mode_display; //      Modes of Operation Display
+    uint16_t status_word;                   //  Status Word
 
-	int16_t torque_actual;
-	int32_t velocity_actual;
-	int32_t position_actual;
+    int16_t torque_actual;
+    int32_t velocity_actual;
+    int32_t position_actual;
 
 } ctrl_proto_values_t;
 
@@ -62,22 +64,25 @@ typedef struct
  *  This function is not considered as stand alone thread! It's for being executed in
  *  the motor control thread
  *
- * \param pdo_out	the channel for outgoing process data objects
- * \param pdo_in 	the channel for incoming process data objects
- * \param InOut		the struct for exchanging data with the motor control functions
+ * \param pdo_out       the channel for outgoing process data objects
+ * \param pdo_in        the channel for incoming process data objects
+ * \param InOut         the struct for exchanging data with the motor control functions
  *
- * \return 	1 if communication is active else 0
+ * \return      1 if communication is active else 0
  */
 int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut);
 
 /**
  *  \brief
- * 	 This function initializes a struct from the type of ctrl_proto_values_t
+ *       This function initializes a struct from the type of ctrl_proto_values_t
  *
- * 	\return ctrl_proto_values_t with values initialised
+ *      \return ctrl_proto_values_t with values initialised
  */
 ctrl_proto_values_t init_ctrl_proto(void);
 
+/*
+ * FIXME: documentation missing
+ */
 void config_sdo_handler(chanend coe_out);
 
 /**
@@ -241,4 +246,3 @@ int sensor_select_sdo(chanend coe_out);
  */
 int speed_sdo_update(chanend coe_out);
 
-#endif

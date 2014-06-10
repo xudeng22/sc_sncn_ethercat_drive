@@ -1,15 +1,22 @@
-SOMANET CIA402 Communication Bridge
-===================================
+SOMANET Control Protocol
+========================
 
 :scope: General Use
 :description:
-:keywords: SOMANET, EtherCAT, CIA402, Motor Control
-:boards: SOMANET COM-EtherCAT, SOMANET IFM-DC100
+:keywords: SOMANET, EtherCAT, CiA402, Motor Control
+:boards: 
 
 Key Features
 ------------
 
-  *
+   * Cyclic Synchronous Position Control
+   * Cyclic Synchronous Velocity Control
+   * Cyclic Synchronous Torque Control
+   * Profile Position Control
+   * Profile Velocity Control
+   * Profile Torque Control
+   * Homing mode
+   * Support motor and controller parameter update
 
 Description
 -----------

@@ -9,18 +9,6 @@ SOMANET Control Protocol Software Component
 .. image:: https://s3-eu-west-1.amazonaws.com/synapticon-resources/images/logos/synapticon_fullname_blackoverwhite_280x48.png
    :align: left
 
-Key Features
-============
-
-   * Cyclic Synchronous Position Control
-   * Cyclic Synchronous Velocity Control
-   * Cyclic Synchronous Torque Control
-   * Profile Position Control 
-   * Profile Velocity Control
-   * Profile Torque Control
-   * Homing mode
-   * Support motor and controller parameter update
-
 Firmware Overview
 =================
 

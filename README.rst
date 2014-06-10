@@ -1,9 +1,10 @@
 SOMANET Control Protocol Software Component
 ...................................
 
-:Latest release: 1.0.0beta0
+:Latest release: 1.0.0beta1
 :Maintainer: Synapticon
 :Description: Implementation of a communication protocol for SOMANET Motor Control applications
+
 
 Firmware Overview
 =================

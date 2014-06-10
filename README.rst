@@ -5,10 +5,6 @@ SOMANET Control Protocol Software Component
 :Maintainer: Synapticon
 :Description: Implementation of a communication protocol for SOMANET Motor Control applications
 
-
-.. image:: https://s3-eu-west-1.amazonaws.com/synapticon-resources/images/logos/synapticon_fullname_blackoverwhite_280x48.png
-   :align: left
-
 Firmware Overview
 =================
 

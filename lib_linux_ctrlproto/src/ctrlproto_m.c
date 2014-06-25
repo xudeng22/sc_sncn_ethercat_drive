@@ -27,7 +27,7 @@
  *
  ****************************************************************************/
  /*
-  * \file ctrlproto_m.c
+  * @file ctrlproto_m.c
   * Adaption to somanet by Frank Jeschke <jeschke@fjes.de>, Pavan Kanajar <pkanajar@synapticon.com>
   * & Christian Holl <choll@synapticon.com>
   *
@@ -77,7 +77,7 @@
 #include <stdarg.h>
 #include <ctrlproto_m.h>
 #include <canod.h>
-#include "ecrt.h"
+#include <ecrt.h>
 
 
 

@@ -1,10 +1,10 @@
 
 /**
- * \file motor_define.h
- * \brief Motor Config Struct definitions
- * \author Pavan Kanajar <pkanajar@synapticon.com>
- * \version 1.0
- * \date 10/04/2014
+ * @file motor_define.h
+ * @brief Motor Config Struct definitions
+ * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @version 1.0
+ * @date 10/04/2014
  */
 
 /*

@@ -1,11 +1,9 @@
 
 /**
- * \file main.xc
- * \brief Test application for Ctrlproto on Somanet
- * \author Frank Jeschke <jeschke@fjes.de>
- * \author Christian Holl <choll@synapticon.com>
- * \version 1.0
- * \date 10/04/2014
+ * @file main.xc
+ * @brief Test application for Ctrlproto on Somanet
+ * @author Frank Jeschke <jeschke@fjes.de>
+ * @author Christian Holl <choll@synapticon.com>
  */
 
 #include <platform.h>

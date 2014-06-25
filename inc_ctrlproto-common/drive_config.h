@@ -1,10 +1,10 @@
 
 /**
- * \file drive_config.h
- * \brief Drive Configuration Defines
- * \author Pavan Kanajar <pkanajar@synapticon.com>
- * \version 1.0
- * \date 10/04/2014
+ * @file drive_config.h
+ * @brief Drive Configuration Defines
+ * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @version 1.0
+ * @date 10/04/2014
  */
 
 /*
@@ -44,7 +44,7 @@
 #pragma once
 
 /**
- * \brief Modes of Operation (CiA402)
+ * @brief Modes of Operation (CiA402)
  *
  * 	M - Mandatory, C - Conditional, R - Recommended, O - optional , FG - Function Group
  */

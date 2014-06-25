@@ -1,14 +1,12 @@
 
 /**
- * \file ctrlproto.xc
- * \brief Control Protocol Handler
- * \author Christian Holl <choll@synapticon.com>
- * \author Pavan Kanajar <pkanajar@synapticon.com>
- * \version 1.0
- * \date 10/04/2014
+ * @file ctrlproto.xc
+ * @brief Control Protocol Handler
+ * @author Christian Holl <choll@synapticon.com>
+ * @author Pavan Kanajar <pkanajar@synapticon.com>
  */
 
-#include "ctrlproto.h"
+#include <ctrlproto.h>
 #include <xs1.h>
 #include <print.h>
 #include <ethercat.h>

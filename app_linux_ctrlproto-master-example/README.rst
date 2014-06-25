@@ -1,9 +1,16 @@
-<Add title here>
-================
+SOMANET Simple EtherCAT Master-Side Demo
+========================================
 
-:scope: <Put one of Roadmap, Example, Early Development or General Use>
-:description: <Add one line here>
-:keywords: <Add comma separated list of keywords>
-:boards: <Add comma separated list of supported boards>
+:scope: General Use
+:description: Simple EtherCAT demo
+:keywords: SOMANET, EtherCAT, process data, master, demo
+:boards: SOMANET COM EtherCAT
 
-<Add description of software block>
+Description
+-----------
+This application provides a example EtherCAT Master application for reading/writing process data sent
+via EtherCAT. This application is intended to test the EtherCAT communication on SOMANET, the nodes 
+must be running app_ctrlproto-test before the Master application runs.
+
+NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. The 
+node configuration must be defined in ethercat_setup.h

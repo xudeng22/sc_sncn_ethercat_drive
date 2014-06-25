@@ -9,4 +9,4 @@ SOMANET Protocol Library for Motor Control
 Description
 -----------
 
-This library provides initialization for multinode setup via config defines, for EtherCAT master setup, EtherCAT Process data and Service data update functions.
+This library provides initialization for multi-node setup via config defines, for EtherCAT master setup, EtherCAT Process data and Service data update functions.

@@ -233,7 +233,6 @@ int generate_profile_velocity(int step, int slave_number, ctrlproto_slv_handle *
 int init_linear_profile_params(float target_torque, float actual_torque, float torque_slope, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
     float max_torque =  slv_handles[slave_number].motor_config_param.s_max_torque.max_torque;
-    printf("\nmax_torque : %f", max_torque);
 
 	return __init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque,\
 			&slv_handles[slave_number].profile_linear_params); //max_torque

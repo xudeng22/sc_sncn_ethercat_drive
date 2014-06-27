@@ -6,6 +6,8 @@ INCLUDE_DIRS += -I ../inc_ctrlproto-common/
 INCLUDE_DIRS += -I ../module_ethercat/src/canod/
 INCLUDE_DIRS += -I ../module_motorcontrol_common/include
 INCLUDE_DIRS += -I ../module_profile/include
+INCLUDE_DIRS += -I ../module_hall/include
+INCLUDE_DIRS += -I ../module_qei/include
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 

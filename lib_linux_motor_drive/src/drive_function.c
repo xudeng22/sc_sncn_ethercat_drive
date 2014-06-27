@@ -1,8 +1,8 @@
 
 /**
- * \file drive_function.c
- * \brief Motor Drive functions over Ethercat
- * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * @file drive_function.c
+ * @brief Motor Drive functions over Ethercat
+ * @author Pavan Kanajar <pkanajar@synapticon.com>
  */
 
 

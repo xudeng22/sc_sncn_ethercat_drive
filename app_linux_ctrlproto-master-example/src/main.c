@@ -5,9 +5,9 @@
  * @author Christian Holl <choll@synapticon.com>
  */
 
+#include "ethercat_setup.h"
 #include <ctrlproto_m.h>
 #include <ecrt.h>
-#include <ethercat_setup.h>
 #include <stdio.h>
 #include <motor_define.h>
 #include <sys/time.h>

@@ -4,15 +4,15 @@ ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 LIBS += -lethercat -lm
 
 MOTORCONTROL_KIT_PATH := ..
-ETHERCAT_PATH := ..
 MOTORCONTROL_PATH := ..
 
-# DEVELOPERS ONLY #
-ifeq ($(MAKECMDGOALS),develop)
+ifneq (,$(wildcard ../../sw_sncn_motorcontrol_ethercat_kit/.))
 	MOTORCONTROL_KIT_PATH := ../../sw_sncn_motorcontrol_ethercat_kit
+endif
+
+ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../sc_sncn_motorcontrol
 endif
-# END DEVELOPERS ONLY #
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I include
@@ -29,7 +29,7 @@ LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 # Needed for checking if Linux machine
 UNAME := $(shell uname)
 
-all develop:
+all:
 
 ifneq "$(UNAME)" "Linux"
 		@echo "----------------------------------------------------------------------------------------------------"

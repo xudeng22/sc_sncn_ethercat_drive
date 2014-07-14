@@ -98,7 +98,7 @@ int sensor_select_sdo(chanend coe_out);
  * @return max position
  * @return min position
  * @return qei type
- * @retrun sensor polarity
+ * @return sensor polarity
  *
  */
 {int, int, int, int, int} qei_sdo_update(chanend coe_out);

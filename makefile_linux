@@ -1,0 +1,9 @@
+all:
+
+	@cd lib_linux_ctrlproto/; make
+	@cd lib_linux_motor_drive/; make
+
+clean:
+
+	@cd lib_linux_ctrlproto/; make clean
+	@cd lib_linux_motor_drive/; make clean

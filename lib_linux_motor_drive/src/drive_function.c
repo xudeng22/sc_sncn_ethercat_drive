@@ -469,7 +469,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, VELOCITY_CTRL_UPDATE, slave_number);  //mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, VELOCITY_CTRL_UPDATE, slave_number);  //Velocity PID gains
 				printf (".");
 				fflush(stdout);
 			}
@@ -485,7 +485,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//nominal current updates
 				printf (".");
 				fflush(stdout);
 			}

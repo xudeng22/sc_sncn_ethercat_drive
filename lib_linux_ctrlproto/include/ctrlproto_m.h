@@ -17,6 +17,7 @@
 #include <profile.h>
 #include <bldc_motor_config_1.h>
 #include <bldc_motor_config_2.h>
+#include <bldc_motor_config_3.h>
 
 #define FREQUENCY 	1000	// Hz
 

@@ -1,7 +1,8 @@
 sc_sncn_ctrlproto Change Log
 ============================
 
-1.1.0
+1.0.1
+-----
 
   * Build for Linux libraries and applications supports both importing sources into workspace and not
 

@@ -363,9 +363,9 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 		buffer[0] = InOut.status_word ;
 		buffer[1] = (InOut.operation_mode_display | (InOut.position_actual&0xff)<<8) ;
 		buffer[2] = (InOut.position_actual>> 8)& 0xffff;
-		buffer[3] = (InOut.position_actual>>24) & 0xff | (InOut.velocity_actual&0xff)<<8 ;
+		buffer[3] = ((InOut.position_actual>>24) & 0xff) | ((InOut.velocity_actual&0xff)<<8);
 		buffer[4] = (InOut.velocity_actual>> 8)& 0xffff;
-		buffer[5] = (InOut.velocity_actual>>24) & 0xff | (InOut.torque_actual&0xff)<<8 ;
+		buffer[5] = ((InOut.velocity_actual>>24) & 0xff) | ((InOut.torque_actual&0xff)<<8) ;
 		buffer[6] = (InOut.torque_actual >> 8)&0xff;
 		for (i = 0; i < 7; i++)
 		{

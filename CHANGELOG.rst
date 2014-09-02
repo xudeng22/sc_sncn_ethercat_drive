@@ -1,6 +1,13 @@
 sc_sncn_ctrlproto Change Log
 ============================
 
+
+1.0.2
+-----
+
+  * No change in source files except the build done with latest tools 
+
+
 1.0.1
 -----
 

@@ -29,7 +29,7 @@ The application runs 2 threads on the COM_TILE and 1 more thread.
   	
   	*Thread: Test application handling process data objects (pdos) from EtherCAT.
 
-Dependencies: module_ctrlproto sc_sncn_ethercat/module_ethercat sc_somanet-base/module_fwupdate sc_somanet-base/module_nodeconfig
+Dependencies: module_ctrlproto sc_sncn_ethercat/module_ethercat sc_somanet-base/module_fwupdate sc_somanet-base/module_board-support
 
 Note: Fore both Core C22 module and Core C21 module, COM_TILE is located on CORE 0.
 

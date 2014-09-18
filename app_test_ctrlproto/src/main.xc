@@ -1,3 +1,6 @@
+/* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE */
+#include <CORE_C22-rev-a.inc>
+#include <COM_ECAT-rev-a.inc>
 
 /**
  * @file main.xc
@@ -6,9 +9,6 @@
  * @author Christian Holl <choll@synapticon.com>
  */
 
-#include <platform.h>
-#include <xs1.h>
-#include <ioports.h>
 #include <ethercat.h>
 #include <print.h>
 #include <ctrlproto.h>

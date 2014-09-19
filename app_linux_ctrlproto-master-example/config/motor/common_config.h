@@ -1,8 +1,7 @@
-
 /**
  * @file common_config.h
  * @brief common internal configurations
- * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #define QEI_WITH_INDEX				1

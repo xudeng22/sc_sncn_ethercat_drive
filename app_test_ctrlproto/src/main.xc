@@ -5,8 +5,7 @@
 /**
  * @file main.xc
  * @brief Test application for Ctrlproto on Somanet
- * @author Frank Jeschke <jeschke@fjes.de>
- * @author Christian Holl <choll@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #include <ethercat.h>

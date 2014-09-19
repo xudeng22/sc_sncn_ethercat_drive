@@ -1,9 +1,7 @@
-
 /**
  * @file ctrlproto.xc
  * @brief Control Protocol Handler
- * @author Christian Holl <choll@synapticon.com>
- * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #include <ctrlproto.h>

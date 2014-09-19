@@ -1,8 +1,7 @@
-
- /**
-  * @file ctrlproto_m.c
-  * @autor Christian Holl <choll@synapticon.com> rank Jeschke <jeschke@fjes.de>, Pavan Kanajar <pkanajar@synapticon.com>
-  */
+/**
+ * @file ctrlproto_m.c
+ * @author Synapticon GmbH <support@synapticon.com>
+*/
 
 #include <errno.h>
 #include <signal.h>

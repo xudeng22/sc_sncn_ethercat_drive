@@ -1,8 +1,7 @@
-
 /**
  * @file motor_define.h
  * @brief Motor Config Struct definitions
- * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #ifndef MOTOR_DEFINE_H_

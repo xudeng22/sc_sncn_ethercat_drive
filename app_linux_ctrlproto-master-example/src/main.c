@@ -1,8 +1,7 @@
-
 /**
  * @file main.c
  * @brief Example Master App to test Ethercat (on PC)
- * @author Christian Holl <choll@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #include "ethercat_setup.h"

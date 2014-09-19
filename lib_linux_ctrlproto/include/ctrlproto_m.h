@@ -1,10 +1,7 @@
-
 /**
  * @file ctrlproto_m.h
  * @brief Ethercat control protocol
- * @author Pavan Kanajar <pkanajar@synapticon.com>
- * @author Frank Jeschke <jeschke@fjes.de>
- * @author Christian Holl <choll@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #ifndef CTRLPROTO_M_H_

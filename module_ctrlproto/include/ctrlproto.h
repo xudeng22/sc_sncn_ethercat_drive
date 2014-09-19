@@ -1,9 +1,7 @@
-
 /**
  * @file ctrlproto.h
  * @brief Control Protocol Handler
- * @author Christian Holl <choll@synapticon.com>
- * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #pragma once

@@ -1,8 +1,7 @@
-
 /**
  * @file drive_function.h
  * @brief Motor Drive functions over Ethercat
- * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #include <drive_config.h>

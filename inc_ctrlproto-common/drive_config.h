@@ -1,8 +1,7 @@
-
 /**
  * @file drive_config.h
  * @brief Drive Configuration Defines
- * @author Pavan Kanajar <pkanajar@synapticon.com>
+ * @author Synapticon GmbH <support@synapticon.com>
  */
 
 #ifndef DRIVE_CONFIG_H_

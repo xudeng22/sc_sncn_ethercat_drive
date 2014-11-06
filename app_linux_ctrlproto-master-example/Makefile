@@ -11,6 +11,7 @@ ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 
 CTRL_PROTO_PATH := ..
 MOTORCONTROL_PATH := ..
+MOTORCONFIG_PATH := ..
 
 ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../sc_sncn_motorcontrol
@@ -20,6 +21,10 @@ ifneq (,$(wildcard ../../sc_sncn_ctrlproto/.))
 	CTRL_PROTO_PATH := ../../sc_sncn_ctrlproto
 endif
 
+ifneq (,$(wildcard ../../sc_sncn_ctrlproto/.)) 
+	MOTORCONFIG_PATH := ../../sw_sncn_motorcontrol_ethercat_kit
+endif
+
 INCLUDE_DIRS += -I $(CTRL_PROTO_PATH)/inc_ctrlproto-common
 INCLUDE_DIRS += -I $(CTRL_PROTO_PATH)/lib_linux_ctrlproto/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include
@@ -27,7 +32,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
-INCLUDE_DIRS += -I ../motor_config
+INCLUDE_DIRS += -I $(MOTORCONFIG_PATH)/motor_config
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 LIB_DIRS += -L ../lib_linux_ctrlproto/lib

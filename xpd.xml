@@ -1,14 +1,14 @@
 <?xml version="1.0" ?>
 <xpd>
     <components>
-        <component description = "Common CiA 402 definitions" type = "demoCode" scope = "General Use" path = "inc_ctrlproto-common" local = "false" id = "inc_ctrlproto-common" name = "SOMANET CiA 402 Definitions for Control Protocol">
+        <component description = "Motor Control communication library" type = "demoCode" scope = "General Use" path = "lib_linux_ctrlproto" local = "false" id = "lib_linux_ctrlproto" name = "SOMANET Protocol Library for Motor Control">
             <board>SOMANET COM-EtherCAT</board>
             <board>SOMANET IFM-DC100</board>
             <board>SOMANET IFM-DC300</board>
             <keyword>SOMANET</keyword>
             <keyword>EtherCAT</keyword>
         </component>
-        <component description = "This library provides motor drive functions over EtherCAT" type = "demoCode" scope = "General Use" path = "lib_linux_motor_drive" local = "false" id = "lib_linux_motor_drive" name = "SOMANET Motor Drive Library">
+        <component description = "Common CiA 402 definitions" type = "demoCode" scope = "General Use" path = "inc_ctrlproto-common" local = "false" id = "inc_ctrlproto-common" name = "SOMANET CiA 402 Definitions for Control Protocol">
             <board>SOMANET COM-EtherCAT</board>
             <board>SOMANET IFM-DC100</board>
             <board>SOMANET IFM-DC300</board>
@@ -22,7 +22,7 @@
             <keyword>CiA402</keyword>
             <keyword>Motor Control</keyword>
         </component>
-        <component description = "Motor Control communication library" type = "demoCode" scope = "General Use" path = "lib_linux_ctrlproto" local = "false" id = "lib_linux_ctrlproto" name = "SOMANET Protocol Library for Motor Control">
+        <component description = "This library provides motor drive functions over EtherCAT" type = "demoCode" scope = "General Use" path = "lib_linux_motor_drive" local = "false" id = "lib_linux_motor_drive" name = "SOMANET Motor Drive Library">
             <board>SOMANET COM-EtherCAT</board>
             <board>SOMANET IFM-DC100</board>
             <board>SOMANET IFM-DC300</board>
@@ -43,7 +43,8 @@
     <release parenthash = "29f2318733d62b30881f647772e19455e360b18e" version = "1.0.0beta0" githash = "a2f4d5450be0fe2e93d849ff7332cdec611a7c5e"></release>
     <release parenthash = "7b2c3de8f62bf49c5a26d0a52b6775de5338928a" version = "1.0.0beta1" githash = "2a57ba8813e8a1157a96acd95135a679b66f1166"></release>
     <release parenthash = "2a57ba8813e8a1157a96acd95135a679b66f1166" version = "1.0.0rc0" githash = "09c4c1669da6b53af66ac91297af9cfbe3f954e5"></release>
-    <release parenthash = "51851371458f55033b24762aae921992136fa1c9" version = "1.0.0rc1"></release>
+    <release parenthash = "51851371458f55033b24762aae921992136fa1c9" version = "1.0.0rc1" githash = "4d79dc41a17ac79cb4b3b7325c32009d483bf1d9"></release>
+    <release parenthash = "c2d710770724739cf240fb5d8c61189ee79f10dd" version = "1.0.2rc0"></release>
     <subpartnumber>XM-005846-SM</subpartnumber>
     <vendor>XMOS</vendor>
     <version_defines></version_defines>

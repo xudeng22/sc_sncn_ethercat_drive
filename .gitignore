@@ -17,7 +17,7 @@
 *.out
 *.app
 
-## ignore XDE(ecipse) files
+## ignore xTIMEcomposer(ecipse) files
 .metadata/
 
 ## generic files to ignore

@@ -32,7 +32,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
-INCLUDE_DIRS += -I $(MOTORCONFIG_PATH)/motor_config
+INCLUDE_DIRS += -I $(MOTORCONFIG_PATH)/config
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 LIB_DIRS += -L ../lib_linux_ctrlproto/lib

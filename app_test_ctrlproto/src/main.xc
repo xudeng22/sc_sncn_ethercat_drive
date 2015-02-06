@@ -13,6 +13,8 @@
 #include <ctrlproto.h>
 #include <flash_somanet.h>
 
+ethercat_interface_t ethercat_interface = SOMANET_COM_ETHERCAT_PORTS;
+
 /* Test application handling pdos from EtherCat */
 static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 {
@@ -102,8 +104,8 @@ int main(void)
 	{
 		/* Ethercat Communication Handler Loop */
 		on tile[COM_TILE] : {
-			ecat_init();
-			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
+			ecat_init(ethercat_interface);
+			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in, ethercat_interface);
 		}
 
 		/* Firmware Update Loop */

@@ -7,7 +7,7 @@
 #include <ctrlproto.h>
 #include <xs1.h>
 #include <print.h>
-#include <ethercat.h>
+#include <ethercat_service.h>
 #include <foefs.h>
 
 ctrl_proto_values_t init_ctrl_proto(void)

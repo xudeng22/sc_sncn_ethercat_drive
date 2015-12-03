@@ -8,10 +8,9 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <ethercat.h>
-#include <print.h>
+#include <ethercat_service.h>
 #include <ctrlproto.h>
-#include <flash_somanet.h>
+
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
@@ -104,14 +103,8 @@ int main(void)
 	{
 		/* Ethercat Communication Handler Loop */
 		on tile[COM_TILE] : {
-			ecat_init(ethercat_ports);
-			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
-		}
-
-		/* Firmware Update Loop */
-		on tile[COM_TILE] :
-		{
-			//firmware_update_loop(p_spi_flash, foe_out, foe_in, c_sig); 	// firmware update over EtherCat
+			ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
+			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
 		}
 
 		/* Test application handling pdos from EtherCat */

@@ -7,7 +7,8 @@
 #include <refclk.h>
 #include <comm.h>
 #include <statemachine.h>
-#include <drive_modes.h>
+#include <drive_mode_helpers.h>
+#include <state_modes.h>
 
 #include <motorcontrol_service.h>
 #include <hall_service.h>
@@ -20,7 +21,6 @@
 
 #include <profile.h>
 
-#include <bldc_motor_init.h>
 
 
 {int, int} static inline get_position_absolute(int sensor_select, interface HallInterface client i_hall,

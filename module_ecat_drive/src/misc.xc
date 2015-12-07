@@ -8,7 +8,7 @@
 #include <hall_service.h>
 #include <motorcontrol_service.h>
 #include <statemachine.h>
-#include <drive_modes.h>
+#include <state_modes.h>
 #include <internal_config.h>
 #include <print.h>
 

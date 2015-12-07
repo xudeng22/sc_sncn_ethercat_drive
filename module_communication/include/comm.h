@@ -8,7 +8,7 @@
 
 #include <hall_service.h>
 #include <qei_service.h>
-#include <internal_config.h>
+#include <drive_modes_config.h>
 #include <ctrlproto.h>
 #include <motorcontrol_service.h>
 #include <control_loops_common.h>

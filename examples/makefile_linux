@@ -1,0 +1,17 @@
+all:
+
+	@cd app_demo_master_cyclic_position/; make
+	@cd app_demo_master_cyclic_torque/; make
+	@cd app_demo_master_cyclic_velocity/; make                                                                                       
+	@cd app_demo_master_cyclic_position_2_nodes/; make
+	@cd app_demo_master_cyclic_torque_2_nodes/; make
+	@cd app_demo_master_cyclic_velocity_2_nodes/; make
+
+clean:
+
+	@cd app_demo_master_cyclic_position/; make clean
+	@cd app_demo_master_cyclic_torque/; make clean
+	@cd app_demo_master_cyclic_velocity/; make clean                                                                                       
+	@cd app_demo_master_cyclic_position_2_nodes/; make clean
+	@cd app_demo_master_cyclic_torque_2_nodes/; make clean
+	@cd app_demo_master_cyclic_velocity_2_nodes/; make clean

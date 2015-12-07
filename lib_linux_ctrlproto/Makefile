@@ -3,13 +3,8 @@ ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 
 LIBS += -lethercat -lm
 
-MOTORCONTROL_KIT_PATH := ..
 ETHERCAT_PATH := ..
 MOTORCONTROL_PATH := ..
-
-ifneq (,$(wildcard ../../sw_sncn_motorcontrol_ethercat_kit/.))
-	MOTORCONTROL_KIT_PATH := ../../sw_sncn_motorcontrol_ethercat_kit
-endif
 
 ifneq (,$(wildcard ../../sc_sncn_ethercat/.))
 	ETHERCAT_PATH := ../../sc_sncn_ethercat
@@ -22,7 +17,7 @@ endif
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I include
 INCLUDE_DIRS += -I ../inc_ctrlproto-common/
-INCLUDE_DIRS += -I $(MOTORCONTROL_KIT_PATH)/config
+INCLUDE_DIRS += -I ../examples/config_motor_ethercat_drive
 INCLUDE_DIRS += -I $(ETHERCAT_PATH)/module_ethercat/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include

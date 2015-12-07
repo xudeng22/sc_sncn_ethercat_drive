@@ -7,41 +7,40 @@ LIBS += -lethercat -lm
 # Installation directory of the  EtherCAT Master by IgH EtherLAB
 ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 
-CTRL_PROTO_PATH := ..
-MOTORCONTROL_PATH := ..
+ETHERCAT_DRIVE_PATH := ../../.
+MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 
 ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
-	MOTORCONTROL_PATH := ../../sc_sncn_motorcontrol
+	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 endif
 
 ifneq (,$(wildcard ../../sc_sncn_ctrlproto/.)) 
-	CTRL_PROTO_PATH := ../../sc_sncn_ctrlproto
+	CTRL_PROTO_PATH := ../../.
 endif
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
-INCLUDE_DIRS += -I ../config
-
-INCLUDE_DIRS += -I $(CTRL_PROTO_PATH)/inc_ctrlproto-common
-INCLUDE_DIRS += -I $(CTRL_PROTO_PATH)/lib_linux_ctrlproto/include
-INCLUDE_DIRS += -I $(CTRL_PROTO_PATH)/lib_linux_motor_drive/include
+INCLUDE_DIRS += -I ../config_motor_ethercat_drive
+INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/inc_ctrlproto-common
+INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/include
+INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
-LIB_DIRS += -L $(CTRL_PROTO_PATH)/lib_linux_ctrlproto/lib
-LIB_DIRS += -L $(CTRL_PROTO_PATH)/lib_linux_motor_drive/lib
+LIB_DIRS += -L $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/lib
+LIB_DIRS += -L $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive/lib
 
 # Needed for checking if Linux machine
 UNAME := $(shell uname)
 
 all:
 		@echo Bulding dependency: lib_linux_ctrlproto...
-		@cd $(CTRL_PROTO_PATH)/lib_linux_ctrlproto; make
+		@cd $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto; make
 		@echo 
 		@echo Bulding dependency: lib_linux_motor_drive...
-		@cd $(CTRL_PROTO_PATH)/lib_linux_motor_drive; make
+		@cd $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive; make
 		@echo 
 		@echo Bulding application...
 ifneq "$(UNAME)" "Linux"

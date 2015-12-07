@@ -41,7 +41,7 @@
 								</outputEntries>
 							</builder>
 							<tool id="com.xmos.cdt.xc.compiler.39320989" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler">
-								<option id="com.xmos.c.compiler.option.defined.symbols.53895147" name="com.xmos.c.compiler.option.defined.symbols" superClass="com.xmos.c.compiler.option.defined.symbols" valueType="definedSymbols"/>
+								<option id="com.xmos.c.compiler.option.defined.symbols.53895147" name="com.xmos.c.compiler.option.defined.symbols" superClass="com.xmos.c.compiler.option.defined.symbols"/>
 								<option id="com.xmos.xc.compiler.option.include.paths.32861890" name="com.xmos.xc.compiler.option.include.paths" superClass="com.xmos.xc.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
@@ -51,7 +51,7 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/xc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 								</option>
-								<option id="com.xmos.xc.compiler.option.defined.symbols.1493684976" superClass="com.xmos.xc.compiler.option.defined.symbols" valueType="definedSymbols">
+								<option id="com.xmos.xc.compiler.option.defined.symbols.1493684976" name="com.xmos.xc.compiler.option.defined.symbols" superClass="com.xmos.xc.compiler.option.defined.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__SHRT_MAX__=32767"/>
 									<listOptionValue builtIn="false" value="__SCHAR_MAX__=127"/>
 									<listOptionValue builtIn="false" value="__SIZE_TYPE__=unsigned"/>

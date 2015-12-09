@@ -230,15 +230,15 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                 int min_position_limit;
                 //int polarity;
                 if (op_mode == CSP) {
-                    deceleration = cyclic_sync_position_config.base.max_acceleration;
+                    deceleration = cyclic_sync_position_config.velocity_config.max_acceleration;
                     max_position_limit = cyclic_sync_position_config.max_position_limit;
                     min_position_limit = cyclic_sync_position_config.min_position_limit;
-                    //polarity = cyclic_sync_position_config.base.polarity;
+                    //polarity = cyclic_sync_position_config.velocity_config.polarity;
                 } else {    /* op_mode == PP */
-                    deceleration = profile_position_config.base.quick_stop_deceleration;
+                    deceleration = profile_position_config.velocity_config.quick_stop_deceleration;
                     max_position_limit = profile_position_config.software_position_limit_max;
                     min_position_limit = profile_position_config.software_position_limit_min;
-                    //polarity = profile_position_config.base.polarity;
+                    //polarity = profile_position_config.velocity_config.polarity;
                 }
 
                 if (actual_velocity>=500 || actual_velocity<=-500) {
@@ -335,7 +335,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     }
                     nominal_speed = speed_sdo_update(coe_out);
                     update_pp_param_ecat(profile_position_config, coe_out);
-                    polarity = profile_position_config.base.polarity;
+                    polarity = profile_position_config.velocity_config.polarity;
                     qei_params.poles = hall_config.pole_pairs;
 
                     //config_sdo_handler(coe_out);
@@ -424,7 +424,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                         update_pp_param_ecat(profile_position_config, coe_out);
                         init_position_profile_limits(profile_position_config.max_acceleration,
-                                                     profile_position_config.base.max_profile_velocity,
+                                                     profile_position_config.velocity_config.max_profile_velocity,
                                                      qei_params, hall_config, sensor_select,
                                                      profile_position_config.software_position_limit_max,
                                                      profile_position_config.software_position_limit_min);
@@ -661,9 +661,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                             int deceleration;
                             if (op_mode == CSP) {
-                                deceleration = cyclic_sync_position_config.base.max_acceleration;
+                                deceleration = cyclic_sync_position_config.velocity_config.max_acceleration;
                             } else { /* op_ode == PP */
-                                deceleration = profile_position_config.base.quick_stop_deceleration;
+                                deceleration = profile_position_config.velocity_config.quick_stop_deceleration;
                             }
 
                             int sensor_ticks;
@@ -782,22 +782,22 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         target_position = get_target_position(InOut);
                         set_position_csp(cyclic_sync_position_config, target_position, 0, 0, 0, i_position_control);
 
-                        actual_position = i_position_control.get_position() * cyclic_sync_position_config.base.polarity;
+                        actual_position = i_position_control.get_position() * cyclic_sync_position_config.velocity_config.polarity;
                         send_actual_position(actual_position, InOut);
                         //safety_state = read_gpio_digital_input(c_gpio, 1);        // read port 1
                         //value = (port_3_value<<3 | port_2_value<<2 | port_1_value <<1| safety_state );  pack values if more than one port inputs
                     } else if (op_mode == PP) {
                         if (ack == 1) {
                             target_position = get_target_position(InOut);
-                            actual_position = i_position_control.get_position() * profile_position_config.base.polarity;
+                            actual_position = i_position_control.get_position() * profile_position_config.velocity_config.polarity;
                             send_actual_position(actual_position, InOut);
 
                             if (prev_position != target_position) {
                                 ack = 0;
                                 steps = init_position_profile(target_position, actual_position,
                                                               profile_position_config.profile_velocity,
-                                                              profile_position_config.base.profile_acceleration,
-                                                              profile_position_config.base.profile_deceleration);
+                                                              profile_position_config.velocity_config.profile_acceleration,
+                                                              profile_position_config.velocity_config.profile_deceleration);
 
                                 i = 1;
                                 prev_position = target_position;
@@ -805,7 +805,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         } else if (ack == 0) {
                             if (i < steps) {
                                 position_ramp = position_profile_generate(i);
-                                i_position_control.set_position(position_limit(position_ramp * profile_position_config.base.polarity,
+                                i_position_control.set_position(position_limit(position_ramp * profile_position_config.velocity_config.polarity,
                                         profile_position_config.software_position_limit_max,
                                         profile_position_config.software_position_limit_min));
                                 i++;
@@ -816,7 +816,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                             } else if (i > steps) {
                                 ack = 1;
                             }
-                            //actual_position = get_position(c_position_ctrl) * profile_position_config.base.polarity;
+                            //actual_position = get_position(c_position_ctrl) * profile_position_config.velocity_config.polarity;
                             //send_actual_position(actual_position, InOut);
                         }
                     } else if (op_mode == TQ) {

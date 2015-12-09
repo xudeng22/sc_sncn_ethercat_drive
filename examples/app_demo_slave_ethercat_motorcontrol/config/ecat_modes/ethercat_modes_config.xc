@@ -21,12 +21,12 @@ void init_csv_config(CyclicSyncVelocityConfig &csv_config)
 
 void init_csp_config(CyclicSyncPositionConfig &csp_config)
 {
-    csp_config.base.max_motor_speed = MAX_NOMINAL_SPEED;
-        csp_config.base.max_acceleration = MAX_ACCELERATION;
+    csp_config.velocity_config.max_motor_speed = MAX_NOMINAL_SPEED;
+        csp_config.velocity_config.max_acceleration = MAX_ACCELERATION;
     if(POLARITY >= 0)
-        csp_config.base.polarity = 1;
+        csp_config.velocity_config.polarity = 1;
     else if(POLARITY < 0)
-        csp_config.base.polarity = -1;
+        csp_config.velocity_config.polarity = -1;
     csp_config.max_following_error = 0;
     csp_config.max_position_limit = MAX_POSITION_LIMIT;
     csp_config.min_position_limit = MIN_POSITION_LIMIT;
@@ -50,13 +50,13 @@ void init_pt_config(ProfileTorqueConfig &pt_config)
 
 void init_pp_config(ProfilePositionConfig &pp_config)
 {
-    pp_config.base.max_profile_velocity = MAX_PROFILE_VELOCITY;
+    pp_config.velocity_config.max_profile_velocity = MAX_PROFILE_VELOCITY;
     pp_config.profile_velocity  = PROFILE_VELOCITY;
-    pp_config.base.profile_acceleration = PROFILE_ACCELERATION;
-    pp_config.base.profile_deceleration = PROFILE_DECELERATION;
-    pp_config.base.quick_stop_deceleration = QUICK_STOP_DECELERATION;
+    pp_config.velocity_config.profile_acceleration = PROFILE_ACCELERATION;
+    pp_config.velocity_config.profile_deceleration = PROFILE_DECELERATION;
+    pp_config.velocity_config.quick_stop_deceleration = QUICK_STOP_DECELERATION;
     pp_config.max_acceleration = MAX_ACCELERATION;
-    pp_config.base.polarity = POLARITY;
+    pp_config.velocity_config.polarity = POLARITY;
     pp_config.software_position_limit_max = MAX_POSITION_LIMIT;
     pp_config.software_position_limit_min = MIN_POSITION_LIMIT;
     return;

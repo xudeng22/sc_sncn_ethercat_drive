@@ -105,13 +105,13 @@ void update_csv_param_ecat(CyclicSyncVelocityConfig &csv_params, chanend coe_out
 
 void update_csp_param_ecat(CyclicSyncPositionConfig &csp_params, chanend coe_out)
 {
-    {csp_params.base.max_motor_speed, csp_params.base.polarity, csp_params.base.nominal_current,
+    {csp_params.velocity_config.max_motor_speed, csp_params.velocity_config.polarity, csp_params.velocity_config.nominal_current,
             csp_params.min_position_limit, csp_params.max_position_limit,
-            csp_params.base.max_acceleration} = csp_sdo_update(coe_out);
-    if (csp_params.base.polarity >= 0) {
-        csp_params.base.polarity = 1;
-    } else if (csp_params.base.polarity < 0) {
-        csp_params.base.polarity = -1;
+            csp_params.velocity_config.max_acceleration} = csp_sdo_update(coe_out);
+    if (csp_params.velocity_config.polarity >= 0) {
+        csp_params.velocity_config.polarity = 1;
+    } else if (csp_params.velocity_config.polarity < 0) {
+        csp_params.velocity_config.polarity = -1;
     }
 }
 
@@ -135,12 +135,12 @@ void update_pv_param_ecat(ProfileVelocityConfig &pv_params, chanend coe_out)
 
 void update_pp_param_ecat(ProfilePositionConfig &pp_params, chanend coe_out)
 {
-    {pp_params.base.max_profile_velocity, pp_params.profile_velocity,
-            pp_params.base.profile_acceleration, pp_params.base.profile_deceleration,
-            pp_params.base.quick_stop_deceleration,
+    {pp_params.velocity_config.max_profile_velocity, pp_params.profile_velocity,
+            pp_params.velocity_config.profile_acceleration, pp_params.velocity_config.profile_deceleration,
+            pp_params.velocity_config.quick_stop_deceleration,
             pp_params.software_position_limit_min,
             pp_params.software_position_limit_max,
-            pp_params.base.polarity,
+            pp_params.velocity_config.polarity,
             pp_params.max_acceleration} = pp_sdo_update(coe_out);
 }
 

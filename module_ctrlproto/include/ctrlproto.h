@@ -9,17 +9,16 @@
 #include <stdint.h>
 #include <coecmd.h>
 #include <canod.h>
-
+#include <qei_service.h>
 
 /* internal qei single variable selection code */
-#define QEI_WITH_INDEX                          1
-#define QEI_WITH_NO_INDEX                       0
+//#define QEI_WITH_INDEX                          1
+//#define QEI_WITH_NO_INDEX                       0
 #define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX
 
 /* Position Sensor Types */
 #define HALL                                    1
-#define QEI_INDEX                               2
-#define QEI_NO_INDEX                            3
+
 
 #define GET_SDO_DATA(index, sub_index, value) \
     coe_out <: CAN_GET_OBJECT;                \

@@ -151,7 +151,6 @@ int main(void)
                     /* Control Loop */
                     torque_control_service(torque_ctrl_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3], i_torque_control);
                 }
-
             }
         }
 
@@ -198,10 +197,9 @@ int main(void)
 
                 /* GPIO Digital Server */
                 gpio_service(gpio_ports, i_gpio);
-
             }
         }
-
     }
+
     return 0;
 }

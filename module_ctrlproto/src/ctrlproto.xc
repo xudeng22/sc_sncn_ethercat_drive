@@ -315,9 +315,9 @@ int sensor_select_sdo(chanend coe_out)
 	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
 	GET_SDO_DATA(SENSOR_POLARITY, 0, sensor_polarity);
 
-	if(qei_type == QEI_INDEX)
+	if(qei_type == QEI_WITH_INDEX)
 		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};
-	else if(qei_type == QEI_NO_INDEX)
+	else if(qei_type == QEI_WITH_NO_INDEX)
 		return {real_counts, max, min, QEI_WITH_NO_INDEX, sensor_polarity};
 	else
 		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};	//default

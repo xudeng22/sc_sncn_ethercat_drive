@@ -132,13 +132,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
     checklist   = init_checklist();
     InOut       = init_ctrl_proto();
 
-    //init_cst_param(cyclic_sync_torque_config);
-    //init_csv_param(cyclic_sync_velocity_config);
-    //init_csp_param(cyclic_sync_position_config);
     hall_config = i_hall.getHallConfig();
-    //init_pp_params(profile_position_config);
-    //init_pv_params(profile_velocity_config);
-    //init_pt_params(profile_torque_config);
     qei_params = i_qei.getQEIConfig();
     velocity_ctrl_params = i_velocity_control.get_velocity_control_config();
 

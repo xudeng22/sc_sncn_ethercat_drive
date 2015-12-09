@@ -9,7 +9,7 @@
 
 void init_motorcontrol_config(MotorcontrolConfig & motorcontrol_config)
 {
-    motorcontrol_config.motor_type = BDC_MOTOR;
+    motorcontrol_config.motor_type = BLDC_MOTOR;
     motorcontrol_config.angle_variance = (60 * 4096) / (POLE_PAIRS * 2 * 360);
 
     if (POLE_PAIRS < 4) {

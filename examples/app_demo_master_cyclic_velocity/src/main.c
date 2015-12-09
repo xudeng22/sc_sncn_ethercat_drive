@@ -32,7 +32,7 @@ void  INThandler(int sig)
 
 int main() {
 
-    int target_velocity = 2000; //rpm
+    int target_velocity = 200; //rpm
     int acceleration = 1000; //rpm/s
     int deceleration = 1000; //rpm/s
 

@@ -19,6 +19,7 @@
 #include <velocity_ctrl_service.h>
 #include <position_ctrl_service.h>
 #include <torque_ctrl_service.h>
+#include <profile_control.h>
 
 #include <ethercat_drive_service.h>
 
@@ -30,6 +31,7 @@
 #include <hall_config.h>
 #include <motorcontrol_config.h>
 #include <control_config.h>
+#include <ethercat_modes_config.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -48,16 +50,16 @@ int main(void)
     /* Motor control channels */
     chan c_adctrig, c_pwm_ctrl;
 
-    interface WatchdogInterface i_watchdog;
-    interface MotorcontrolInterface i_motorcontrol[5];
-    interface ADCInterface i_adc;
+    interface GPIOInterface i_gpio[2];
+    interface WatchdogInterface i_watchdog[3];
+    interface ADCInterface i_adc[3];
     interface HallInterface i_hall[5];
     interface QEIInterface i_qei[5];
-    interface GPIOInterface i_gpio[2];
+    interface MotorcontrolInterface i_motorcontrol[5];
 
-    interface TorqueControlInterface i_torque_control;
-    interface PositionControlInterface i_position_control;
-    interface VelocityControlInterface i_velocity_control;
+    interface TorqueControlInterface i_torque_control[3];
+    interface PositionControlInterface i_position_control[3];
+    interface VelocityControlInterface i_velocity_control[3];
 
     /* EtherCat Communication channels */
     chan coe_in;          // CAN from module_ethercat to consumer
@@ -65,12 +67,11 @@ int main(void)
     chan eoe_in;          // Ethernet from module_ethercat to consumer
     chan eoe_out;         // Ethernet from consumer to module_ethercat
     chan eoe_sig;
-    chan foe_in;              // File from module_ethercat to consumer
-    chan foe_out;             // File from consumer to module_ethercat
+    chan foe_in;          // File from module_ethercat to consumer
+    chan foe_out;         // File from consumer to module_ethercat
     chan pdo_in;
     chan pdo_out;
     chan c_nodes[1], c_flash_data; // Firmware channels
-
 
     par
     {
@@ -94,8 +95,29 @@ int main(void)
         /* Ethercat Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-            ethercat_drive_service(pdo_out, pdo_in, coe_out, i_motorcontrol[3], i_hall[4], i_qei[4],
-                    i_torque_control, i_velocity_control, i_position_control, i_gpio[0]);
+            CyclicSyncTorqueConfig cyclic_sync_torque_config;
+            init_cst_config(cyclic_sync_torque_config);
+
+            CyclicSyncVelocityConfig cyclic_sync_velocity_config;
+            init_csv_config(cyclic_sync_velocity_config);
+
+            CyclicSyncPositionConfig cyclic_sync_position_config;
+            init_csp_config(cyclic_sync_position_config);
+
+            ProfilePositionConfig profile_position_config;
+            init_pp_config(profile_position_config);
+
+            ProfileVelocityConfig profile_velocity_config;
+            init_pv_config(profile_velocity_config);
+
+            ProfileTorqueConfig profile_torque_config;
+            init_pt_config(profile_torque_config);
+
+            ethercat_drive_service(cyclic_sync_position_config, cyclic_sync_velocity_config, cyclic_sync_torque_config,
+                                    profile_position_config, profile_velocity_config, profile_torque_config,
+                                    pdo_out, pdo_in, coe_out,
+                                    i_motorcontrol[3], i_hall[4], i_qei[4], i_gpio[0],
+                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
         }
 
         on tile[APP_TILE_2]:
@@ -104,30 +126,30 @@ int main(void)
             {
                 /* Position Control Loop */
                 {
-                     ControlConfig position_ctrl_params;
-                     init_position_control_config(position_ctrl_params); // Initialize PID parameters for Position Control
+                     ControlConfig position_ctrl_config;
+                     init_position_control_config(position_ctrl_config); // Initialize PID parameters for Position Control
 
                      /* Control Loop */
-                     position_control_service(position_ctrl_params, i_hall[1], i_qei[1], i_position_control, i_motorcontrol[0]);
+                     position_control_service(position_ctrl_config, i_hall[1], i_qei[1], i_motorcontrol[0], i_position_control);
                 }
 
                 /* Velocity Control Loop */
                 {
-                    ControlConfig velocity_ctrl_params;
-                    init_velocity_control_config(velocity_ctrl_params); // Initialize PID parameters for Velocity Control
+                    ControlConfig velocity_ctrl_config;
+                    init_velocity_control_config(velocity_ctrl_config); // Initialize PID parameters for Velocity Control
 
                     /* Control Loop */
-                    velocity_control_service(velocity_ctrl_params, i_hall[2], i_qei[2], i_velocity_control, i_motorcontrol[1]);
+                    velocity_control_service(velocity_ctrl_config, i_hall[2], i_qei[2], i_motorcontrol[1], i_velocity_control);
                 }
 
                 /* Torque Control Loop */
                 {
                     /* Torque Control Loop */
-                    ControlConfig torque_ctrl_params;
-                    init_torque_control_config(torque_ctrl_params);  // Initialize PID parameters for Torque Control
+                    ControlConfig torque_ctrl_config;
+                    init_torque_control_config(torque_ctrl_config);  // Initialize PID parameters for Torque Control
 
                     /* Control Loop */
-                    torque_control_service( torque_ctrl_params, i_adc, i_motorcontrol[2], i_hall[3], i_qei[3], i_torque_control);
+                    torque_control_service(torque_ctrl_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3], i_torque_control);
                 }
 
             }
@@ -171,7 +193,7 @@ int main(void)
                     init_motorcontrol_config(motorcontrol_config);
 
                     motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                            c_pwm_ctrl, i_hall[0], i_qei[0], i_watchdog, i_motorcontrol);
+                                            c_pwm_ctrl, i_hall[0], i_qei[0], i_watchdog[0], i_motorcontrol);
                 }
 
                 /* GPIO Digital Server */

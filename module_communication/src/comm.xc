@@ -80,7 +80,7 @@ void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chane
             commutation_params.bldc_winding_type} = commutation_sdo_update(coe_out);
 }
 
-void update_cst_param_ecat(cst_par &cst_params, chanend coe_out)
+void update_cst_param_ecat(CyclicSyncTorqueConfig &cst_params, chanend coe_out)
 {
     {cst_params.nominal_current, cst_params.nominal_motor_speed, cst_params.polarity,
             cst_params.max_torque, cst_params.motor_torque_constant} = cst_sdo_update(coe_out);
@@ -91,7 +91,7 @@ void update_cst_param_ecat(cst_par &cst_params, chanend coe_out)
     }
 }
 
-void update_csv_param_ecat(csv_par &csv_params, chanend coe_out)
+void update_csv_param_ecat(CyclicSyncVelocityConfig &csv_params, chanend coe_out)
 {
     {csv_params.max_motor_speed, csv_params.nominal_current, csv_params.polarity,
             csv_params.max_acceleration, csv_params.motor_torque_constant} = csv_sdo_update(coe_out);
@@ -103,7 +103,7 @@ void update_csv_param_ecat(csv_par &csv_params, chanend coe_out)
     }
 }
 
-void update_csp_param_ecat(csp_par &csp_params, chanend coe_out)
+void update_csp_param_ecat(CyclicSyncPositionConfig &csp_params, chanend coe_out)
 {
     {csp_params.base.max_motor_speed, csp_params.base.polarity, csp_params.base.nominal_current,
             csp_params.min_position_limit, csp_params.max_position_limit,
@@ -115,7 +115,7 @@ void update_csp_param_ecat(csp_par &csp_params, chanend coe_out)
     }
 }
 
-void update_pt_param_ecat(pt_par &pt_params, chanend coe_out)
+void update_pt_param_ecat(ProfileTorqueConfig &pt_params, chanend coe_out)
 {
     {pt_params.profile_slope, pt_params.polarity} = pt_sdo_update(coe_out);
     if (pt_params.polarity >= 0) {
@@ -125,7 +125,7 @@ void update_pt_param_ecat(pt_par &pt_params, chanend coe_out)
     }
 }
 
-void update_pv_param_ecat(pv_par &pv_params, chanend coe_out)
+void update_pv_param_ecat(ProfileVelocityConfig &pv_params, chanend coe_out)
 {
     {pv_params.max_profile_velocity, pv_params.profile_acceleration,
             pv_params.profile_deceleration,
@@ -133,7 +133,7 @@ void update_pv_param_ecat(pv_par &pv_params, chanend coe_out)
             pv_params.polarity} = pv_sdo_update(coe_out);
 }
 
-void update_pp_param_ecat(pp_par &pp_params, chanend coe_out)
+void update_pp_param_ecat(ProfilePositionConfig &pp_params, chanend coe_out)
 {
     {pp_params.base.max_profile_velocity, pp_params.profile_velocity,
             pp_params.base.profile_acceleration, pp_params.base.profile_deceleration,

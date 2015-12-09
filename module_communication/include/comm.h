@@ -8,10 +8,11 @@
 
 #include <hall_service.h>
 #include <qei_service.h>
-#include <drive_modes_config.h>
 #include <ctrlproto.h>
 #include <motorcontrol_service.h>
+
 #include <control_loops_common.h>
+#include <profile_control.h>
 
 /**
  * @brief Get target torque from Ethercat
@@ -81,7 +82,7 @@ void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chane
  * @param cst_params struct defines the cyclic synchronous torque params
  * @param coe_out
 */
-void update_cst_param_ecat(cst_par &cst_params, chanend coe_out);
+void update_cst_param_ecat(CyclicSyncTorqueConfig &cst_params, chanend coe_out);
 
 /**
  * @brief Update cyclic synchronous velocity parameters from Ethercat
@@ -90,7 +91,7 @@ void update_cst_param_ecat(cst_par &cst_params, chanend coe_out);
  * @param coe_out
 *
 */
-void update_csv_param_ecat(csv_par &csv_params, chanend coe_out);
+void update_csv_param_ecat(CyclicSyncVelocityConfig &csv_params, chanend coe_out);
 
 /**
  * @brief Update cyclic synchronous position parameters from Ethercat
@@ -98,7 +99,7 @@ void update_csv_param_ecat(csv_par &csv_params, chanend coe_out);
  * @param csp_params struct defines the cyclic synchronous position params
  * @param coe_out
 */
-void update_csp_param_ecat(csp_par &csp_params, chanend coe_out);
+void update_csp_param_ecat(CyclicSyncPositionConfig &csp_params, chanend coe_out);
 
 /**
  * @brief Update profile torque parameters from Ethercat
@@ -106,7 +107,7 @@ void update_csp_param_ecat(csp_par &csp_params, chanend coe_out);
  * @param pt_params struct defines the profile torque params
  * @param coe_out
 */
-void update_pt_param_ecat(pt_par &pt_params, chanend coe_out);
+void update_pt_param_ecat(ProfileTorqueConfig &pt_params, chanend coe_out);
 
 /**
  * @brief Update profile velocity parameters from Ethercat
@@ -114,7 +115,7 @@ void update_pt_param_ecat(pt_par &pt_params, chanend coe_out);
  * @param pv_params struct defines the profile velocity params
  * @param coe_out
 */
-void update_pv_param_ecat(pv_par &pv_params, chanend coe_out);
+void update_pv_param_ecat(ProfileVelocityConfig &pv_params, chanend coe_out);
 
 /**
  * @brief Update profile position parameters from Ethercat
@@ -122,7 +123,7 @@ void update_pv_param_ecat(pv_par &pv_params, chanend coe_out);
  * @param pp_params struct defines the profile position params
  * @param coe_out
 */
-void update_pp_param_ecat(pp_par &pp_params, chanend coe_out);
+void update_pp_param_ecat(ProfilePositionConfig &pp_params, chanend coe_out);
 
 /**
  * @brief Update torque control PID parameters from Ethercat

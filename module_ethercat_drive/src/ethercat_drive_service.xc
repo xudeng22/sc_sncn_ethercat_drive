@@ -6,7 +6,7 @@
 
 #include <ethercat_drive_service.h>
 #include <refclk.h>
-#include <comm.h>
+#include <cia402_wrapper.h>
 #include <statemachine.h>
 #include <state_modes.h>
 #include <profile.h>

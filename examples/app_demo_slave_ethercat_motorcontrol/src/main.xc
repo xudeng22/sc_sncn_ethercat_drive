@@ -130,7 +130,8 @@ int main(void)
                      init_position_control_config(position_ctrl_config); // Initialize PID parameters for Position Control
 
                      /* Control Loop */
-                     position_control_service(position_ctrl_config, i_hall[1], i_qei[1], i_motorcontrol[0], i_position_control);
+                     position_control_service(position_ctrl_config, i_hall[1], i_qei[1], i_motorcontrol[0],
+                                                 i_position_control);
                 }
 
                 /* Velocity Control Loop */
@@ -139,7 +140,8 @@ int main(void)
                     init_velocity_control_config(velocity_ctrl_config); // Initialize PID parameters for Velocity Control
 
                     /* Control Loop */
-                    velocity_control_service(velocity_ctrl_config, i_hall[2], i_qei[2], i_motorcontrol[1], i_velocity_control);
+                    velocity_control_service(velocity_ctrl_config, i_hall[2], i_qei[2], i_motorcontrol[1],
+                                                i_velocity_control);
                 }
 
                 /* Torque Control Loop */
@@ -149,7 +151,8 @@ int main(void)
                     init_torque_control_config(torque_ctrl_config);  // Initialize PID parameters for Torque Control
 
                     /* Control Loop */
-                    torque_control_service(torque_ctrl_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3], i_torque_control);
+                    torque_control_service(torque_ctrl_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3],
+                                                i_torque_control);
                 }
             }
         }
@@ -162,10 +165,10 @@ int main(void)
             par
             {
                 /* ADC Loop */
-                adc_service(i_adc, adc_ports, c_adctrig);
+                adc_service(adc_ports, c_adctrig, i_adc);
 
                 /* PWM Loop */
-                pwm_triggered_service(pwm_ports, c_pwm_ctrl, c_adctrig);
+                pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl);
 
                 /* Watchdog Server */
                 watchdog_service(wd_ports, i_watchdog);

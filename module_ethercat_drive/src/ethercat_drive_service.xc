@@ -244,7 +244,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     if (sensor_select == HALL) {
                         sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
                     } else {    /* QEI */
-                        sensor_ticks = qei_params.real_counts;
+                        sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
                     }
 
                     steps = init_quick_stop_position_profile(
@@ -330,7 +330,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     nominal_speed = speed_sdo_update(coe_out);
                     update_pp_param_ecat(profile_position_config, coe_out);
                     polarity = profile_position_config.velocity_config.polarity;
-                    qei_params.poles = hall_config.pole_pairs;
+                    //qei_params.poles = hall_config.pole_pairs;
 
                     //config_sdo_handler(coe_out);
                     {homing_method, limit_switch_type} = homing_sdo_update(coe_out);
@@ -664,7 +664,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                             if (sensor_select == HALL) {
                                 sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//hall_config.max_ticks_per_turn;
                             } else { /* QEI */
-                                sensor_ticks = qei_params.real_counts;
+                                qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
                             }
 
                             steps = init_quick_stop_position_profile(

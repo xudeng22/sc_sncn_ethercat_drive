@@ -99,7 +99,7 @@ int sensor_select_sdo(chanend coe_out);
  * @return sensor polarity
  *
  */
-{int, int, int, int, int} qei_sdo_update(chanend coe_out);
+{int, int, int} qei_sdo_update(chanend coe_out);
 
 /**
  * @brief read hall params from Ethercat

@@ -6,7 +6,7 @@
 
 #ifndef _MOTOR_3
 #define _MOTOR_3
-#include <common_config.h>
+//#include <common_config.h>
 
 /**
  * Define Motor Specific Constants (found in motor specification sheet)
@@ -22,7 +22,7 @@
  * and any additional encoders attached specify encoder resolution here (Mandatory)
  */
 #define GEAR_RATIO_3                    4       // if no gears are attached - set to gear ratio to 1
-#define ENCODER_RESOLUTION_3            16384   // 4 x Max count of Incremental Encoder (4X decoding - quadrature mode)
+#define ENCODER_RESOLUTION_3            4000    // Resolution of Incremental Encoder
 
 /* Somanet IFM Internal Configuration:  Specifies the current sensor resolution per Ampere
  *  (DC300_RESOLUTION / DC100_RESOLUTION / OLD_DC300_RESOLUTION) */

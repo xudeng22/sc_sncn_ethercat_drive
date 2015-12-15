@@ -159,10 +159,8 @@ int read_statusword(int slave_number, ctrlproto_slv_handle *slv_handles)
 
 void initialize_position_profile_limits(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	slv_handles[slave_number].profile_position_params.qei_params.real_counts = \
+	slv_handles[slave_number].profile_position_params.qei_params.ticks_resolution = \
 			slv_handles[slave_number].motor_config_param.s_position_encoder_resolution.position_encoder_resolution;
-	slv_handles[slave_number].profile_position_params.hall_params.max_ticks_per_turn = \
-			slv_handles[slave_number].motor_config_param.s_pole_pair.pole_pair * 4096;
 	__initialize_position_profile_limits(slv_handles[slave_number].motor_config_param.s_max_acceleration.max_acceleration,\
 			slv_handles[slave_number].motor_config_param.s_nominal_motor_speed.nominal_motor_speed,\
 			slv_handles[slave_number].motor_config_param.s_sensor_selection_code.sensor_selection_code,\

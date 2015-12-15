@@ -299,26 +299,26 @@ int hall_sdo_update(chanend coe_out)
 
 
 
-{int, int, int, int, int} qei_sdo_update(chanend coe_out)
+{int, int, int} qei_sdo_update(chanend coe_out)
 {
-	int real_counts;
+	int ticks_resolution;
 	int qei_type;
-	int min;
-	int max;
+	//int min;
+	//int max;
 	int sensor_polarity;
 
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, real_counts);
+	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
+	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, ticks_resolution);
 	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
 	GET_SDO_DATA(SENSOR_POLARITY, 0, sensor_polarity);
 
 	if(qei_type == QEI_WITH_INDEX)
-		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};
+		return {ticks_resolution, QEI_WITH_INDEX, sensor_polarity};
 	else if(qei_type == QEI_WITH_NO_INDEX)
-		return {real_counts, max, min, QEI_WITH_NO_INDEX, sensor_polarity};
+		return {ticks_resolution, QEI_WITH_NO_INDEX, sensor_polarity};
 	else
-		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};	//default
+		return {ticks_resolution, QEI_WITH_INDEX, sensor_polarity};	//default
 }
 
 int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
@@ -444,16 +444,16 @@ void update_hall_config_ecat(HallConfig &hall_config, chanend coe_out)
 
 void update_qei_param_ecat(QEIConfig &qei_params, chanend coe_out)
 {
-    int min;
-    int max;
+    //int min;
+    //int max;
 
-    { qei_params.real_counts, max, min, qei_params.index, qei_params.sensor_polarity } = qei_sdo_update(coe_out);
+    { qei_params.ticks_resolution, qei_params.index_type, qei_params.sensor_polarity } = qei_sdo_update(coe_out);
 
-    min = abs(min);
-    max = abs(max);
+    //min = abs(min);
+    //max = abs(max);
 
-    qei_params.max_ticks = (max > min) ? max : min;
-    qei_params.max_ticks += qei_params.max_ticks_per_turn;  // tolerance
+    //qei_params.max_ticks = (max > min) ? max : min;
+    //qei_params.max_ticks += qei_params.max_ticks_per_turn;  // tolerance
 }
 
 void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chanend coe_out)

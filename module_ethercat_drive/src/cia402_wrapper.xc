@@ -4,6 +4,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <refclk.h>
 #include <ethercat_service.h>
 #include <cia402_wrapper.h>
 #include <foefs.h>

@@ -11,6 +11,7 @@
 #include <ecrt.h>
 #include <inttypes.h>
 #include <motor_define.h>
+#include <motorcontrol_service.h>
 #include <profile.h>
 #include <bldc_motor_config_1.h>
 #include <bldc_motor_config_2.h>
@@ -24,15 +25,15 @@ extern "C"
 #endif
 
 #define MOTOR_PARAM_UPDATE 		1
-#define VELOCITY_CTRL_UPDATE 	2
+#define VELOCITY_CTRL_UPDATE 		2
 #define CSV_MOTOR_UPDATE   		3
-#define POSITION_CTRL_UPDATE    4
+#define POSITION_CTRL_UPDATE    	4
 #define PV_MOTOR_UPDATE			5
 #define PP_MOTOR_UPDATE  		6
 #define CST_MOTOR_UPDATE		7
 #define TORQUE_CTRL_UPDATE 		8
 #define TQ_MOTOR_UPDATE			9
-#define QEI_CALIBRATE_UPDATE   10
+#define QEI_CALIBRATE_UPDATE   		10
 
 
 #define SOMANET_ID     0x000022d2, 0x00000201

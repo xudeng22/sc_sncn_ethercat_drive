@@ -6,7 +6,7 @@
  */
 #include <refclk.h>
 #include <control_config.h>
-#include <bldc_motor_config.h>
+#include <user_config.h>
 
 
 void init_position_control_config(ControlConfig &position_ctrl_params){

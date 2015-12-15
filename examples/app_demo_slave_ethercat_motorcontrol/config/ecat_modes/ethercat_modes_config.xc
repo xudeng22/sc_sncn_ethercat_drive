@@ -5,7 +5,7 @@
  *      Author: atena
  */
 #include <ethercat_modes_config.h>
-#include <bldc_motor_config.h>
+#include <user_config.h>
 
 
 void init_csv_config(CyclicSyncVelocityConfig &csv_config)

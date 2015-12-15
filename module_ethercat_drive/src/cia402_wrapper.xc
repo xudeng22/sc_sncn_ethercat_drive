@@ -284,17 +284,17 @@ int sensor_select_sdo(chanend coe_out)
 	return {Kp, Ki, Kd};
 }
 
-{int, int, int} hall_sdo_update(chanend coe_out)
+int hall_sdo_update(chanend coe_out)
 {
 	int pole_pairs;
-	int min;
-	int max;
+	//int min;
+	//int max;
 
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
+	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, pole_pairs);
 
-	return {pole_pairs, max, min};
+	return pole_pairs; //{pole_pairs, max, min};
 }
 
 
@@ -427,18 +427,19 @@ void send_actual_position(int actual_position, ctrl_proto_values_t &InOut)
 
 void update_hall_config_ecat(HallConfig &hall_config, chanend coe_out)
 {
-    int min;
-    int max;
+    //int min;
+    //int max;
 
-    {hall_config.pole_pairs, max, min} = hall_sdo_update(coe_out);
+    //{hall_config.pole_pairs, max, min} = hall_sdo_update(coe_out);
+    hall_config.pole_pairs = hall_sdo_update(coe_out);
 
-    min = abs(min);
-    max = abs(max);
+    //min = abs(min);
+    //max = abs(max);
 
-    hall_config.max_ticks = (max > min) ? max : min;
+    //hall_config.max_ticks = (max > min) ? max : min;
 
-    hall_config.max_ticks_per_turn = hall_config.pole_pairs * HALL_POSITION_INTERPOLATED_RANGE;
-    hall_config.max_ticks += hall_config.max_ticks_per_turn;
+    //hall_config.max_ticks_per_turn = hall_config.pole_pairs * HALL_POSITION_INTERPOLATED_RANGE;
+    //hall_config.max_ticks += hall_config.max_ticks_per_turn;
 }
 
 void update_qei_param_ecat(QEIConfig &qei_params, chanend coe_out)

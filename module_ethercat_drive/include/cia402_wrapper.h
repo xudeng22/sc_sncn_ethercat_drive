@@ -105,11 +105,9 @@ int sensor_select_sdo(chanend coe_out);
  * @brief read hall params from Ethercat
  *
  * @return pole pairs
- * @return max position
- * @return min position
  *
  */
-{int, int, int} hall_sdo_update(chanend coe_out);
+int hall_sdo_update(chanend coe_out);
 
 /**
  * @brief read commutation parameters from Ethercat

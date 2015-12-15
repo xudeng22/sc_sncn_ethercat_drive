@@ -28,7 +28,6 @@
 
  //Configure your default motor parameters in config/bldc_motor_config.h
 #include <qei_config.h>
-#include <hall_config.h>
 #include <motorcontrol_config.h>
 #include <control_config.h>
 #include <ethercat_modes_config.h>
@@ -51,7 +50,7 @@ int main(void)
     chan c_adctrig, c_pwm_ctrl;
 
     interface GPIOInterface i_gpio[2];
-    interface WatchdogInterface i_watchdog[3];
+    interface WatchdogInterface i_watchdog[2];
     interface ADCInterface i_adc[3];
     interface HallInterface i_hall[5];
     interface QEIInterface i_qei[5];
@@ -164,24 +163,24 @@ int main(void)
         {
             par
             {
-                /* ADC Loop */
+                /* ADC Service */
                 adc_service(adc_ports, c_adctrig, i_adc);
 
-                /* PWM Loop */
+                /* PWM Service */
                 pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl);
 
-                /* Watchdog Server */
+                /* Watchdog Service */
                 watchdog_service(wd_ports, i_watchdog);
 
-                /* Hall Server */
+                /* Hall sensor Service */
                 {
                     HallConfig hall_config;
-                    init_hall_config(hall_config);
+                        hall_config.pole_pairs = POLE_PAIRS;
 
                     hall_service(hall_ports, hall_config, i_hall);
                 }
 
-                /* QEI Server */
+                /* QEI Service */
                 {
                     QEIConfig qei_config;
                     init_qei_config(qei_config);
@@ -198,7 +197,7 @@ int main(void)
                                             c_pwm_ctrl, i_hall[0], i_qei[0], i_watchdog[0], i_motorcontrol);
                 }
 
-                /* GPIO Digital Server */
+                /* GPIO Digital Service */
                 gpio_service(gpio_ports, i_gpio);
             }
         }

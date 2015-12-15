@@ -242,7 +242,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                     int sensor_ticks;
                     if (sensor_select == HALL) {
-                        sensor_ticks = hall_config.max_ticks_per_turn;
+                        sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
                     } else {    /* QEI */
                         sensor_ticks = qei_params.real_counts;
                     }
@@ -662,7 +662,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                             int sensor_ticks;
                             if (sensor_select == HALL) {
-                                sensor_ticks = hall_config.max_ticks_per_turn;
+                                sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//hall_config.max_ticks_per_turn;
                             } else { /* QEI */
                                 sensor_ticks = qei_params.real_counts;
                             }

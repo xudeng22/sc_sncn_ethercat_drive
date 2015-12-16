@@ -11,6 +11,7 @@
 #include <ecrt.h>
 #include <inttypes.h>
 #include <motor_define.h>
+#include <gpio_service.h>
 #include <motorcontrol_service.h>
 #include <profile.h>
 #include <bldc_motor_config_1.h>

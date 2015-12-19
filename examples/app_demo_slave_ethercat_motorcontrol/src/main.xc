@@ -28,7 +28,6 @@
 
  //Configure your default motorcontrol parameters in config/motorcontrol_config.h
 #include <user_config.h>
-#include <control_config.h>
 #include <ethercat_modes_config.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
@@ -124,32 +123,53 @@ int main(void)
             {
                 /* Position Control Loop */
                 {
-                     ControlConfig position_ctrl_config;
-                     init_position_control_config(position_ctrl_config); // Initialize PID parameters for Position Control
+                     ControlConfig position_control_config;
+
+                     position_control_config.position_sensor_type = SENSOR_USED;
+
+                     position_control_config.Kp = POSITION_Kp_NUMERATOR;    // Divided by 10000
+                     position_control_config.Ki = POSITION_Ki_NUMERATOR;    // Divided by 10000
+                     position_control_config.Kd = POSITION_Kd_NUMERATOR;    // Divided by 10000
+
+                     position_control_config.control_loop_period = COMMUTATION_LOOP_PERIOD; //us
 
                      /* Control Loop */
-                     position_control_service(position_ctrl_config, i_hall[1], i_qei[1], i_motorcontrol[0],
+                     position_control_service(position_control_config, i_hall[1], i_qei[1], i_motorcontrol[0],
                                                  i_position_control);
                 }
 
                 /* Velocity Control Loop */
                 {
-                    ControlConfig velocity_ctrl_config;
-                    init_velocity_control_config(velocity_ctrl_config); // Initialize PID parameters for Velocity Control
+                    ControlConfig velocity_control_config;
+
+                    velocity_control_config.position_sensor_type = SENSOR_USED;
+
+                    velocity_control_config.Kp = VELOCITY_Kp_NUMERATOR;
+                    velocity_control_config.Ki = VELOCITY_Ki_NUMERATOR;
+                    velocity_control_config.Kd = VELOCITY_Kd_NUMERATOR;
+
+                    velocity_control_config.control_loop_period =  COMMUTATION_LOOP_PERIOD;
 
                     /* Control Loop */
-                    velocity_control_service(velocity_ctrl_config, i_hall[2], i_qei[2], i_motorcontrol[1],
+                    velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], i_motorcontrol[1],
                                                 i_velocity_control);
                 }
 
                 /* Torque Control Loop */
                 {
                     /* Torque Control Loop */
-                    ControlConfig torque_ctrl_config;
-                    init_torque_control_config(torque_ctrl_config);  // Initialize PID parameters for Torque Control
+                    ControlConfig torque_control_config;
+
+                    torque_control_config.position_sensor_type = SENSOR_USED;
+
+                    torque_control_config.Kp = TORQUE_Kp_NUMERATOR;
+                    torque_control_config.Ki = TORQUE_Ki_NUMERATOR;
+                    torque_control_config.Kd = TORQUE_Kd_NUMERATOR;
+
+                    torque_control_config.control_loop_period = COMMUTATION_LOOP_PERIOD; // us
 
                     /* Control Loop */
-                    torque_control_service(torque_ctrl_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3],
+                    torque_control_service(torque_control_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3],
                                                 i_torque_control);
                 }
             }

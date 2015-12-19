@@ -54,58 +54,45 @@
 #define POLARITY_1 						1
 
 /* Profile defines (Mandatory for profile modes) */
-#define MAX_PROFILE_VELOCITY_1  		MAX_NOMINAL_SPEED_1
-#define PROFILE_VELOCITY_1			1000	// rpm
-#define MAX_ACCELERATION_1   			4000    // rpm/s
-#define PROFILE_ACCELERATION_1			2000	// rpm/s
-#define PROFILE_DECELERATION_1  		2000	// rpm/s
-#define QUICK_STOP_DECELERATION_1 		2500 	// rpm/s
-#define MAX_TORQUE_1				MOTOR_TORQUE_CONSTANT_1 * IFM_RESOLUTION_1 * MAX_NOMINAL_CURRENT_1 // calculated
-#define TORQUE_SLOPE_1 				66 		// mNm/s
+#define MAX_PROFILE_VELOCITY_1          MAX_NOMINAL_SPEED_1
+#define PROFILE_VELOCITY_1              1000    // rpm
+#define MAX_ACCELERATION_1              4000    // rpm/s
+#define PROFILE_ACCELERATION_1          2000    // rpm/s
+#define PROFILE_DECELERATION_1          2000    // rpm/s
+#define QUICK_STOP_DECELERATION_1       2500    // rpm/s
+#define MAX_TORQUE_1                    MOTOR_TORQUE_CONSTANT_1 * IFM_RESOLUTION_1 * MAX_NOMINAL_CURRENT_1 // calculated
+#define TORQUE_SLOPE_1                  66      // mNm/s
 
 
 /* Control specific constants/variables */
 	/* Torque Control (Mandatory if Torque control used)
-	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
-	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */
-#define TORQUE_Kp_NUMERATOR_1 	   		2
-#define TORQUE_Kp_DENOMINATOR_1  		10
-#define TORQUE_Ki_NUMERATOR_1    		1
-#define TORQUE_Ki_DENOMINATOR_1  		110
-#define TORQUE_Kd_NUMERATOR_1    		0
-#define TORQUE_Kd_DENOMINATOR_1  		10
+	 * Note: DENOMINATOR is defined as 10000 to give ranges */
+#define TORQUE_Kp_NUMERATOR_1 	   		1000	//Denominator is 10000
+#define TORQUE_Ki_NUMERATOR_1    		91	//Denominator is 10000
+#define TORQUE_Kd_NUMERATOR_1    		0	//Denominator is 10000
 
 	/* Velocity Control (Mandatory if Velocity control used)
-	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
-	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */
-#define VELOCITY_Kp_NUMERATOR_1 		1
-#define VELOCITY_Kp_DENOMINATOR_1  		15
-#define VELOCITY_Ki_NUMERATOR_1    		2
-#define VELOCITY_Ki_DENOMINATOR_1  		100
-#define VELOCITY_Kd_NUMERATOR_1   		0
-#define VELOCITY_Kd_DENOMINATOR_1 		1
+	 * Note: DENOMINATOR is defined as 10000 to give ranges */
+#define VELOCITY_Kp_NUMERATOR_1 		667	//Denominator is 10000
+#define VELOCITY_Ki_NUMERATOR_1    		200	//Denominator is 10000
+#define VELOCITY_Kd_NUMERATOR_1   		0	//Denominator is 10000
 
 	/* Position Control (Mandatory if Position control used)
-	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
-	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */
-#if(SENSOR_SELECTION_CODE_1 == HALL)		// PID gains for position control with Hall Sensor
+	 * Note: DENOMINATOR is defined as 10000 to give ranges */
+#if(SENSOR_SELECTION_CODE_1 == HALL_SENSOR)		// PID gains for position control with Hall Sensor
 
-	#define POSITION_Kp_NUMERATOR_1 	 	100
-	#define POSITION_Kp_DENOMINATOR_1  		1000
-	#define POSITION_Ki_NUMERATOR_1    		5
-	#define POSITION_Ki_DENOMINATOR_1  		1200
-	#define POSITION_Kd_NUMERATOR_1    		0
-	#define POSITION_Kd_DENOMINATOR_1  		1000
+	#define POSITION_Kp_NUMERATOR_1 	 	1000	//Denominator is 10000
+	#define POSITION_Ki_NUMERATOR_1    		1	//Denominator is 10000
+	#define POSITION_Kd_NUMERATOR_1    		0	//Denominator is 10000
+
 	#define MAX_POSITION_LIMIT_1 			POLE_PAIRS_1*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_1	// ticks (max range: 2^30, limited for safe operation)
 	#define MIN_POSITION_LIMIT_1			-POLE_PAIRS_1*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_1	// ticks (min range: -2^30, limited for safe operation)
 
 #else // PID gains for position control with other Encoders
-	#define POSITION_Kp_NUMERATOR_1         100
-	#define POSITION_Kp_DENOMINATOR_1       1000
-	#define POSITION_Ki_NUMERATOR_1         5
-	#define POSITION_Ki_DENOMINATOR_1       1200
-	#define POSITION_Kd_NUMERATOR_1         0
-	#define POSITION_Kd_DENOMINATOR_1       100
+	#define POSITION_Kp_NUMERATOR_1         1000	//Denominator is 10000
+	#define POSITION_Ki_NUMERATOR_1         1	//Denominator is 10000
+	#define POSITION_Kd_NUMERATOR_1         0	//Denominator is 10000
+
 	#define MAX_POSITION_LIMIT_1            GEAR_RATIO_1*ENCODER_RESOLUTION_1*QEI_CHANGES_PER_TICK*10       // ticks (max range: 2^30, limited for safe operation)
 	#define MIN_POSITION_LIMIT_1            -GEAR_RATIO_1*ENCODER_RESOLUTION_1*QEI_CHANGES_PER_TICK*10      // ticks (min range: -2^30, limited for safe operation)
 

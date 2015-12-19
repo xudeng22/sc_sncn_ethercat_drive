@@ -529,55 +529,57 @@ void update_pp_param_ecat(ProfilePositionConfig &pp_params, chanend coe_out)
 
 void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, chanend coe_out)
 {
-    {torque_ctrl_params.Kp_n, torque_ctrl_params.Ki_n, torque_ctrl_params.Kd_n} = torque_sdo_update(coe_out);
-    torque_ctrl_params.Kp_d = 65536;                // 16 bit precision PID gains
-    torque_ctrl_params.Ki_d = 65536;
-    torque_ctrl_params.Kd_d = 65536;
+    {torque_ctrl_params.Kp, torque_ctrl_params.Ki, torque_ctrl_params.Kd} = torque_sdo_update(coe_out);
+   // torque_ctrl_params.Kp_d = 65536;                // 16 bit precision PID gains
+   // torque_ctrl_params.Ki_d = 65536;
+   // torque_ctrl_params.Kd_d = 65536;
 
-    torque_ctrl_params.Loop_time = 1 * MSEC_STD;    // units - core timer value //CORE 2/1/0 default
+    torque_ctrl_params.control_loop_period = 1000; //1ms
 
-    torque_ctrl_params.Control_limit = BLDC_PWM_CONTROL_LIMIT;  // PWM resolution
+   // torque_ctrl_params.Control_limit = BLDC_PWM_CONTROL_LIMIT;  // PWM resolution
 
-    if(torque_ctrl_params.Ki_n != 0)                // auto calculated using control_limit
-        torque_ctrl_params.Integral_limit = torque_ctrl_params.Control_limit * (torque_ctrl_params.Ki_d/torque_ctrl_params.Ki_n) ;
-    else
-        torque_ctrl_params.Integral_limit = 0;
+ //   if(torque_ctrl_params.Ki_n != 0)                // auto calculated using control_limit
+ //       torque_ctrl_params.Integral_limit = torque_ctrl_params.Control_limit * (torque_ctrl_params.Ki_d/torque_ctrl_params.Ki_n) ;
+ //   else
+ //       torque_ctrl_params.Integral_limit = 0;
     return;
 }
 
 
 void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, chanend coe_out)
 {
-    {velocity_ctrl_params.Kp_n, velocity_ctrl_params.Ki_n, velocity_ctrl_params.Kd_n} = velocity_sdo_update(coe_out);
-    velocity_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
-    velocity_ctrl_params.Ki_d = 65536;
-    velocity_ctrl_params.Kd_d = 65536;
+    {velocity_ctrl_params.Kp, velocity_ctrl_params.Ki, velocity_ctrl_params.Kd} = velocity_sdo_update(coe_out);
+    //velocity_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
+    //velocity_ctrl_params.Ki_d = 65536;
+    //velocity_ctrl_params.Kd_d = 65536;
 
-    velocity_ctrl_params.Loop_time = 1 * MSEC_STD;  // units - core timer value //CORE 2/1/0 default
+    velocity_ctrl_params.control_loop_period = 1000; //1ms
 
-    velocity_ctrl_params.Control_limit = BLDC_PWM_CONTROL_LIMIT; // PWM resolution
+   // velocity_ctrl_params.Control_limit = BLDC_PWM_CONTROL_LIMIT; // PWM resolution
 
-    if(velocity_ctrl_params.Ki_n != 0)              // auto calculated using control_limit
+   /* if(velocity_ctrl_params.Ki_n != 0)              // auto calculated using control_limit
         velocity_ctrl_params.Integral_limit = velocity_ctrl_params.Control_limit * (velocity_ctrl_params.Ki_d/velocity_ctrl_params.Ki_n) ;
     else
         velocity_ctrl_params.Integral_limit = 0;
+   */
     return;
 }
 
 void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, chanend coe_out)
 {
-    {position_ctrl_params.Kp_n, position_ctrl_params.Ki_n, position_ctrl_params.Kd_n} = position_sdo_update(coe_out);
-    position_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
-    position_ctrl_params.Ki_d = 65536;
-    position_ctrl_params.Kd_d = 65536;
+    {position_ctrl_params.Kp, position_ctrl_params.Ki, position_ctrl_params.Kd} = position_sdo_update(coe_out);
+    //position_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
+    //position_ctrl_params.Ki_d = 65536;
+    //position_ctrl_params.Kd_d = 65536;
 
-    position_ctrl_params.Loop_time = 1 * MSEC_STD;  // units - core timer value //CORE 2/1/0 default
+    position_ctrl_params.control_loop_period = 1000; //1ms
 
-    position_ctrl_params.Control_limit = BLDC_PWM_CONTROL_LIMIT; // PWM resolution
-
+    //position_ctrl_params.Control_limit = BLDC_PWM_CONTROL_LIMIT; // PWM resolution
+/*
     if(position_ctrl_params.Ki_n != 0)              // auto calculated using control_limit
         position_ctrl_params.Integral_limit = position_ctrl_params.Control_limit * (position_ctrl_params.Ki_d/position_ctrl_params.Ki_n) ;
     else
         position_ctrl_params.Integral_limit = 0;
+  */
     return;
 }

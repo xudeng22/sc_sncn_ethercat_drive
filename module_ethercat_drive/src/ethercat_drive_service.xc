@@ -19,7 +19,7 @@
     int actual_position;
     int direction;
 
-    if (sensor_select == HALL) {
+    if (sensor_select == HALL_SENSOR) {
         {actual_position, direction} = i_hall.get_hall_position_absolute();//get_hall_position_absolute(c_hall);
     } else { /* QEI */
         {actual_position, direction} = i_qei.get_qei_position_absolute();//get_qei_position_absolute(c_qei);
@@ -241,7 +241,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     }
 
                     int sensor_ticks;
-                    if (sensor_select == HALL) {
+                    if (sensor_select == HALL_SENSOR) {
                         sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
                     } else {    /* QEI */
                         sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
@@ -320,11 +320,11 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     update_commutation_param_ecat(commutation_params, coe_out);
                     sensor_select = sensor_select_sdo(coe_out);
 
-                    //if (sensor_select == HALL)  /* FIXME (?)
+                    //if (sensor_select == HALL_SENSOR)  /* FIXME (?)
                     //{
                     update_hall_config_ecat(hall_config, coe_out);
                     //}
-                    if (sensor_select >= QEI) { /* FIXME QEI with Index defined as 2 and without Index as 3  */
+                    if (sensor_select >= QEI_SENSOR) { /* FIXME QEI with Index defined as 2 and without Index as 3  */
                         update_qei_param_ecat(qei_params, coe_out);
                     }
                     nominal_speed = speed_sdo_update(coe_out);
@@ -354,9 +354,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                 }
             }
             /* Read Position Sensor */
-            if (sensor_select == HALL) {
+            if (sensor_select == HALL_SENSOR) {
                 actual_velocity = i_hall.get_hall_velocity();
-            } else if (sensor_select == QEI) {
+            } else if (sensor_select == QEI_SENSOR) {
                 actual_velocity = i_qei.get_qei_velocity();
             }
             send_actual_velocity(actual_velocity * polarity, InOut);
@@ -381,7 +381,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        i_velocity_control.set_velocity_sensor(QEI); //QEI
+                        i_velocity_control.set_velocity_sensor(QEI_SENSOR); //QEI
                         InOut.operation_mode_display = HM;
                     }
                     break;
@@ -392,7 +392,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL) {
+                        if (sensor_select == HALL_SENSOR) {
                             i_position_control.set_position_ctrl_hall_param(hall_config);
                         } else { /* QEI */
                             i_position_control.set_position_ctrl_qei_param(qei_params);
@@ -432,7 +432,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL) {
+                        if (sensor_select == HALL_SENSOR) {
                             i_torque_control.set_torque_ctrl_hall_param(hall_config);
                         } else { /* QEI */
                             i_torque_control.set_torque_ctrl_qei_param(qei_params);
@@ -474,7 +474,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL) {
+                        if (sensor_select == HALL_SENSOR) {
                             i_velocity_control.set_velocity_ctrl_hall_param(hall_config);
                         } else { /* QEI */
                             i_velocity_control.set_velocity_ctrl_qei_param(qei_params);
@@ -512,7 +512,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL) {
+                        if (sensor_select == HALL_SENSOR) {
                             i_position_control.set_position_ctrl_hall_param(hall_config);
                         } else { /* QEI */
                             i_position_control.set_position_ctrl_qei_param(qei_params);
@@ -546,7 +546,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL) {
+                        if (sensor_select == HALL_SENSOR) {
                             i_velocity_control.set_velocity_ctrl_hall_param(hall_config);
                         } else { /* QEI */
                             i_velocity_control.set_velocity_ctrl_qei_param(qei_params);
@@ -581,7 +581,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL) {
+                        if (sensor_select == HALL_SENSOR) {
                             i_torque_control.set_torque_ctrl_hall_param(hall_config);
                         } else { /* QEI */
                             i_torque_control.set_torque_ctrl_qei_param(qei_params);
@@ -661,7 +661,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                             }
 
                             int sensor_ticks;
-                            if (sensor_select == HALL) {
+                            if (sensor_select == HALL_SENSOR) {
                                 sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//hall_config.max_ticks_per_turn;
                             } else { /* QEI */
                                 qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;

@@ -20,6 +20,7 @@ INCLUDE_DIRS += -I ../inc_ctrlproto-common/
 INCLUDE_DIRS += -I ../examples/config_motor_ethercat_drive
 INCLUDE_DIRS += -I $(ETHERCAT_PATH)/module_ethercat/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include

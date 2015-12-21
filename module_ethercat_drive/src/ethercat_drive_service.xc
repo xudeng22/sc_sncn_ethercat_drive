@@ -31,12 +31,13 @@
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
-void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_config,
-                            CyclicSyncVelocityConfig &cyclic_sync_velocity_config,
-                            CyclicSyncTorqueConfig &cyclic_sync_torque_config,
-                            ProfilePositionConfig &profile_position_config,
-                            ProfileVelocityConfig &profile_velocity_config,
-                            ProfileTorqueConfig &profile_torque_config,
+void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_config,
+                            //CyclicSyncVelocityConfig &cyclic_sync_velocity_config,
+                            //CyclicSyncTorqueConfig &cyclic_sync_torque_config,
+                            //ProfilePositionConfig &profile_position_config,
+                            //ProfileVelocityConfig &profile_velocity_config,
+                            //ProfileTorqueConfig &profile_torque_config,
+                            ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in, chanend coe_out,
                             interface MotorcontrolInterface client i_commutation,
                             interface HallInterface client i_hall,
@@ -170,14 +171,14 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
             if (op_mode == CST || op_mode == TQ)
             {
                 actual_torque = i_torque_control.get_torque();
-                steps = init_linear_profile(0, actual_torque, profile_torque_config.profile_slope,
-                                            profile_torque_config.profile_slope);
+                steps = init_linear_profile(0, actual_torque, profiler_config.max_current_slope,
+                                            profiler_config.max_current_slope);
                 t :> c_time;
                 for (int i=0; i<steps; i++) {
                     target_torque = linear_profile_generate(i);
                     i_torque_control.set_torque(target_torque);
                     actual_torque = i_torque_control.get_torque();
-                    send_actual_torque(actual_torque * cyclic_sync_torque_config.polarity, InOut);
+                    send_actual_torque(actual_torque * profiler_config.polarity, InOut);
 
                     t when timerafter(c_time + MSEC_STD) :> c_time;
                 }
@@ -191,13 +192,13 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                 int max_velocity;
                 int polarity;
                 if (op_mode == CSV) {
-                    deceleration = cyclic_sync_velocity_config.max_acceleration;
-                    max_velocity = cyclic_sync_velocity_config.max_motor_speed;
-                    polarity = cyclic_sync_velocity_config.polarity;
+                    deceleration = profiler_config.max_acceleration;
+                    max_velocity = profiler_config.max_velocity; //cyclic_sync_velocity_config.max_motor_speed;
+                    polarity = profiler_config.polarity; //cyclic_sync_velocity_config.polarity;
                 } else {        /* op_mode == PV */
-                    deceleration = profile_velocity_config.quick_stop_deceleration;
-                    max_velocity = profile_velocity_config.max_profile_velocity;
-                    polarity = profile_velocity_config.polarity;
+                    deceleration = profiler_config.max_deceleration;//profile_velocity_config.quick_stop_deceleration;
+                    max_velocity = profiler_config.max_velocity;//profile_velocity_config.max_profile_velocity;
+                    polarity = profiler_config.polarity; //profile_velocity_config.polarity;
                 }
                 steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
 
@@ -224,14 +225,14 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                 int min_position_limit;
                 //int polarity;
                 if (op_mode == CSP) {
-                    deceleration = cyclic_sync_position_config.velocity_config.max_acceleration;
-                    max_position_limit = cyclic_sync_position_config.max_position_limit;
-                    min_position_limit = cyclic_sync_position_config.min_position_limit;
+                    deceleration = profiler_config.max_acceleration;
+                    max_position_limit = profiler_config.max_position;
+                    min_position_limit = profiler_config.min_position;
                     //polarity = cyclic_sync_position_config.velocity_config.polarity;
                 } else {    /* op_mode == PP */
-                    deceleration = profile_position_config.velocity_config.quick_stop_deceleration;
-                    max_position_limit = profile_position_config.software_position_limit_max;
-                    min_position_limit = profile_position_config.software_position_limit_min;
+                    deceleration = profiler_config.max_deceleration;
+                    max_position_limit = profiler_config.max_position;//profile_position_config.software_position_limit_max;
+                    min_position_limit = profiler_config.min_position;//profile_position_config.software_position_limit_min;
                     //polarity = profile_position_config.velocity_config.polarity;
                 }
 
@@ -328,8 +329,8 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         update_qei_param_ecat(qei_params, coe_out);
                     }
                     nominal_speed = speed_sdo_update(coe_out);
-                    update_pp_param_ecat(profile_position_config, coe_out);
-                    polarity = profile_position_config.velocity_config.polarity;
+                    update_pp_param_ecat(profiler_config, coe_out);
+                    polarity = profiler_config.polarity;//profile_position_config.velocity_config.polarity;
                     //qei_params.poles = hall_config.pole_pairs;
 
                     //config_sdo_handler(coe_out);
@@ -356,8 +357,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
             /* Read Position Sensor */
             if (sensor_select == HALL_SENSOR) {
                 actual_velocity = i_hall.get_hall_velocity();
-            } else if (sensor_select == QEI_SENSOR) {
+            } else if (sensor_select >= QEI_SENSOR) {
                 actual_velocity = i_qei.get_qei_velocity();
+               //printintln(actual_velocity);
             }
             send_actual_velocity(actual_velocity * polarity, InOut);
 
@@ -416,12 +418,12 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_pp_param_ecat(profile_position_config, coe_out);
-                        init_position_profile_limits(profile_position_config.max_acceleration,
-                                                     profile_position_config.velocity_config.max_profile_velocity,
+                        update_pp_param_ecat(profiler_config, coe_out);
+                        init_position_profile_limits(profiler_config.max_acceleration,
+                                                     profiler_config.max_velocity,
                                                      qei_params, hall_config, sensor_select,
-                                                     profile_position_config.software_position_limit_max,
-                                                     profile_position_config.software_position_limit_min);
+                                                     profiler_config.max_position,
+                                                     profiler_config.min_position);
                         InOut.operation_mode_display = PP;
                     }
                     break;
@@ -457,12 +459,12 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_cst_param_ecat(cyclic_sync_torque_config, coe_out);
-                        update_pt_param_ecat(profile_torque_config, coe_out);
-                        torque_offstate = (cyclic_sync_torque_config.max_torque * 15) /
-                            (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
-
-                        init_linear_profile_limits(cyclic_sync_torque_config.max_torque,cyclic_sync_torque_config.polarity);
+                        update_cst_param_ecat(profiler_config, coe_out);
+                        update_pt_param_ecat(profiler_config, coe_out);
+                       // torque_offstate = (cyclic_sync_torque_config.max_torque * 15) /
+                       //     (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
+                        // REMOVED BY AGUS BECAUSE IT SEEMS UNNECCESSARY
+                        init_linear_profile_limits(profiler_config.max_current, profiler_config.polarity);
 
                         InOut.operation_mode_display = TQ;
                     }
@@ -499,9 +501,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_pv_param_ecat(profile_velocity_config, coe_out);
-                        init_velocity_profile_limits(profile_velocity_config.max_profile_velocity,profile_velocity_config.quick_stop_deceleration,
-                                                        profile_velocity_config.quick_stop_deceleration);
+                        update_pv_param_ecat(profiler_config, coe_out);
+                        init_velocity_profile_limits(profiler_config.max_velocity,profiler_config.max_deceleration,
+                                                        profiler_config.max_deceleration);//profile_velocity_config.quick_stop_deceleration);
                         InOut.operation_mode_display = PV;
                     }
                     break;
@@ -535,7 +537,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_csp_param_ecat(cyclic_sync_position_config, coe_out);
+                        update_csp_param_ecat(profiler_config, coe_out);
                         InOut.operation_mode_display = CSP;
                     }
                     break;
@@ -569,7 +571,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_csv_param_ecat(cyclic_sync_velocity_config, coe_out);
+                        update_csv_param_ecat(profiler_config, coe_out);
                         InOut.operation_mode_display = CSV;
                     }
                     break;
@@ -608,9 +610,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_cst_param_ecat(cyclic_sync_torque_config, coe_out);
-                        update_pt_param_ecat(profile_torque_config, coe_out);
-                        torque_offstate = (cyclic_sync_torque_config.max_torque * 15) / (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
+                        update_cst_param_ecat(profiler_config, coe_out);
+                        update_pt_param_ecat(profiler_config, coe_out);
+                        //torque_offstate = (cyclic_sync_torque_config.max_torque * 15) / (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
                         InOut.operation_mode_display = CST;
                     }
                     break;
@@ -624,8 +626,8 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                 case QUICK_STOP:
                     if (op_mode == CST || op_mode == TQ) {
                         actual_torque = i_torque_control.get_torque();
-                        steps = init_linear_profile(0, actual_torque, profile_torque_config.profile_slope,
-                                                    profile_torque_config.profile_slope);
+                        steps = init_linear_profile(0, actual_torque, profiler_config.current_slope,
+                                                        profiler_config.current_slope);
                         i = 0;
                         mode_selected = 3; // non interruptible mode
                         mode_quick_flag = 0;
@@ -635,9 +637,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                         int deceleration;
                         if (op_mode == CSV) {
-                            deceleration = cyclic_sync_velocity_config.max_acceleration;
+                            deceleration = profiler_config.max_acceleration;
                         } else { /* op_mode == PV */
-                            deceleration = profile_velocity_config.quick_stop_deceleration;
+                            deceleration = profiler_config.max_deceleration;
                         }
                         steps = init_quick_stop_velocity_profile(actual_velocity,
                                                                  deceleration);
@@ -655,9 +657,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                             int deceleration;
                             if (op_mode == CSP) {
-                                deceleration = cyclic_sync_position_config.velocity_config.max_acceleration;
+                                deceleration = profiler_config.max_acceleration;
                             } else { /* op_ode == PP */
-                                deceleration = profile_position_config.velocity_config.quick_stop_deceleration;
+                                deceleration = profiler_config.max_deceleration;
                             }
 
                             int sensor_ticks;
@@ -762,36 +764,37 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
 
                     if (op_mode == CSV) {
                         target_velocity = get_target_velocity(InOut);
-                        set_velocity_csv(cyclic_sync_velocity_config, target_velocity, 0, 0, i_velocity_control);
+                        set_velocity_csv(profiler_config, target_velocity, 0, 0, i_velocity_control);
 
-                        actual_velocity = i_velocity_control.get_velocity() * cyclic_sync_velocity_config.polarity;
+                        actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;//cyclic_sync_velocity_config.polarity;
                         send_actual_velocity(actual_velocity, InOut);
                     } else if (op_mode == CST) {
                         target_torque = get_target_torque(InOut);
-                        set_torque_cst(cyclic_sync_torque_config, target_torque, 0, i_torque_control);
+                        set_torque_cst(profiler_config, target_torque, 0, i_torque_control);
 
                         actual_torque = i_torque_control.get_torque();
+                        //printintln(target_torque);
                         send_actual_torque(actual_torque, InOut);
                     } else if (op_mode == CSP) {
                         target_position = get_target_position(InOut);
-                        set_position_csp(cyclic_sync_position_config, target_position, 0, 0, 0, i_position_control);
+                        set_position_csp(profiler_config, target_position, 0, 0, 0, i_position_control);
 
-                        actual_position = i_position_control.get_position() * cyclic_sync_position_config.velocity_config.polarity;
+                        actual_position = i_position_control.get_position() * profiler_config.polarity;//cyclic_sync_position_config.velocity_config.polarity;
                         send_actual_position(actual_position, InOut);
                         //safety_state = read_gpio_digital_input(c_gpio, 1);        // read port 1
                         //value = (port_3_value<<3 | port_2_value<<2 | port_1_value <<1| safety_state );  pack values if more than one port inputs
                     } else if (op_mode == PP) {
                         if (ack == 1) {
                             target_position = get_target_position(InOut);
-                            actual_position = i_position_control.get_position() * profile_position_config.velocity_config.polarity;
+                            actual_position = i_position_control.get_position() * profiler_config.polarity;//profile_position_config.velocity_config.polarity;
                             send_actual_position(actual_position, InOut);
 
                             if (prev_position != target_position) {
                                 ack = 0;
                                 steps = init_position_profile(target_position, actual_position,
-                                                              profile_position_config.profile_velocity,
-                                                              profile_position_config.velocity_config.profile_acceleration,
-                                                              profile_position_config.velocity_config.profile_deceleration);
+                                                              profiler_config.velocity,
+                                                              profiler_config.acceleration,
+                                                              profiler_config.deceleration);
 
                                 i = 1;
                                 prev_position = target_position;
@@ -799,9 +802,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         } else if (ack == 0) {
                             if (i < steps) {
                                 position_ramp = position_profile_generate(i);
-                                i_position_control.set_position(position_limit(position_ramp * profile_position_config.velocity_config.polarity,
-                                        profile_position_config.software_position_limit_max,
-                                        profile_position_config.software_position_limit_min));
+                                i_position_control.set_position(position_limit(position_ramp * profiler_config.polarity,
+                                        profiler_config.max_position,
+                                        profiler_config.min_position));
                                 i++;
                             } else if (i == steps) {
                                 t :> c_time;
@@ -810,7 +813,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                             } else if (i > steps) {
                                 ack = 1;
                             }
-                            //actual_position = get_position(c_position_ctrl) * profile_position_config.velocity_config.polarity;
+                            //actual_position = get_position(c_position_ctrl) * profiler_config.velocity_config.polarity;
                             //send_actual_position(actual_position, InOut);
                         }
                     } else if (op_mode == TQ) {
@@ -822,15 +825,15 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                             if (prev_torque != target_torque) {
                                 ack = 0;
                                 steps = init_linear_profile(target_torque, actual_torque,
-                                                            profile_torque_config.profile_slope,
-                                                            profile_torque_config.profile_slope);
+                                                            profiler_config.current_slope,
+                                                            profiler_config.current_slope);
                                 i = 1;
                                 prev_torque = target_torque;
                             }
                         } else if (ack == 0) {
                             if (i < steps) {
                                 torque_ramp = linear_profile_generate(i);
-                                set_torque_cst(cyclic_sync_torque_config, torque_ramp, 0, i_torque_control);
+                                set_torque_cst(profiler_config, torque_ramp, 0, i_torque_control);
                                 i++;
                             } else if (i == steps) {
                                 t :> c_time;
@@ -845,22 +848,22 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     } else if (op_mode == PV) {
                         if (ack == 1) {
                             target_velocity = get_target_velocity(InOut);
-                            actual_velocity = i_velocity_control.get_velocity() * profile_velocity_config.polarity;
+                            actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;//profile_velocity_config.polarity;
                             send_actual_velocity(actual_velocity, InOut);
 
                             if (prev_velocity != target_velocity) {
                                 ack = 0;
                                 steps = init_velocity_profile(target_velocity, actual_velocity,
-                                                              profile_velocity_config.profile_acceleration,
-                                                              profile_velocity_config.profile_deceleration);
+                                                                profiler_config.acceleration,//profile_velocity_config.profile_acceleration,
+                                                                profiler_config.deceleration);//profile_velocity_config.profile_deceleration);
                                 i = 1;
                                 prev_velocity = target_velocity;
                             }
                         } else if (ack == 0) {
                             if (i < steps) {
                                 velocity_ramp = velocity_profile_generate(i);
-                                i_velocity_control.set_velocity(max_speed_limit( (velocity_ramp) * profile_velocity_config.polarity,
-                                        profile_velocity_config.max_profile_velocity));
+                                i_velocity_control.set_velocity(max_speed_limit( (velocity_ramp) * profiler_config.polarity,
+                                        profiler_config.max_velocity));
                                 i++;
                             } else if (i == steps) {
                                 t :> c_time;
@@ -869,7 +872,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                             } else if (i > steps) {
                                 ack = 1;
                             }
-                            actual_velocity = i_velocity_control.get_velocity() * profile_velocity_config.polarity;
+                            actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;
                             send_actual_velocity(actual_velocity, InOut);
                         }
                     }
@@ -916,7 +919,7 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     while (i < steps) {
                         target_torque = linear_profile_generate(i);
                         i_torque_control.set_torque(target_torque);
-                        actual_torque = i_torque_control.get_torque() * cyclic_sync_torque_config.polarity;
+                        actual_torque = i_torque_control.get_torque() * profiler_config.polarity;
                         send_actual_torque(actual_torque, InOut);
                         t when timerafter(c_time + MSEC_STD) :> c_time;
                         i++;
@@ -929,12 +932,12 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     if (i >= steps) {
                         actual_torque = i_torque_control.get_torque();
                         send_actual_torque(actual_torque, InOut);
-                        if (actual_torque < torque_offstate || actual_torque > -torque_offstate) {
+                    //    if (actual_torque < torque_offstate || actual_torque > -torque_offstate) {
                             ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
                             mode_selected = 100;
                             op_set_flag = 0;
                             init = 0;
-                        }
+                    //    }
                     }
                     if (steps == 0) {
                         mode_selected = 100;
@@ -946,13 +949,13 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     while (i < steps) {
                         target_velocity = quick_stop_velocity_profile_generate(i);
                         if (op_mode == CSV) {
-                            i_velocity_control.set_velocity(max_speed_limit(target_velocity, cyclic_sync_velocity_config.max_motor_speed));
+                            i_velocity_control.set_velocity(max_speed_limit(target_velocity, profiler_config.max_velocity));//cyclic_sync_velocity_config.max_motor_speed));
                             actual_velocity = i_velocity_control.get_velocity();
-                            send_actual_velocity(actual_velocity * cyclic_sync_velocity_config.polarity, InOut);
+                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
                         } else if (op_mode == PV) {
-                            i_velocity_control.set_velocity(max_speed_limit(target_velocity, profile_velocity_config.max_profile_velocity));
+                            i_velocity_control.set_velocity(max_speed_limit(target_velocity, profiler_config.max_velocity));
                             actual_velocity = i_velocity_control.get_velocity();
-                            send_actual_velocity(actual_velocity * profile_velocity_config.polarity, InOut);
+                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
                         }
                         t when timerafter(c_time + MSEC_STD) :> c_time;
                         i++;
@@ -962,9 +965,9 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     }
                     if (i >= steps) {
                         if (op_mode == CSV)
-                            send_actual_velocity(actual_velocity * cyclic_sync_velocity_config.polarity, InOut);
+                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
                         else if (op_mode == PV)
-                            send_actual_velocity(actual_velocity * profile_velocity_config.polarity, InOut);
+                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
                         if (actual_velocity < 50 || actual_velocity > -50) {
                             ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
                             mode_selected = 100;
@@ -986,12 +989,14 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                         target_position = quick_stop_position_profile_generate(i, sense);
                         if (op_mode == CSP) {
                             i_position_control.set_position(position_limit(target_position,
-                                                                   cyclic_sync_position_config.max_position_limit,
-                                                                   cyclic_sync_position_config.min_position_limit));
+                                                                    profiler_config.max_position,
+                                                                    profiler_config.min_position));
+                                                                 //  cyclic_sync_position_config.max_position_limit,
+                                                                 //  cyclic_sync_position_config.min_position_limit));
                         } else if (op_mode == PP) {
                             i_position_control.set_position(position_limit(target_position,
-                                                            profile_position_config.software_position_limit_max,
-                                                            profile_position_config.software_position_limit_min));
+                                                            profiler_config.max_position,
+                                                            profiler_config.min_position));
                         }
                         t when timerafter(c_time + MSEC_STD) :> c_time;
                         i++;
@@ -1021,10 +1026,10 @@ void ethercat_drive_service(CyclicSyncPositionConfig &cyclic_sync_position_confi
                     send_actual_torque(actual_torque, InOut);
                 } else if (op_mode == CSV) {
                     actual_velocity = i_velocity_control.get_velocity();
-                    send_actual_velocity(actual_velocity * cyclic_sync_velocity_config.polarity, InOut);
+                    send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
                 } else if (op_mode == PV) {
                     actual_velocity = i_velocity_control.get_velocity();
-                    send_actual_velocity(actual_velocity * profile_velocity_config.polarity, InOut);
+                    send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
                     send_actual_velocity(actual_velocity, InOut);
                 }
                 switch (InOut.operation_mode) {

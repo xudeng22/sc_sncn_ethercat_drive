@@ -19,10 +19,10 @@ enum {ECAT_SLAVE_0};
 
 int main() {
 
-    int target_position = 16000; // ticks
-    int acceleration = 500; // rpm/s
-    int deceleration = 500; // rpm/s
-    int velocity = 500; // rpm
+    int target_position = 32000; // ticks
+    int acceleration = 2000; // rpm/s
+    int deceleration = 2000; // rpm/s
+    int velocity = 2000; // rpm
 
     int actual_position = 0; // ticks
     int actual_velocity = 0; // rpm

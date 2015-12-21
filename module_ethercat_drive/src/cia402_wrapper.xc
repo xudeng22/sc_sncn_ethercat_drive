@@ -203,39 +203,40 @@ void config_sdo_handler(chanend coe_out)
 	return {Kp, Ki, Kd};
 }
 
-{int, int, int, int, int} cst_sdo_update(chanend coe_out)
+{int, int, int} cst_sdo_update(chanend coe_out)
 {
-	int  nominal_current;
+	//int  nominal_current;
 	int max_motor_speed;
 	int polarity;
 	int max_torque;
-	int motor_torque_constant;
+	//int motor_torque_constant;
 
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 	GET_SDO_DATA(CIA402_MAX_TORQUE, 0, max_torque);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
+	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
 
-	return {nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant};
+	//return {nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant};
+	return {max_motor_speed, polarity, max_torque};
 }
 
-{int, int, int, int, int} csv_sdo_update(chanend coe_out)
+{int, int, int} csv_sdo_update(chanend coe_out)
 {
 	int max_motor_speed;
-	int nominal_current;
+	//int nominal_current;
 	int polarity;
-	int motor_torque_constant;
+	//int motor_torque_constant;
 	int max_acceleration;
 
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
+	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
 
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration);
 	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
-	return {max_motor_speed, nominal_current, polarity, max_acceleration, motor_torque_constant};
+	return {max_motor_speed, polarity, max_acceleration};
 }
 
 int speed_sdo_update(chanend coe_out)
@@ -245,23 +246,23 @@ int speed_sdo_update(chanend coe_out)
 	return max_motor_speed;
 }
 
-{int, int, int, int, int, int} csp_sdo_update(chanend coe_out)
+{int, int, int, int, int} csp_sdo_update(chanend coe_out)
 {
 	int max_motor_speed;
 	int polarity;
-	int nominal_current;
+	//int nominal_current;
 	int min;
 	int max;
 	int max_acc;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
 	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acc);
 
-	return {max_motor_speed, polarity, nominal_current, min, max, max_acc};
+	return {max_motor_speed, polarity, min, max, max_acc};
 }
 
 int sensor_select_sdo(chanend coe_out)
@@ -463,10 +464,10 @@ void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chane
             commutation_params.bldc_winding_type} = commutation_sdo_update(coe_out);
 }
 
-void update_cst_param_ecat(CyclicSyncTorqueConfig &cst_params, chanend coe_out)
+void update_cst_param_ecat(ProfilerConfig &cst_params, chanend coe_out)
 {
-    {cst_params.nominal_current, cst_params.nominal_motor_speed, cst_params.polarity,
-            cst_params.max_torque, cst_params.motor_torque_constant} = cst_sdo_update(coe_out);
+    {cst_params.max_velocity, cst_params.polarity, cst_params.max_current} = cst_sdo_update(coe_out);
+
     if (cst_params.polarity >= 0) {
         cst_params.polarity = 1;
     } else if (cst_params.polarity < 0) {
@@ -474,10 +475,11 @@ void update_cst_param_ecat(CyclicSyncTorqueConfig &cst_params, chanend coe_out)
     }
 }
 
-void update_csv_param_ecat(CyclicSyncVelocityConfig &csv_params, chanend coe_out)
+void update_csv_param_ecat(ProfilerConfig &csv_params, chanend coe_out)
 {
-    {csv_params.max_motor_speed, csv_params.nominal_current, csv_params.polarity,
-            csv_params.max_acceleration, csv_params.motor_torque_constant} = csv_sdo_update(coe_out);
+    {csv_params.max_velocity,
+        csv_params.polarity,
+        csv_params.max_acceleration} = csv_sdo_update(coe_out);
 
     if (csv_params.polarity >= 0) {
         csv_params.polarity = 1;
@@ -486,21 +488,20 @@ void update_csv_param_ecat(CyclicSyncVelocityConfig &csv_params, chanend coe_out
     }
 }
 
-void update_csp_param_ecat(CyclicSyncPositionConfig &csp_params, chanend coe_out)
+void update_csp_param_ecat(ProfilerConfig &csp_params, chanend coe_out)
 {
-    {csp_params.velocity_config.max_motor_speed, csp_params.velocity_config.polarity, csp_params.velocity_config.nominal_current,
-            csp_params.min_position_limit, csp_params.max_position_limit,
-            csp_params.velocity_config.max_acceleration} = csp_sdo_update(coe_out);
-    if (csp_params.velocity_config.polarity >= 0) {
-        csp_params.velocity_config.polarity = 1;
-    } else if (csp_params.velocity_config.polarity < 0) {
-        csp_params.velocity_config.polarity = -1;
+    {csp_params.max_velocity, csp_params.polarity, csp_params.min_position, csp_params.max_position,
+            csp_params.max_acceleration} = csp_sdo_update(coe_out);
+    if (csp_params.polarity >= 0) {
+        csp_params.polarity = 1;
+    } else if (csp_params.polarity < 0) {
+        csp_params.polarity = -1;
     }
 }
 
-void update_pt_param_ecat(ProfileTorqueConfig &pt_params, chanend coe_out)
+void update_pt_param_ecat(ProfilerConfig &pt_params, chanend coe_out)
 {
-    {pt_params.profile_slope, pt_params.polarity} = pt_sdo_update(coe_out);
+    {pt_params.current_slope, pt_params.polarity} = pt_sdo_update(coe_out);
     if (pt_params.polarity >= 0) {
         pt_params.polarity = 1;
     } else if (pt_params.polarity < 0) {
@@ -508,22 +509,22 @@ void update_pt_param_ecat(ProfileTorqueConfig &pt_params, chanend coe_out)
     }
 }
 
-void update_pv_param_ecat(ProfileVelocityConfig &pv_params, chanend coe_out)
+void update_pv_param_ecat(ProfilerConfig &pv_params, chanend coe_out)
 {
-    {pv_params.max_profile_velocity, pv_params.profile_acceleration,
-            pv_params.profile_deceleration,
-            pv_params.quick_stop_deceleration,
+    {pv_params.max_velocity, pv_params.acceleration,
+            pv_params.deceleration,
+            pv_params.max_deceleration,
             pv_params.polarity} = pv_sdo_update(coe_out);
 }
 
-void update_pp_param_ecat(ProfilePositionConfig &pp_params, chanend coe_out)
+void update_pp_param_ecat(ProfilerConfig &pp_params, chanend coe_out)
 {
-    {pp_params.velocity_config.max_profile_velocity, pp_params.profile_velocity,
-            pp_params.velocity_config.profile_acceleration, pp_params.velocity_config.profile_deceleration,
-            pp_params.velocity_config.quick_stop_deceleration,
-            pp_params.software_position_limit_min,
-            pp_params.software_position_limit_max,
-            pp_params.velocity_config.polarity,
+    {pp_params.max_velocity, pp_params.velocity,
+            pp_params.acceleration, pp_params.deceleration,
+            pp_params.max_deceleration,
+            pp_params.min_position,
+            pp_params.max_position,
+            pp_params.polarity,
             pp_params.max_acceleration} = pp_sdo_update(coe_out);
 }
 

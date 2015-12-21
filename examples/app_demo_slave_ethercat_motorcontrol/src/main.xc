@@ -49,7 +49,7 @@ int main(void)
 
     interface GPIOInterface i_gpio[2];
     interface WatchdogInterface i_watchdog[2];
-    interface ADCInterface i_adc[3];
+    interface ADCInterface i_adc[2];
     interface HallInterface i_hall[5];
     interface QEIInterface i_qei[5];
     interface MotorcontrolInterface i_motorcontrol[5];
@@ -92,26 +92,22 @@ int main(void)
         /* Ethercat Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-            CyclicSyncTorqueConfig cyclic_sync_torque_config;
-            init_cst_config(cyclic_sync_torque_config);
 
-            CyclicSyncVelocityConfig cyclic_sync_velocity_config;
-            init_csv_config(cyclic_sync_velocity_config);
+            ProfilerConfig profiler_config;
 
-            CyclicSyncPositionConfig cyclic_sync_position_config;
-            init_csp_config(cyclic_sync_position_config);
+            profiler_config.polarity = POLARITY;
+            profiler_config.max_position = MAX_POSITION_LIMIT;
+            profiler_config.min_position = MIN_POSITION_LIMIT;
 
-            ProfilePositionConfig profile_position_config;
-            init_pp_config(profile_position_config);
+            profiler_config.max_velocity = MAX_VELOCITY;
+            profiler_config.max_acceleration = MAX_ACCELERATION;
+            profiler_config.max_deceleration = MAX_ACCELERATION;
 
-            ProfileVelocityConfig profile_velocity_config;
-            init_pv_config(profile_velocity_config);
+            profiler_config.polarity = POLARITY;
+            profiler_config.max_current_slope = MAX_CURRENT_VARIATION;
+            profiler_config.max_current = MAX_CURRENT;
 
-            ProfileTorqueConfig profile_torque_config;
-            init_pt_config(profile_torque_config);
-
-            ethercat_drive_service(cyclic_sync_position_config, cyclic_sync_velocity_config, cyclic_sync_torque_config,
-                                    profile_position_config, profile_velocity_config, profile_torque_config,
+            ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
                                     i_motorcontrol[3], i_hall[4], i_qei[4], i_gpio[0],
                                     i_torque_control[0], i_velocity_control[0], i_position_control[0]);
@@ -166,11 +162,27 @@ int main(void)
                     torque_control_config.Ki = TORQUE_Ki_NUMERATOR;
                     torque_control_config.Kd = TORQUE_Kd_NUMERATOR;
 
-                    torque_control_config.control_loop_period = COMMUTATION_LOOP_PERIOD; // us
+                    torque_control_config.control_loop_period = 100; // us
 
                     /* Control Loop */
                     torque_control_service(torque_control_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3],
                                                 i_torque_control);
+                }
+
+                {
+                    int phaseB, phaseC, actual_torque, target_torque;
+
+                    while(1){
+                        {phaseB, phaseC} = i_adc[1].get_currents();
+                        actual_torque = i_torque_control[1].get_torque();
+                        target_torque = i_torque_control[1].get_set_torque();
+
+                        xscope_int(TARGET_TORQUE, target_torque);
+                        xscope_int(ACTUAL_TORQUE, actual_torque);
+                        xscope_int(PHASE_B, phaseB);
+                        xscope_int(PHASE_C, phaseC);
+                        delay_microseconds(50);
+                    }
                 }
             }
         }

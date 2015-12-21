@@ -8,9 +8,24 @@
 #include <user_config.h>
 
 
-void init_csv_config(CyclicSyncVelocityConfig &csv_config)
+/*
+MAX_POSITION
+MIN_POSITION
+
+MAX_VELOCITY
+
+MAX_ACCELERATION
+MAX_DECELERATION
+
+MAX_CURRENT
+
+TORQUE_CONSTANT*/
+
+/*
+
+void init_csv_config(ProfilerConfig &csv_config)
 {
-    csv_config.max_motor_speed = MAX_NOMINAL_SPEED;
+    csv_config.max_velocity = MAX_NOMINAL_SPEED;
         csv_config.max_acceleration = MAX_ACCELERATION;
     if(POLARITY >= 0)
         csv_config.polarity = 1;
@@ -19,7 +34,7 @@ void init_csv_config(CyclicSyncVelocityConfig &csv_config)
     return;
 }
 
-void init_csp_config(CyclicSyncPositionConfig &csp_config)
+void init_csp_config(ProfilerConfig &csp_config)
 {
     csp_config.velocity_config.max_motor_speed = MAX_NOMINAL_SPEED;
         csp_config.velocity_config.max_acceleration = MAX_ACCELERATION;
@@ -33,7 +48,7 @@ void init_csp_config(CyclicSyncPositionConfig &csp_config)
     return;
 }
 
-void init_cst_config(CyclicSyncTorqueConfig &cst_config)
+void init_cst_config(ProfilerConfig &cst_config)
 {
     cst_config.nominal_current = MAX_NOMINAL_CURRENT;
     cst_config.nominal_motor_speed = MAX_NOMINAL_SPEED;
@@ -42,13 +57,13 @@ void init_cst_config(CyclicSyncTorqueConfig &cst_config)
         cst_config.motor_torque_constant = MOTOR_TORQUE_CONSTANT;
 }
 
-void init_pt_config(ProfileTorqueConfig &pt_config)
+void init_pt_config(ProfilerConfig &pt_config)
 {
     pt_config.profile_slope = PROFILE_TORQUE_SLOPE;
     pt_config.polarity = POLARITY;
 }
 
-void init_pp_config(ProfilePositionConfig &pp_config)
+void init_pp_config(ProfilerConfig &pp_config)
 {
     pp_config.velocity_config.max_profile_velocity = MAX_PROFILE_VELOCITY;
     pp_config.profile_velocity  = PROFILE_VELOCITY;
@@ -62,7 +77,7 @@ void init_pp_config(ProfilePositionConfig &pp_config)
     return;
 }
 
-void init_pv_config(ProfileVelocityConfig &pv_config)
+void init_pv_config(ProfilerConfig &pv_config)
 {
     pv_config.max_profile_velocity = MAX_PROFILE_VELOCITY;
     pv_config.profile_acceleration = PROFILE_ACCELERATION;
@@ -71,3 +86,4 @@ void init_pv_config(ProfileVelocityConfig &pv_config)
     pv_config.polarity = POLARITY;
     return;
 }
+*/

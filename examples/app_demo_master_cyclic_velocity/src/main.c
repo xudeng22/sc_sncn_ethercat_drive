@@ -32,9 +32,9 @@ void  INThandler(int sig)
 
 int main() {
 
-    int target_velocity = 200; //rpm
-    int acceleration = 1000; //rpm/s
-    int deceleration = 1000; //rpm/s
+    int target_velocity = 900; //rpm
+    int acceleration = 100; //rpm/s
+    int deceleration = 100; //rpm/s
 
     int actual_velocity = 0; // rpm
     int actual_position; // ticks

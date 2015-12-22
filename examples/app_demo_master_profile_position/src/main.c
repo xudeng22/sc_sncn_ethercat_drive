@@ -23,7 +23,7 @@ int main()
 	int flag_position_set = 0;
 
 	int actual_position = 0;			// ticks
-	int target_position = 350;			// ticks
+	int target_position = 16000;			// ticks
 	int tolerance = 35;	 				// ticks
 	int actual_velocity;				// rpm
 	float actual_torque;				// mNm
@@ -66,7 +66,7 @@ int main()
 				 i = i+1;
 				 if(i>3)
 				 {
-					 target_position =  actual_position + 10000;
+					 target_position =  actual_position + 32000;
 					 if(target_position > 52000)
 						 target_position = 52000;
 					 flag = 1;
@@ -99,7 +99,7 @@ int main()
 	printf("reached \n");
 
 	flag_position_set = 0;
-	target_position = actual_position - 10000;
+	target_position = actual_position - 32000;
 	if(target_position < -52000)
 		target_position = -52000;
 	stop_position = target_position + 4000;

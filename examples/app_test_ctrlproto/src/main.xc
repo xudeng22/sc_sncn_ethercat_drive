@@ -9,7 +9,7 @@
  */
 
 #include <ethercat_service.h>
-#include <ctrlproto.h>
+#include <cia402_wrapper.h>
 
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;

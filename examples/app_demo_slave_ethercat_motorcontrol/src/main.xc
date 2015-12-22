@@ -26,9 +26,8 @@
 #include <ethercat_service.h>
 #include <fw_update_service.h>
 
- //Configure your default motorcontrol parameters in config/motorcontrol_config.h
+ //Configure your default motorcontrol parameters in config_motor/user_config.h
 #include <user_config.h>
-#include <ethercat_modes_config.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -103,7 +102,6 @@ int main(void)
             profiler_config.max_acceleration = MAX_ACCELERATION;
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
-            profiler_config.polarity = POLARITY;
             profiler_config.max_current_slope = MAX_CURRENT_VARIATION;
             profiler_config.max_current = MAX_CURRENT;
 
@@ -121,13 +119,13 @@ int main(void)
                 {
                      ControlConfig position_control_config;
 
-                     position_control_config.position_sensor_type = SENSOR_USED;
+                     position_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
 
-                     position_control_config.Kp = POSITION_Kp_NUMERATOR;    // Divided by 10000
-                     position_control_config.Ki = POSITION_Ki_NUMERATOR;    // Divided by 10000
-                     position_control_config.Kd = POSITION_Kd_NUMERATOR;    // Divided by 10000
+                     position_control_config.Kp = POSITION_Kp;    // Divided by 10000
+                     position_control_config.Ki = POSITION_Ki;    // Divided by 10000
+                     position_control_config.Kd = POSITION_Kd;    // Divided by 10000
 
-                     position_control_config.control_loop_period = COMMUTATION_LOOP_PERIOD; //us
+                     position_control_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
 
                      /* Control Loop */
                      position_control_service(position_control_config, i_hall[1], i_qei[1], i_motorcontrol[0],
@@ -138,13 +136,13 @@ int main(void)
                 {
                     ControlConfig velocity_control_config;
 
-                    velocity_control_config.position_sensor_type = SENSOR_USED;
+                    velocity_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
 
-                    velocity_control_config.Kp = VELOCITY_Kp_NUMERATOR;
-                    velocity_control_config.Ki = VELOCITY_Ki_NUMERATOR;
-                    velocity_control_config.Kd = VELOCITY_Kd_NUMERATOR;
+                    velocity_control_config.Kp = VELOCITY_Kp;
+                    velocity_control_config.Ki = VELOCITY_Ki;
+                    velocity_control_config.Kd = VELOCITY_Kd;
 
-                    velocity_control_config.control_loop_period =  COMMUTATION_LOOP_PERIOD;
+                    velocity_control_config.control_loop_period =  CONTROL_LOOP_PERIOD;
 
                     /* Control Loop */
                     velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], i_motorcontrol[1],
@@ -156,11 +154,11 @@ int main(void)
                     /* Torque Control Loop */
                     ControlConfig torque_control_config;
 
-                    torque_control_config.position_sensor_type = SENSOR_USED;
+                    torque_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
 
-                    torque_control_config.Kp = TORQUE_Kp_NUMERATOR;
-                    torque_control_config.Ki = TORQUE_Ki_NUMERATOR;
-                    torque_control_config.Kd = TORQUE_Kd_NUMERATOR;
+                    torque_control_config.Kp = TORQUE_Kp;
+                    torque_control_config.Ki = TORQUE_Ki;
+                    torque_control_config.Kd = TORQUE_Kd;
 
                     torque_control_config.control_loop_period = 100; // us
 
@@ -214,9 +212,9 @@ int main(void)
                 /* Quadrature encoder sensor Service */
                  {
                      QEIConfig qei_config;
-                         qei_config.signal_type = QEI_SIGNAL_TYPE;               // Encoder signal type (if applicable to your board)
-                         qei_config.index_type = QEI_INDEX_TYPE;                 // Indexed encoder?
-                         qei_config.ticks_resolution = ENCODER_RESOLUTION;       // Encoder resolution
+                         qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;               // Encoder signal type (if applicable to your board)
+                         qei_config.index_type = QEI_SENSOR_INDEX_TYPE;                 // Indexed encoder?
+                         qei_config.ticks_resolution = QEI_SENSOR_RESOLUTION;       // Encoder resolution
                          qei_config.sensor_polarity = QEI_SENSOR_POLARITY;       // CW
 
                      qei_service(qei_ports, qei_config, i_qei);
@@ -226,6 +224,7 @@ int main(void)
                  {
                      MotorcontrolConfig motorcontrol_config;
                          motorcontrol_config.motor_type = BLDC_MOTOR;
+                         motorcontrol_config.commutation_sensor = HALL_SENSOR;
                          motorcontrol_config.bldc_winding_type = BLDC_WINDING_TYPE;
                          motorcontrol_config.hall_offset_clk =  COMMUTATION_OFFSET_CLK;
                          motorcontrol_config.hall_offset_cclk = COMMUTATION_OFFSET_CCLK;

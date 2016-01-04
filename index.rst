@@ -5,7 +5,6 @@ SOMANET EtherCAT Drive
 	:maxdepth: 1
 	:hidden:
 
-	Examples <examples/index>
 	EtherCAT Drive Module <module_ethercat_drive/doc/index>	
 	Communication Protocol Library for Linux <lib_linux_ctrlproto/doc/index>	
 	Motor Drive Library for Linux <lib_linux_motor_drive/doc/index>	
@@ -22,6 +21,10 @@ SOMANET EtherCAT Drive
 Examples
 --------
 
+.. toctree::
+	:maxdepth: 2
+
+	SOMANET EtherCAT Drive Examples: <examples/index>
 
 Dependencies
 ------------

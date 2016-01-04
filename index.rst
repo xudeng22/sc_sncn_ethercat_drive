@@ -24,7 +24,7 @@ Examples
 .. toctree::
 	:maxdepth: 2
 
-	SOMANET EtherCAT Drive Examples: 
+	SOMANET EtherCAT Drive Examples: <examples/index>	
 
 Dependencies
 ------------

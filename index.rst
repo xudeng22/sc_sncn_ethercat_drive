@@ -22,6 +22,7 @@ Examples
 --------
 
 .. toctree::
+	:hidden:
 	:maxdepth: 1
 
 	Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>
@@ -30,13 +31,35 @@ Examples
 	EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc_quickstart/quickstart>
 	EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc_quickstart/quickstart>
 
+	EtherCAT Profile Position Control Demo <examples/app_demo_master_profile_position/doc/index>
+	EtherCAT Profile Velocity Control Demo <examples/app_demo_master_profile_velocity/doc/index>
+	EtherCAT Profile Torque Control Demo <examples/app_demo_master_profile_torque/doc/index>
+
 	EtherCAT Multi-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc_quickstart/quickstart>
 	EtherCAT Multi-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc_quickstart/quickstart>
 	EtherCAT Multi-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc_quickstart/quickstart>
-	
-	EtherCAT Standalone Position Control Demo (slave only) <examples/app_demo_bldc_position/doc_quickstart/quickstart>
-	EtherCAT Standalone Velocity Control Demo (slave only) <examples/app_demo_bldc_velocity/doc_quickstart/quickstart>
-	EtherCAT Standalone Torque Control Demo (slave only) <examples/app_demo_bldc_torque/doc_quickstart/quickstart>
+
+* **Slave examples (for SOMANET devices):**
+
+        * `Slave Firmware <app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>`_: Ethercat Drive slave firmware for your SOMANET device.
+
+
+* **Master examples (for Linux machines):**
+
+	* `EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc_quickstart/quickstart>`_:
+	* `EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc_quickstart/quickstart>`_:
+	* `EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc_quickstart/quickstart>`_:
+
+	* `EtherCAT Profile Position Control Demo <examples/app_demo_master_profile_position/doc/index>`_:
+	* `EtherCAT Profile Velocity Control Demo <examples/app_demo_master_profile_velocity/doc/index>`_:
+	* `EtherCAT Profile Torque Control Demo <examples/app_demo_master_profile_torque/doc/index>`_:
+
+	* `EtherCAT dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc_quickstart/quickstart>`_:
+	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc_quickstart/quickstart>`_:
+	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc_quickstart/quickstart>`_:
+
+Quick Guides
+------------
 
 Dependencies
 ------------

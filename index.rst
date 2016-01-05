@@ -46,17 +46,18 @@ Examples
 
 * **Master examples (for Linux machines):**
 
-	* `EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc_quickstart/quickstart>`_:
-	* `EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc_quickstart/quickstart>`_:
-	* `EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc_quickstart/quickstart>`_:
+	* `EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc_quickstart/quickstart>`_: Example to do cyclic position control on one axis over EtherCAT.
+	* `EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc_quickstart/quickstart>`_: Example to do cyclic velocity control on one axis over EtherCAT.
+	* `EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc_quickstart/quickstart>`_: Example to do cyclic torque control on one axis over EtherCAT.
 
-	* `EtherCAT Profile Position Control Demo <examples/app_demo_master_profile_position/doc/index>`_:
-	* `EtherCAT Profile Velocity Control Demo <examples/app_demo_master_profile_velocity/doc/index>`_:
-	* `EtherCAT Profile Torque Control Demo <examples/app_demo_master_profile_torque/doc/index>`_:
+	* `EtherCAT dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc_quickstart/quickstart>`_: Example to do cyclic position control on two axis over EtherCAT.
+	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc_quickstart/quickstart>`_: Example to do cyclic velocity control on two axis over EtherCAT.
 
-	* `EtherCAT dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc_quickstart/quickstart>`_:
-	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc_quickstart/quickstart>`_:
-	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc_quickstart/quickstart>`_:
+	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc_quickstart/quickstart>`_: Example to do cyclic torque control on two axis over EtherCAT.
+
+	* `EtherCAT Profile Position Control Demo <examples/app_demo_master_profile_position/doc/index>`_: Example to generate position ramps and control one axis over EtherCAT.
+	* `EtherCAT Profile Velocity Control Demo <examples/app_demo_master_profile_velocity/doc/index>`_: Example to generate velocity ramps and control one axis over EtherCAT.
+	* `EtherCAT Profile Torque Control Demo <examples/app_demo_master_profile_torque/doc/index>`_: Example to generate torque ramps and control one axis over EtherCAT.
 
 Quick Guides
 ------------

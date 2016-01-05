@@ -22,44 +22,56 @@ Examples
 --------
 
 .. toctree::
-	:maxdepth: 2
+	:maxdepth: 1
 
-	SOMANET EtherCAT Drive Examples: <examples/index>	
+	Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>
+	
+	EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc_quickstart/quickstart>
+	EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc_quickstart/quickstart>
+	EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc_quickstart/quickstart>
+
+	EtherCAT Multi-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc_quickstart/quickstart>
+	EtherCAT Multi-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc_quickstart/quickstart>
+	EtherCAT Multi-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc_quickstart/quickstart>
+	
+	EtherCAT Standalone Position Control Demo (slave only) <examples/app_demo_bldc_position/doc_quickstart/quickstart>
+	EtherCAT Standalone Velocity Control Demo (slave only) <examples/app_demo_bldc_velocity/doc_quickstart/quickstart>
+	EtherCAT Standalone Torque Control Demo (slave only) <examples/app_demo_bldc_torque/doc_quickstart/quickstart>
 
 Dependencies
 ------------
 
 To run **Ethercat Drive applications** it is neccesary to include additionally the following libraries:
 
-**SOMANET Motorcontrol Library**.
+* **SOMANET Motorcontrol Library**
 
-.. cssclass:: downloadable-button 
+	.. cssclass:: downloadable-button 
 
- `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/new_board_support_system.zip>`_
+	 `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/new_board_support_system.zip>`_
 
-.. cssclass:: github
+	.. cssclass:: github
 
-  `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/tree/new_board_support_system>`_
+	  `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/tree/new_board_support_system>`_
 
-**SOMANET EtherCAT Library**.
+* **SOMANET EtherCAT Library**
 
-.. cssclass:: downloadable-button 
+	.. cssclass:: downloadable-button 
 
- `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/new_board_support_system.zip>`_
+	 `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/new_board_support_system.zip>`_
 
-.. cssclass:: github
+	.. cssclass:: github
 
-  `Visit SOMANET EtherCAT Public Repository <https://github.com/synapticon/sc_sncn_ethercat>`_
+	  `Visit SOMANET EtherCAT Public Repository <https://github.com/synapticon/sc_sncn_ethercat>`_
 
-**SOMANET Base Library**.
+* **SOMANET Base Library**
 
-.. cssclass:: downloadable-button 
+	.. cssclass:: downloadable-button 
 
-  `Download SOMANET Base Library <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
+	  `Download SOMANET Base Library <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
 
-.. cssclass:: github
+	.. cssclass:: github
 
-  `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base>`_
+	  `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base>`_
 
 
 .. important:: To be able to **run** Ethercat Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.

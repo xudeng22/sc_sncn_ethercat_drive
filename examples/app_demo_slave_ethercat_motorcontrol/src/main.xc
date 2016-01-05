@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
-#include <COM_ECAT-rev-a.inc>
-#include <CORE_C22-rev-a.inc>
-#include <IFM_DC100-rev-b.inc>
+#include <COM_ECAT-rev-a.bsp>
+#include <CORE_C22-rev-a.bsp>
+#include <IFM_DC100-rev-b.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -173,7 +173,7 @@ int main(void)
                     while(1){
                         {phaseB, phaseC} = i_adc[1].get_currents();
                         actual_torque = i_torque_control[1].get_torque();
-                        target_torque = i_torque_control[1].get_set_torque();
+                        target_torque = i_torque_control[1].get_target_torque();
 
                         xscope_int(TARGET_TORQUE, target_torque);
                         xscope_int(ACTUAL_TORQUE, actual_torque);

@@ -77,7 +77,7 @@ void update_checklist(check_list &check_list_param, int mode,
     switch(check) {
     case INIT_BUSY:
         if (~check_list_param._commutation_init) {
-            check_list_param._commutation_init = i_commutation.checkBusy();//__check_commutation_init(c_commutation);
+            check_list_param._commutation_init = i_commutation.check_busy();//__check_commutation_init(c_commutation);
             if(check_list_param._commutation_init) {
                 skip = false;
             }
@@ -88,11 +88,11 @@ void update_checklist(check_list &check_list_param, int mode,
         }
 
         if (~skip && ~check_list_param._hall_init) {
-            check_list_param._hall_init = i_hall.checkBusy();//__check_hall_init(c_hall);
+            check_list_param._hall_init = i_hall.check_busy();//__check_hall_init(c_hall);
         }
 
         if (~skip &&  ~check_list_param._qei_init) {
-            check_list_param._qei_init = i_qei.checkBusy();//__check_qei_init(c_qei);
+            check_list_param._qei_init = i_qei.check_busy();//__check_qei_init(c_qei);
         }
         break;
     case INIT:

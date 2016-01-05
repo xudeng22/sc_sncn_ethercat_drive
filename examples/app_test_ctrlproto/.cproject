@@ -137,6 +137,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/doc}&quot;"/>
 								</option>
 								<option id="com.xmos.xc.compiler.option.defined.symbols.1540322941" name="com.xmos.xc.compiler.option.defined.symbols" superClass="com.xmos.xc.compiler.option.defined.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__SHRT_MAX__=32767"/>
@@ -722,6 +723,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.95438848" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1127,6 +1129,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_gpio}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.22657252" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

@@ -108,7 +108,7 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
     int status=0;
     int tmp=0;
 
-    int torque_offstate = 0;
+    //int torque_offstate = 0;
     int mode_selected = 0;
     check_list checklist;
 
@@ -133,8 +133,8 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
     checklist   = init_checklist();
     InOut       = init_ctrl_proto();
 
-    hall_config = i_hall.getHallConfig();
-    qei_params = i_qei.getQEIConfig();
+    hall_config = i_hall.get_hall_config();
+    qei_params = i_qei.get_qei_config();
     velocity_ctrl_params = i_velocity_control.get_velocity_control_config();
 
     t :> time;
@@ -344,10 +344,10 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                     i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
                     i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
                     i_gpio.config_dio_done();//end_config_gpio(c_gpio);
-                    i_hall.setHallConfig(hall_config); //set_hall_conifg_ecat(c_hall, hall_config);
+                    i_hall.set_hall_config(hall_config); //set_hall_conifg_ecat(c_hall, hall_config);
                     if (homing_done == 0)
-                        i_qei.setQEIConfig(qei_params);
-                    i_commutation.setAllParameters(hall_config, qei_params,
+                        i_qei.set_qei_config(qei_params);
+                    i_commutation.set_all_parameters(hall_config, qei_params,
                                                commutation_params, nominal_speed);
 
                     setup_loop_flag = 1;

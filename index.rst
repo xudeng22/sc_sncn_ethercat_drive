@@ -12,11 +12,11 @@ SOMANET EtherCAT Drive
 
 .. cssclass:: downloadable-button 
 
-  `Download Library <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/new_board_support_system.zip>`_
+  `Download Library <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/master.zip>`_
 
 .. cssclass:: github
 
-  `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/new_board_support_system>`_
+  `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/>`_
 
 Examples
 --------
@@ -71,17 +71,17 @@ To run **Ethercat Drive applications** it is neccesary to include additionally t
 
 	.. cssclass:: downloadable-button 
 
-	 `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/new_board_support_system.zip>`_
+	 `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/master.zip>`_
 
 	.. cssclass:: github
 
-	  `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/tree/new_board_support_system>`_
+	  `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
 
 * **SOMANET EtherCAT Library**
 
 	.. cssclass:: downloadable-button 
 
-	 `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/new_board_support_system.zip>`_
+	 `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/master.zip>`_
 
 	.. cssclass:: github
 

@@ -7,13 +7,17 @@
 #pragma once
 
 #include <stdint.h>
-#include <stdbool_xc.h>
+//#include <stdbool_xc.h>
 
 #include <adc_service.h>
 
 #include <position_ctrl_service.h>
 #include <velocity_ctrl_service.h>
 #include <torque_ctrl_service.h>
+
+typedef int bool;
+#define true 1
+#define false 0
 
 typedef struct S_Check_list {
     bool ready;

@@ -20,9 +20,11 @@
     int direction;
 
     if (sensor_select == HALL_SENSOR) {
-        {actual_position, direction} = i_hall.get_hall_position_absolute();//get_hall_position_absolute(c_hall);
+        actual_position = i_hall.get_hall_position_absolute();//get_hall_position_absolute(c_hall);
+        direction = i_hall.get_hall_direction();
     } else { /* QEI */
-        {actual_position, direction} = i_qei.get_qei_position_absolute();//get_qei_position_absolute(c_qei);
+        actual_position = i_qei.get_qei_position_absolute();//get_qei_position_absolute(c_qei);
+        direction = i_qei.get_qei_direction();
     }
 
     return {actual_position, direction};
@@ -58,6 +60,8 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
     int target_position = 0;
     int actual_position = 0;
 
+    int direction = 0;
+
     int position_ramp = 0;
     int prev_position = 0;
 
@@ -92,8 +96,6 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
     int mode_quick_flag = 0;
     int shutdown_ack = 0;
     int sensor_select = 4;
-
-    int direction;
 
     int communication_active = 0;
     unsigned int c_time;
@@ -348,7 +350,7 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                     if (homing_done == 0)
                         i_qei.set_qei_config(qei_params);
                     i_commutation.set_all_parameters(hall_config, qei_params,
-                                               commutation_params, nominal_speed);
+                                               commutation_params);
 
                     setup_loop_flag = 1;
                     op_set_flag = 0;
@@ -371,10 +373,10 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                     if (op_set_flag == 0) {
                         ctrl_state = i_torque_control.check_busy();
                         if (ctrl_state == 1)
-                            i_torque_control.shutdown_torque_ctrl();
-                        init = init_velocity_control(i_velocity_control);
+                            i_torque_control.disable_torque_ctrl();
+                        init_velocity_control(i_velocity_control);
                     }
-                    if (init == INIT) {
+                    if (i_velocity_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         op_mode = HM;
@@ -395,21 +397,21 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         sensor_select = sensor_select_sdo(coe_out);
 
                         if (sensor_select == HALL_SENSOR) {
-                            i_position_control.set_position_ctrl_hall_param(hall_config);
+                            i_position_control.set_hall_config(hall_config);
                         } else { /* QEI */
-                            i_position_control.set_position_ctrl_qei_param(qei_params);
+                            i_position_control.set_qei_config(qei_params);
                         }
-                        i_position_control.set_position_ctrl_param(position_ctrl_params);
+                        i_position_control.set_position_control_config(position_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
-                        ctrl_state = i_velocity_control.check_velocity_ctrl_state();
+                        ctrl_state = i_velocity_control.check_busy();
                         if (ctrl_state == 1)
-                            i_velocity_control.shutdown_velocity_ctrl();
-                        init = init_position_control(i_position_control);
+                            i_velocity_control.disable_velocity_ctrl();
+                            init_position_control(i_position_control);
                     }
-                    if (init == INIT) {
+                    if (i_position_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         op_mode = PP;
@@ -435,22 +437,22 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         sensor_select = sensor_select_sdo(coe_out);
 
                         if (sensor_select == HALL_SENSOR) {
-                            i_torque_control.set_torque_ctrl_hall_param(hall_config);
+                            i_torque_control.set_hall_config(hall_config);
                         } else { /* QEI */
-                            i_torque_control.set_torque_ctrl_qei_param(qei_params);
+                            i_torque_control.set_qei_config(qei_params);
                         }
 
-                        i_torque_control.set_torque_ctrl_param(torque_ctrl_params);
+                        i_torque_control.set_torque_control_config(torque_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
                         ctrl_state = i_position_control.check_busy();
                         if (ctrl_state == 1)
-                            i_position_control.shutdown_position_ctrl();
-                        init = init_torque_control(i_torque_control);
+                            i_position_control.disable_position_ctrl();
+                        init_torque_control(i_torque_control);
                     }
-                    if (init == INIT) {
+                    if (i_torque_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         op_mode = TQ;
@@ -477,22 +479,22 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         sensor_select = sensor_select_sdo(coe_out);
 
                         if (sensor_select == HALL_SENSOR) {
-                            i_velocity_control.set_velocity_ctrl_hall_param(hall_config);
+                            i_velocity_control.set_hall_config(hall_config);
                         } else { /* QEI */
-                            i_velocity_control.set_velocity_ctrl_qei_param(qei_params);
+                            i_velocity_control.set_qei_config(qei_params);
                         }
 
-                        i_velocity_control.set_velocity_ctrl_param(velocity_ctrl_params);
+                        i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
-                        ctrl_state = i_position_control.check_position_ctrl_state();
+                        ctrl_state = i_position_control.check_busy();
                         if (ctrl_state == 1)
-                            i_position_control.shutdown_position_ctrl();
-                        init = init_velocity_control(i_velocity_control);
+                            i_position_control.disable_position_ctrl();
+                        init_velocity_control(i_velocity_control);
                     }
-                    if (init == INIT) {
+                    if (i_velocity_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         op_mode = PV;
@@ -515,21 +517,21 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         sensor_select = sensor_select_sdo(coe_out);
 
                         if (sensor_select == HALL_SENSOR) {
-                            i_position_control.set_position_ctrl_hall_param(hall_config);
+                            i_position_control.set_hall_config(hall_config);
                         } else { /* QEI */
-                            i_position_control.set_position_ctrl_qei_param(qei_params);
+                            i_position_control.set_qei_config(qei_params);
                         }
-                        i_position_control.set_position_ctrl_param(position_ctrl_params);
+                        i_position_control.set_position_control_config(position_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
-                        ctrl_state = i_velocity_control.check_velocity_ctrl_state();
+                        ctrl_state = i_velocity_control.check_busy();
                         if (ctrl_state == 1)
-                            i_velocity_control.shutdown_velocity_ctrl();
-                        init = init_position_control(i_position_control);
+                            i_velocity_control.disable_velocity_ctrl();
+                            init_position_control(i_position_control);
                     }
-                    if (init == INIT) {
+                    if (i_position_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         mode_quick_flag = 10;
@@ -549,21 +551,21 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         sensor_select = sensor_select_sdo(coe_out);
 
                         if (sensor_select == HALL_SENSOR) {
-                            i_velocity_control.set_velocity_ctrl_hall_param(hall_config);
+                            i_velocity_control.set_hall_config(hall_config);
                         } else { /* QEI */
-                            i_velocity_control.set_velocity_ctrl_qei_param(qei_params);
+                            i_velocity_control.set_qei_config(qei_params);
                         }
 
-                        i_velocity_control.set_velocity_ctrl_param(velocity_ctrl_params);
+                        i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
-                        ctrl_state = i_position_control.check_position_ctrl_state();
+                        ctrl_state = i_position_control.check_busy();
                         if (ctrl_state == 1)
-                            i_position_control.shutdown_position_ctrl();
-                        init = init_velocity_control(i_velocity_control);
+                            i_position_control.disable_position_ctrl();
+                        init_velocity_control(i_velocity_control);
                     }
-                    if (init == INIT) {
+                    if (i_velocity_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         mode_quick_flag = 10;
@@ -584,25 +586,25 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         sensor_select = sensor_select_sdo(coe_out);
 
                         if (sensor_select == HALL_SENSOR) {
-                            i_torque_control.set_torque_ctrl_hall_param(hall_config);
+                            i_torque_control.set_hall_config(hall_config);
                         } else { /* QEI */
-                            i_torque_control.set_torque_ctrl_qei_param(qei_params);
+                            i_torque_control.set_qei_config(qei_params);
                         }
 
-                        i_torque_control.set_torque_ctrl_param(torque_ctrl_params);
+                        i_torque_control.set_torque_control_config(torque_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
-                        ctrl_state = i_velocity_control.check_velocity_ctrl_state();
+                        ctrl_state = i_velocity_control.check_busy();
                         if (ctrl_state == 1)
-                            i_velocity_control.shutdown_velocity_ctrl();
-                        ctrl_state = i_position_control.check_position_ctrl_state(); /* FIXME: why twice? */
+                            i_velocity_control.disable_velocity_ctrl();
+                        ctrl_state = i_position_control.check_busy(); /* FIXME: why twice? */
                         if (ctrl_state == 1)
-                            i_position_control.shutdown_position_ctrl();
-                        init = init_torque_control(i_torque_control);
+                            i_position_control.disable_position_ctrl();
+                            init_torque_control(i_torque_control);
                     }
-                    if (init == INIT) {
+                    if (i_torque_control.check_busy() == INIT) {
                         op_set_flag = 1;
                         mode_selected = 1;
                         mode_quick_flag = 10;
@@ -727,7 +729,7 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                                 }
                                 home_state = i_gpio.read_gpio(0);//read_gpio_digital_input(c_gpio, 0);
                                 safety_state = i_gpio.read_gpio(1);//read_gpio_digital_input(c_gpio, 1);
-                                {capture_position, direction} = i_qei.get_qei_position_absolute();
+                                capture_position = i_qei.get_qei_position_absolute();
 
                                 if ((home_state == 1 || safety_state == 1) && end_state == 0) {
                                     actual_velocity = i_velocity_control.get_velocity();
@@ -738,14 +740,14 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                                     end_state = 1;
                                 }
                                 if (end_state == 1 && i >= steps) {
-                                    i_velocity_control.shutdown_velocity_ctrl();
+                                    i_velocity_control.disable_velocity_ctrl();
                                     if (home_state == 1) {
-                                        {current_position, direction} = i_qei.get_qei_position_absolute();//get_qei_position_absolute(c_qei);
+                                        current_position = i_qei.get_qei_position_absolute();//get_qei_position_absolute(c_qei);
 
                                         //printintln(current_position);
                                         home_offset = current_position - capture_position;
                                         //printintln(home_offset);
-                                        i_qei.reset_qei_count(home_offset);
+                                        i_qei.reset_qei_absolute_position(home_offset);
                                         reset_counter = 1;
                                     }
                                 }
@@ -764,20 +766,26 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
 
                     if (op_mode == CSV) {
                         target_velocity = get_target_velocity(InOut);
-                        set_velocity_csv(profiler_config, target_velocity, 0, 0, i_velocity_control);
+                        i_velocity_control.set_velocity(max_speed_limit( target_velocity * profiler_config.polarity,
+                                                        profiler_config.max_velocity ));
+                        //set_velocity_csv(profiler_config, target_velocity, 0, 0, i_velocity_control);
 
                         actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;//cyclic_sync_velocity_config.polarity;
                         send_actual_velocity(actual_velocity, InOut);
                     } else if (op_mode == CST) {
                         target_torque = get_target_torque(InOut);
-                        set_torque_cst(profiler_config, target_torque, 0, i_torque_control);
+                        i_torque_control.set_torque(torque_limit( target_torque * profiler_config.polarity,
+                                                    profiler_config.max_current));
+                        //set_torque_cst(profiler_config, target_torque, 0, i_torque_control);
 
                         actual_torque = i_torque_control.get_torque();
                         //printintln(target_torque);
                         send_actual_torque(actual_torque, InOut);
                     } else if (op_mode == CSP) {
                         target_position = get_target_position(InOut);
-                        set_position_csp(profiler_config, target_position, 0, 0, 0, i_position_control);
+                        i_position_control.set_position(position_limit( (target_position) * profiler_config.polarity,
+                                                        profiler_config.max_position, profiler_config.min_position));
+                       // set_position_csp(profiler_config, target_position, 0, 0, 0, i_position_control);
 
                         actual_position = i_position_control.get_position() * profiler_config.polarity;//cyclic_sync_position_config.velocity_config.polarity;
                         send_actual_position(actual_position, InOut);
@@ -833,7 +841,9 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
                         } else if (ack == 0) {
                             if (i < steps) {
                                 torque_ramp = linear_profile_generate(i);
-                                set_torque_cst(profiler_config, torque_ramp, 0, i_torque_control);
+                                i_torque_control.set_torque(torque_limit( torque_ramp * profiler_config.polarity,
+                                                            profiler_config.max_current));
+                                //set_torque_cst(profiler_config, torque_ramp, 0, i_torque_control);
                                 i++;
                             } else if (i == steps) {
                                 t :> c_time;
@@ -880,21 +890,21 @@ void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_con
 
                 case SHUTDOWN:
                     if (op_mode == CST || op_mode == TQ) {
-                        i_torque_control.shutdown_torque_ctrl();
+                        i_torque_control.disable_torque_ctrl();
                         shutdown_ack = 1;
                         op_set_flag = 0;
                         init = 0;
                         mode_selected = 0;  // to reenable the op selection and reset the controller
                         setup_loop_flag = 0;
                     } else if (op_mode == CSV || op_mode == PV) {
-                        i_velocity_control.shutdown_velocity_ctrl();
+                        i_velocity_control.disable_velocity_ctrl();
                         shutdown_ack = 1;
                         op_set_flag = 0;
                         init = 0;
                         mode_selected = 0;  // to reenable the op selection and reset the controller
                         setup_loop_flag = 0;
                     } else if (op_mode == CSP || op_mode == PP) {
-                        i_position_control.shutdown_position_ctrl();
+                        i_position_control.disable_position_ctrl();
                         shutdown_ack = 1;
                         op_set_flag = 0;
                         init = 0;

@@ -460,7 +460,7 @@ void update_qei_param_ecat(QEIConfig &qei_params, chanend coe_out)
 
 void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chanend coe_out)
 {
-    {commutation_params.hall_offset_clk, commutation_params.hall_offset_cclk,
+    {commutation_params.hall_offset[0], commutation_params.hall_offset[1],
             commutation_params.bldc_winding_type} = commutation_sdo_update(coe_out);
 }
 
@@ -530,7 +530,7 @@ void update_pp_param_ecat(ProfilerConfig &pp_params, chanend coe_out)
 
 void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, chanend coe_out)
 {
-    {torque_ctrl_params.Kp, torque_ctrl_params.Ki, torque_ctrl_params.Kd} = torque_sdo_update(coe_out);
+    {torque_ctrl_params.Kp_n, torque_ctrl_params.Ki_n, torque_ctrl_params.Kd_n} = torque_sdo_update(coe_out);
    // torque_ctrl_params.Kp_d = 65536;                // 16 bit precision PID gains
    // torque_ctrl_params.Ki_d = 65536;
    // torque_ctrl_params.Kd_d = 65536;
@@ -549,7 +549,7 @@ void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, chanend co
 
 void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, chanend coe_out)
 {
-    {velocity_ctrl_params.Kp, velocity_ctrl_params.Ki, velocity_ctrl_params.Kd} = velocity_sdo_update(coe_out);
+    {velocity_ctrl_params.Kp_n, velocity_ctrl_params.Ki_n, velocity_ctrl_params.Kd_n} = velocity_sdo_update(coe_out);
     //velocity_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
     //velocity_ctrl_params.Ki_d = 65536;
     //velocity_ctrl_params.Kd_d = 65536;
@@ -568,7 +568,7 @@ void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, chanen
 
 void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, chanend coe_out)
 {
-    {position_ctrl_params.Kp, position_ctrl_params.Ki, position_ctrl_params.Kd} = position_sdo_update(coe_out);
+    {position_ctrl_params.Kp_n, position_ctrl_params.Ki_n, position_ctrl_params.Kd_n} = position_sdo_update(coe_out);
     //position_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
     //position_ctrl_params.Ki_d = 65536;
     //position_ctrl_params.Kd_d = 65536;

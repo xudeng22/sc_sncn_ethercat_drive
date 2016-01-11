@@ -9,7 +9,7 @@ TARGET = SOMANET-C22
 APP_NAME = demo-slave-ethercat-motorcontrol
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = config_motor module_adc module_blocks module_board-support module_ctrl_loops module_ethercat module_ethercat_drive module_ethercat_fwupdate module_gpio module_hall module_motorcontrol module_motorcontrol_common module_profile module_pwm_symmetrical module_qei module_watchdog
+USED_MODULES = config_motor module_adc module_misc module_board-support module_ctrl_loops module_ethercat module_ethercat_drive module_ethercat_fwupdate module_gpio module_hall module_motorcontrol  module_profile module_pwm_symmetrical module_qei module_watchdog
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:

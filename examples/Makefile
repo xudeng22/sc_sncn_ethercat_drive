@@ -4,7 +4,7 @@
 #
 # If the variable is set to "all" then all directories that start with app_
 # are built.
-BUILD_SUBDIRS = app_demo_bldc_position app_demo_bldc_torque app_demo_bldc_velocity app_demo_slave_ethercat_motorcontrol
+BUILD_SUBDIRS = app_demo_slave_ethercat_motorcontrol
 
 XMOS_MAKE_PATH ?= ..
 include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.toplevel

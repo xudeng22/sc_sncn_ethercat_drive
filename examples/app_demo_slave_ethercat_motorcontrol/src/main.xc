@@ -8,10 +8,10 @@
  * @brief Test illustrates usage of Motor Control with Ethercat
  * @author Synapticon GmbH (www.synapticon.com)
  */
-
+#include <pwm_service.h>
 #include <qei_service.h>
 #include <hall_service.h>
-#include <pwm_service.h>
+#include <watchdog_service.h>
 #include <adc_service.h>
 #include <motorcontrol_service.h>
 #include <gpio_service.h>
@@ -91,7 +91,6 @@ int main(void)
         /* Ethercat Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-
             ProfilerConfig profiler_config;
 
             profiler_config.polarity = POLARITY;
@@ -121,9 +120,9 @@ int main(void)
 
                      position_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
 
-                     position_control_config.Kp = POSITION_Kp;    // Divided by 10000
-                     position_control_config.Ki = POSITION_Ki;    // Divided by 10000
-                     position_control_config.Kd = POSITION_Kd;    // Divided by 10000
+                     position_control_config.Kp_n = POSITION_Kp;    // Divided by 10000
+                     position_control_config.Ki_n = POSITION_Ki;    // Divided by 10000
+                     position_control_config.Kd_n = POSITION_Kd;    // Divided by 10000
 
                      position_control_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
 
@@ -138,9 +137,9 @@ int main(void)
 
                     velocity_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
 
-                    velocity_control_config.Kp = VELOCITY_Kp;
-                    velocity_control_config.Ki = VELOCITY_Ki;
-                    velocity_control_config.Kd = VELOCITY_Kd;
+                    velocity_control_config.Kp_n = VELOCITY_Kp;
+                    velocity_control_config.Ki_n = VELOCITY_Ki;
+                    velocity_control_config.Kd_n = VELOCITY_Kd;
 
                     velocity_control_config.control_loop_period =  CONTROL_LOOP_PERIOD;
 
@@ -156,17 +155,18 @@ int main(void)
 
                     torque_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
 
-                    torque_control_config.Kp = TORQUE_Kp;
-                    torque_control_config.Ki = TORQUE_Ki;
-                    torque_control_config.Kd = TORQUE_Kd;
+                    torque_control_config.Kp_n = TORQUE_Kp;
+                    torque_control_config.Ki_n = TORQUE_Ki;
+                    torque_control_config.Kd_n = TORQUE_Kd;
 
                     torque_control_config.control_loop_period = 100; // us
 
                     /* Control Loop */
-                    torque_control_service(torque_control_config, i_adc[0], i_motorcontrol[2], i_hall[3], i_qei[3],
+                    torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], i_motorcontrol[2],
                                                 i_torque_control);
                 }
 
+                /* XScope monitoring */
                 {
                     int phaseB, phaseC, actual_torque, target_torque;
 
@@ -210,29 +210,29 @@ int main(void)
                 }
 
                 /* Quadrature encoder sensor Service */
-                 {
+                {
                      QEIConfig qei_config;
-                         qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;               // Encoder signal type (if applicable to your board)
-                         qei_config.index_type = QEI_SENSOR_INDEX_TYPE;                 // Indexed encoder?
-                         qei_config.ticks_resolution = QEI_SENSOR_RESOLUTION;       // Encoder resolution
+                         qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;        // Encoder signal type (if applicable to your board)
+                         qei_config.index_type = QEI_SENSOR_INDEX_TYPE;          // Indexed encoder?
+                         qei_config.ticks_resolution = QEI_SENSOR_RESOLUTION;    // Encoder resolution
                          qei_config.sensor_polarity = QEI_SENSOR_POLARITY;       // CW
 
                      qei_service(qei_ports, qei_config, i_qei);
-                 }
+                }
 
-                 /* Motor Commutation Service */
-                 {
+                /* Motor Commutation Service */
+                {
                      MotorcontrolConfig motorcontrol_config;
                          motorcontrol_config.motor_type = BLDC_MOTOR;
                          motorcontrol_config.commutation_sensor = HALL_SENSOR;
                          motorcontrol_config.bldc_winding_type = BLDC_WINDING_TYPE;
-                         motorcontrol_config.hall_offset_clk =  COMMUTATION_OFFSET_CLK;
-                         motorcontrol_config.hall_offset_cclk = COMMUTATION_OFFSET_CCLK;
+                         motorcontrol_config.hall_offset[0] =  COMMUTATION_OFFSET_CLK;
+                         motorcontrol_config.hall_offset[1] = COMMUTATION_OFFSET_CCLK;
                          motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
 
                      motorcontrol_service(fet_driver_ports, motorcontrol_config,
                                              c_pwm_ctrl, i_hall[0], i_qei[0], i_watchdog[0], i_motorcontrol);
-                 }
+                }
 
                 /* GPIO Digital Service */
                 gpio_service(gpio_ports, i_gpio);

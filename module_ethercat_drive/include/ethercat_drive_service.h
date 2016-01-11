@@ -46,13 +46,7 @@
  * @param c_gpio channel to config/read/drive GPIO digital ports
  *
  */
-void ethercat_drive_service(//CyclicSyncPositionConfig &cyclic_sync_position_config,
-                            //CyclicSyncVelocityConfig &cyclic_sync_velocity_config,
-                            //CyclicSyncTorqueConfig &cyclic_sync_torque_config,
-                            //ProfilePositionConfig &profile_position_config,
-                            //ProfileVelocityConfig &profile_velocity_config,
-                            //ProfileTorqueConfig &profile_torque_config,
-                            ProfilerConfig &profiler_config,
+void ethercat_drive_service(ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in, chanend coe_out,
                             interface MotorcontrolInterface client i_commutation,
                             interface HallInterface client i_hall,

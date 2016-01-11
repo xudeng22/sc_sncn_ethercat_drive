@@ -46,7 +46,7 @@ int main(void)
     /* Motor control channels */
     chan c_adctrig, c_pwm_ctrl;
 
-    interface GPIOInterface i_gpio[2];
+    interface GPIOInterface i_gpio[1];
     interface WatchdogInterface i_watchdog[2];
     interface ADCInterface i_adc[2];
     interface HallInterface i_hall[5];

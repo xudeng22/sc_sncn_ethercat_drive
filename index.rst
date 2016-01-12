@@ -9,6 +9,19 @@ SOMANET EtherCAT Drive
 	Communication Protocol Library for Linux <lib_linux_ctrlproto/doc/index>	
 	Motor Drive Library for Linux <lib_linux_motor_drive/doc/index>	
 
+The **SOMANET EtherCAT Drive Library** offers the services and utilities required to perform BLDC/BDC Motor Control over EtherCAT using SOMANET devices.
+It implements a CiA 402-compliant Motor Control protocol that gathers all the functionalities offered by the **SOMANET Motor Control Library** and gives 
+flexibility for application-specific requirements.
+
+Minimum Hardware requirements: 
+- 1x SOMANET **COM**,.
+- 1x SOMANET **Core**.
+- 1x SOMANET **IFM**.
+Hardware Compatibility:
+- SOMANET COM: **EtherCAT**.
+- SOMANET Core: **C22**.
+- SOMANET IFM: **DC 100**, **DC 300**, **DC 1000**, **DC 5000**.
+
 
 .. cssclass:: downloadable-button 
 

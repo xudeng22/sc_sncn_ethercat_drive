@@ -80,7 +80,7 @@ Dependencies
 
 To run **Ethercat Drive applications** it is neccesary to include additionally the following libraries:
 
-* :ref:`**SOMANET Motor Control** <somanet_motor_control>`
+* :ref:`SOMANET Motor Control <somanet_motor_control>`
 
 	.. cssclass:: downloadable-button 
 
@@ -90,7 +90,7 @@ To run **Ethercat Drive applications** it is neccesary to include additionally t
 
 	  `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
 
-* :ref:`**SOMANET EtherCAT** <somanet_ethercat>`
+* :ref:`SOMANET EtherCAT <somanet_ethercat>`
 
 	.. cssclass:: downloadable-button 
 

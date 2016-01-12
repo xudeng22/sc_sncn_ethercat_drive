@@ -10,18 +10,8 @@ SOMANET EtherCAT Drive
 	Motor Drive Library for Linux <lib_linux_motor_drive/doc/index>	
 
 The **SOMANET EtherCAT Drive Library** offers the services and utilities required to perform BLDC/BDC Motor Control over EtherCAT using SOMANET devices.
-It implements a CiA 402-compliant Motor Control protocol that gathers all the functionalities offered by the **SOMANET Motor Control Library** and gives 
+It implements a CiA 402-compliant Motor Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motor Control Library<somanet_motor_control>` and gives 
 flexibility for application-specific requirements.
-
-Minimum Hardware requirements: 
-- 1x SOMANET **COM**,.
-- 1x SOMANET **Core**.
-- 1x SOMANET **IFM**.
-Hardware Compatibility:
-- SOMANET COM: **EtherCAT**.
-- SOMANET Core: **C22**.
-- SOMANET IFM: **DC 100**, **DC 300**, **DC 1000**, **DC 5000**.
-
 
 .. cssclass:: downloadable-button 
 
@@ -30,6 +20,33 @@ Hardware Compatibility:
 .. cssclass:: github
 
   `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/>`_
+
+Hardware Compatibility
+----------------------
+
+.. class:: float-left 
+
++---------------------------+
+| Required SOMANET Hardware |
++===========================+
+| 1x SOMANET **Core**       |
++---------------------------+
+| 1x SOMANET **COM**        |
++---------------------------+
+| 1x SOMANET **IFM**        |
++---------------------------+
+
+.. class:: float-left 
+
++-----------------------------------------------------------------------------------------------+
+| Supported SOMANET Devices                                                                     |
++===============================================================================================+
+| SOMANET COM: :ref:`EtherCAT <com_ethercat>`                                                   |
++-----------------------------------------------------------------------------------------------+
+| SOMANET Core: :ref:`C22 <core_c22>`                                                           |
++-----------------------------------------------------------------------------------------------+
+| SOMANET IFM: :ref:`DC 100 <ifm_dc100>`, :ref:`DC 300 <ifm_dc300>`, **DC 1000**, **DC 5000**   |
++-----------------------------------------------------------------------------------------------+
 
 Examples
 --------

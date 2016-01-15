@@ -29,6 +29,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../config_motor_ethercat_drive
 

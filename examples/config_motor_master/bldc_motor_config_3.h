@@ -65,36 +65,36 @@
 #define TORQUE_SLOPE_3                  66      // mNm/s
 
 /* Control specific constants/variables */
-	/* Torque Control (Mandatory if Torque control used)
-	 * Note: DENOMINATOR is defined as 10000 to give ranges */
-#define TORQUE_Kp_NUMERATOR_3 	   		2000	//Denominator is 10000
-#define TORQUE_Ki_NUMERATOR_3    		91	//Denominator is 10000
-#define TORQUE_Kd_NUMERATOR_3    		0	//Denominator is 10000
+    /* Torque Control (Mandatory if Torque control used)
+     * Note: DENOMINATOR is defined as 10000 to give ranges */
+#define TORQUE_Kp_NUMERATOR_3           2000    //Denominator is 10000
+#define TORQUE_Ki_NUMERATOR_3           91  //Denominator is 10000
+#define TORQUE_Kd_NUMERATOR_3           0   //Denominator is 10000
 
-	/* Velocity Control (Mandatory if Velocity control used)
-	 * Note: DENOMINATOR is defined as 10000 to give ranges */
-#define VELOCITY_Kp_NUMERATOR_3 		667	//Denominator is 10000
-#define VELOCITY_Ki_NUMERATOR_3    		200	//Denominator is 10000
-#define VELOCITY_Kd_NUMERATOR_3   		0	//Denominator is 10000
+    /* Velocity Control (Mandatory if Velocity control used)
+     * Note: DENOMINATOR is defined as 10000 to give ranges */
+#define VELOCITY_Kp_NUMERATOR_3         667 //Denominator is 10000
+#define VELOCITY_Ki_NUMERATOR_3         200 //Denominator is 10000
+#define VELOCITY_Kd_NUMERATOR_3         0   //Denominator is 10000
 
-	/* Position Control (Mandatory if Position control used)
-	 * Note: DENOMINATOR is defined as 10000 to give ranges */
-#if(SENSOR_SELECTION_CODE_3 == HALL)		// PID gains for position control with Hall Sensor
+    /* Position Control (Mandatory if Position control used)
+     * Note: DENOMINATOR is defined as 10000 to give ranges */
+#if(SENSOR_SELECTION_CODE_3 == HALL)        // PID gains for position control with Hall Sensor
 
-	#define POSITION_Kp_NUMERATOR_3 	 	1000	//Denominator is 10000
-	#define POSITION_Ki_NUMERATOR_3    		42	//Denominator is 10000
-	#define POSITION_Kd_NUMERATOR_3    		0	//Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_3     1000    //Denominator is 10000
+    #define POSITION_Ki_NUMERATOR_3     42  //Denominator is 10000
+    #define POSITION_Kd_NUMERATOR_3     0   //Denominator is 10000
 
-	#define MAX_POSITION_LIMIT_3 			POLE_PAIRS_3*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_3	// ticks (max range: 2^30, limited for safe operation)
-	#define MIN_POSITION_LIMIT_3			-POLE_PAIRS_3*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_3	// ticks (min range: -2^30, limited for safe operation)
+    #define MAX_POSITION_LIMIT_3        POLE_PAIRS_3*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_3  // ticks (max range: 2^30, limited for safe operation)
+    #define MIN_POSITION_LIMIT_3        -POLE_PAIRS_3*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_3 // ticks (min range: -2^30, limited for safe operation)
 
 #else // PID gains for position control with other Encoders
-	#define POSITION_Kp_NUMERATOR_3         1000	//Denominator is 10000
-	#define POSITION_Ki_NUMERATOR_3         42	//Denominator is 10000
-	#define POSITION_Kd_NUMERATOR_3         0	//Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_3     1000    //Denominator is 10000
+    #define POSITION_Ki_NUMERATOR_3     42  //Denominator is 10000
+    #define POSITION_Kd_NUMERATOR_3     0   //Denominator is 10000
 
-	#define MAX_POSITION_LIMIT_3            GEAR_RATIO_3*ENCODER_RESOLUTION_3*QEI_CHANGES_PER_TICK*10       // ticks (max range: 2^30, limited for safe operation)
-	#define MIN_POSITION_LIMIT_3            -GEAR_RATIO_3*ENCODER_RESOLUTION_3*QEI_CHANGES_PER_TICK*10      // ticks (min range: -2^30, limited for safe operation)
+    #define MAX_POSITION_LIMIT_3        GEAR_RATIO_3*ENCODER_RESOLUTION_3*QEI_CHANGES_PER_TICK*10       // ticks (max range: 2^30, limited for safe operation)
+    #define MIN_POSITION_LIMIT_3        -GEAR_RATIO_3*ENCODER_RESOLUTION_3*QEI_CHANGES_PER_TICK*10      // ticks (min range: -2^30, limited for safe operation)
 
 #endif
 

@@ -22,7 +22,7 @@
  * and any additional encoders attached specify encoder resolution here (Mandatory)
  */
 #define GEAR_RATIO_2                    1       // if no gears are attached - set to gear ratio to 1
-#define ENCODER_RESOLUTION_2          	4000    // Resolution of Incremental Encoder
+#define ENCODER_RESOLUTION_2            4000    // Resolution of Incremental Encoder
 
 /* Somanet IFM Internal Configuration:  Specifies the current sensor resolution per Ampere
  *  (DC300_RESOLUTION / DC100_RESOLUTION / OLD_DC300_RESOLUTION) */

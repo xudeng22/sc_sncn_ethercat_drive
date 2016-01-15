@@ -12,15 +12,15 @@ It deploys over EtherCAT all the features of the SOMANET Motor Control Library a
     :backlinks: none
     :depth: 3
 
+.. cssclass:: github
+
+  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_ethercat_drive>`_
+ 
 How to use
 ==========
 
 .. important:: We assume that you are using :ref:`SOMANET Base <somanet_base>`, :ref:`SOMANET Motor Control <somanet_motor_control>`, and :ref:`SOMANET EtherCAT <somanet_ethercat>` libraries. And therefore, your app includes the required **board support** files for your SOMANET device, and the required Motor Control and EtherCAT Services. 
-
-.. cssclass:: github
-
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_ethercat_drive>`_
-          
+         
 .. seealso:: 
     You might find useful the :ref:`EtherCAT Drive Slave Firmware <ethercat_slave_demo>` example app, which illustrate the use of this module. 
     

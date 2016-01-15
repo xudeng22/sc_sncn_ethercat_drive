@@ -6,12 +6,8 @@ EtherCAT Master Profile Velocity Control Demo
     :backlinks: none
     :depth: 3
 
-Lorem ipsum...
-
 Overview
 ==========
-
-Lorem ipsum...
 
 Hardware setup
 ==============

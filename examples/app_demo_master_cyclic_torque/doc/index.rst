@@ -1,9 +1,13 @@
 .. _SOMANET_Cyclic_Torque_Control_with_EtherCAT_Demo_Quickstart:
 
-SOMANET Cyclic Torque Control with EtherCAT Demo Quick Start Guide
-==================================================================
+SOMANET EtherCAT Drive Cyclic Torque Control Master Demo
+========================================================
 
 This simple demonstration shows how to control your motor using SOMANET EtherCAT Motor Control Kit from a Linux PC. Only Cyclic Synchronous Torque (CST) control mode is included into this demo with a simple linear profile generator example. The CST control mode is designed to achieve a desired motion trajectory with a controlled force by using various motion profiles and closing the control loop over EtherCAT. The slave controller in its turn is taking the generated at a fixed time interval (1ms) target torque setpoints as a controller input and will be following them. 
+
+.. cssclass:: github
+
+  `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_cyclic_torque/>`_
 
 Hardware setup
 ++++++++++++++

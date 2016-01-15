@@ -6,12 +6,9 @@ EtherCAT Master Profile Torque Control Demo
     :backlinks: none
     :depth: 3
 
-Lorem ipsum...
 
 Overview
 ==========
-
-Lorem ipsum...
 
 Hardware setup
 ==============

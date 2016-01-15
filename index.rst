@@ -56,7 +56,7 @@ Modules
 
 	EtherCAT Drive Module <module_ethercat_drive/doc/index>
 
-* `EtherCAT Drive Module <module_ethercat_drive/doc/index>`_: Provide a Service that act as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `EtherCAT Drive Module <module_ethercat_drive/doc/index>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
 
 EtherCAT Drive Linux Master Libraries
 -------------------------------------
@@ -68,8 +68,8 @@ EtherCAT Drive Linux Master Libraries
 	Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>
 	Linux Motor Drive Library <lib_linux_motor_drive/doc/index>
 
-* `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>`_: This library provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
-* `Linux Motor Drive Library <lib_linux_motor_drive/doc/index>`_: This library provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
+* `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>`_: Provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
+* `Linux Motor Drive Library <lib_linux_motor_drive/doc/index>`_: Provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
 
 Examples
 --------
@@ -83,10 +83,6 @@ Examples
 	EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index>
 	EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index>
 	EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index>
-
-	EtherCAT Profile Position Control Demo <examples/app_demo_master_profile_position/doc/index>
-	EtherCAT Profile Velocity Control Demo <examples/app_demo_master_profile_velocity/doc/index>
-	EtherCAT Profile Torque Control Demo <examples/app_demo_master_profile_torque/doc/index>
 
 	EtherCAT Multi-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index>
 	EtherCAT Multi-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>
@@ -107,10 +103,6 @@ Examples
 	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>`_: Example to do cyclic velocity control on two axis over EtherCAT.
 
 	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index>`_: Example to do cyclic torque control on two axis over EtherCAT.
-
-	* `EtherCAT Profile Position Control Demo <examples/app_demo_master_profile_position/doc/index>`_: Example to generate position ramps and control one axis over EtherCAT.
-	* `EtherCAT Profile Velocity Control Demo <examples/app_demo_master_profile_velocity/doc/index>`_: Example to generate velocity ramps and control one axis over EtherCAT.
-	* `EtherCAT Profile Torque Control Demo <examples/app_demo_master_profile_torque/doc/index>`_: Example to generate torque ramps and control one axis over EtherCAT.
 
 Dependencies
 ------------

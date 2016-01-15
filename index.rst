@@ -20,6 +20,8 @@ It implements a CiA 402-compliant Motor Control protocol that gathers all the fu
 
   `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/>`_
 
+.. _ecat_drive_hw_compatibility:
+
 Hardware Compatibility
 ----------------------
 

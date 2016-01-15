@@ -16,6 +16,10 @@ How to use
 ==========
 
 .. important:: We assume that you are using :ref:`SOMANET Base <somanet_base>`, :ref:`SOMANET Motor Control <somanet_motor_control>`, and :ref:`SOMANET EtherCAT <somanet_ethercat>` libraries. And therefore, your app includes the required **board support** files for your SOMANET device, and the required Motor Control and EtherCAT Services. 
+
+.. cssclass:: github
+
+  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_ethercat_drive>`_
           
 .. seealso:: 
     You might find useful the :ref:`EtherCAT Drive Slave Firmware <ethercat_slave_demo>` example app, which illustrate the use of this module. 
@@ -101,7 +105,8 @@ How to use
                 on tile[COM_TILE] : ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
                                                         foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
                 
-                on tile[COM_TILE] : fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
+                on tile[COM_TILE] : fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, 
+                                                        c_nodes, null);
                 
                 on tile[APP_TILE_1] :
                 {
@@ -116,9 +121,10 @@ How to use
                     profiler_config.max_current = 7000;
 
                     ethercat_drive_service( profiler_config,
-                                            pdo_out, pdo_in, coe_out,
-                                            i_motorcontrol[3], i_hall[4], i_qei[4], i_gpio[0],
-                                            i_torque_control[0], i_velocity_control[0], i_position_control[0]); // 3
+                                                pdo_out, pdo_in, coe_out,
+                                                i_motorcontrol[3], i_hall[4], 
+                                                i_qei[4], i_gpio[0], i_torque_control[0], 
+                                                i_velocity_control[0], i_position_control[0]); // 3
                 }
 
                 on tile[APP_TILE_2]:
@@ -132,8 +138,8 @@ How to use
                              position_control_config.Ki_n = 10;    
                              position_control_config.Kd_n = 0;    
                              position_control_config.control_loop_period = 60;
-                             position_control_service(position_control_config, i_hall[1], i_qei[1], i_motorcontrol[0],
-                                                         i_position_control);
+                             position_control_service(position_control_config, i_hall[1], i_qei[1], 
+                                                        i_motorcontrol[0], i_position_control);
                         }
 
                         {
@@ -143,8 +149,8 @@ How to use
                             velocity_control_config.Ki_n = 10;
                             velocity_control_config.Kd_n = 0;
                             velocity_control_config.control_loop_period =  60;
-                            velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], i_motorcontrol[1],
-                                                        i_velocity_control);
+                            velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], 
+                                                        i_motorcontrol[1], i_velocity_control);
                         }
 
                         {
@@ -154,8 +160,8 @@ How to use
                             torque_control_config.Ki_n = 10;
                             torque_control_config.Kd_n = 0;
                             torque_control_config.control_loop_period = 100; 
-                            torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], i_motorcontrol[2],
-                                                        i_torque_control);
+                            torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], 
+                                                        i_motorcontrol[2], i_torque_control);
                         }
                     }
                 }
@@ -193,7 +199,8 @@ How to use
                              motorcontrol_config.hall_offset[1] = 0;
                              motorcontrol_config.commutation_loop_period =  60;
                              motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                                     c_pwm_ctrl, i_hall[0], i_qei[0], i_watchdog[0], i_motorcontrol);
+                                                     c_pwm_ctrl, i_hall[0], i_qei[0], 
+                                                     i_watchdog[0], i_motorcontrol);
                         }
                     }
                 }
@@ -207,3 +214,21 @@ API
 
 
 .. doxygenfunction:: ethercat_drive_service
+.. doxygenfunction:: ctrlproto_protocol_handler_function
+.. doxygenfunction:: init_ctrl_proto
+.. doxygenfunction:: config_sdo_handler
+.. doxygenfunction:: sensor_select_sdo
+.. doxygenfunction:: qei_sdo_update
+.. doxygenfunction:: hall_sdo_update
+.. doxygenfunction:: commutation_sdo_update
+.. doxygenfunction:: homing_sdo_update
+.. doxygenfunction:: pt_sdo_update
+.. doxygenfunction:: pv_sdo_update
+.. doxygenfunction:: pp_sdo_update
+.. doxygenfunction:: cst_sdo_update
+.. doxygenfunction:: csv_sdo_update
+.. doxygenfunction:: csp_sdo_update
+.. doxygenfunction:: torque_sdo_update
+.. doxygenfunction:: velocity_sdo_update
+.. doxygenfunction:: position_sdo_update
+.. doxygenfunction:: speed_sdo_update

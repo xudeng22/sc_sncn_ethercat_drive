@@ -56,6 +56,8 @@ Modules
 
 	EtherCAT Drive Module <module_ethercat_drive/doc/index>
 
+* `EtherCAT Drive Module <module_ethercat_drive/doc/index>`_: Provide a Service that act as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+
 EtherCAT Drive Linux Master Libraries
 -------------------------------------
 
@@ -65,6 +67,9 @@ EtherCAT Drive Linux Master Libraries
 
 	Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>
 	Linux Motor Drive Library <lib_linux_motor_drive/doc/index>
+
+* `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>`_: This library provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
+* `Linux Motor Drive Library <lib_linux_motor_drive/doc/index>`_: This library provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
 
 Examples
 --------

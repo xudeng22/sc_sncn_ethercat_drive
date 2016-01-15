@@ -98,7 +98,8 @@ How to use
                 on tile[COM_TILE] : ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
                                                         foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
                 
-                on tile[COM_TILE] : fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
+                on tile[COM_TILE] : fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, 
+                                                        c_nodes, null);
                 
                 on tile[APP_TILE_1] :
                 {
@@ -113,9 +114,10 @@ How to use
                     profiler_config.max_current = 7000;
 
                     ethercat_drive_service( profiler_config,
-                                            pdo_out, pdo_in, coe_out,
-                                            i_motorcontrol[3], i_hall[4], i_qei[4], i_gpio[0],
-                                            i_torque_control[0], i_velocity_control[0], i_position_control[0]); // 3
+                                                pdo_out, pdo_in, coe_out,
+                                                i_motorcontrol[3], i_hall[4], 
+                                                i_qei[4], i_gpio[0], i_torque_control[0], 
+                                                i_velocity_control[0], i_position_control[0]); // 3
                 }
 
                 on tile[APP_TILE_2]:
@@ -129,8 +131,8 @@ How to use
                              position_control_config.Ki_n = 10;    
                              position_control_config.Kd_n = 0;    
                              position_control_config.control_loop_period = 60;
-                             position_control_service(position_control_config, i_hall[1], i_qei[1], i_motorcontrol[0],
-                                                         i_position_control);
+                             position_control_service(position_control_config, i_hall[1], i_qei[1], 
+                                                        i_motorcontrol[0], i_position_control);
                         }
 
                         {
@@ -151,8 +153,8 @@ How to use
                             torque_control_config.Ki_n = 10;
                             torque_control_config.Kd_n = 0;
                             torque_control_config.control_loop_period = 100; 
-                            torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], i_motorcontrol[2],
-                                                        i_torque_control);
+                            torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], 
+                                                        i_motorcontrol[2], i_torque_control);
                         }
                     }
                 }
@@ -190,7 +192,8 @@ How to use
                              motorcontrol_config.hall_offset[1] = 0;
                              motorcontrol_config.commutation_loop_period =  60;
                              motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                                     c_pwm_ctrl, i_hall[0], i_qei[0], i_watchdog[0], i_motorcontrol);
+                                                     c_pwm_ctrl, i_hall[0], i_qei[0], 
+                                                     i_watchdog[0], i_motorcontrol);
                         }
                     }
                 }

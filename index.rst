@@ -31,6 +31,17 @@ Hardware Compatibility:
 
   `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/>`_
 
+Modules
+-------
+
+.. toctree::
+	:maxdepth: 1
+	:hidden:
+
+	EtherCAT Drive Module <module_ethercat_drive/doc/index>
+
+
+
 Examples
 --------
 
@@ -38,7 +49,7 @@ Examples
 	:hidden:
 	:maxdepth: 1
 
-	Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>
+	EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>
 	
 	EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc_quickstart/quickstart>
 	EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc_quickstart/quickstart>
@@ -54,7 +65,7 @@ Examples
 
 * **Slave examples (for SOMANET devices):**
 
-        * `Slave Firmware <app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>`_: Ethercat Drive slave firmware for your SOMANET device.
+        * `EtherCAT Drive Slave Firmware <app_demo_slave_ethercat_motorcontrol/doc_quickstart/quickstart>`_: Ethercat Drive slave firmware for your SOMANET device.
 
 
 * **Master examples (for Linux machines):**
@@ -74,6 +85,8 @@ Examples
 
 Quick Guides
 ------------
+
+
 
 Dependencies
 ------------

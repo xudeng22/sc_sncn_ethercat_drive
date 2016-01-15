@@ -29,22 +29,18 @@
 #define CSTCA   11  /* [O] Cyclic synchronous torque mode with commutation angle */
 
 /**
- * @brief This server implementation enables motor drive functions via EtherCAT communication
+ * @brief This Service enables motor drive functions via EtherCAT.
  *
- * @Input Channel
- * @param pdo_in channel to receive information from ethercat
- * @param coe_out channel to receive motor config information from ethercat
- * @param c_signal channel to receive init ack from commutation loop
- * @param c_hall channel to receive position information from hall
- * @param c_qei channel to receive position information from qei
- *
- * @Output Channel
- * @param pdo_out channel to send out information via ethercat
- * @param c_torque_ctrl channel to receive/send torque control information
- * @param c_velocity_ctrl channel to receive/send velocity control information
- * @param c_position_ctrl channel to receive/send position control information
- * @param c_gpio channel to config/read/drive GPIO digital ports
- *
+ * @param profiler_config Configuration for profile mode control.
+ * @param pdo_out Channel to send out information to EtherCAT Service.
+ * @param pdo_in Channel to receive information from EtherCAT Service.
+ * @param coe_out Channel to receive motor config information from EtherCAT Service.
+ * @param i_hall Interface to Hall Service.
+ * @param i_qei Interface to Encoder Service.
+ * @param i_gpio Interface to the GPIO Service.
+ * @param i_torque_control Interface to Torque Control Loop Service.
+ * @param i_velocity_control Interface to Velocity Control Loop Service.
+ * @param i_position_control Interface to Position Control Loop Service.
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in, chanend coe_out,

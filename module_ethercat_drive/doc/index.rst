@@ -143,8 +143,8 @@ How to use
                             velocity_control_config.Ki_n = 10;
                             velocity_control_config.Kd_n = 0;
                             velocity_control_config.control_loop_period =  60;
-                            velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], i_motorcontrol[1],
-                                                        i_velocity_control);
+                            velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], 
+                                                        i_motorcontrol[1], i_velocity_control);
                         }
 
                         {

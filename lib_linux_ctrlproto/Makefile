@@ -17,7 +17,7 @@ endif
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I include
 INCLUDE_DIRS += -I ../inc_ctrlproto-common/
-INCLUDE_DIRS += -I ../examples/config_motor_ethercat_drive
+INCLUDE_DIRS += -I ../examples/config_motor_master
 INCLUDE_DIRS += -I $(ETHERCAT_PATH)/module_ethercat/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include

@@ -3,6 +3,10 @@
 SOMANET EtherCAT Drive Cyclic Velocity Control Master Demo 
 ====================================================================
 
+.. contents:: In this document
+    :backlinks: none
+    :depth: 3
+
 This simple demonstration shows how to control your motor using SOMANET EtherCAT Motor Control Kit from a Linux PC. Only Cyclic Synchronous Velocity (CSV) control mode is included into this demo with a simple linear profile generator example. The CSV control mode is designed to achieve a desired motion by using various motion profiles and closing the control loop over EtherCAT. The slave controller in its turn is taking the generated at a fixed time interval (1ms) target velocity set-points as a controller input and will be following them. 
 
 .. cssclass:: github

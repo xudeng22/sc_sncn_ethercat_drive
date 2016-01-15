@@ -3,6 +3,10 @@
 SOMANET EtherCAT Drive Cyclic Torque Control (two axis) Master Demo
 ===================================================================
 
+.. contents:: In this document
+    :backlinks: none
+    :depth: 3
+
 This simple demonstration shows how to control multiple motors using SOMANET EtherCAT Motor Control Kit from a Linux PC. This demo features the Cyclic Synchronous Torque control mode with a simple linear profile generator. The CST control mode is designed to follow a desired motion trajectory by using various motion profiles or cascaded control approach with closing the control loop over EtherCAT. The slave controller in its turn is taking the generated at a fixed time interval (1ms) target torque set-points as a controller input and will be following them. That means that for the CST the torque control loop (PID loop) is closed on the slave and is not limited by any parameter. All the configurations are done from the master side.
 
 .. cssclass:: github

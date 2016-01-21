@@ -7,6 +7,7 @@
 #include <ctrlproto_m.h>
 #include <ecrt.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <profile.h>
 #include <drive_function.h>
@@ -30,11 +31,14 @@ void  INThandler(int sig)
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
     int target_velocity = 900; //rpm
     int acceleration = 100; //rpm/s
     int deceleration = 100; //rpm/s
+
+    if (argc > 1)
+        target_velocity = strtol(argv[1], NULL, 10);
 
     int actual_velocity = 0; // rpm
     int actual_position; // ticks
@@ -94,6 +98,8 @@ int main() {
 
                 printf("\r    Velocity: %d    Position: %d    Torque: %f        ",
                         actual_velocity, actual_position, actual_torque);
+                if (break_loop)
+                    break;
             }
         } else {
             /* Update the process data (EtherCat packets) sent/received from the node */

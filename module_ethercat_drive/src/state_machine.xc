@@ -58,8 +58,9 @@ check_list init_checklist(void)
 
 void update_checklist(check_list &check_list_param, int mode,
                         interface MotorcontrolInterface client i_commutation,
-                        interface HallInterface client i_hall,
-                        interface QEIInterface client i_qei,
+                        interface HallInterface client ?i_hall,
+                        interface QEIInterface client ?i_qei,
+                        interface BISSInterface client ?i_biss,
                         interface ADCInterface client ?i_adc,
                                 interface TorqueControlInterface client i_torque_control,
                                 interface VelocityControlInterface client i_velocity_control,
@@ -85,12 +86,17 @@ void update_checklist(check_list &check_list_param, int mode,
             check_list_param._adc_init = 0; //__check_adc_init(); TODO NEED TO IMPLEMENT STATUS CHECKING HERE
         }
 
-        if (~skip && ~check_list_param._hall_init) {
+        if (~skip && ~check_list_param._hall_init && !isnull(i_hall)) {
             check_list_param._hall_init = i_hall.check_busy();//__check_hall_init(c_hall);
         }
 
-        if (~skip &&  ~check_list_param._qei_init) {
+        if (~skip &&  ~check_list_param._qei_init && !isnull(i_qei)) {
             check_list_param._qei_init = i_qei.check_busy();//__check_qei_init(c_qei);
+        }
+
+        if (~skip &&  ~check_list_param._biss_init && !isnull(i_biss)) {
+            i_biss.get_biss_position_fast();
+            check_list_param._biss_init = INIT;
         }
         break;
     case INIT:
@@ -110,7 +116,7 @@ void update_checklist(check_list &check_list_param, int mode,
         check_list_param.ready = true;
     }
 
-    if (check_list_param.ready && check_list_param._hall_init && check_list_param._qei_init && ~check_list_param.fault) {
+    if (check_list_param.ready && (check_list_param._hall_init || isnull(i_hall)) && (check_list_param._qei_init || isnull(i_qei)) && (check_list_param._biss_init || isnull(i_biss)) && ~check_list_param.fault) {
         check_list_param.switch_on = true;
         check_list_param.mode_op = true;
         check_list_param.operation_enable = true;

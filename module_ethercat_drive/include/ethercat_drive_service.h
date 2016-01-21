@@ -45,9 +45,10 @@
 void ethercat_drive_service(ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in, chanend coe_out,
                             interface MotorcontrolInterface client i_commutation,
-                            interface HallInterface client i_hall,
-                            interface QEIInterface client i_qei,
-                            interface GPIOInterface client i_gpio,
+                            interface HallInterface client ?i_hall,
+                            interface QEIInterface client ?i_qei,
+                            interface BISSInterface client ?i_biss,
+                            interface GPIOInterface client ?i_gpio,
                             interface TorqueControlInterface client i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control);

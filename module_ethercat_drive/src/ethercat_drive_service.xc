@@ -450,7 +450,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_pp_param_ecat(profiler_config, coe_out);
                         init_position_profile_limits(profiler_config.max_acceleration,
                                                      profiler_config.max_velocity,
-                                                     qei_params, hall_config, sensor_select,
+                                                     qei_params, hall_config, biss_config, sensor_select,
                                                      profiler_config.max_position,
                                                      profiler_config.min_position);
                         InOut.operation_mode_display = PP;

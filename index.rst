@@ -109,7 +109,7 @@ Examples
 Dependencies
 ------------
 
-To run **Ethercat Drive applications** it is neccesary to include additionally the following libraries:
+To run **Ethercat Drive applications** it is necessary to include additionally the following libraries:
 
 * :ref:`SOMANET Motor Control <somanet_motor_control>`
 

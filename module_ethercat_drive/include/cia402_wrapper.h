@@ -1,5 +1,5 @@
 /**
- * @file ctrlproto.h
+ * @file cia402_wrapper.h
  * @brief Control Protocol Handler
  * @author Synapticon GmbH <support@synapticon.com>
  */
@@ -60,9 +60,9 @@ typedef struct
  *  This function is not considered as stand alone thread! It's for being executed in
  *  the motor control thread
  *
- * @param pdo_out       the channel for outgoing process data objects
- * @param pdo_in        the channel for incoming process data objects
- * @param InOut         the struct for exchanging data with the motor control functions
+ * @param pdo_out       Channel for outgoing process data objects
+ * @param pdo_in        Channel for incoming process data objects
+ * @param InOut         Struct for exchanging data with the motor control functions
  *
  * @return      1 if communication is active else 0
  */
@@ -72,7 +72,7 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
  *  @brief
  *       This function initializes a struct from the type of ctrl_proto_values_t
  *
- *      \return ctrl_proto_values_t with values initialised
+ *      \return ctrl_proto_values_t with values initialized
  */
 ctrl_proto_values_t init_ctrl_proto(void);
 
@@ -82,7 +82,7 @@ ctrl_proto_values_t init_ctrl_proto(void);
 void config_sdo_handler(chanend coe_out);
 
 /**
- * @brief read sensor select from Ethercat
+ * @brief read sensor select from EtherCAT
  *
  * @return sensor_select HALL/QEI
  *
@@ -90,7 +90,7 @@ void config_sdo_handler(chanend coe_out);
 int sensor_select_sdo(chanend coe_out);
 
 /**
- * @brief read qei params from Ethercat
+ * @brief read qei params from EtherCAT
  *
  * @return real counts
  * @return max position
@@ -102,7 +102,7 @@ int sensor_select_sdo(chanend coe_out);
 {int, int, int} qei_sdo_update(chanend coe_out);
 
 /**
- * @brief read hall params from Ethercat
+ * @brief read hall params from EtherCAT
  *
  * @return pole pairs
  *
@@ -110,7 +110,7 @@ int sensor_select_sdo(chanend coe_out);
 int hall_sdo_update(chanend coe_out);
 
 /**
- * @brief read commutation parameters from Ethercat
+ * @brief read commutation parameters from EtherCAT
  *
  * @return hall_offset_clk
  * @return hall_offset_cclk
@@ -120,7 +120,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int} commutation_sdo_update(chanend coe_out);
 
 /**
- * @brief read homing parameters from Ethercat
+ * @brief read homing parameters from EtherCAT
  *
  * @return homing_method
  * @return limit_switch_type
@@ -129,7 +129,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int} homing_sdo_update(chanend coe_out);
 
 /**
- * @brief read profile torque params from Ethercat
+ * @brief read profile torque params from EtherCAT
  *
  * @return torque_slope
  * @return polarity
@@ -138,7 +138,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int} pt_sdo_update(chanend coe_out);
 
 /**
- * @brief read profile velocity params from Ethercat
+ * @brief read profile velocity params from EtherCAT
  *
  * @return max_profile_velocity
  * @return profile_acceleration
@@ -150,7 +150,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int, int, int} pv_sdo_update(chanend coe_out);
 
 /**
- * @brief read profile position params from Ethercat
+ * @brief read profile position params from EtherCAT
  *
  * @return max_profile_velocity
  * @return profile_velocity
@@ -166,7 +166,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int, int, int, int, int, int, int} pp_sdo_update(chanend coe_out);
 
 /**
- * @brief read cyclic synchronous torque params from Ethercat
+ * @brief read cyclic synchronous torque params from EtherCAT
  *
  * @return nominal_current
  * @return max_motor_speed
@@ -178,7 +178,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int} cst_sdo_update(chanend coe_out);
 
 /**
- * @brief read cyclic synchronous velocity params from Ethercat
+ * @brief read cyclic synchronous velocity params from EtherCAT
  *
  * @return max_motor_speed
  * @return nominal_current
@@ -190,7 +190,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int} csv_sdo_update(chanend coe_out);
 
 /**
- * @brief read cyclic synchronous position params from Ethercat
+ * @brief read cyclic synchronous position params from EtherCAT
  *
  * @return max_motor_speed
  * @return polarity
@@ -203,7 +203,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int, int, int} csp_sdo_update(chanend coe_out);
 
 /**
- * @brief read torque control params from Ethercat
+ * @brief read torque control params from EtherCAT
  *
  * @return Kp
  * @return Ki
@@ -213,7 +213,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int} torque_sdo_update(chanend coe_out);
 
 /**
- * @brief read velocity control params from Ethercat
+ * @brief read velocity control params from EtherCAT
  *
  * @return Kp
  * @return Ki
@@ -223,7 +223,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int} velocity_sdo_update(chanend coe_out);
 
 /**
- * @brief read position control params from Ethercat
+ * @brief read position control params from EtherCAT
  *
  * @return Kp
  * @return Ki
@@ -233,7 +233,7 @@ int hall_sdo_update(chanend coe_out);
 {int, int, int} position_sdo_update(chanend coe_out);
 
 /**
- * @brief read nominal speed from Ethercat
+ * @brief read nominal speed from EtherCAT
  *
  * @return nominal_speed
  *
@@ -242,51 +242,58 @@ int speed_sdo_update(chanend coe_out);
 
 
 /**
- * @brief Get target torque from Ethercat
+ * @brief Get target torque from EtherCAT
  *
- * @return target torque from Ethercat in range [0 - mNm * Current Resolution]
+ * @param InOut Structure containing all PDO data
+ *
+ * @return target torque from EtherCAT in range [0 - mNm * Current Resolution]
  */
 int get_target_torque(ctrl_proto_values_t InOut);
 
 /**
- * @brief Get target velocity from Ethercat
+ * @brief Get target velocity from EtherCAT
  *
- * @return target velocity from Ethercat in rpm
+ * @param InOut Structure containing all PDO data
+ *
+ * @return target velocity from EtherCAT in rpm
  */
 int get_target_velocity(ctrl_proto_values_t InOut);
 
 /**
- * @brief Get target position from Ethercat
+ * @brief Get target position from EtherCAT
  *
- * @return target position from Ethercat in ticks
+ * @param InOut Structure containing all PDO data
+ *
+ * @return target position from EtherCAT in ticks
  */
 int get_target_position(ctrl_proto_values_t InOut);
 
 /**
- * @brief Send actual torque to Ethercat
+ * @brief Send actual torque to EtherCAT
  *
- * @param[in] actual_torque sent to Ethercat in range [0 - mNm * Current Resolution]
+ * @param[in] actual_torque sent to EtherCAT in range [0 - mNm * Current Resolution]
+ * @param InOut Structure containing all PDO data
  */
 void send_actual_torque(int actual_torque, ctrl_proto_values_t &InOut);
 
 /**
- * @brief Send actual velocity to Ethercat
+ * @brief Send actual velocity to EtherCAT
  *
- * @param[in] actual_velocity sent to Ethercat in rpm
- * @param[in] ctrl_proto_values_t
+ * @param[in] actual_velocity sent to EtherCAT in rpm
+ * @param InOut Structure containing all PDO data
  */
 void send_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut);
 
 /**
- * @brief Send actual position to Ethercat
+ * @brief Send actual position to EtherCAT
  *
- * @param[in] actual_position sent to Ethercat in ticks
- * @param[in] ctrl_proto_values_t
+ * @param[in] actual_position sent to EtherCAT in ticks
+ * @param InOut Structure containing all PDO data
  */
 void send_actual_position(int actual_position, ctrl_proto_values_t &InOut);
 
 /**
- * @brief Update Hall sensor parameters from Ethercat
+ * @brief Update Hall sensor parameters from EtherCAT
  *
  * @param hall_config struct defines the pole-pairs and gear ratio
  * @param coe_out
@@ -294,82 +301,86 @@ void send_actual_position(int actual_position, ctrl_proto_values_t &InOut);
 void update_hall_config_ecat(HallConfig &hall_config, chanend coe_out);
 
 /**
- * @brief Update QEI sensor parameters from Ethercat
-*
+ * @brief Update QEI sensor parameters from EtherCAT
+ *
  * @param qei_params struct defines the quadrature encoder (QEI) resolution, sensor type and
-*    gear-ratio used for the motor
-*/
+ *    gear-ratio used for the motor
+ * @param coe_out
+ */
 void update_qei_param_ecat(QEIConfig &qei_params, chanend coe_out);
 
 void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chanend coe_out);
 
 /**
- * @brief Update cyclic synchronous torque parameters from Ethercat
-*
+ * @brief Update cyclic synchronous torque parameters from EtherCAT
+ *
  * @param cst_params struct defines the cyclic synchronous torque params
  * @param coe_out
-*/
+ */
 void update_cst_param_ecat(ProfilerConfig &cst_params, chanend coe_out);
 
 /**
- * @brief Update cyclic synchronous velocity parameters from Ethercat
-*
+ * @brief Update cyclic synchronous velocity parameters from EtherCAT
+ *
  * @param csv_params struct defines the cyclic synchronous velocity params
  * @param coe_out
-*
-*/
+ *
+ */
 void update_csv_param_ecat(ProfilerConfig &csv_params, chanend coe_out);
 
 /**
- * @brief Update cyclic synchronous position parameters from Ethercat
-*
+ * @brief Update cyclic synchronous position parameters from EtherCAT
+ *
  * @param csp_params struct defines the cyclic synchronous position params
  * @param coe_out
-*/
+ */
 void update_csp_param_ecat(ProfilerConfig &csp_params, chanend coe_out);
 
 /**
- * @brief Update profile torque parameters from Ethercat
-*
+ * @brief Update profile torque parameters from EtherCAT
+ *
  * @param pt_params struct defines the profile torque params
  * @param coe_out
-*/
+ */
 void update_pt_param_ecat(ProfilerConfig &pt_params, chanend coe_out);
 
 /**
- * @brief Update profile velocity parameters from Ethercat
-*
+ * @brief Update profile velocity parameters from EtherCAT
+ *
  * @param pv_params struct defines the profile velocity params
  * @param coe_out
-*/
+ */
 void update_pv_param_ecat(ProfilerConfig &pv_params, chanend coe_out);
 
 /**
- * @brief Update profile position parameters from Ethercat
-*
+ * @brief Update profile position parameters from EtherCAT
+ *
  * @param pp_params struct defines the profile position params
  * @param coe_out
-*/
+ */
 void update_pp_param_ecat(ProfilerConfig &pp_params, chanend coe_out);
 
 /**
- * @brief Update torque control PID parameters from Ethercat
+ * @brief Update torque control PID parameters from EtherCAT
  *
  * @param torque_ctrl_params struct defines torque control PID params
+ * @param coe_out
  */
 void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, chanend coe_out);
 
 /**
- * @brief Update velocity control PID parameters from Ethercat
+ * @brief Update velocity control PID parameters from EtherCAT
  *
  * @param velocity_ctrl_params struct defines velocity control PID params
+ * @param coe_out
  */
 void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, chanend coe_out);
 
 /**
- * @brief Update position control PID params from Ethercat
+ * @brief Update position control PID params from EtherCAT
  *
  * @param position_ctrl_params struct defines position control PID params
+ * @param coe_out
  */
 void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, chanend coe_out);
 

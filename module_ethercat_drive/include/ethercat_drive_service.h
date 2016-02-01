@@ -1,5 +1,5 @@
 /**
- * @file ecat_motor_drive.h
+ * @file ethercat_drive_service.h
  * @brief Ethercat Motor Drive Server
  * @author Synapticon GmbH <support@synapticon.com>
  */
@@ -34,9 +34,11 @@
  * @param profiler_config Configuration for profile mode control.
  * @param pdo_out Channel to send out information to EtherCAT Service.
  * @param pdo_in Channel to receive information from EtherCAT Service.
- * @param coe_out Channel to receive motor config information from EtherCAT Service.
+ * @param coe_out Channel to receive motor configuration information from EtherCAT Service.
+ * @param i_motorcontrol Interface to Motor Commutation Service
  * @param i_hall Interface to Hall Service.
- * @param i_qei Interface to Encoder Service.
+ * @param i_qei Interface to Incremental Encoder Service.
+ * @param i_biss Interface to BiSS Encoder Service.
  * @param i_gpio Interface to the GPIO Service.
  * @param i_torque_control Interface to Torque Control Loop Service.
  * @param i_velocity_control Interface to Velocity Control Loop Service.
@@ -44,7 +46,7 @@
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in, chanend coe_out,
-                            interface MotorcontrolInterface client i_commutation,
+                            interface MotorcontrolInterface client i_motorcontrol,
                             interface HallInterface client ?i_hall,
                             interface QEIInterface client ?i_qei,
                             interface BISSInterface client ?i_biss,

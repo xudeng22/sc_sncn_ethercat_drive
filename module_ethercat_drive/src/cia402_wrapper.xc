@@ -1,5 +1,5 @@
 /**
- * @file ctrlproto.xc
+ * @file cia402_wrapper.xc
  * @brief Control Protocol Handler
  * @author Synapticon GmbH <support@synapticon.com>
  */

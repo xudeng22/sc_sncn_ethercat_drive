@@ -1,5 +1,5 @@
 /**
- * @file drive_config.h
+ * @file state_modes.h
  * @brief Drive mode definitions
  * @author Synapticon GmbH <support@synapticon.com>
 */

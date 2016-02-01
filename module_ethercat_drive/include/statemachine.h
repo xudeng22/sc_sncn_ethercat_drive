@@ -1,5 +1,5 @@
 /**
- * @file drive_config.h
+ * @file statemachine.h
  * @brief Motor Drive defines and configurations
  * @author Synapticon GmbH <support@synapticon.com>
 */
@@ -44,31 +44,27 @@ int init_state(void);
 /**
  * @brief Initialize checklist params
  *
- * @Output
- * @return check_list initialised checklist parameters
+ * @return check_list initialized checklist parameters
  */
 check_list init_checklist(void);
 
 /**
  * @brief Update Checklist
  *
- * @Input channel
- * @param c_commutation for communicating with the commutation server
- * @param c_hall for communicating with the hall server
- * @param c_qei for communicating with the qei server
- * @param c_adc for communicating with the adc server
- * @param c_torque_ctrl for communicating with the torque control server
- * @param c_velocity_ctrl for communicating with the velocity control server
- * @param c_position_ctrl for communicating with the position control server
- *
- * @Input
+ * @param check_list_param Check List to be updated
  * @param mode sets mode of operation
+ * @param i_motorcontrol Interface to Commutation Service
+ * @param i_hall Interface to Hall Service
+ * @param i_qei Interface to Incremental Encoder Service
+ * @param i_biss Interface to BiSS Encoder Service
+ * @param i_adc Interface to ADC Service
+ * @param i_torque_control Interface to Torque Control Service
+ * @param i_velocity_control Interface to Velocity Control Service
+ * @param i_position_control Interface to Position Control Service
  *
- * @Output
- * @return check_list_param updated checklist parameters
  */
 void update_checklist(check_list &check_list_param, int mode,
-                        interface MotorcontrolInterface client i_commutation,
+                        interface MotorcontrolInterface client i_motorcontrol,
                         interface HallInterface client ?i_hall,
                         interface QEIInterface client ?i_qei,
                         interface BISSInterface client ?i_biss,

@@ -1,5 +1,5 @@
 /**
- * @file drive_sys.xc
+ * @file state_machine.xc
  * @brief Motor Drive State Machine Implementation
  * @author Synapticon GmbH <support@synapticon.com>
  */

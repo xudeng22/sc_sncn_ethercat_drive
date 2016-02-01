@@ -1,7 +1,7 @@
 .. _ethercat_drive_module:
 
 =============================
-SOMANET EtherCAT Drive Module
+EtherCAT Drive Module
 =============================
 
 This module provides a Service to perform Motor Control over EtherCAT. It needs to be interfaced to the :ref:`EtherCAT Serve <module_ethercat>` and some Services belonging to the :ref:`Motor Control Library <somanet_motor_control>`.
@@ -34,7 +34,7 @@ How to use
               This will help solving internal dependency issues.
 
 2. Include the EtherCaT Drive Service header **ethercat_drive_service.h** in your app. 
-3. Properly instanciate an **EtherCAT Drive Service**. For that, first you will have to fill up the Profiler configuration and provide channels/interfaces to the EtherCAT, Hall, Encoder, GPIO, Motor Control and Control Loop Services.
+3. Properly instantiate an **EtherCAT Drive Service**. For that, first you will have to fill up the Profiler configuration and provide channels/interfaces to the EtherCAT, Hall, Encoder, GPIO, Motor Control and Control Loop Services.
 
     .. code-block:: C
 

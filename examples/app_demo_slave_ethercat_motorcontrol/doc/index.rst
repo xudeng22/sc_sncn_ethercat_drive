@@ -1,7 +1,7 @@
 .. _ethercat_slave_demo:
 
 ==========================================
-SOMANET EtherCAT Drive Slave Firmware Demo
+EtherCAT Drive Slave Firmware Demo
 ==========================================
 
 .. contents:: In this document
@@ -37,7 +37,7 @@ Quick How-to
             * :ref:`EtherCAT Cyclic Torque Control Demo <SOMANET_Cyclic_Torque_Control_with_EtherCAT_Demo_Quickstart>`
 
 
-.. important:: To be able to **run** Ethercat Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
+.. important:: To be able to **run** EtherCAT Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
 	
 	Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 
 

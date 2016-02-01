@@ -1,5 +1,5 @@
 ==========================================
-SOMANET Linux Motor Drive Library
+Linux Motor Drive Library
 ==========================================
 
 This library offers functionality to your EtherCAT Master application to drive motors using your SOMANET EtherCAT slave device.

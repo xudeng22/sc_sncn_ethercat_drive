@@ -1,5 +1,5 @@
 ==========================================
-SOMANET Linux Control Protocol Library
+Linux Control Protocol Library
 ==========================================
 
 This library offers functionality to your EtherCAT Master application to handle communication to your SOMANET EtherCAT slave device.

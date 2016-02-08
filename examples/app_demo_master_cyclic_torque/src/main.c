@@ -19,7 +19,7 @@ enum {ECAT_SLAVE_0};
 
 int main() {
 
-    float target_torque = 100.0; // mNm
+    float target_torque = 15.0; // mNm
     float torque_slope = 10.0; // mNm/s
 
     float actual_torque = 0.0; // mNm

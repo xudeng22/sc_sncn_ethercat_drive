@@ -296,7 +296,7 @@ Importing the EtherCAT application
 
 If you have not done so already you need to install the IgH EtherCAT Master for Linux.
 
-   #. Download the EtherCAT master software and associated makefiles from `<http://doc.synapticon.com/index.php/File:IgHEthercatLinuxMaster.zip>`_. Do not try and get the software from the EtherLab site.
+   #. Download the EtherCAT master software and associated makefiles from `<http://doc.synapticon.com/index.php/File:IgHEtherCATLinuxMaster.zip>`_. Do not try and get the software from the EtherLab site.
    #. Unpack the file and navigate into the folder
    #. Be sure to have Linux kernel headers and build-essential installed in order to avoid compilation errors. They can be installed following this command:
 

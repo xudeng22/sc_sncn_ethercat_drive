@@ -1,6 +1,6 @@
 /**
  * @file ctrlproto_m.h
- * @brief Ethercat control protocol
+ * @brief EtherCAT control protocol
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
@@ -326,7 +326,7 @@ typedef struct
 typedef struct
 {
 	/**
-	 * Flag for system start in handleEthercat
+	 * Flag for system start in handleEtherCAT
 	 */
 	bool first_run;
 

@@ -1,6 +1,6 @@
 /**
  * @file ethercat_drive_service.h
- * @brief Ethercat Motor Drive Server
+ * @brief EtherCAT Motor Drive Server
  * @author Synapticon GmbH <support@synapticon.com>
  */
 

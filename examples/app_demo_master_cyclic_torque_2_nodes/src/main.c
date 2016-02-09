@@ -88,7 +88,7 @@ int main()
 
     printf("\n*****************************\nLoading motor configurations\n*****************************\n");
 
-    /* Initialize Ethercat Master */
+    /* Initialize EtherCAT Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
     /* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/

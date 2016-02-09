@@ -1,6 +1,6 @@
 /**
  * @file drive_function.h
- * @brief Motor Drive functions over Ethercat
+ * @brief Motor Drive functions over EtherCAT
  * @author Synapticon GmbH <support@synapticon.com>
  */
 

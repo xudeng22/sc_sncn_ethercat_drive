@@ -27,7 +27,7 @@ int main()
 	int sdo_update = 1;             // 1- yes / 0 - no
 	int slave_number = 0;
 
-	/* Initialize Ethercat Master */
+	/* Initialize EtherCAT Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/

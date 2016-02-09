@@ -101,7 +101,7 @@ int main(void)
 
 	par
 	{
-		/* Ethercat Communication Handler Loop */
+		/* EtherCAT Communication Handler Loop */
 		on tile[COM_TILE] : {
 			ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
 			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);

@@ -92,7 +92,7 @@ Examples
 
 * **Slave examples (for SOMANET devices):**
 
-        * `EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>`_: Ethercat Drive slave firmware for your SOMANET device.
+        * `EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>`_: EtherCAT Drive slave firmware for your SOMANET device.
 
 
 * **Master examples (for Linux machines):**
@@ -109,7 +109,7 @@ Examples
 Dependencies
 ------------
 
-To run **Ethercat Drive applications** it is necessary to include additionally the following libraries:
+To run **EtherCAT Drive applications** it is necessary to include additionally the following libraries:
 
 * :ref:`SOMANET Motor Control <somanet_motor_control>`
 
@@ -142,6 +142,6 @@ To run **Ethercat Drive applications** it is necessary to include additionally t
 	  `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base>`_
 
 
-.. important:: To be able to **run** Ethercat Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
+.. important:: To be able to **run** EtherCAT Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
 	
 	Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 

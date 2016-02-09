@@ -34,7 +34,7 @@ int main()
 	int sdo_update = 1;                 // 1- yes / 0 - no
 	int i = 0;
 
-	/* Initialize Ethercat Master */
+	/* Initialize EtherCAT Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	/* Initialize torque parameters */

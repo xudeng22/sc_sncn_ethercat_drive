@@ -1,6 +1,6 @@
 /**
  * @file ecat_motor_drive.xc
- * @brief Ethercat Motor Drive Server
+ * @brief EtherCAT Motor Drive Server
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
@@ -296,10 +296,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
 
         /*********************************************************************************
-         * Ethercat communication is Active
+         * EtherCAT communication is Active
          *********************************************************************************/
         if (comm_inactive_flag == 0) {
-            /* Read controlword from the received from Ethercat Master application */
+            /* Read controlword from the received from EtherCAT Master application */
             controlword = InOut.control_word;
 
             /* Check states of the motor drive, sensor drive and control servers */
@@ -309,7 +309,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* Update state machine */
             state = get_next_state(state, checklist, controlword);
 
-            /* Update statusword sent to the Ethercat Master Application */
+            /* Update statusword sent to the EtherCAT Master Application */
             statusword = update_statusword(statusword, state, ack, quick_active, shutdown_ack);
             InOut.status_word = statusword;
 
@@ -335,7 +335,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         InOut.operation_mode_display = 105;
                     }
                 }
-                /* Read Motor Configuration sent from the Ethercat Master Application */
+                /* Read Motor Configuration sent from the EtherCAT Master Application */
                 if (controlword == 5) {
                     update_commutation_param_ecat(commutation_params, coe_out);
                     sensor_select = sensor_select_sdo(coe_out);
@@ -391,7 +391,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             send_actual_velocity(actual_velocity * polarity, InOut);
 
             if (mode_selected == 0) {
-                /* Select an operation mode requested from Ethercat Master Application */
+                /* Select an operation mode requested from EtherCAT Master Application */
                 switch (InOut.operation_mode) {
                     /* Homing Mode initialization */
                 case HM:

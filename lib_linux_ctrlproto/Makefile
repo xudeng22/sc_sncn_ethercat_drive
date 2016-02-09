@@ -37,7 +37,7 @@ all:
 
 ifneq "$(UNAME)" "Linux"
 		@echo "----------------------------------------------------------------------------------------------------"
-		@echo "||Your System isn't Linux, so the ctrlproto libary for the Linux Ethercat Master can not be built!||"
+		@echo "||Your System isn't Linux, so the ctrlproto libary for the Linux EtherCAT Master can not be built!||"
 		@echo "----------------------------------------------------------------------------------------------------"
 else
 		@if test -d $(ETHERCAT_MASTER_INSTALLDIR); \
@@ -51,7 +51,7 @@ else
 		else echo \
 		"\n\
 		-----------------------------------------------------------------------------------------------------------------\n\
-		||Ethercat Master is not installed at given directory if you installed it elsewhere change location in Makefile||\n\
+		||EtherCAT Master is not installed at given directory if you installed it elsewhere change location in Makefile||\n\
 		-----------------------------------------------------------------------------------------------------------------\n";\
 		fi
 endif

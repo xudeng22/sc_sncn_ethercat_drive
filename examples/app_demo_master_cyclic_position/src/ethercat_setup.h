@@ -1,6 +1,6 @@
 /**
  * @file ethercat_setup.h
- * @brief Ethercat Node Setup: Please define your the node structure and configuration for each node.
+ * @brief EtherCAT Node Setup: Please define your the node structure and configuration for each node.
  * @author Synapticon GmbH <support@synapticon.com>
  */
 

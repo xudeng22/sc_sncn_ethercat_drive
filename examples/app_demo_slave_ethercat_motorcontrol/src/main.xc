@@ -5,7 +5,7 @@
 
 /**
  * @file test_ethercat-mode.xc
- * @brief Test illustrates usage of Motor Control with Ethercat
+ * @brief Test illustrates usage of Motor Control with EtherCAT
  * @author Synapticon GmbH (www.synapticon.com)
  */
 #include <pwm_service.h>
@@ -84,20 +84,20 @@ int main(void)
          *                          COM_TILE
          ************************************************************/
 
-        /* Ethercat Communication Handler Loop */
+        /* EtherCAT Communication Handler Loop */
         on tile[COM_TILE] :
         {
             ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
                                 foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
         }
 
-        /* Firmware Update Loop over Ethercat */
+        /* Firmware Update Loop over EtherCAT */
         on tile[COM_TILE] :
         {
             fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
         }
 
-        /* Ethercat Motor Drive Loop */
+        /* EtherCAT Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
             ProfilerConfig profiler_config;

@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief Example Master App to test Ethercat (on PC)
+ * @brief Example Master App to test EtherCAT (on PC)
  * @author Synapticon GmbH <support@synapticon.com>
  */
 

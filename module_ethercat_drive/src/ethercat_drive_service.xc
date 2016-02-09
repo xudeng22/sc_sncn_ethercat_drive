@@ -11,8 +11,6 @@
 #include <state_modes.h>
 #include <profile.h>
 
-
-
 {int, int} static inline get_position_absolute(int sensor_select, interface HallInterface client ?i_hall,
                                                 interface QEIInterface client ?i_qei, interface BISSInterface client ?i_biss)
 {
@@ -606,7 +604,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                     /* Cyclic synchronous torque mode initialization */
                 case CST:
-                    //printstrln("op mode enabled on slave");
                     if (op_set_flag == 0) {
                         update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
@@ -662,7 +659,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     }
                     else if (op_mode == CSV || op_mode == PV) {
                         actual_velocity = i_velocity_control.get_velocity();
-
                         int deceleration;
                         if (op_mode == CSV) {
                             deceleration = profiler_config.max_acceleration;
@@ -1000,15 +996,16 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         t when timerafter(c_time + 100*MSEC_STD) :> c_time;
                         actual_torque = i_torque_control.get_torque();
                         send_actual_torque(actual_torque, InOut);
+                        ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
                     }
                     if (i >= steps) {
                         actual_torque = i_torque_control.get_torque();
                         send_actual_torque(actual_torque, InOut);
                     //    if (actual_torque < torque_offstate || actual_torque > -torque_offstate) {
-                            ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
                             mode_selected = 100;
                             op_set_flag = 0;
                             init = 0;
+                            t when timerafter(c_time + 250*MSEC_STD) :> c_time;//FixMe: why is this nesessary?
                     //    }
                     }
                     if (steps == 0) {
@@ -1051,8 +1048,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         mode_selected = 100;
                         op_set_flag = 0;
                         init = 0;
-
                     }
+                    t when timerafter(c_time + 100*MSEC_STD) :> c_time; //FixMe: why is this nesessary?
+
                 } else if (op_mode == CSP || op_mode == PP) {
                     {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
 

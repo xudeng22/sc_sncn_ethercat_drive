@@ -1,7 +1,7 @@
 .. _SOMANET_Cyclic_Velocity_Control_with_EtherCAT_Demo_Quickstart:
 
-SOMANET EtherCAT Drive Cyclic Velocity Control Master Demo 
-====================================================================
+SOMANET EtherCAT Drive Cyclic Velocity Control Master Demo
+===========================================================
 
 .. contents:: In this document
     :backlinks: none

@@ -1,8 +1,8 @@
 .. _ethercat_slave_demo:
 
-==========================================
+===================================
 EtherCAT Drive Slave Firmware Demo
-==========================================
+===================================
 
 .. contents:: In this document
     :backlinks: none

@@ -46,7 +46,7 @@ Import and build the application
 
    #. Open *xTIMEcomposer* Studio and check that it is operating in online mode. Open the edit perspective (Window->Open Perspective->XMOS Edit).
    #. Locate the ``'SOMANET EtherCAT CST Motor Control Demo'`` item in the *xSOFTip* pane on the bottom left of the window and drag it into the Project Explorer window in *xTIMEcomposer*. This will also cause the modules on which this application depends to be imported as well. 
-   #. Click on the ``app_demo_master_cyclic_torque`` item in the Project Explorer plane then click on the build icon (hammer) in *xTIMEcomposer*. Check the Console window to verify that the application has built successfully. Note that you require the EtherCAT driver from IgH EtherLab `to be installed <http://doc.synapticon.com/index.php/EtherCAT_Master_Software>`_ on your system to build the application. Otherwise the build will fail.
+   #. Click on the ``app_demo_master_cyclic_torque`` item in the Project Explorer plane then click on the build icon (hammer) in *xTIMEcomposer*. Check the Console window to verify that the application has built successfully. Note that you require the EtherCAT master :ref:`IgH EtherLab to be installed <ethercat_master_software_linux>` on your system to build the application. Otherwise the build will fail.
 
 For help in using *xTIMEcomposer*, try the *xTIMEcomposer* tutorial, which you can find by selecting Help->Tutorials from the *xTIMEcomposer* menu.
 

@@ -58,7 +58,7 @@ Modules
 
 	EtherCAT Drive Module <module_ethercat_drive/doc/index>
 
-* `EtherCAT Drive Module <module_ethercat_drive/doc/index>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `EtherCAT Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
 
 EtherCAT Drive Linux Master Libraries
 -------------------------------------
@@ -70,8 +70,8 @@ EtherCAT Drive Linux Master Libraries
 	Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>
 	Linux Motor Drive Library <lib_linux_motor_drive/doc/index>
 
-* `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>`_: Provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
-* `Linux Motor Drive Library <lib_linux_motor_drive/doc/index>`_: Provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
+* `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index.html>`_: Provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
+* `Linux Motor Drive Library <lib_linux_motor_drive/doc/index.html>`_: Provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
 
 Examples
 --------
@@ -92,19 +92,19 @@ Examples
 
 * **Slave examples (for SOMANET devices):**
 
-        * `EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>`_: EtherCAT Drive slave firmware for your SOMANET device.
+        * `EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index.html>`_: EtherCAT Drive slave firmware for your SOMANET device.
 
 
 * **Master examples (for Linux machines):**
 
-	* `EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index>`_: Example to do cyclic position control on one axis over EtherCAT.
-	* `EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index>`_: Example to do cyclic velocity control on one axis over EtherCAT.
-	* `EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index>`_: Example to do cyclic torque control on one axis over EtherCAT.
+	* `EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index.html>`_: Example to do cyclic position control on one axis over EtherCAT.
+	* `EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index.html>`_: Example to do cyclic velocity control on one axis over EtherCAT.
+	* `EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index.html>`_: Example to do cyclic torque control on one axis over EtherCAT.
 
-	* `EtherCAT dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index>`_: Example to do cyclic position control on two axis over EtherCAT.
-	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>`_: Example to do cyclic velocity control on two axis over EtherCAT.
+	* `EtherCAT dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index.html>`_: Example to do cyclic position control on two axis over EtherCAT.
+	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index.html>`_: Example to do cyclic velocity control on two axis over EtherCAT.
 
-	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index>`_: Example to do cyclic torque control on two axis over EtherCAT.
+	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index.html>`_: Example to do cyclic torque control on two axis over EtherCAT.
 
 Dependencies
 ------------

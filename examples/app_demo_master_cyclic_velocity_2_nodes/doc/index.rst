@@ -46,7 +46,7 @@ Import and build the application
 
    #. Open *xTIMEcomposer* Studio and check that it is operating in online mode. Open the edit perspective (Window->Open Perspective->XMOS Edit).
    #. Locate the ``'SOMANET EtherCAT CSV Motor Control Two Nodes Demo'`` item in the *xSOFTip* pane on the bottom left of the window and drag it into the Project Explorer window in *xTIMEcomposer*. This will also cause the modules and Linux libraries on which this application depends on to be imported as well. 
-   #. Click on the ``app_demo_master_cyclic_velocity_2_nodes`` item in the Project Explorer plane then click on the build icon (hammer) in *xTIMEcomposer*. Check the Console window to verify that the application has built successfully. Note that you require the EtherLab IgH EtherCAT driver to be installed on your system to build the application.
+   #. Click on the ``app_demo_master_cyclic_velocity_2_nodes`` item in the Project Explorer plane then click on the build icon (hammer) in *xTIMEcomposer*. Check the Console window to verify that the application has built successfully. Note that you require the EtherCAT master :ref:`IgH EtherLab to be installed <ethercat_master_software_linux>` on your system to build the application.
 
 For help in using *xTIMEcomposer*, try the *xTIMEcomposer* tutorial, which you can find by selecting Help->Tutorials from the *xTIMEcomposer* menu.
 

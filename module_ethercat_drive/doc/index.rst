@@ -36,7 +36,7 @@ How to use
 2. Include the EtherCaT Drive Service header **ethercat_drive_service.h** in your app. 
 3. Properly instantiate an **EtherCAT Drive Service**. For that, first you will have to fill up the Profiler configuration and provide channels/interfaces to the EtherCAT, Hall, Encoder, GPIO, Motor Control and Control Loop Services.
 
-    .. code-block:: C
+    .. code-block:: c
 
         #include <COM_ECAT-rev-a.bsp>   //Board Support file for SOMANET COM EtherCAT device 
         #include <CORE_C22-rev-a.bsp>   //Board Support file for SOMANET Core C22 device 

@@ -8,9 +8,9 @@ LIBS += -lethercat -lm
 ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 
 ETHERCAT_DRIVE_PATH := ../../.
-MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
+MOTORCONTROL_PATH := ../../.
 
-ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
+ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 endif
 

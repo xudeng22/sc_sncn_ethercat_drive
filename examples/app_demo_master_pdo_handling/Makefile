@@ -16,10 +16,6 @@ ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 endif
 
-ifneq (,$(wildcard ../../sc_sncn_ctrlproto/.)) 
-	CTRL_PROTO_PATH := ../../.
-endif
-
 INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/inc_ctrlproto-common
 INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include

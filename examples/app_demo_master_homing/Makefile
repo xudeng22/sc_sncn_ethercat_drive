@@ -14,10 +14,6 @@ ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 endif
 
-ifneq (,$(wildcard ../../sc_sncn_ctrlproto/.)) 
-	CTRL_PROTO_PATH := ../../.
-endif
-
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../config_motor_master
 

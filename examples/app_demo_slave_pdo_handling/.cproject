@@ -45,10 +45,10 @@
 								<option id="com.xmos.xc.compiler.option.include.paths.33392207" name="com.xmos.xc.compiler.option.include.paths" superClass="com.xmos.xc.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config/node}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config/node}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto}&quot;"/>
@@ -637,10 +637,10 @@
 								<option id="com.xmos.c.compiler.option.include.paths.97903105" name="com.xmos.c.compiler.option.include.paths" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config/node}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config/node}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto}&quot;"/>
@@ -1047,10 +1047,10 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config/node}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config/node}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto}&quot;"/>
@@ -1203,10 +1203,10 @@
 								<option id="com.xmos.xc.compiler.option.include.paths.51250417" name="com.xmos.xc.compiler.option.include.paths" superClass="com.xmos.xc.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config/node}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config/node}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto}&quot;"/>
@@ -1440,10 +1440,10 @@
 								<option id="com.xmos.c.compiler.option.include.paths.35163103" name="com.xmos.c.compiler.option.include.paths" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config/node}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config/node}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto}&quot;"/>
@@ -1571,10 +1571,10 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config/node}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_test_ctrlproto}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config/node}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_slave_pdo_handling}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ctrlproto}&quot;"/>
@@ -1601,7 +1601,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="app_test_ctrlproto.null.18433044" name="app_test_ctrlproto"/>
+		<project id="app_demo_slave_pdo_handling.null.18433044" name="app_demo_slave_pdo_handling"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>

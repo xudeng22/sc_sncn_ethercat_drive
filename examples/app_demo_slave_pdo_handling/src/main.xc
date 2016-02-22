@@ -108,7 +108,7 @@ int main(void)
 		}
 
 		/* Test application handling pdos from EtherCat */
-		on tile[1] :
+		on tile[APP_TILE] :
 		{
 			pdo_handler(coe_out, pdo_out, pdo_in);
 		}

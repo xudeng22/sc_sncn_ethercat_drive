@@ -1,14 +1,6 @@
 SOMANET EtherCAT Drive
 ======================
 
-.. toctree::
-	:maxdepth: 1
-	:hidden:
-
-	EtherCAT Drive Module <module_ethercat_drive/doc/index>	
-	Communication Protocol Library for Linux <lib_linux_ctrlproto/doc/index>	
-	Motor Drive Library for Linux <lib_linux_motor_drive/doc/index>	
-
 The **SOMANET EtherCAT Drive Library** offers the services and utilities required to perform BLDC/BDC Motor Control over EtherCAT using SOMANET devices.
 It implements a CiA 402-compliant Motor Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motor Control Library<somanet_motor_control>` and gives flexibility for application-specific requirements.
 
@@ -53,58 +45,63 @@ Modules
 -------
 
 .. toctree::
-	:maxdepth: 1
-	:hidden:
+    :maxdepth: 1
+    :hidden:
 
-	EtherCAT Drive Module <module_ethercat_drive/doc/index>
+    Drive Module <module_ethercat_drive/doc/index>
 
-* `EtherCAT Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+    * `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
 
 EtherCAT Drive Linux Master Libraries
 -------------------------------------
 
 .. toctree::
-	:maxdepth: 1
-	:hidden:
+    :maxdepth: 1
+    :hidden:
 
-	Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>
-	Linux Motor Drive Library <lib_linux_motor_drive/doc/index>
+    Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>
+    Linux Motor Drive Library <lib_linux_motor_drive/doc/index>
 
-* `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index.html>`_: Provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
-* `Linux Motor Drive Library <lib_linux_motor_drive/doc/index.html>`_: Provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
+    * `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index.html>`_: Provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
+    * `Linux Motor Drive Library <lib_linux_motor_drive/doc/index.html>`_: Provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
 
 Examples
 --------
 
 .. toctree::
-	:hidden:
-	:maxdepth: 1
+    :hidden:
+    :maxdepth: 1
 
-	EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>
-	
-	EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index>
-	EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index>
-	EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index>
+    Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>
+    
+    Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index>
+    Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index>
+    Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index>
 
-	EtherCAT Multi-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index>
-	EtherCAT Multi-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>
-	EtherCAT Multi-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index>
+    Dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index>
+    Dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>
+    Dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index>
+
+    PDO Handling Demo <examples/app_demo_slave_pdo_handling/doc/index>
+    PDO Handling Demo Master <examples/app_linux_ctrlproto-master-example/doc/index>
 
 * **Slave examples (for SOMANET devices):**
 
-        * `EtherCAT Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index.html>`_: EtherCAT Drive slave firmware for your SOMANET device.
+    * `Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index.html>`_: EtherCAT Drive slave firmware for your SOMANET device.
 
 
 * **Master examples (for Linux machines):**
 
-	* `EtherCAT Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index.html>`_: Example to do cyclic position control on one axis over EtherCAT.
-	* `EtherCAT Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index.html>`_: Example to do cyclic velocity control on one axis over EtherCAT.
-	* `EtherCAT Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index.html>`_: Example to do cyclic torque control on one axis over EtherCAT.
+    * `Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index.html>`_: Example to do cyclic position control on one axis over EtherCAT.
+    * `Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index.html>`_: Example to do cyclic velocity control on one axis over EtherCAT.
+    * `Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index.html>`_: Example to do cyclic torque control on one axis over EtherCAT.
 
-	* `EtherCAT dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index.html>`_: Example to do cyclic position control on two axis over EtherCAT.
-	* `EtherCAT dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index.html>`_: Example to do cyclic velocity control on two axis over EtherCAT.
+    * `Dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index.html>`_: Example to do cyclic position control on two axis over EtherCAT.
+    * `Dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index.html>`_: Example to do cyclic velocity control on two axis over EtherCAT.
+    * `Dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index.html>`_: Example to do cyclic torque control on two axis over EtherCAT.
 
-	* `EtherCAT dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index.html>`_: Example to do cyclic torque control on two axis over EtherCAT.
+    * `PDO Handling Demo Slave <examples/app_demo_slave_pdo_handling/doc/index.html>`_: Showcases simple PDO communication (Slave)
+    * `PDO Handling Demo Master <examples/app_linux_ctrlproto-master-example/doc/index.html>`_: Showcases simple PDO communication (Master)
 
 Dependencies
 ------------
@@ -113,35 +110,35 @@ To run **EtherCAT Drive applications** it is necessary to include additionally t
 
 * :ref:`SOMANET Motor Control <somanet_motor_control>`
 
-	.. cssclass:: downloadable-button 
+    .. cssclass:: downloadable-button 
 
-	 `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/master.zip>`_
+     `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/master.zip>`_
 
-	.. cssclass:: github
+    .. cssclass:: github
 
-	  `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
+      `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
 
 * :ref:`SOMANET EtherCAT <somanet_ethercat>`
 
-	.. cssclass:: downloadable-button 
+    .. cssclass:: downloadable-button 
 
-	 `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/master.zip>`_
+     `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/master.zip>`_
 
-	.. cssclass:: github
+    .. cssclass:: github
 
-	  `Visit SOMANET EtherCAT Public Repository <https://github.com/synapticon/sc_sncn_ethercat>`_
+      `Visit SOMANET EtherCAT Public Repository <https://github.com/synapticon/sc_sncn_ethercat>`_
 
 * :ref:`SOMANET Base <somanet_base>`
 
-	.. cssclass:: downloadable-button 
+    .. cssclass:: downloadable-button 
 
-	  `Download SOMANET Base Library <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
+      `Download SOMANET Base Library <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
 
-	.. cssclass:: github
+    .. cssclass:: github
 
-	  `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base>`_
+      `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base>`_
 
 
 .. important:: To be able to **run** EtherCAT Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
-	
-	Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 
+    
+    Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 

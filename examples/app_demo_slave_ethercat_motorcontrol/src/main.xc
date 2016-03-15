@@ -26,8 +26,8 @@
 #include <ethercat_service.h>
 #include <fw_update_service.h>
 
-// Please configure your slave's default motorcontrol parameters in config_motor_ethercat_drive/default_bldc_motor_config.h.
-// These parameter will bi eventually overwritten by the app running on the EtherCAT master
+// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
+// These parameter will be eventually overwritten by the app running on the EtherCAT master
 #include <user_config.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;

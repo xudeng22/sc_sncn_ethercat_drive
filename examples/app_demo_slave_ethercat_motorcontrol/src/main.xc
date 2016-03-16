@@ -36,14 +36,14 @@ WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
 HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
-port gpio_ports[4] = { SOMANET_IFM_GPIO_D0,
-                       SOMANET_IFM_GPIO_D1,
-                       SOMANET_IFM_GPIO_D2,
-                       SOMANET_IFM_GPIO_D3 };
-#else
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
 BISSPorts biss_ports = SOMANET_IFM_BISS_PORTS;
+#else
+QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
+port gpio_ports[4] = {  SOMANET_IFM_GPIO_D0,
+                        SOMANET_IFM_GPIO_D1,
+                        SOMANET_IFM_GPIO_D2,
+                        SOMANET_IFM_GPIO_D3 };
 #endif
 
 int main(void)
@@ -55,11 +55,11 @@ int main(void)
     interface ADCInterface i_adc[2];
     interface HallInterface i_hall[5];
     interface MotorcontrolInterface i_motorcontrol[4];
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
+    interface BISSInterface i_biss[5];
+#else
     interface QEIInterface i_qei[5];
     interface GPIOInterface i_gpio[1];
-#else
-    interface BISSInterface i_biss[5];
 #endif
 
     interface TorqueControlInterface i_torque_control[3];
@@ -113,15 +113,15 @@ int main(void)
             profiler_config.max_current_slope = MAX_CURRENT_VARIATION;
             profiler_config.max_current = MAX_CURRENT;
 
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
-                                    i_motorcontrol[3], i_hall[4], i_qei[4], null, i_gpio[0],
+                                    i_motorcontrol[3], i_hall[4], null, i_biss[4], null,
                                     i_torque_control[0], i_velocity_control[0], i_position_control[0]);
 #else
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
-                                    i_motorcontrol[3], i_hall[4], null, i_biss[4], null,
+                                    i_motorcontrol[3], i_hall[4], i_qei[4], null, i_gpio[0],
                                     i_torque_control[0], i_velocity_control[0], i_position_control[0]);
 #endif
         }
@@ -143,11 +143,11 @@ int main(void)
                      position_control_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
 
                      /* Control Loop */
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                     position_control_service(position_control_config, i_hall[1], i_qei[1], null, i_motorcontrol[0],
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
+                     position_control_service(position_control_config, i_hall[1], null, i_biss[1], i_motorcontrol[0],
                                                  i_position_control);
 #else
-                     position_control_service(position_control_config, i_hall[1], null, i_biss[1], i_motorcontrol[0],
+                     position_control_service(position_control_config, i_hall[1], i_qei[1], null, i_motorcontrol[0],
                                                  i_position_control);
 #endif
                 }
@@ -165,11 +165,11 @@ int main(void)
                     velocity_control_config.control_loop_period =  CONTROL_LOOP_PERIOD;
 
                     /* Control Loop */
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                    velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], null, i_motorcontrol[1],
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
+                    velocity_control_service(velocity_control_config, i_hall[2], null, i_biss[2], i_motorcontrol[1],
                                                 i_velocity_control);
 #else
-                    velocity_control_service(velocity_control_config, i_hall[2], null, i_biss[2], i_motorcontrol[1],
+                    velocity_control_service(velocity_control_config, i_hall[2], i_qei[2], null, i_motorcontrol[1],
                                                 i_velocity_control);
 #endif
                 }
@@ -188,11 +188,11 @@ int main(void)
                     torque_control_config.control_loop_period = CONTROL_LOOP_PERIOD; // us
 
                     /* Control Loop */
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], null, i_motorcontrol[2],
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
+                    torque_control_service(torque_control_config, i_adc[0], i_hall[3], null, i_biss[3], i_motorcontrol[2],
                                                 i_torque_control);
 #else
-                    torque_control_service(torque_control_config, i_adc[0], i_hall[3], null, i_biss[3], i_motorcontrol[2],
+                    torque_control_service(torque_control_config, i_adc[0], i_hall[3], i_qei[3], null, i_motorcontrol[2],
                                                 i_torque_control);
 #endif
                 }
@@ -240,21 +240,7 @@ int main(void)
                     hall_service(hall_ports, hall_config, i_hall);
                 }
 
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                /* Quadrature encoder sensor Service */
-                {
-                     QEIConfig qei_config;
-                         qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;        // Encoder signal type (if applicable to your board)
-                         qei_config.index_type = QEI_SENSOR_INDEX_TYPE;          // Indexed encoder?
-                         qei_config.ticks_resolution = QEI_SENSOR_RESOLUTION;    // Encoder resolution
-                         qei_config.sensor_polarity = QEI_SENSOR_POLARITY;       // CW
-
-                     qei_service(qei_ports, qei_config, i_qei);
-                }
-
-                /* GPIO Digital Service */
-                gpio_service(gpio_ports, i_gpio);
-#else
+#if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
                 /* BiSS service */
                 {
                     BISSConfig biss_config;
@@ -275,6 +261,20 @@ int main(void)
 
                     biss_service(biss_ports, biss_config, i_biss);
                 }
+#else
+                /* Quadrature encoder sensor Service */
+                {
+                     QEIConfig qei_config;
+                         qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;        // Encoder signal type (if applicable to your board)
+                         qei_config.index_type = QEI_SENSOR_INDEX_TYPE;          // Indexed encoder?
+                         qei_config.ticks_resolution = QEI_SENSOR_RESOLUTION;    // Encoder resolution
+                         qei_config.sensor_polarity = QEI_SENSOR_POLARITY;       // CW
+
+                     qei_service(qei_ports, qei_config, i_qei);
+                }
+
+                /* GPIO Digital Service */
+                gpio_service(gpio_ports, i_gpio);
 #endif
 
                 /* Motor Commutation Service */
@@ -287,12 +287,12 @@ int main(void)
                          motorcontrol_config.hall_offset[1] = COMMUTATION_OFFSET_CCLK;
                          motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
 
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                     motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                             c_pwm_ctrl, i_hall[0], i_qei[0], null, i_watchdog[0], i_motorcontrol);
+#if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
+                         motorcontrol_service(fet_driver_ports, motorcontrol_config,
+                                                 c_pwm_ctrl, i_hall[0], null, i_biss[0], i_watchdog[0], i_motorcontrol);
 #else
-                     motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                             c_pwm_ctrl, i_hall[0], null, i_biss[0], i_watchdog[0], i_motorcontrol);
+                         motorcontrol_service(fet_driver_ports, motorcontrol_config,
+                                                 c_pwm_ctrl, i_hall[0], null, null, i_watchdog[0], i_motorcontrol);
 #endif
                 }
 

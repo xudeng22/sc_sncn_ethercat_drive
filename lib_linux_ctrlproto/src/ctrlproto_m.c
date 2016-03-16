@@ -73,8 +73,9 @@ void check_master_state(master_setup_variables_t *master_setup)
     master_setup->master_state = ms;
 }
 
-/****************************************************************************
+/****************************************************************************/
 
+/*
 void check_slave_config_states(void)
 {
     ec_slave_config_state_t s;
@@ -91,12 +92,13 @@ void check_slave_config_states(void)
 
     sc_data_in_state = s;
 }
+ */
 
 /****************************************************************************/
 
 int read_sdo(ec_sdo_request_t *req)
 {
-	int sdo_read_value;
+	int sdo_read_value = 0;
     switch (ecrt_sdo_request_state(req)) {
         case EC_REQUEST_UNUSED: // request was not used yet
             ecrt_sdo_request_read(req); // trigger first read
@@ -142,6 +144,8 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 			return 0;
 			break;
 	}
+
+	return 0;
 }
 
 /****************************************************************************/
@@ -152,8 +156,6 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         int update_sequence, int slave_number)
 {
-	int slv;
-
 	if(sig_alarms == user_alarms) pause();
 	while (sig_alarms != user_alarms)
 	{
@@ -165,7 +167,7 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_domain_process(master_setup->domain);
 
 
-		//for (slv = 0; slv < total_no_of_slaves; ++slv)
+		//for (int slv = 0; slv < total_no_of_slaves; ++slv)
 		{
 			slv_handles[slave_number].motor_config_param = \
 					sdo_motor_config_update(slv_handles[slave_number].motor_config_param, \
@@ -203,7 +205,7 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         unsigned int total_no_of_slaves)
 {
-	int slv;
+	unsigned int slv;
 
 	if(sig_alarms == user_alarms) pause();
 	while (sig_alarms != user_alarms)
@@ -305,7 +307,7 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 
 void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int total_no_of_slaves)
 {
-	int slv;
+    unsigned int slv;
 
     struct sigaction sa;
     struct itimerval tv;

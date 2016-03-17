@@ -132,6 +132,14 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 	0,\
 	0,\
 	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
 	{ 	{POLE_PAIRS(CONFIG_NUMBER), 0},\
 		{GEAR_RATIO(CONFIG_NUMBER), 0},\
 		{MAX_NOMINAL_SPEED(CONFIG_NUMBER), 0},\

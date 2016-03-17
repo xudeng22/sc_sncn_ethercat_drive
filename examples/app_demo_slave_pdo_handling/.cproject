@@ -143,6 +143,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc}&quot;"/>
 								</option>
 								<option id="com.xmos.xc.compiler.option.defined.symbols.1540322941" name="com.xmos.xc.compiler.option.defined.symbols" superClass="com.xmos.xc.compiler.option.defined.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__SHRT_MAX__=32767"/>
@@ -734,6 +740,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.95438848" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1145,6 +1157,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.22657252" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

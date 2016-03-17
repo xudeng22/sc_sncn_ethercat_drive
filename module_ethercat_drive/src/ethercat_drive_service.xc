@@ -186,6 +186,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     actual_torque = i_torque_control.get_torque();
                     send_actual_torque(actual_torque * profiler_config.polarity, InOut);
 
+                    xscope_int(VALUE_1, c_time);
                     t when timerafter(c_time + MSEC_STD) :> c_time;
                 }
             }
@@ -217,6 +218,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     actual_velocity = i_velocity_control.get_velocity();
                     send_actual_velocity(actual_velocity * polarity, InOut);
 
+                    xscope_int(VALUE_2, c_time);
                     t when timerafter(c_time + MSEC_STD) :> c_time;
                 }
             }
@@ -278,6 +280,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                 {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
 
+                int t_tmp;
                 t :> c_time;
                 for (int i=0; i<steps; i++) {
                     target_position = quick_stop_position_profile_generate(i, sense);
@@ -285,7 +288,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                                                                     min_position_limit));
 
                     //send_actual_position(actual_position * polarity, InOut);
+                    xscope_int(VALUE_3, t_tmp-c_time);
                     t when timerafter(c_time + MSEC_STD) :> c_time;
+                    t_tmp = c_time;
                 }
             }
             mode_selected = 0;

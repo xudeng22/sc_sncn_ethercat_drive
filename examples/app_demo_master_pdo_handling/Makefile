@@ -1,20 +1,24 @@
+# Makefile for app_demo_master_pdo_handling
+#
+# 2016-03-15 Synapticon GmbH
+
+CC = gcc
+LD = gcc
+MKDIR = mkdir
+RM = rm
+RMDIR = rm -d
+
+CFLAGS = -g -Wall -Wextra -std=c99 -O2
+LDFLAGS = -static
+
 FLAGS = -static
 FLAGS += -std=c99
 
+LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
+LIB_DIRS += -L ../../lib_linux_ctrlproto/lib
+
 LIBS += -lsncn_ctrlproto
 LIBS += -lethercat -lm
-
-SOURCE_DIRS = src
-
-# Installation directory of the  EtherCAT Master by IgH EtherLAB
-ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
-
-ETHERCAT_DRIVE_PATH := ../../.
-MOTORCONTROL_PATH := ../../.
-
-ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
-	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
-endif
 
 INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/inc_ctrlproto-common
 INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/include
@@ -30,35 +34,66 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../config_motor_master
 
-LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
-LIB_DIRS += -L ../../lib_linux_ctrlproto/lib
-
-# Needed for checking if Linux machine
+#
+# Check for Linux machine
+#
 UNAME := $(shell uname)
 
-all:
-		@echo Bulding dependency: lib_linux_ctrlproto...
-		@cd $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto; make
-		@echo 
-		@echo Bulding application $(notdir $(shell pwd))
-ifneq "$(UNAME)" "Linux"
-		@echo "------------------------------------------------------------------------------------------------------"
-		@echo "||Your System isn't Linux, so the Master Application for the Linux EtherCAT Master can not be built.||"
-		@echo "------------------------------------------------------------------------------------------------------"
-else
-		@if test -d $(ETHERCAT_MASTER_INSTALLDIR); \
-		then \
-		mkdir bin -p;\
-		gcc src/main.c $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/$(notdir $(shell pwd)); \
-		else echo \
-		"\n\
-		-----------------------------------------------------------------------------------------------------------------\n\
-		||EtherCAT Master is not installed at given directory if you installed it elsewhere change location in Makefile||\n\
-		-----------------------------------------------------------------------------------------------------------------\n";\
-		fi
+ifneq ($(UNAME),Linux)
+  $(error This software only runs on Linux.)
 endif
 
-##Add clean Master Application
-clean: masterAppClean
-masterAppClean:
+#
+# Directories
+#
+
+SOURCE_DIRS = src
+BUILD_DIR = build
+OUT_DIR = bin
+
+ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
+# Installation directory of the  EtherCAT Master by IgH EtherLAB
+ifeq (,$(wildcard /opt/etherlab))
+  $(error Directory /opt/etherlab does not exist, please check your EtherLAB installation and fix the path)
+endif
+
+ETHERCAT_DRIVE_PATH := ../../.
+MOTORCONTROL_PATH := ../../.
+
+ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
+	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
+endif
+
+#
+# Targets and Objects
+#
+
+TARGET = app_linux_ctrlproto-master-example
+OBJECTS = main.o
+
+#
+# Implicit Target
+#
+
+$(BUILD_DIR)/%.o: $(SOURCE_DIRS)/%.c
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c -o $@ $^
+
+#
+# Target
+#
+
+all: prerequisite $(TARGET)
+
+$(TARGET): $(BUILD_DIR)/main.o
+	$(LD) $(LDFLAGS) -o $(OUT_DIR)/$@ $^ $(LIB_DIRS) $(LIBS)
+
+.PHONY: clean prerequisite
+
+prerequisite:
+	$(MAKE) -C $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto
+	$(MKDIR) -p $(BUILD_DIR) $(OUT_DIR)
+
+clean:
 	rm -f bin/app_linux_ctrlproto-master-example
+	$(RM) $(BUILD_DIR)/*.o $(BIN_DIR)/$(TARGET)
+	$(RMDIR) $(BIN_DIR) $(BUILD_DIR)

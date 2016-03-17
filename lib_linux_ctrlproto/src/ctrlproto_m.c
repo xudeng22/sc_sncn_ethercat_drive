@@ -235,6 +235,11 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 			slv_handles[slv].position_in = EC_READ_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[2]);
 			slv_handles[slv].speed_in = EC_READ_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[3]);
 			slv_handles[slv].torque_in = EC_READ_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[4]);
+			/* Read user PDOs */
+			slv_handles[slv].user1_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[5]);
+			slv_handles[slv].user2_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[6]);
+			slv_handles[slv].user3_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[7]);
+			slv_handles[slv].user4_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[8]);
 		}
 
 /*		printf("\n%x", 	slv_handles[slv].motorctrl_status_in);
@@ -251,6 +256,11 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 			EC_WRITE_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[2], (slv_handles[slv].torque_setpoint)&0xffff);
 			EC_WRITE_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[3], slv_handles[slv].position_setpoint);
 			EC_WRITE_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[4], slv_handles[slv].speed_setpoint);
+			/* Write user PDOs */
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[5], slv_handles[slv].user1_out);
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[6], slv_handles[slv].user2_out);
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[7], slv_handles[slv].user3_out);
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[8], slv_handles[slv].user4_out);
 		}
 
 		// send process data

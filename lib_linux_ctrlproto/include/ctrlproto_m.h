@@ -310,6 +310,22 @@ typedef struct
 	uint8_t operation_mode_disp;		/*only 8 bits valid*/
 
 	/**
+	 * User defined RX fields
+	 */
+	int32_t user1_in;
+	int32_t user2_in;
+	int32_t user3_in;
+	int32_t user4_in;
+
+	/**
+	 * User defined TX fields
+	 */
+	int32_t user1_out;
+	int32_t user2_out;
+	int32_t user3_out;
+	int32_t user4_out;
+
+	/**
 	 * motor config struct
 	 */
 	motor_config motor_config_param; /*set via bldc_motor_config header file*/

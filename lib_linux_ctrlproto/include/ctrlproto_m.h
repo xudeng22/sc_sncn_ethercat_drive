@@ -73,19 +73,19 @@ ec_pdo_entry_info_t ctrlproto_pdo_entries[] = {\
 	    {CAN_OD_TORQUE_TARGET, 0x00, 16},\
 	    {CAN_OD_POSITION_TARGET, 0x00, 32},\
 	    {CAN_OD_VELOCITY_TARGET, 0x00, 32},\
-            {CAN_OD_USER_RX_1, 0x00, 32}, \
-            {CAN_OD_USER_RX_2, 0x00, 32}, \
-            {CAN_OD_USER_RX_3, 0x00, 32}, \
-            {CAN_OD_USER_RX_4, 0x00, 32}, \
+            {CAN_OD_USER_TX_1, 0x00, 32}, \
+            {CAN_OD_USER_TX_2, 0x00, 32}, \
+            {CAN_OD_USER_TX_3, 0x00, 32}, \
+            {CAN_OD_USER_TX_4, 0x00, 32}, \
 	    {CAN_OD_STATUS_WORD, 0x00, 16},\
 	    {CAN_OD_MODES_DISPLAY, 0x00, 8},\
 	    {CAN_OD_POSITION_VALUE, 0x00, 32},\
 	    {CAN_OD_VELOCITY_VALUE, 0x00, 32},\
 	    {CAN_OD_TORQUE_VALUE, 0x00, 16},\
-            {CAN_OD_USER_TX_1, 0x00, 32}, \
-            {CAN_OD_USER_TX_2, 0x00, 32}, \
-            {CAN_OD_USER_TX_3, 0x00, 32}, \
-            {CAN_OD_USER_TX_4, 0x00, 32}, \
+            {CAN_OD_USER_RX_1, 0x00, 32}, \
+            {CAN_OD_USER_RX_2, 0x00, 32}, \
+            {CAN_OD_USER_RX_3, 0x00, 32}, \
+            {CAN_OD_USER_RX_4, 0x00, 32}, \
 };\
 \
 ec_pdo_info_t ctrlproto_pdos[] = {\
@@ -99,7 +99,7 @@ ec_sync_info_t ctrlproto_syncs[] = {\
     {2, EC_DIR_OUTPUT, 1, ctrlproto_pdos + 0, EC_WD_DISABLE},\
     {3, EC_DIR_INPUT, 1, ctrlproto_pdos + 1, EC_WD_DISABLE},\
     {0xff}\
-};\
+};
 
 
 

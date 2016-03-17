@@ -8,9 +8,14 @@
 #define ETHERCAT_SETUP_H_
 
 /**
- * Number of SOMANET Slaves
+ * SOMANET Slave Configuration
  */
 #define TOTAL_NUM_OF_SLAVES 1
+
+#define SLAVE_ALIAS                    0
+#define SLAVE_POSITION                 0
+#define SLAVE_CONFIG_NUMBER            1
+#define SLAVE_POSITION_IN_SLV_HANDLES  0
 
 SOMANET_C22_CTRLPROTO_CSTRUCT();
 
@@ -18,14 +23,14 @@ SOMANET_C22_CTRLPROTO_CSTRUCT();
   Note: Each array entry defines handle struct for a node */
 static ctrlproto_slv_handle slv_handles[]=
 {
-    SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0, 0, 1) /* ALIAS / POSITION / CONFIG_NUMBER */
+    SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(SLAVE_ALIAS, SLAVE_POSITION, SLAVE_CONFIG_NUMBER)
 };
 
 /* Domain entries for the pdos
  * Note: Each array entry define pdos for a node
  */
 const static ec_pdo_entry_reg_t domain_regs[] = {
-    SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0, 0, 0),  /* ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES */
+    SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(SLAVE_ALIAS, SLAVE_POSITION, SLAVE_POSITION_IN_SLV_HANDLES),
     {0}
 };
 

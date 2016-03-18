@@ -68,7 +68,7 @@ endif
 # Targets and Objects
 #
 
-TARGET = app_linux_ctrlproto-master-example
+TARGET = app_demo_master_pdo_handling
 OBJECTS = main.o
 
 #

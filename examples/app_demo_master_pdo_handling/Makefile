@@ -5,8 +5,8 @@
 CC = gcc
 LD = gcc
 MKDIR = mkdir
-RM = rm
-RMDIR = rm -d
+RM = rm -f
+RMDIR = rm -f -d
 
 CFLAGS = -g -Wall -Wextra -std=c99 -O2
 LDFLAGS = -static
@@ -94,6 +94,5 @@ prerequisite:
 	$(MKDIR) -p $(BUILD_DIR) $(OUT_DIR)
 
 clean:
-	rm -f bin/app_linux_ctrlproto-master-example
-	$(RM) $(BUILD_DIR)/*.o $(BIN_DIR)/$(TARGET)
-	$(RMDIR) $(BIN_DIR) $(BUILD_DIR)
+	$(RM) $(BUILD_DIR)/*.o $(OUT_DIR)/$(TARGET)
+	$(RMDIR) $(OUT_DIR) $(BUILD_DIR)

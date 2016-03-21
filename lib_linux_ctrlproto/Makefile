@@ -12,7 +12,7 @@ AR = ar
 RM = rm
 INSTALL = install
 
-CFLAGS = -g -Wall -Wextra  -O3
+CFLAGS = -g -Wall -Wextra  -O0
 LDFLAGS = -g
 ARFLAGS =
 

@@ -10,6 +10,7 @@ CC = gcc
 LD = gcc
 AR = ar
 RM = rm
+INSTALL = install
 
 CFLAGS = -g -Wall -Wextra  -O3
 LDFLAGS = -g
@@ -65,6 +66,7 @@ endif
 
 
 OUTDIR ?= ./lib
+TARGET_DIR = /opt/synapticon/lib
 
 #
 # prototype to compile object files
@@ -77,7 +79,7 @@ src/%.s.o: src/%.c
 	$(CC) $(CFLAGS) -fPIC $(INCLUDE_DIRS) -c -o $@ $^
 
 # Phony targets
-.PHONY: clean
+.PHONY: clean install uninstall
 
 # build rules
 
@@ -91,6 +93,15 @@ libsncn_ctrlproto.so: src/ctrlproto_m.s.o
 
 libsncn_ctrlproto.a: src/ctrlproto_m.o
 	$(AR) rcs $(OUTDIR)/$@ $^
+
+# simple lib installation, use -L to reference to $(TARGET_DIR)
+install:
+	#$(INSTALL) -D $(OUTDIR)/libsncn_ctrlproto.so $(TARGET_DIR)
+	$(INSTALL) -D $(OUTDIR)/libsncn_ctrlproto.a $(TARGET_DIR)
+
+uninstall:
+	$(RM) -f $(TARGET_DIR)/libsncn_ctrlproto.a
+	$(RM) -f $(TARGET_DIR)/libsncn_ctrlproto.so
 
 clean:
 	$(RM) -f lib/*.so lib/*.a src/*.o

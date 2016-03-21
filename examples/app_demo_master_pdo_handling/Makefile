@@ -8,11 +8,12 @@ MKDIR = mkdir
 RM = rm -f
 RMDIR = rm -f -d
 
-CFLAGS = -g -Wall -Wextra -std=c99 -O2
+CFLAGS = -g -Wall -Wextra  -O0 -std=c99 -static
 LDFLAGS = -static
 
-FLAGS = -static
-FLAGS += -std=c99
+#
+# Include and Library paths
+#
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 LIB_DIRS += -L ../../lib_linux_ctrlproto/lib
@@ -64,6 +65,7 @@ ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 endif
 
+
 #
 # Targets and Objects
 #
@@ -86,12 +88,16 @@ all: prerequisite $(TARGET)
 
 $(TARGET): $(BUILD_DIR)/main.o
 	$(LD) $(LDFLAGS) -o $(OUT_DIR)/$@ $^ $(LIB_DIRS) $(LIBS)
+	@echo "Build finished: $(OUTDIR)/$(TARGET)"
 
-.PHONY: clean prerequisite
+.PHONY: clean prerequisite justpreprocess
+
+justpreprocess:
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -E -o main.preproc.c $(SOURCE_DIRS)/main.c
 
 prerequisite:
-	$(MAKE) -C $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto
 	$(MKDIR) -p $(BUILD_DIR) $(OUT_DIR)
+	$(MAKE) -C $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto
 
 clean:
 	$(RM) $(BUILD_DIR)/*.o $(OUT_DIR)/$(TARGET)

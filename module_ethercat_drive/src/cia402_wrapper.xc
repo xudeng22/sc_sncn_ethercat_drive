@@ -360,10 +360,10 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 		InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
 		InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
 		InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-		InOut.user1_in        = (buffer[8]&0xff)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
-		InOut.user2_in        = (buffer[10]&0xff) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
-		InOut.user3_in        = (buffer[12]&0xff) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
-		InOut.user4_in        = (buffer[14]&0xff) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
+		InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
+		InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
+		InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
+		InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
 //		printhexln(InOut.control_word);
 //		printhexln(InOut.operation_mode);
 //		printhexln(InOut.target_torque);

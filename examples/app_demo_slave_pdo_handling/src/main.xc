@@ -44,6 +44,11 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 		InOut.status_word = status;
 		InOut.operation_mode_display = InOut.operation_mode;
 
+		/* Mirror user defined fields */
+		InOut.user1_out = InOut.user1_in;
+		InOut.user2_out = InOut.user2_in;
+		InOut.user3_out = InOut.user3_in;
+		InOut.user4_out = InOut.user4_in;
 
 		if(InOutOld.control_word != InOut.control_word)
 		{

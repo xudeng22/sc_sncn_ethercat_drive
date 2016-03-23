@@ -66,7 +66,7 @@
 /////////////////////////////////////////////
 
 // CONTROL LOOP PERIOD [us]
-#define CONTROL_LOOP_PERIOD     60
+#define CONTROL_LOOP_PERIOD     1000
 
 // PID FOR POSITION CONTROL (if applicable) [will be divided by 10000]
 #define POSITION_Kp       1000

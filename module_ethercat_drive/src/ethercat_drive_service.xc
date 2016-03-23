@@ -431,10 +431,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL_SENSOR) {
+                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
+                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
                             i_qei.set_qei_config(qei_params);
+                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
+                            i_biss.set_biss_config(biss_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
@@ -470,10 +472,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     if (op_set_flag == 0) {
                         update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
-                        if (sensor_select == HALL_SENSOR) {
+                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
+                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
                             i_qei.set_qei_config(qei_params);
+                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
+                            i_biss.set_biss_config(biss_config);
                         }
 
                         i_torque_control.set_torque_control_config(torque_ctrl_params);
@@ -512,10 +516,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL_SENSOR) {
+                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
+                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
                             i_qei.set_qei_config(qei_params);
+                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
+                            i_biss.set_biss_config(biss_config);
                         }
 
                         i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
@@ -550,10 +556,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL_SENSOR) {
+                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
+                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
                             i_qei.set_qei_config(qei_params);
+                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
+                            i_biss.set_biss_config(biss_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
                         i_torque_control.set_torque_sensor(sensor_select);
@@ -584,10 +592,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL_SENSOR) {
+                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
+                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
                             i_qei.set_qei_config(qei_params);
+                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
+                            i_biss.set_biss_config(biss_config);
                         }
 
                         i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
@@ -618,10 +628,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
                         sensor_select = sensor_select_sdo(coe_out);
 
-                        if (sensor_select == HALL_SENSOR) {
+                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
+                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
                             i_qei.set_qei_config(qei_params);
+                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
+                            i_biss.set_biss_config(biss_config);
                         }
 
                         i_torque_control.set_torque_control_config(torque_ctrl_params);

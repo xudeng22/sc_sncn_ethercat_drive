@@ -3,12 +3,7 @@ ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 
 LIBS += -lethercat -lm
 
-#MOTORCONTROL_KIT_PATH := ..
 MOTORCONTROL_PATH := ..
-
-#ifneq (,$(wildcard ../../sw_sncn_motorcontrol_ethercat_kit/.))
-#	MOTORCONTROL_KIT_PATH := ../../sw_sncn_motorcontrol_ethercat_kit
-#endif
 
 ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../sc_sncn_motorcontrol

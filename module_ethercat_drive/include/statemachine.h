@@ -30,6 +30,7 @@ typedef struct S_Check_list {
     bool _hall_init;
     bool _qei_init;
     bool _biss_init;
+    bool _ams_init;
     bool _adc_init;
     bool _torque_init;
     bool _velocity_init;
@@ -68,6 +69,7 @@ void update_checklist(check_list &check_list_param, int mode,
                         interface HallInterface client ?i_hall,
                         interface QEIInterface client ?i_qei,
                         interface BISSInterface client ?i_biss,
+                        interface AMSInterface client ?i_ams,
                         interface ADCInterface client ?i_adc,
                         interface TorqueControlInterface client i_torque_control,
                         interface VelocityControlInterface client i_velocity_control,

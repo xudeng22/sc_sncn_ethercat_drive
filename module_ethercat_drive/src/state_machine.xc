@@ -61,6 +61,7 @@ void update_checklist(check_list &check_list_param, int mode,
                         interface HallInterface client ?i_hall,
                         interface QEIInterface client ?i_qei,
                         interface BISSInterface client ?i_biss,
+                        interface AMSInterface client ?i_ams,
                         interface ADCInterface client ?i_adc,
                                 interface TorqueControlInterface client i_torque_control,
                                 interface VelocityControlInterface client i_velocity_control,
@@ -98,6 +99,10 @@ void update_checklist(check_list &check_list_param, int mode,
             i_biss.get_biss_position_fast();
             check_list_param._biss_init = INIT;
         }
+        if (~skip &&  ~check_list_param._ams_init && !isnull(i_ams)) {
+            i_ams.get_ams_position();
+            check_list_param._ams_init = INIT;
+        }
         break;
     case INIT:
         if (~check_list_param._torque_init && mode == 1) {
@@ -116,7 +121,7 @@ void update_checklist(check_list &check_list_param, int mode,
         check_list_param.ready = true;
     }
 
-    if (check_list_param.ready && (check_list_param._hall_init || isnull(i_hall)) && (check_list_param._qei_init || isnull(i_qei)) && (check_list_param._biss_init || isnull(i_biss)) && ~check_list_param.fault) {
+    if (check_list_param.ready && (check_list_param._hall_init || isnull(i_hall)) && (check_list_param._qei_init || isnull(i_qei)) && (check_list_param._biss_init || isnull(i_biss)) && (check_list_param._ams_init || isnull(i_ams)) && ~check_list_param.fault) {
         check_list_param.switch_on = true;
         check_list_param.mode_op = true;
         check_list_param.operation_enable = true;

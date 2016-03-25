@@ -44,10 +44,6 @@ port gpio_ports[4] = {  SOMANET_IFM_GPIO_D0,
                         SOMANET_IFM_GPIO_D3 };
 #elif (MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
 AMSPorts ams_ports = SOMANET_IFM_AMS_PORTS;
-port gpio_ports[4] = {  SOMANET_IFM_GPIO_D0,
-                        SOMANET_IFM_GPIO_D1,
-                        SOMANET_IFM_GPIO_D2,
-                        SOMANET_IFM_GPIO_D3 };
 #else
 BISSPorts biss_ports = SOMANET_IFM_BISS_PORTS;
 #endif
@@ -299,8 +295,6 @@ int main(void)
 
                     ams_service(ams_ports, ams_config, i_ams);
                 }
-                /* GPIO Digital Service */
-                gpio_service(gpio_ports, i_gpio);
 #elif (MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
                 /* BiSS service */
                 {

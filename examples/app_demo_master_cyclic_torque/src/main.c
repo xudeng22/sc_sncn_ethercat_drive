@@ -19,13 +19,13 @@ enum {ECAT_SLAVE_0};
 
 int main() {
 
-    float target_torque = 30.0; // mNm
-    float torque_slope = 10.0; // mNm/s
+    float target_torque = 200;
+    float torque_slope = 10.0; // Unit/s
 
-    float actual_torque = 0.0; // mNm
-    int actual_position = 0; // ticks
-    int actual_velocity = 0; // rpm
-    float torque_ramp = 0.0; // mNm
+    float actual_torque = 0.0;
+    int actual_position = 0;
+    int actual_velocity = 0;
+    float torque_ramp = 0.0;
     int steps = 0;
 
     /* Initialize EtherCAT Master */
@@ -64,10 +64,10 @@ int main() {
                     slv_handles);
             //printf("torque_ramp %f \n",torque_ramp);
             /* Send target torque for the node specified by ECAT_SLAVE_0 */
-            set_torque_mNm(torque_ramp, ECAT_SLAVE_0, slv_handles);
+            set_torque(torque_ramp, ECAT_SLAVE_0, slv_handles);
 
             /* Read actual node sensor values */
-            actual_torque = get_torque_actual_mNm(ECAT_SLAVE_0, slv_handles);
+            actual_torque = get_torque_actual(ECAT_SLAVE_0, slv_handles);
             actual_position = get_position_actual_ticks(ECAT_SLAVE_0,
                     slv_handles);
             actual_velocity

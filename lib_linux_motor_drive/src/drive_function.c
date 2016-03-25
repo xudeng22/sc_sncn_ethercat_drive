@@ -66,9 +66,19 @@ void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle 
 
 }
 
+void set_torque(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+    slv_handles[slave_number].torque_setpoint =  target_torque;
+}
+
 float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	return (  ((float) slv_handles[slave_number].torque_in ) * slv_handles[slave_number].factor_torq );
+}
+
+float get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+    return (float)slv_handles[slave_number].torque_in;
 }
 
 int get_velocity_actual_rpm(int slave_number, ctrlproto_slv_handle *slv_handles)

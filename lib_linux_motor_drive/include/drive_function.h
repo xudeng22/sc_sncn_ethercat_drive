@@ -206,7 +206,7 @@ int generate_profile_position(int step, int slave_number, ctrlproto_slv_handle *
 
 
 /**
- * @brief Sets target torque for Profile Torque mode(PTM) & Cyclic Synchronous Torque(CST) mode
+ * @brief Sets target torque in mNm for Profile Torque mode(PTM) & Cyclic Synchronous Torque(CST) mode
  *
  * @param target_torque			Specify the target torque to follow (in mNm)
  * @param slave_number			Specify the slave number to which the motor is connected
@@ -214,9 +214,17 @@ int generate_profile_position(int step, int slave_number, ctrlproto_slv_handle *
  */
 void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 
+/**
+ * @brief Sets target torque for Profile Torque mode(PTM) & Cyclic Synchronous Torque(CST) mode
+ *
+ * @param target_torque         Specify the target torque to follow
+ * @param slave_number          Specify the slave number to which the motor is connected
+ * @param slv_handles           The handle struct for the slaves
+ */
+void set_torque(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 /**
- * @brief Gets actual torque
+ * @brief Gets actual torque in mNm
  *
  * @param slave_number			Specify the slave number to which the motor is connected
  * @param slv_handles 			The handle struct for the slaves
@@ -224,6 +232,16 @@ void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle 
  * @return actual torque in mNm from the slave number specified
  */
 float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+/**
+ * @brief Gets actual torque
+ *
+ * @param slave_number          Specify the slave number to which the motor is connected
+ * @param slv_handles           The handle struct for the slaves
+ *
+ * @return actual torque in mNm from the slave number specified
+ */
+float get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**

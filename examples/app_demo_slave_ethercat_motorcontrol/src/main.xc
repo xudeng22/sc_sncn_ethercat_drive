@@ -243,7 +243,7 @@ int main(void)
             par
             {
                 /* ADC Service */
-                adc_service(adc_ports, c_adctrig, i_adc);
+                adc_service(adc_ports, c_adctrig, i_adc, i_watchdog[1]);
 
                 /* PWM Service */
                 pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl);
@@ -321,13 +321,13 @@ int main(void)
                 /* Motor Commutation Service */
                 {
                      MotorcontrolConfig motorcontrol_config;
-                         motorcontrol_config.motor_type = BLDC_MOTOR;
-                         motorcontrol_config.commutation_method = FOC;
-                         motorcontrol_config.commutation_sensor = MOTOR_COMMUTATION_SENSOR;
-                         motorcontrol_config.bldc_winding_type = BLDC_WINDING_TYPE;
-                         motorcontrol_config.hall_offset[0] =  COMMUTATION_OFFSET_CLK;
-                         motorcontrol_config.hall_offset[1] = COMMUTATION_OFFSET_CCLK;
-                         motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
+                     motorcontrol_config.motor_type = BLDC_MOTOR;
+                     motorcontrol_config.commutation_method = FOC;
+                     motorcontrol_config.commutation_sensor = MOTOR_COMMUTATION_SENSOR;
+                     motorcontrol_config.bldc_winding_type = BLDC_WINDING_TYPE;
+                     motorcontrol_config.hall_offset[0] =  COMMUTATION_OFFSET_CLK;
+                     motorcontrol_config.hall_offset[1] = COMMUTATION_OFFSET_CCLK;
+                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
 
 #if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
                      motorcontrol_service(fet_driver_ports, motorcontrol_config,

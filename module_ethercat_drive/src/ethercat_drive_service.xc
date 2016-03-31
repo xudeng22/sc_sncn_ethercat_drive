@@ -13,6 +13,16 @@
 #include <profile.h>
 #include <config_manager.h>
 
+const char * state_names[] = {"u shouldn't see me",
+"S_NOT_READY_TO_SWITCH_ON",
+"S_SWITCH_ON_DISABLED",
+"S_SWITCH_ON",
+"S_OPERATION_ENABLE",
+"S_FAULT",
+"S_QUICK_STOP",
+"S_READY_TO_SWITCH_ON"
+};
+
 {int, int} static inline get_position_absolute(int sensor_select, interface HallInterface client ?i_hall,
                                                 interface QEIInterface client ?i_qei, interface BISSInterface client ?i_biss, interface AMSInterface client ?i_ams)
 {
@@ -143,7 +153,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int inactive_timeout_flag = 0;
 
     unsigned int time;
-    int state = 0, state_old = 0;
+    int state, state_old;
     int statusword = 0, statusword_old = 0;
     int controlword = 0, controlword_old = 0;
 
@@ -302,7 +312,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             //printstrln("Triggering quick stop mode");
 
             if(controlword != controlword_old || state != state_old || statusword != statusword_old || InOut.operation_mode != op_mode_commanded_old || op_mode != op_mode_old){
-                printf("Inactive_COMM!!!, Control_word: %d  |  State: %d  |   Statusword: %d  |   Op_mode_commanded %d, Op_mode_assigned %d\n", controlword, state, statusword, InOut.operation_mode, op_mode);
+                printf("Inactive_COMM!!!, Control_word: %d  |  State: %s  |   Statusword: %d  |   Op_mode_commanded %d, Op_mode_assigned %d\n",
+                        controlword, state_names[state], statusword, InOut.operation_mode, op_mode);
             }
             controlword_old = controlword; state_old = state; statusword_old = statusword; op_mode_commanded_old = InOut.operation_mode; op_mode_old = op_mode;
 
@@ -403,7 +414,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             InOut.status_word = statusword;
 
             if(controlword != controlword_old || state != state_old || statusword != statusword_old || InOut.operation_mode != op_mode_commanded_old || op_mode != op_mode_old){
-                printf("Active_COMM, Control_word: %d  |  State: %d  |   Statusword: %d  |   Op_mode_commanded %d, Op_mode_assigned %d\n", controlword, state, statusword, InOut.operation_mode, op_mode);
+                printf("Active_COMM, Control_word: %d  |  State: %s  |   Statusword: %d  |   Op_mode_commanded %d, Op_mode_assigned %d\n",
+                        controlword, state_names[state], statusword, InOut.operation_mode, op_mode);
             }
             controlword_old = controlword; state_old = state; statusword_old = statusword; op_mode_commanded_old = InOut.operation_mode; op_mode_old = op_mode;
 

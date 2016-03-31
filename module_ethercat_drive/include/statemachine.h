@@ -19,6 +19,14 @@ typedef int bool;
 #define true 1
 #define false 0
 
+//#define S_NOT_READY_TO_SWITCH_ON    1
+//#define S_SWITCH_ON_DISABLED        2
+//#define S_READY_TO_SWITCH_ON        7
+//#define S_SWITCH_ON                 3
+//#define S_OPERATION_ENABLE          4
+//#define S_FAULT                     5
+//#define S_QUICK_STOP                6
+
 typedef struct S_Check_list {
     bool ready;
     bool switch_on;
@@ -37,6 +45,15 @@ typedef struct S_Check_list {
     bool _position_init;
 } check_list;
 
+typedef enum e_States {
+    S_NOT_READY_TO_SWITCH_ON = 1,
+    S_SWITCH_ON_DISABLED = 2,
+    S_READY_TO_SWITCH_ON = 7,
+    S_SWITCH_ON = 3,
+    S_OPERATION_ENABLE = 4,
+    S_FAULT = 5,
+    S_QUICK_STOP = 6
+} states;
 
 bool __check_bdc_init(chanend c_signal);
 

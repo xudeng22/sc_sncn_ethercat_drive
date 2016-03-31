@@ -739,11 +739,29 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
+<<<<<<< 75931371dc57a1cce1e2779ba1987011d4b9fbc1
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/src/canopen}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/bin}&quot;"/>
+=======
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_SERIAL}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_spi_master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_spi_master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor/include}&quot;"/>
+>>>>>>> add new_state_machine.xc
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.95438848" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1155,11 +1173,29 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
+<<<<<<< 75931371dc57a1cce1e2779ba1987011d4b9fbc1
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/src/canopen}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/bin}&quot;"/>
+=======
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_SERIAL}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_spi_master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_spi_master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor/include}&quot;"/>
+>>>>>>> add new_state_machine.xc
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.22657252" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

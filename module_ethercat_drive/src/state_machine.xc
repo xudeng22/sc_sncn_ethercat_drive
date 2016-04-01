@@ -230,7 +230,7 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
 }
 
 int get_next_state(int in_state, check_list &checklist, int controlword) {
-    int out_state;
+    int out_state = -1;
     int ctrl_input;
 
     switch(in_state)
@@ -289,6 +289,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_QUICK_STOP_ACTIVE;
             else if ( ctrl_disable_volt(controlword) )
                 out_state = S_SWITCH_ON_DISABLED;
+            else if ( ctrl_enable_op(controlword))
+                out_state = S_OPERATION_ENABLE;
             break;
 
         case S_QUICK_STOP_ACTIVE:

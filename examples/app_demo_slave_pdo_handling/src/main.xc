@@ -36,12 +36,12 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 		i++;
 		if(i >= 999) {
 			i = 100;
-                }
+		}
 
-		InOut.position_actual = i;
-		InOut.torque_actual = i;
-		InOut.velocity_actual = i;
-		InOut.status_word = status;
+		InOut.position_actual = InOut.target_position;
+		InOut.torque_actual = InOut.target_torque;
+		InOut.velocity_actual = InOut.target_velocity;
+		InOut.status_word = InOut.control_word;
 		InOut.operation_mode_display = InOut.operation_mode;
 
 		/* Mirror user defined fields */
@@ -79,14 +79,44 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 			printstr("\nTorque: ");
 			printintln(InOut.target_torque);
 		}
+#if 0
+	   if (InOutOld.user1_in != InOut.user1_in)
+	   {
+	       printstr("\nUser 1 Data: ");
+	       printhexln(InOut.user1_in);
+	   }
+
+	   if (InOutOld.user2_in != InOut.user2_in)
+	   {
+	       printstr("User 2 Data: ");
+	       printhexln(InOut.user2_in);
+	   }
+
+	   if (InOutOld.user3_in != InOut.user3_in)
+	   {
+	       printstr("User 1 Data: ");
+	       printhexln(InOut.user3_in);
+	   }
+
+	   if (InOutOld.user4_in != InOut.user4_in)
+	   {
+	       printstr("User 1 Data: ");
+	       printhexln(InOut.user4_in);
+	   }
+#endif
+
 	   InOutOld.control_word 	= InOut.control_word;
 	   InOutOld.target_position = InOut.target_position;
 	   InOutOld.target_velocity = InOut.target_velocity;
 	   InOutOld.target_torque = InOut.target_torque;
 	   InOutOld.operation_mode = InOut.operation_mode;
+	   InOutOld.user1_in        = InOut.user1_in;
+	   InOutOld.user2_in        = InOut.user2_in;
+	   InOutOld.user3_in        = InOut.user3_in;
+	   InOutOld.user4_in        = InOut.user4_in;
+
 
 	   t when timerafter(time+delay) :> time;
-
 	}
 
 }

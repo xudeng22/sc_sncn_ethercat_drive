@@ -43,6 +43,14 @@ ifneq "$(UNAME)" "Linux"
 endif
 
 #
+# Special defines for compile options
+#
+
+TIME_MEASUREMENT = 0
+
+CFLAGS += -DMAKE_TIME_MEASUREMENT=$(TIME_MEASUREMENT)
+
+#
 # Necessary paths
 #
 

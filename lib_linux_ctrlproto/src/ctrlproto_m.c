@@ -200,12 +200,51 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 	}
 }
 
+#if MAKE_TIME_MEASUREMENT == 1
+#include <time.h>
+
+static double calc_mean(double mean, double current)
+{
+	static unsigned int counter = 0;
+	double K = 1.0 / ( counter + 1);
+	double new = mean + K * (current - mean);
+	counter++;
+
+	return new;
+}
+
+struct timespec timespec_diff(struct timespec *start, struct timespec *end)
+{
+	struct timespec temp;
+
+	if ( (end->tv_nsec - start->tv_nsec) < 0) {
+		temp.tv_sec = end->tv_sec - start->tv_sec - 1;
+		temp.tv_nsec = 1000000000 + end->tv_nsec - start->tv_nsec;
+	} else {
+		temp.tv_sec = end->tv_sec - start->tv_sec;
+		temp.tv_nsec = end->tv_nsec - start->tv_nsec;
+	}
+
+	return temp;
+}
+#endif /* MAKE_TIME_MEASUREMENT */
 
 void pdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         unsigned int total_no_of_slaves)
 {
 	unsigned int slv;
+
+#if MAKE_TIME_MEASUREMENT == 1
+	static struct timespec g_timer = { 0, 0 };
+	static double mean = 0.0;
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	struct timespec tdiff = timespec_diff(&g_timer, &ts);
+	mean = calc_mean(mean, (1.0 * tdiff.tv_nsec));
+	printf("[%s] time diff %ld ns (%.2f ns)\n", __func__,  tdiff.tv_nsec, mean);
+	g_timer.tv_nsec = ts.tv_nsec;
+#endif /* MAKE_TIME_MEASUREMENT */
 
 	if(sig_alarms == user_alarms) pause();
 	while (sig_alarms != user_alarms)

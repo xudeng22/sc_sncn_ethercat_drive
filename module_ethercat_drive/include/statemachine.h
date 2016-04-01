@@ -30,6 +30,7 @@ typedef int bool;
 typedef struct S_Check_list {
     bool ready;
     bool switch_on;
+    bool voltage_enable;
     bool operation_enable;
     bool mode_op;
     bool fault;
@@ -52,7 +53,7 @@ typedef enum e_States {
     S_SWITCH_ON = 3,
     S_OPERATION_ENABLE = 4,
     S_FAULT = 5,
-    S_QUICK_STOP = 6
+    S_QUICK_STOP_ACTIVE = 6
 } states;
 
 bool __check_bdc_init(chanend c_signal);

@@ -12,8 +12,12 @@ int read_controlword_switch_on(int control_word) {
     return (control_word & SWITCH_ON_CONTROL);
 }
 
+int read_controlword_enable_voltage(int control_word) {
+    return (control_word & ENABLE_VOLTAGE_CONTROL) >> 1;
+}
+
 int read_controlword_quick_stop(int control_word) {
-    return (~((control_word & QUICK_STOP_CONTROL) >> 2) & 0x1);
+    return (control_word & QUICK_STOP_CONTROL) >> 2;
 }
 
 int read_controlword_enable_op(int control_word) {
@@ -23,6 +27,42 @@ int read_controlword_enable_op(int control_word) {
 int read_controlword_fault_reset(int control_word) {
     return (control_word & FAULT_RESET_CONTROL) >> 7;
 }
+
+bool ctrl_shutdown(int control_word) {
+    return !read_controlword_switch_on(control_word)
+        && read_controlword_enable_voltage(control_word)
+        && read_controlword_quick_stop(control_word);
+}
+
+bool ctrl_switch_on(int control_word) {
+    return read_controlword_switch_on(control_word)
+        && read_controlword_enable_voltage(control_word)
+        && read_controlword_quick_stop(control_word);
+}
+
+bool ctrl_disable_volt(int control_word) {
+    return !read_controlword_enable_voltage(control_word);
+}
+
+bool ctrl_quick_stop(int control_word) {
+    return read_controlword_enable_voltage(control_word)
+        && !read_controlword_quick_stop(control_word);
+}
+
+bool ctrl_disable_op(int control_word) {
+    return read_controlword_switch_on(control_word)
+        && read_controlword_enable_voltage(control_word)
+        && read_controlword_quick_stop(control_word)
+        && !read_controlword_enable_voltage(control_word);
+}
+
+bool ctrl_enable_op(int control_word) {
+    return read_controlword_switch_on(control_word)
+        && read_controlword_enable_voltage(control_word)
+        && read_controlword_quick_stop(control_word)
+        && read_controlword_enable_voltage(control_word);
+}
+
 
 bool __check_bdc_init(chanend c_signal)
 {
@@ -69,28 +109,28 @@ void update_checklist(check_list &check_list_param, int mode,
 {
     bool check;
     bool skip = true;
-    check =  check_list_param._commutation_init // & check_list_param._fault check_list_param._adc_init &
+    check =  check_list_param._commutation_init 
         & check_list_param._hall_init & check_list_param._qei_init;
 
     switch(check) {
         case INIT_BUSY:
             if (~check_list_param._commutation_init) {
-                check_list_param._commutation_init = i_motorcontrol.check_busy();//__check_commutation_init(c_commutation);
+                check_list_param._commutation_init = i_motorcontrol.check_busy();
                 if(check_list_param._commutation_init) {
                     skip = false;
                 }
             }
 
             if (~skip && ~check_list_param._adc_init) {
-                check_list_param._adc_init = 0; //__check_adc_init(); TODO NEED TO IMPLEMENT STATUS CHECKING HERE
+                check_list_param._adc_init = 0; // TODO NEED TO IMPLEMENT STATUS CHECKING HERE
             }
 
             if (~skip && ~check_list_param._hall_init && !isnull(i_hall)) {
-                check_list_param._hall_init = i_hall.check_busy();//__check_hall_init(c_hall);
+                check_list_param._hall_init = i_hall.check_busy();
             }
 
             if (~skip &&  ~check_list_param._qei_init && !isnull(i_qei)) {
-                check_list_param._qei_init = i_qei.check_busy();//__check_qei_init(c_qei);
+                check_list_param._qei_init = i_qei.check_busy();
             }
 
             if (~skip &&  ~check_list_param._biss_init && !isnull(i_biss)) {
@@ -104,13 +144,13 @@ void update_checklist(check_list &check_list_param, int mode,
             break;
         case INIT:
             if (~check_list_param._torque_init && mode == 1) {
-                check_list_param._torque_init = i_torque_control.check_busy();//__check_torque_init(c_torque_ctrl);
+                check_list_param._torque_init = i_torque_control.check_busy();
             }
             if (~check_list_param._velocity_init && mode == 2) {
-                check_list_param._velocity_init = i_velocity_control.check_busy();//__check_velocity_init(c_velocity_ctrl);
+                check_list_param._velocity_init = i_velocity_control.check_busy();
             }
             if (~check_list_param._position_init && mode == 3) {
-                check_list_param._position_init = i_position_control.check_busy(); //__check_position_init(c_position_ctrl);
+                check_list_param._position_init = i_position_control.check_busy();
             }
             break;
     }
@@ -119,7 +159,12 @@ void update_checklist(check_list &check_list_param, int mode,
         check_list_param.ready = true;
     }
 
-    if (check_list_param.ready && (check_list_param._hall_init || isnull(i_hall)) && (check_list_param._qei_init || isnull(i_qei)) && (check_list_param._biss_init || isnull(i_biss)) && (check_list_param._ams_init || isnull(i_ams)) && ~check_list_param.fault) {
+    if (check_list_param.ready 
+        && (check_list_param._hall_init || isnull(i_hall)) 
+        && (check_list_param._qei_init || isnull(i_qei)) 
+        && (check_list_param._biss_init || isnull(i_biss)) 
+        && (check_list_param._ams_init || isnull(i_ams)) && ~check_list_param.fault) 
+    {
         check_list_param.switch_on = true;
         check_list_param.mode_op = true;
         check_list_param.operation_enable = true;
@@ -130,9 +175,6 @@ int init_state(void) {
     return S_NOT_READY_TO_SWITCH_ON;
 }
 
-/**
- *
- */
 int16_t update_statusword(int current_status, int state_reached, int ack, int q_active, int shutdown_ack) {
     int16_t status_word;
 
@@ -158,7 +200,7 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
         case S_SWITCH_ON:
             status_word = (current_status & ~SWITCH_ON_DISABLED_STATE
                            & ~OPERATION_ENABLED_STATE) | SWITCHED_ON_STATE
-                | VOLTAGE_ENABLED_STATE;
+                           | VOLTAGE_ENABLED_STATE;
             break;
 
         case S_OPERATION_ENABLE:
@@ -169,7 +211,7 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
             status_word = current_status | FAULT_STATE;
             break;
 
-        case S_QUICK_STOP:
+        case S_QUICK_STOP_ACTIVE:
             status_word = current_status | QUICK_STOP_STATE;
             break;
 
@@ -180,10 +222,9 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
     if (shutdown_ack == 1)
         return status_word & (~VOLTAGE_ENABLED_STATE);
     if (ack == 1)
-        return status_word|TARGET_REACHED;
+        return status_word | TARGET_REACHED;
     else if (ack == 0)
         return status_word & (~TARGET_REACHED);
-
 
     return status_word;
 }
@@ -192,113 +233,79 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
     int out_state;
     int ctrl_input;
 
-    switch (in_state) {
+    switch(in_state)
+    {
         case S_NOT_READY_TO_SWITCH_ON:
-
-            if (checklist.fault == true)
+            if (checklist.fault)
                 out_state = S_FAULT;
-            else if (checklist.ready == false)
+            else 
                 out_state = S_SWITCH_ON_DISABLED;
-            else if (checklist.ready == true)
-                out_state = S_READY_TO_SWITCH_ON;
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
             break;
 
         case S_SWITCH_ON_DISABLED:
-            if (checklist.fault == true)
+            if (checklist.fault)
                 out_state = S_FAULT;
-            else if (checklist.ready == false)
-                out_state = S_NOT_READY_TO_SWITCH_ON;
-            else if (checklist.ready == true)
+            else if (ctrl_shutdown(controlword) || checklist.ready) // aka ready
                 out_state = S_READY_TO_SWITCH_ON;
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
+            else
+                out_state = S_SWITCH_ON_DISABLED;
             break;
 
         case S_READY_TO_SWITCH_ON:
             ctrl_input = read_controlword_switch_on(controlword);
-            if (checklist.fault == true)
+            if (checklist.fault)
                 out_state = S_FAULT;
-            else if (checklist.switch_on == false)
+            else if (ctrl_switch_on(controlword))
+                out_state = S_SWITCH_ON;
+            else if (ctrl_shutdown(controlword))
                 out_state = S_READY_TO_SWITCH_ON;
-            else if (checklist.switch_on == true)
-            {
-                if (ctrl_input == false)
-                    out_state = S_READY_TO_SWITCH_ON;
-                else if (ctrl_input == true)
-                    out_state = S_SWITCH_ON;
-            }
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
+            else if ( ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) )
+                out_state = S_SWITCH_ON_DISABLED;
             break;
 
         case S_SWITCH_ON:
             ctrl_input = read_controlword_enable_op(controlword);
-            if (checklist.fault == true)
+            if (checklist.fault)
                 out_state = S_FAULT;
-            else if (checklist.switch_on == false)
+            else if (ctrl_enable_op(controlword))
+                out_state = S_OPERATION_ENABLE;
+            else if (ctrl_switch_on(controlword))
                 out_state = S_SWITCH_ON;
-            else if (checklist.switch_on == true)
-            {
-                if (ctrl_input == false)
-                    out_state = S_SWITCH_ON;
-                else if (ctrl_input == true)
-                    out_state = S_OPERATION_ENABLE;
-            }
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
+            else if (ctrl_shutdown(controlword))
+                out_state = S_READY_TO_SWITCH_ON;
+            else if ( ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) )
+                out_state = S_SWITCH_ON_DISABLED;
             break;
 
         case S_OPERATION_ENABLE:
             ctrl_input = read_controlword_quick_stop(controlword); //quick stop
-            if (checklist.fault == true)
+            if (checklist.fault)
                 out_state = S_FAULT;
-            else if (ctrl_input == false)
-                out_state = S_OPERATION_ENABLE;
-            else if (ctrl_input == true) /*quick stop*/
-                out_state = S_QUICK_STOP;
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
+            else if (ctrl_disable_op(controlword))
+                out_state = S_SWITCH_ON;
+            else if (ctrl_shutdown(controlword))
+                out_state = S_READY_TO_SWITCH_ON;
+            else  if ( ctrl_quick_stop(controlword) )
+                out_state = S_QUICK_STOP_ACTIVE;
+            else if ( ctrl_disable_volt(controlword) )
+                out_state = S_SWITCH_ON_DISABLED;
+            break;
+
+        case S_QUICK_STOP_ACTIVE:
+            if (checklist.fault)
+                out_state = S_FAULT;
+            else if (ctrl_disable_volt(controlword))
+                out_state = S_SWITCH_ON_DISABLED;
             break;
 
         case S_FAULT:
             ctrl_input = read_controlword_fault_reset(controlword);
-            if (ctrl_input == false)
-                out_state = S_FAULT;
-            else if (ctrl_input == true)
-                out_state = S_SWITCH_ON_DISABLED;
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
-            break;
-
-        case S_QUICK_STOP:
-            if (checklist.fault == true)
+            if (!ctrl_input)
                 out_state = S_FAULT;
             else
                 out_state = S_SWITCH_ON_DISABLED;
-    #ifdef print_slave
-            printstr("updated state ");
-            printhexln(in_state);
-    #endif
             break;
+    }
 
-        default:
-            if (checklist.fault == true)
-                out_state = S_FAULT;
-            break;
-        }
-        return out_state;
+    return out_state;
 }

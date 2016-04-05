@@ -261,6 +261,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_READY_TO_SWITCH_ON;
             else if ( ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) )
                 out_state = S_SWITCH_ON_DISABLED;
+            else
+                out_state = -5;
             break;
 
         case S_SWITCH_ON:
@@ -275,6 +277,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_READY_TO_SWITCH_ON;
             else if ( ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) )
                 out_state = S_SWITCH_ON_DISABLED;
+            else
+                out_state = -4;
             break;
 
         case S_OPERATION_ENABLE:
@@ -291,6 +295,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_SWITCH_ON_DISABLED;
             else if ( ctrl_enable_op(controlword))
                 out_state = S_OPERATION_ENABLE;
+            else
+                out_state = -2;
             break;
 
         case S_QUICK_STOP_ACTIVE:
@@ -298,6 +304,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_FAULT;
             else if (ctrl_disable_volt(controlword))
                 out_state = S_SWITCH_ON_DISABLED;
+            else
+                out_state = S_QUICK_STOP_ACTIVE;
             break;
 
         case S_FAULT:

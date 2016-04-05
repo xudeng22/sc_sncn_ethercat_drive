@@ -432,7 +432,7 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 
 
 				/*************check operation_mode display**************/
-				set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles);
+				set_controlword(DISABLE_VOLT_CMD, slave_number, slv_handles); //from QUICK_STOP_CONTROL to DISABLE_VOLT_CMD
 
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;
@@ -498,7 +498,7 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 
 				slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
-				set_controlword(SHUTDOWN, slave_number, slv_handles);
+				set_controlword(SHUTDOWN_CMD, slave_number, slv_handles);
 				status_word = read_statusword(slave_number, slv_handles);
 				ack_stop = check_shutdown_active(status_word);
 
@@ -576,7 +576,7 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 			{
 				slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
-				set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles);
+				set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles); // QUICK_STOP_CONTROL to DISABLE_VOLT_CMD
 
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;

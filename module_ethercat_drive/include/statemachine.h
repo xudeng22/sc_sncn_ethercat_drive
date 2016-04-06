@@ -49,11 +49,11 @@ typedef struct S_Check_list {
 typedef enum e_States {
     S_NOT_READY_TO_SWITCH_ON = 1,
     S_SWITCH_ON_DISABLED = 2,
-    S_READY_TO_SWITCH_ON = 7,
-    S_SWITCH_ON = 3,
-    S_OPERATION_ENABLE = 4,
-    S_FAULT = 5,
-    S_QUICK_STOP_ACTIVE = 6
+    S_READY_TO_SWITCH_ON = 3,
+    S_SWITCH_ON = 4,
+    S_OPERATION_ENABLE = 5,
+    S_QUICK_STOP_ACTIVE = 6,
+    S_FAULT = 7
 } states;
 
 bool __check_bdc_init(chanend c_signal);

@@ -90,8 +90,8 @@ int main(int argc, char *argv[]) {
                 set_velocity_rpm(velocity_ramp, ECAT_SLAVE_0, slv_handles);
 
                 /* Read actual node sensor values */
-                actual_velocity
-                        = get_velocity_actual_rpm(ECAT_SLAVE_0, slv_handles);
+                actual_velocity = get_velocity_actual_rpm(ECAT_SLAVE_0, slv_handles);
+                
                 actual_position = get_position_actual_ticks(ECAT_SLAVE_0,
                         slv_handles);
                 actual_torque = get_torque_actual_mNm(ECAT_SLAVE_0, slv_handles);

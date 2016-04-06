@@ -257,12 +257,12 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_FAULT;
             else if (ctrl_switch_on(controlword))
                 out_state = S_SWITCH_ON;
-            else if (ctrl_shutdown(controlword))
-                out_state = S_READY_TO_SWITCH_ON;
-            else if ( ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) )
+            //else if (ctrl_shutdown(controlword))
+            //    out_state = S_READY_TO_SWITCH_ON;
+            else if ( (ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) ) && !checklist.ready)
                 out_state = S_SWITCH_ON_DISABLED;
             else
-                out_state = -5;
+                out_state = S_READY_TO_SWITCH_ON;
             break;
 
         case S_SWITCH_ON:

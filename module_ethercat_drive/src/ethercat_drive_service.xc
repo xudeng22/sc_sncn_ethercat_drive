@@ -93,7 +93,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface BISSInterface client ?i_biss,
                             interface AMSInterface client ?i_ams,
                             interface GPIOInterface client ?i_gpio,
+                            interface ADCInterface client i_adc,
                             interface TorqueControlInterface client ?i_torque_control,
+                            interface TorqueControlInterface client i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control)
 {
@@ -419,6 +421,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
             controlword_old = controlword; state_old = state; statusword_old = statusword; op_mode_commanded_old = InOut.operation_mode; op_mode_old = op_mode;
 
+
+
             if (setup_loop_flag == 0) {
                 if (controlword == 6) {
                     InOut.operation_mode_display = 105;
@@ -441,6 +445,26 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 actual_velocity = i_ams.get_ams_velocity();
             }
             send_actual_velocity(actual_velocity * polarity, InOut);
+
+            /* ################################
+             * Error Handling
+             * ################################ */
+
+            if (!checklist.fault)
+            {
+                /* Temperature */
+                if (i_adc.get_temperature() > TEMP_THRESHOLD) {
+                    checklist.fault = true;
+
+                }
+
+                /* Speed */
+
+                /* Over current */
+
+                /* Over voltage */
+            }
+
 
             if (mode_selected == 0) {
                 /* Select an operation mode requested from EtherCAT Master Application */

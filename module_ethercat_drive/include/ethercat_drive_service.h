@@ -11,6 +11,7 @@
 #include <qei_service.h>
 #include <gpio_service.h>
 #include <ethercat_service.h>
+#include <adc_service.h>
 
 #include <velocity_ctrl_service.h>
 #include <position_ctrl_service.h>
@@ -54,6 +55,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface BISSInterface client ?i_biss,
                             interface AMSInterface client ?i_ams,
                             interface GPIOInterface client ?i_gpio,
+                            interface ADCInterface client i_adc,
                             interface TorqueControlInterface client ?i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control);

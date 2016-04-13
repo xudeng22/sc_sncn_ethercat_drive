@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_DC1K-rev-c2.bsp>
+#include <IFM_DC1K-rev-c3.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -59,6 +59,7 @@ int main(void)
     interface MotorcontrolInterface i_motorcontrol[4];
 #if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
     interface BISSInterface i_biss[5];
+    interface BrakeInterface i_brake;
 #elif(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
     interface QEIInterface i_qei[5];
     interface GPIOInterface i_gpio[1];
@@ -121,7 +122,7 @@ int main(void)
 #if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
-                                    i_motorcontrol[3], i_hall[4], null, i_biss[4], null,
+                                    i_motorcontrol[3], null, null, i_biss[4], null, null,
                                     i_torque_control[0], i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
             ethercat_drive_service( profiler_config,
@@ -160,10 +161,10 @@ int main(void)
 
                      /* Control Loop */
 #if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
-                     position_control_service(position_control_config, i_hall[1], null, i_biss[1], i_motorcontrol[0],
+                     position_control_service(position_control_config, null, null, i_biss[1], null, i_motorcontrol[0],
                                                  i_position_control);
 #elif(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                     position_control_service(position_control_config, i_hall[1], i_qei[1], null, i_motorcontrol[0],
+                     position_control_service(position_control_config, i_hall[1], i_qei[1], null, null, i_motorcontrol[0],
                                                  i_position_control);
 #elif (MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
                      position_control_service(position_control_config, i_hall[1], null, null, i_ams[1], i_motorcontrol[0],
@@ -224,7 +225,7 @@ int main(void)
                     torque_control_service(torque_control_config, i_adc[1], i_hall[3], null, null, i_ams[3], i_motorcontrol[2],
                                                 i_torque_control);
 #elif (MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], i_hall[3], null, i_biss[3], null, i_motorcontrol[2],
+                    torque_control_service(torque_control_config, i_adc[1], null, null, i_biss[3], null, i_motorcontrol[2],
                                                 i_torque_control);
 #else
                     torque_control_service(torque_control_config, i_adc[1], i_hall[3], null, null, null, i_motorcontrol[2],
@@ -246,19 +247,24 @@ int main(void)
                 adc_service(adc_ports, c_adctrig, i_adc, i_watchdog[1]);
 
                 /* PWM Service */
-                pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl);
+#if (MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
+                pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl, i_brake);
+#else
+                pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl, null);
+#endif
 
                 /* Watchdog Service */
                 watchdog_service(wd_ports, i_watchdog);
 
+#if(MOTOR_FEEDBACK_SENSOR != BISS_SENSOR)
                 /* Hall sensor Service */
                 {
                     HallConfig hall_config;
-                        hall_config.pole_pairs = POLE_PAIRS;
+                    hall_config.pole_pairs = POLE_PAIRS;
 
                     hall_service(hall_ports, hall_config, i_hall);
                 }
-
+#endif
 #if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
                 /* Quadrature encoder sensor Service */
                 {
@@ -331,16 +337,16 @@ int main(void)
 
 #if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
                      motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                             c_pwm_ctrl, i_adc[0], i_hall[0], i_qei[0], null, null, i_watchdog[0], i_motorcontrol);
+                                             c_pwm_ctrl, i_adc[0], i_hall[0], null, null, null, i_watchdog[0], null, i_motorcontrol);
 #elif(MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
                     motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                             c_pwm_ctrl, i_adc[0], i_hall[0], null, null, i_ams[0], i_watchdog[0], i_motorcontrol);
+                                             c_pwm_ctrl, i_adc[0], i_hall[0], null, null, i_ams[0], i_watchdog[0], null, i_motorcontrol);
 #elif(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
                     motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                             c_pwm_ctrl, i_adc[0], i_hall[0], null, i_biss[0], null, i_watchdog[0], i_motorcontrol);
+                                             c_pwm_ctrl, i_adc[0], null, null, i_biss[0], null, i_watchdog[0], i_brake, i_motorcontrol);
 #else
                      motorcontrol_service(fet_driver_ports, motorcontrol_config,
-                                             c_pwm_ctrl,  i_adc[0], i_hall[0], null, null, null, i_watchdog[0], i_motorcontrol);
+                                             c_pwm_ctrl,  i_adc[0], i_hall[0], null, null, null, i_watchdog[0], null, i_motorcontrol);
 #endif
                 }
 

@@ -188,7 +188,8 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{QEI_SENSOR_POLARITY(CONFIG_NUMBER), 0},\
 		\
 		0},\
-		0.0f,\
+	 	0.0f,\
+		0, 0, 0, \
 }
 
 

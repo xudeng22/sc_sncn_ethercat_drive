@@ -6,13 +6,13 @@
 
 #include <ctrlproto_m.h>
 #include <ecrt.h>
-#include <stdio.h>
 #include <motor_define.h>
 #include <sys/time.h>
 #include <time.h>
 #include "ethercat_setup.h"
 #include <curses.h> // required
 #include <stdio.h>
+#include <stdint.h>
 #include <ctype.h>
 
 int r,c, // current row and column (upper-left is (0,0))
@@ -65,7 +65,7 @@ void draw(char dc)
     if (c == ncols) {
         c = 0;
         r++;
-        if (r == nrows) r = 3;
+        if (r == nrows) r = 4;
     }
 }
 
@@ -87,7 +87,7 @@ int main()
     refresh(); // curses call to implement all changes since last refresh
     nodelay(stdscr, TRUE); //no delay
 
-    r = 3; c = 0;
+    r = 4; c = 0;
     int i = 0;
     int value = 0;
     char mode = 0;
@@ -96,27 +96,67 @@ int main()
     int last_mode;
     int ack = 0;
     int quit = 0;
+    int offset_clk = 0, offset_cclk=0, sensor_offset = 0;
+    int winding_type = 0, polarity = 0, field_control_flag = 0;
 
     /* Write Process data */
     slv_handles[slave_number].motorctrl_out = 0;
     slv_handles[slave_number].torque_setpoint = 0;
     slv_handles[slave_number].speed_setpoint = 0;
     slv_handles[slave_number].position_setpoint = 0;
-    slv_handles[slave_number].operation_mode = 6;
+    slv_handles[slave_number].operation_mode = 0;
+    slv_handles[slave_number].operation_mode_disp = 0;
 
     while (1) {
         /* Update the process data (EtherCAT packets) sent/received from the node */
         pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+        if (quit > 100)
+            break;
+
         if (slv_handles[slave_number].operation_mode_disp == 6) {
             slv_handles[slave_number].operation_mode = 6;
+        } else {
+            if (slv_handles[slave_number].operation_mode == 6 && quit) //quit enabled and received
+                quit++;
         }
 
         if(master_setup.op_flag) /*Check if the master is active*/
         {   //print
             move(0, 0);
             clrtoeol();
-            printw("Velocity %d", slv_handles[slave_number].speed_in);
+            int16_t peak_current = slv_handles[slave_number].position_in >> 16;
+            int16_t field = slv_handles[slave_number].position_in;
+            printw("Peak current %4d | Velocity %4d    | Field %4d          | Torque %4d",
+                    peak_current, slv_handles[slave_number].speed_in, field, slv_handles[slave_number].torque_in);
+            move(1, 0);
+            clrtoeol();
+            int status_mux = slv_handles[slave_number].motorctrl_status_in >> 14;
+            if (status_mux == 0) {
+                offset_clk = 0xfff & slv_handles[slave_number].motorctrl_status_in;
+                polarity = (slv_handles[slave_number].motorctrl_status_in & 0x2000) >> 13;
+                winding_type = (slv_handles[slave_number].motorctrl_status_in & 0x1000) >> 12;
+            } else if (status_mux == 1) {
+                offset_cclk = 0xfff & slv_handles[slave_number].motorctrl_status_in;
+                field_control_flag = (slv_handles[slave_number].motorctrl_status_in & 0x1000) >> 12;
+            } else {
+                sensor_offset = 0x7fff & slv_handles[slave_number].motorctrl_status_in;
+            }
+            printw("Offset clk %4d   | Offset cclk %4d | Sensor Offset %5d", offset_clk, offset_cclk, sensor_offset);
+            move(2, 0);
+            clrtoeol();
+            if (polarity)
+                printw("Polarity Inverted | ");
+            else
+                printw("Polarity  Normal  | ");
+            if (winding_type)
+                printw("Delta Winding    | ");
+            else
+                printw("Star  Winding    | ");
+            if (field_control_flag)
+                printw("Field control on");
+            else
+                printw("Field control off");
         }
 
         d = getch(); // curses call to input from keyboard
@@ -136,9 +176,9 @@ int main()
             }
 
             if (d == '\n') {
-                move(3, 0);
+                move(4, 0);
                 clrtoeol();
-                move(2, 0);
+                move(3, 0);
                 clrtoeol();
                 value *= sign;
                 printw("value %d, mode %c", value, mode);

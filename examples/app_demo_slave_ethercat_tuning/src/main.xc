@@ -10,6 +10,7 @@
  */
 
 #include <ethercat_service.h>
+#include <fw_update_service.h>
 #include <cia402_wrapper.h>
 #include <pwm_service.h>
 #include <hall_service.h>
@@ -125,6 +126,7 @@ int main(void)
 	chan foe_out;  		// File from consumer to module_ethercat
 	chan pdo_in;
 	chan pdo_out;
+    chan c_nodes[1], c_flash_data; // Firmware channels
 
     // Motor control interfaces
     chan c_pwm_ctrl, c_adctrig; // pwm channels
@@ -165,11 +167,12 @@ int main(void)
 
         /* WARNING: only one blocking task is possible per tile. */
         /* Waiting for a user input blocks other tasks on the same tile from execution. */
-        on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_tuning, null, coe_out, pdo_out, pdo_in);
+        on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_tuning, i_adc[1], coe_out, pdo_out, pdo_in,
+                                             i_position_control[0], null, i_biss[1], null);
 
 
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
-        on tile[APP_TILE_2]: tuning_service(i_tuning, i_motorcontrol[1], i_adc[1], i_position_control[0], null, i_biss[1], null);
+//        on tile[APP_TILE_2]: tuning_service(i_tuning, i_motorcontrol[1], i_adc[1], i_position_control[0], null, i_biss[1], null);
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
         on tile[APP_TILE_2]: tuning_service(i_tuning, i_motorcontrol[1], i_adc[1], i_position_control[0], null, null, i_ams[1]);
 #else

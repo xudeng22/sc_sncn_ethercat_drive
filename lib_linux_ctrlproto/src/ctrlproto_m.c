@@ -200,7 +200,7 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 	}
 }
 
-#if MAKE_TIME_MEASUREMENT == 1
+#if MAKE_TIME_MEASUREMENT == 0
 #include <time.h>
 
 static double calc_mean(double mean, double current)

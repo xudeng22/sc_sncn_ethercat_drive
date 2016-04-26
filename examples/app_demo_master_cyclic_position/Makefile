@@ -26,6 +26,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_biss/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_ams_rotary_sensor/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include

@@ -21,6 +21,7 @@ INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/inc_ctrlproto-common
 INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/include
 INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_biss/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_ams_rotary_sensor/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common

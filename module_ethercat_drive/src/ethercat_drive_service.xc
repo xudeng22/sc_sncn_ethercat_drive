@@ -12,7 +12,7 @@
 #include <profile.h>
 
 {int, int} static inline get_position_absolute(int sensor_select, interface HallInterface client ?i_hall,
-                                                interface QEIInterface client ?i_qei, interface BISSInterface client ?i_biss)
+                                                interface QEIInterface client ?i_qei, interface BISSInterface client ?i_biss, interface AMSInterface client ?i_ams)
 {
     int actual_position;
     int direction;
@@ -26,6 +26,12 @@
     } else if (sensor_select == BISS_SENSOR) { /* BISS */
         { actual_position, void, void } = i_biss.get_biss_position();
         if (i_biss.get_biss_velocity() >= 0)
+            direction = 1;
+        else
+            direction = -1;
+    } else if (sensor_select == AMS_SENSOR) { /* AMS */
+        { actual_position, void} = i_ams.get_ams_position();
+        if (i_ams.get_ams_velocity() >= 0)
             direction = 1;
         else
             direction = -1;
@@ -43,6 +49,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface HallInterface client ?i_hall,
                             interface QEIInterface client ?i_qei,
                             interface BISSInterface client ?i_biss,
+                            interface AMSInterface client ?i_ams,
                             interface GPIOInterface client ?i_gpio,
                             interface TorqueControlInterface client i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
@@ -84,6 +91,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     QEIConfig qei_params;
     HallConfig hall_config;
     BISSConfig biss_config;
+    AMSConfig ams_config;
 
     MotorcontrolConfig commutation_params;
     ctrl_proto_values_t InOut;
@@ -141,7 +149,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         qei_params = i_qei.get_qei_config();
     if (!isnull(i_biss))
         biss_config = i_biss.get_biss_config();
+    if (!isnull(i_ams))
+            ams_config = i_ams.get_ams_config();
     velocity_ctrl_params = i_velocity_control.get_velocity_control_config();
+    MotorcontrolConfig motorcontrol_config = i_commutation.get_config();
 
     t :> time;
     while (1) {
@@ -176,14 +187,29 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* quick stop for torque mode */
             if (op_mode == CST || op_mode == TQ)
             {
-                actual_torque = i_torque_control.get_torque();
+                if(motorcontrol_config.commutation_method == FOC){
+                    actual_torque = i_commutation.get_torque_actual();
+                } else {
+                    actual_torque = i_torque_control.get_torque();
+                }
+
                 steps = init_linear_profile(0, actual_torque, profiler_config.max_current_slope,
                                             profiler_config.max_current_slope);
                 t :> c_time;
                 for (int i=0; i<steps; i++) {
                     target_torque = linear_profile_generate(i);
-                    i_torque_control.set_torque(target_torque);
-                    actual_torque = i_torque_control.get_torque();
+                    if(motorcontrol_config.commutation_method == FOC){
+                        i_commutation.set_torque(target_torque);
+                    } else {
+                        i_torque_control.set_torque(target_torque);
+                    }
+
+                    if(motorcontrol_config.commutation_method == FOC){
+                        actual_torque = i_commutation.get_torque_actual();
+                    } else {
+                        actual_torque = i_torque_control.get_torque();
+                    }
+
                     send_actual_torque(actual_torque * profiler_config.polarity, InOut);
 
                     t when timerafter(c_time + MSEC_STD) :> c_time;
@@ -229,12 +255,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     actual_velocity = i_biss.get_biss_velocity();
                 else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
                     actual_velocity = i_qei.get_qei_velocity();
-                else if (!isnull(i_hall))
-                    actual_velocity = i_hall.get_hall_velocity();
-                else if (!isnull(i_biss))
-                    actual_velocity = i_biss.get_biss_velocity();
-                else if (!isnull(i_qei))
-                    actual_velocity = i_qei.get_qei_velocity();
+                else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
+                    actual_velocity = i_ams.get_ams_velocity();
                 actual_position = i_position_control.get_position();
 
                 int deceleration;
@@ -276,7 +298,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     mode_quick_flag = 0;
                 }
 
-                {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
+                {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
 
                 t :> c_time;
                 for (int i=0; i<steps; i++) {
@@ -303,7 +325,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             controlword = InOut.control_word;
 
             /* Check states of the motor drive, sensor drive and control servers */
-            update_checklist(checklist, mode, i_commutation, i_hall, i_qei, i_biss, null,
+            update_checklist(checklist, mode, i_commutation, i_hall, i_qei, i_biss, i_ams, null,
                              i_torque_control, i_velocity_control, i_position_control);
 
             /* Update state machine */
@@ -372,6 +394,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         i_qei.set_qei_config(qei_params);
                     if (!isnull(i_biss))
                         i_biss.set_biss_config(biss_config);
+                    if (!isnull(i_ams))
+                        i_ams.set_ams_config(ams_config);
                     i_commutation.set_all_parameters(hall_config, qei_params,
                                                commutation_params);
 
@@ -387,6 +411,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                //printintln(actual_velocity);
             } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) {
                 actual_velocity = i_biss.get_biss_velocity();
+            } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) {
+                actual_velocity = i_ams.get_ams_velocity();
             }
             send_actual_velocity(actual_velocity * polarity, InOut);
 
@@ -396,9 +422,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Homing Mode initialization */
                 case HM:
                     if (op_set_flag == 0) {
-                        ctrl_state = i_torque_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_torque_control.disable_torque_ctrl();
+                        if(motorcontrol_config.commutation_method == FOC){
+                            ctrl_state = i_commutation.check_busy();
+                        } else {
+                            ctrl_state = i_torque_control.check_busy();
+                        }
+                        if (ctrl_state == 1){
+                            if(motorcontrol_config.commutation_method == FOC){
+                                i_commutation.set_fets_state(0);
+                            } else {
+                                i_torque_control.disable_torque_ctrl();
+                            }
+                        }
                         init_velocity_control(i_velocity_control);
                     }
                     if (i_velocity_control.check_busy() == INIT) {
@@ -429,7 +464,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_biss.set_biss_config(biss_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
+                        if(motorcontrol_config.commutation_method == SINE){
+                            i_torque_control.set_torque_sensor(sensor_select);
+                        }
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
@@ -450,7 +487,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         update_pp_param_ecat(profiler_config, coe_out);
                         init_position_profile_limits(profiler_config.max_acceleration,
                                                      profiler_config.max_velocity,
-                                                     qei_params, hall_config, biss_config, sensor_select,
+                                                     qei_params, hall_config, biss_config, ams_config, sensor_select,
                                                      profiler_config.max_position,
                                                      profiler_config.min_position);
                         InOut.operation_mode_display = PP;
@@ -470,8 +507,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_biss.set_biss_config(biss_config);
                         }
 
-                        i_torque_control.set_torque_control_config(torque_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
+                        if(motorcontrol_config.commutation_method == SINE){
+                            i_torque_control.set_torque_control_config(torque_ctrl_params);
+                            i_torque_control.set_torque_sensor(sensor_select);
+                        }
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
@@ -480,7 +519,24 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_position_control.disable_position_ctrl();
                         init_torque_control(i_torque_control);
                     }
-                    if (i_torque_control.check_busy() == INIT) {
+                    if(motorcontrol_config.commutation_method == SINE){
+                        if (i_torque_control.check_busy() == INIT) {
+                            op_set_flag = 1;
+                            mode_selected = 1;
+                            op_mode = TQ;
+                            steps = 0;
+                            mode_quick_flag = 10;
+                            ack = 0;
+                            shutdown_ack = 0;
+
+                            update_cst_param_ecat(profiler_config, coe_out);
+                            update_pt_param_ecat(profiler_config, coe_out);
+                            init_linear_profile_limits(profiler_config.max_current, profiler_config.polarity);
+
+                            InOut.operation_mode_display = TQ;
+                        }
+                    } else {
+                        delay_milliseconds(500);
                         op_set_flag = 1;
                         mode_selected = 1;
                         op_mode = TQ;
@@ -491,9 +547,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                         update_cst_param_ecat(profiler_config, coe_out);
                         update_pt_param_ecat(profiler_config, coe_out);
-                       // torque_offstate = (cyclic_sync_torque_config.max_torque * 15) /
-                       //     (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
-                        // REMOVED BY AGUS BECAUSE IT SEEMS UNNECCESSARY
                         init_linear_profile_limits(profiler_config.max_current, profiler_config.polarity);
 
                         InOut.operation_mode_display = TQ;
@@ -515,7 +568,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         }
 
                         i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
+                        if(motorcontrol_config.commutation_method == SINE){
+                            i_torque_control.set_torque_sensor(sensor_select);
+                        }
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
@@ -554,7 +609,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_biss.set_biss_config(biss_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
+                        if(motorcontrol_config.commutation_method == SINE){
+                            i_torque_control.set_torque_sensor(sensor_select);
+                        }
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
@@ -591,7 +648,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         }
 
                         i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
+                        if(motorcontrol_config.commutation_method == SINE){
+                            i_torque_control.set_torque_sensor(sensor_select);
+                        }
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
                         ctrl_state = i_position_control.check_busy();
@@ -626,8 +685,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_biss.set_biss_config(biss_config);
                         }
 
-                        i_torque_control.set_torque_control_config(torque_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
+                        if(motorcontrol_config.commutation_method == SINE){
+                            i_torque_control.set_torque_control_config(torque_ctrl_params);
+                            i_torque_control.set_torque_sensor(sensor_select);
+                        }
                         i_velocity_control.set_velocity_sensor(sensor_select);
                         i_position_control.set_position_sensor(sensor_select);
 
@@ -639,7 +700,22 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_position_control.disable_position_ctrl();
                             init_torque_control(i_torque_control);
                     }
-                    if (i_torque_control.check_busy() == INIT) {
+                    if(motorcontrol_config.commutation_method == SINE){
+                        if (i_torque_control.check_busy() == INIT) {
+                            op_set_flag = 1;
+                            mode_selected = 1;
+                            mode_quick_flag = 10;
+                            op_mode = CST;
+                            ack = 0;
+                            shutdown_ack = 0;
+
+                            update_cst_param_ecat(profiler_config, coe_out);
+                            update_pt_param_ecat(profiler_config, coe_out);
+                            //torque_offstate = (cyclic_sync_torque_config.max_torque * 15) / (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
+                            InOut.operation_mode_display = CST;
+                        }
+                    } else {
+                        delay_milliseconds(500);
                         op_set_flag = 1;
                         mode_selected = 1;
                         mode_quick_flag = 10;
@@ -662,7 +738,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 switch (InOut.control_word) {
                 case QUICK_STOP:
                     if (op_mode == CST || op_mode == TQ) {
-                        actual_torque = i_torque_control.get_torque();
+                        if(motorcontrol_config.commutation_method == FOC){
+                            actual_torque = i_commutation.get_torque_actual();
+                        } else {
+                            actual_torque = i_torque_control.get_torque();
+                        }
                         steps = init_linear_profile(0, actual_torque, profiler_config.current_slope,
                                                         profiler_config.current_slope);
                         i = 0;
@@ -687,13 +767,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             actual_velocity = i_hall.get_hall_velocity();
                         else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
                             actual_velocity = i_biss.get_biss_velocity();
+                        else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
+                            actual_velocity = i_ams.get_ams_velocity();
                         else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
-                        else if (!isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (!isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (!isnull(i_qei))
                             actual_velocity = i_qei.get_qei_velocity();
                         actual_position = i_position_control.get_position();
 
@@ -785,10 +861,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                                     capture_position = i_qei.get_qei_position_absolute();
                                 else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
                                     { capture_position, void, void } = i_biss.get_biss_position();
-                                else if (!isnull(i_qei))
-                                    capture_position = i_qei.get_qei_position_absolute();
-                                else if (!isnull(i_biss))
-                                    { capture_position, void, void } = i_biss.get_biss_position();
+                                else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
+                                    { capture_position, void} = i_ams.get_ams_position();
+
 
                                 if ((home_state == 1 || safety_state == 1) && end_state == 0) {
                                     actual_velocity = i_velocity_control.get_velocity();
@@ -809,14 +884,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                                             { current_position, void, void } = i_biss.get_biss_position();
                                             home_offset = current_position - capture_position;
                                             i_biss.reset_biss_position(home_offset);
-                                        } else if (!isnull(i_qei)) {
-                                            current_position = i_qei.get_qei_position_absolute();
+                                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) {
+                                            { current_position, void } = i_ams.get_ams_position();
                                             home_offset = current_position - capture_position;
-                                            i_qei.reset_qei_absolute_position(home_offset);
-                                        } else if (!isnull(i_biss)) {
-                                            { current_position, void, void } = i_biss.get_biss_position();
-                                            home_offset = current_position - capture_position;
-                                            i_biss.reset_biss_position(home_offset);
+                                            i_ams.reset_ams_position(home_offset);
                                         }
                                         reset_counter = 1;
                                     }
@@ -844,11 +915,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         send_actual_velocity(actual_velocity, InOut);
                     } else if (op_mode == CST) {
                         target_torque = get_target_torque(InOut);
-                        i_torque_control.set_torque(torque_limit( target_torque * profiler_config.polarity,
-                                                    profiler_config.max_current));
-                        //set_torque_cst(profiler_config, target_torque, 0, i_torque_control);
 
-                        actual_torque = i_torque_control.get_torque();
+                        if(motorcontrol_config.commutation_method == FOC){
+                            i_commutation.set_torque(target_torque);
+                        } else {
+                            i_torque_control.set_torque(torque_limit( target_torque * profiler_config.polarity, profiler_config.max_current));
+                        }
+
+                        if(motorcontrol_config.commutation_method == FOC){
+                            actual_torque = i_commutation.get_torque_actual();
+                        } else {
+                            actual_torque = i_torque_control.get_torque();
+                        }
                         //printintln(target_torque);
                         send_actual_torque(actual_torque, InOut);
                     } else if (op_mode == CSP) {
@@ -897,7 +975,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     } else if (op_mode == TQ) {
                         if (ack == 1) {
                             target_torque = get_target_torque(InOut);
-                            actual_torque = i_torque_control.get_torque();
+                            if(motorcontrol_config.commutation_method == FOC){
+                                actual_torque = i_commutation.get_torque_actual();
+                            } else {
+                                actual_torque = i_torque_control.get_torque();
+                            }
                             send_actual_torque(actual_torque, InOut);
 
                             if (prev_torque != target_torque) {
@@ -911,9 +993,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         } else if (ack == 0) {
                             if (i < steps) {
                                 torque_ramp = linear_profile_generate(i);
-                                i_torque_control.set_torque(torque_limit( torque_ramp * profiler_config.polarity,
-                                                            profiler_config.max_current));
-                                //set_torque_cst(profiler_config, torque_ramp, 0, i_torque_control);
+                                if(motorcontrol_config.commutation_method == FOC){
+                                    i_commutation.set_torque(torque_ramp);
+                                } else {
+                                    i_torque_control.set_torque(torque_limit( torque_ramp * profiler_config.polarity, profiler_config.max_current));
+                                }
                                 i++;
                             } else if (i == steps) {
                                 t :> c_time;
@@ -922,7 +1006,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             } else if (i > steps) {
                                 ack = 1;
                             }
-                            actual_torque = i_torque_control.get_torque();
+                            if(motorcontrol_config.commutation_method == FOC){
+                                actual_torque = i_commutation.get_torque_actual();
+                            } else {
+                                actual_torque = i_torque_control.get_torque();
+                            }
                             send_actual_torque(actual_torque, InOut);
                         }
                     } else if (op_mode == PV) {
@@ -960,7 +1048,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                 case SHUTDOWN:
                     if (op_mode == CST || op_mode == TQ) {
-                        i_torque_control.disable_torque_ctrl();
+                        if(motorcontrol_config.commutation_method == FOC){
+                            i_commutation.set_fets_state(0);
+                        } else {
+                            i_torque_control.disable_torque_ctrl();
+                        }
                         shutdown_ack = 1;
                         op_set_flag = 0;
                         init = 0;
@@ -998,20 +1090,37 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     t :> c_time;
                     while (i < steps) {
                         target_torque = linear_profile_generate(i);
-                        i_torque_control.set_torque(target_torque);
-                        actual_torque = i_torque_control.get_torque() * profiler_config.polarity;
+                        if(motorcontrol_config.commutation_method == FOC){
+                            i_commutation.set_torque(target_torque);
+                        } else {
+                            i_torque_control.set_torque(target_torque);
+                        }
+
+                        if(motorcontrol_config.commutation_method == FOC){
+                            actual_torque = i_commutation.get_torque_actual();
+                        } else {
+                            actual_torque = i_torque_control.get_torque() * profiler_config.polarity;
+                        }
                         send_actual_torque(actual_torque, InOut);
                         t when timerafter(c_time + MSEC_STD) :> c_time;
                         i++;
                     }
                     if (i == steps) {
                         t when timerafter(c_time + 100*MSEC_STD) :> c_time;
-                        actual_torque = i_torque_control.get_torque();
+                        if(motorcontrol_config.commutation_method == FOC){
+                            actual_torque = i_commutation.get_torque_actual();
+                        } else {
+                            actual_torque = i_torque_control.get_torque();
+                        }
                         send_actual_torque(actual_torque, InOut);
                         ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
                     }
                     if (i >= steps) {
-                        actual_torque = i_torque_control.get_torque();
+                        if(motorcontrol_config.commutation_method == FOC){
+                            actual_torque = i_commutation.get_torque_actual();
+                        } else {
+                            actual_torque = i_torque_control.get_torque();
+                        }
                         send_actual_torque(actual_torque, InOut);
                     //    if (actual_torque < torque_offstate || actual_torque > -torque_offstate) {
                             mode_selected = 100;
@@ -1064,7 +1173,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     t when timerafter(c_time + 100*MSEC_STD) :> c_time; //FixMe: why is this nesessary?
 
                 } else if (op_mode == CSP || op_mode == PP) {
-                    {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
+                    {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
 
                     t :> c_time;
                     while (i < steps) {
@@ -1094,12 +1203,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             actual_velocity = i_biss.get_biss_velocity();
                         else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
                             actual_velocity = i_qei.get_qei_velocity();
-                        else if (!isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (!isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (!isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
+                        else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
+                            actual_velocity = i_ams.get_ams_velocity();
                         if (actual_velocity < 50 || actual_velocity > -50) {
                             mode_selected = 100;
                             op_set_flag = 0;
@@ -1112,10 +1217,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     quick_active = 1;
 
                 if (op_mode == CST) {
-                    actual_torque = i_torque_control.get_torque();
+                    if(motorcontrol_config.commutation_method == FOC){
+                        actual_torque = i_commutation.get_torque_actual();
+                    } else {
+                        actual_torque = i_torque_control.get_torque();
+                    }
                     send_actual_torque(actual_torque, InOut);
                 } else if (op_mode == TQ) {
-                    actual_torque = i_torque_control.get_torque();
+                    if(motorcontrol_config.commutation_method == FOC){
+                        actual_torque = i_commutation.get_torque_actual();
+                    } else {
+                        actual_torque = i_torque_control.get_torque();
+                    }
                     send_actual_torque(actual_torque, InOut);
                 } else if (op_mode == CSV) {
                     actual_velocity = i_velocity_control.get_velocity();
@@ -1136,8 +1249,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Read Torque and Position */
-            {actual_position, direction} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
-            send_actual_torque( i_torque_control.get_torque(), InOut );
+            {actual_position, direction} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
+
+            if(motorcontrol_config.commutation_method == FOC){
+                send_actual_torque( i_commutation.get_torque_actual(), InOut );
+            } else {
+                send_actual_torque( i_torque_control.get_torque() * polarity, InOut );
+            }
             //send_actual_torque( get_torque(c_torque_ctrl) * polarity, InOut );
             send_actual_position(actual_position * polarity, InOut);
             t when timerafter(time + MSEC_STD) :> time;

@@ -367,6 +367,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     update_hall_config_ecat(hall_config, coe_out);
                     //}
                     biss_config.pole_pairs = hall_config.pole_pairs;
+                    ams_config.pole_pairs = hall_config.pole_pairs;
                     if (sensor_select >= QEI_SENSOR) { /* FIXME QEI with Index defined as 2 and without Index as 3  */
                         update_qei_param_ecat(qei_params, coe_out);
                     }
@@ -462,6 +463,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_qei.set_qei_config(qei_params);
                         } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
                             i_biss.set_biss_config(biss_config);
+                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
+                            i_ams.set_ams_config(ams_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
                         if(motorcontrol_config.commutation_method == SINE){
@@ -505,6 +508,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_qei.set_qei_config(qei_params);
                         } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
                             i_biss.set_biss_config(biss_config);
+                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
+                            i_ams.set_ams_config(ams_config);
                         }
 
                         if(motorcontrol_config.commutation_method == SINE){
@@ -565,6 +570,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_qei.set_qei_config(qei_params);
                         } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
                             i_biss.set_biss_config(biss_config);
+                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
+                            i_ams.set_ams_config(ams_config);
                         }
 
                         i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
@@ -607,6 +614,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_qei.set_qei_config(qei_params);
                         } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
                             i_biss.set_biss_config(biss_config);
+                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
+                            i_ams.set_ams_config(ams_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
                         if(motorcontrol_config.commutation_method == SINE){
@@ -645,6 +654,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_qei.set_qei_config(qei_params);
                         } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
                             i_biss.set_biss_config(biss_config);
+                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
+                            i_ams.set_ams_config(ams_config);
                         }
 
                         i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
@@ -683,6 +694,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_qei.set_qei_config(qei_params);
                         } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
                             i_biss.set_biss_config(biss_config);
+                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
+                            i_ams.set_ams_config(ams_config);
                         }
 
                         if(motorcontrol_config.commutation_method == SINE){
@@ -792,6 +805,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                                 sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
                             } else if (sensor_select == BISS_SENSOR){    /* BiSS */
                                 sensor_ticks = (1 << biss_config.singleturn_resolution);
+                            } else if (sensor_select == AMS_SENSOR){    /* AMS */
+                                sensor_ticks = (1 << ams_config.resolution_bits);
                             }
 
                             steps = init_quick_stop_position_profile(

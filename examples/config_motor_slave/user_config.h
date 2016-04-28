@@ -26,6 +26,9 @@
 // WINDING TYPE (if applicable) [STAR_WINDING, DELTA_WINDING]
 #define BLDC_WINDING_TYPE   DELTA_WINDING
 
+// MOTOR POLARITY [NORMAL_POLARITY, INVERTED_POLARITY]
+#define MOTOR_POLARITY      INVERTED_POLARITY
+
 /////////////////////////////////////////////
 //////  MOTOR SENSORS CONFIGURATION
 ///////////////////////////////////////////
@@ -53,13 +56,13 @@
 ////////////////////////////////////////////
 
 // COMMUTATION LOOP PERIOD (if applicable) [us]
-#define COMMUTATION_LOOP_PERIOD     60
+#define COMMUTATION_LOOP_PERIOD     110
 
 // COMMUTATION CW SPIN OFFSET (if applicable) [0:4095]
-#define COMMUTATION_OFFSET_CLK      910
+#define COMMUTATION_OFFSET_CLK      0
 
 // COMMUTATION CCW SPIN OFFSET (if applicable) [0:4095]
-#define COMMUTATION_OFFSET_CCLK     2460
+#define COMMUTATION_OFFSET_CCLK     342
 
 ///////////////////////////////////////////////
 //////  MOTOR CONTROL CONFIGURATION
@@ -97,8 +100,8 @@
 #define PROFILE_TORQUE_SLOPE    400         // adc_ticks
 
 // PROFILER LIMITIS
-#define MAX_POSITION_LIMIT      20000000        // ticks (max range: 2^30, limited for safe operation)
-#define MIN_POSITION_LIMIT      -20000000       // ticks (min range: -2^30, limited for safe operation)
+#define MAX_POSITION_LIMIT      0x7fffffff        // ticks (max range: 2^30, limited for safe operation)
+#define MIN_POSITION_LIMIT      -0x7fffffff       // ticks (min range: -2^30, limited for safe operation)
 #define MAX_VELOCITY            4000            // rpm
 #define MAX_ACCELERATION        4000            // rpm/s
 #define MAX_DECELERATION        4000            // rpm/s

@@ -11,7 +11,7 @@
  * Define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_1  				3	 	// Number of pole pairs
+#define POLE_PAIRS_1  				2	 	// Number of pole pairs
 #define MAX_NOMINAL_SPEED_1  			4000	// rpm
 #define MAX_NOMINAL_CURRENT_1  			2		// A
 #define MOTOR_TORQUE_CONSTANT_1			72		// mNm/A
@@ -21,7 +21,7 @@
  * and any additional encoders attached specify encoder resolution here (Mandatory)
  */
 #define GEAR_RATIO_1                    1       // if no gears are attached - set to gear ratio to 1
-#define ENCODER_RESOLUTION_1            4000            // Resolution of Incremental Encoder
+#define ENCODER_RESOLUTION_1            16384           // Resolution of Incremental Encoder
 
 /* Somanet IFM Internal Configuration:  Specifies the current sensor resolution per Ampere
  *  (DC300_RESOLUTION / DC100_RESOLUTION / OLD_DC300_RESOLUTION) */
@@ -36,11 +36,11 @@
 #define QEI_SENSOR_POLARITY_1           QEI_POLARITY_NORMAL
 
 /* Commutation offset (range 0-4095) (HALL sensor based commutation) */
-#define COMMUTATION_OFFSET_CLK_1        910
-#define COMMUTATION_OFFSET_CCLK_1       2460
+#define COMMUTATION_OFFSET_CLK_1        3835
+#define COMMUTATION_OFFSET_CCLK_1       316
 
 /* Motor Winding type (STAR_WINDING/DELTA_WINDING) */
-#define WINDING_TYPE_1                  DELTA_WINDING
+#define WINDING_TYPE_1                  STAR_WINDING
 
 /* Specify Switch Types (ACTIVE_HIGH/ACTIVE_LOW) when switch is closed
  * (Only if you have any limit switches in the system for safety/homing ) */
@@ -81,20 +81,20 @@
      * Note: DENOMINATOR is defined as 10000 to give ranges */
 #if(SENSOR_SELECTION_CODE_1 == HALL_SENSOR)     // PID gains for position control with Hall Sensor
 
-    #define POSITION_Kp_NUMERATOR_1     1000    //Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_1     100    //Denominator is 10000
     #define POSITION_Ki_NUMERATOR_1     1   //Denominator is 10000
     #define POSITION_Kd_NUMERATOR_1     0   //Denominator is 10000
 
-    #define MAX_POSITION_LIMIT_1        POLE_PAIRS_1*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_1  // ticks (max range: 2^30, limited for safe operation)
-    #define MIN_POSITION_LIMIT_1        -POLE_PAIRS_1*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_1 // ticks (min range: -2^30, limited for safe operation)
+    #define MAX_POSITION_LIMIT_1        0x7fffffff  // ticks (max range: 2^30, limited for safe operation)
+    #define MIN_POSITION_LIMIT_1        -0x7fffffff // ticks (min range: -2^30, limited for safe operation)
 
 #else // PID gains for position control with other Encoders
-    #define POSITION_Kp_NUMERATOR_1     1000    //Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_1     100    //Denominator is 10000
     #define POSITION_Ki_NUMERATOR_1     1   //Denominator is 10000
     #define POSITION_Kd_NUMERATOR_1     0   //Denominator is 10000
 
-    #define MAX_POSITION_LIMIT_1        GEAR_RATIO_1*ENCODER_RESOLUTION_1*QEI_CHANGES_PER_TICK*10       // ticks (max range: 2^30, limited for safe operation)
-    #define MIN_POSITION_LIMIT_1        -GEAR_RATIO_1*ENCODER_RESOLUTION_1*QEI_CHANGES_PER_TICK*10      // ticks (min range: -2^30, limited for safe operation)
+    #define MAX_POSITION_LIMIT_1        0x7fffffff       // ticks (max range: 2^30, limited for safe operation)
+    #define MIN_POSITION_LIMIT_1        -0x7fffffff      // ticks (min range: -2^30, limited for safe operation)
 
 #endif
 

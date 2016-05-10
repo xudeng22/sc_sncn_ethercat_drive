@@ -9,13 +9,16 @@
  */
 
 #include <ethercat_service.h>
+#if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 #include <cia402_wrapper.h>
+#endif
 
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
+#if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
+static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
@@ -120,12 +123,36 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 	}
 
 }
+#endif
 
+#define MAX_TIME_TO_WAIT_SDO      100000
+
+
+static void sdo_handler(client interface i_coe_communication i_coe)
+{
+    timer t;
+    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
+    unsigned int time;
+
+    while (1) {
+        select {
+            case i_coe.object_changed():
+                uint16_t object = i_coe.get_object_changed();
+                uint32_t value = i_coe.get_object_value(object, 0);
+
+                printstr("Object changed: 0x");
+                printhex(object);
+                printstr(" = 0x"); printhexln(value);
+                break;
+        }
+
+        t when timerafter(time+delay) :> time;
+
+    }
+}
 
 int main(void)
 {
-	chan coe_in;  	 	// CAN from module_ethercat to consumer
-	chan coe_out;  		// CAN from consumer to module_ethercat
 	chan eoe_in;   		// Ethernet from module_ethercat to consumer
 	chan eoe_out;  		// Ethernet from consumer to module_ethercat
 	chan eoe_sig;
@@ -134,18 +161,24 @@ int main(void)
 	chan pdo_in;
 	chan pdo_out;
 
+	interface i_coe_communication i_coecomm;
+
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
-		on tile[COM_TILE] : {
-			ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
+		on tile[COM_TILE] :
+		{
+			ethercat_service(i_coecomm, eoe_out, eoe_in, eoe_sig,
 			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
 		}
 
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_handler(coe_out, pdo_out, pdo_in);
+#if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
+			pdo_handler(pdo_out, pdo_in);
+#endif
+			sdo_handler(i_coecomm);
 		}
 	}
 

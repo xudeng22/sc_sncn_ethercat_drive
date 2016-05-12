@@ -137,8 +137,8 @@ static void sdo_handler(client interface i_coe_communication i_coe)
     while (1) {
         select {
             case i_coe.object_changed():
-                uint16_t object = i_coe.get_object_changed();
-                uint32_t value = i_coe.get_object_value(object, 0);
+                uint32_t object = i_coe.get_object_changed();
+                uint32_t value = i_coe.get_object_value((object>>16)&0xffff, object&0xff);
 
                 printstr("Object changed: 0x");
                 printhex(object);

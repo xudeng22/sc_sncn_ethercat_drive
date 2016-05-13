@@ -113,4 +113,4 @@ uninstall:
 
 clean:
 	$(RM) -f $(OUTDIR)/*.so $(OUTDIR)/*.a src/*.o
-	$(RM) -d $(OUTDIR)
+	$(RM) -f -d $(OUTDIR)

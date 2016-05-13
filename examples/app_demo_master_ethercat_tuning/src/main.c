@@ -19,39 +19,20 @@ int r,c, // current row and column (upper-left is (0,0))
 nrows, // number of rows in window
 ncols; // number of columns in window
 
-//int main()
-//{
-//	int slave_number = 0;
+///* Write Process data */
+//slv_handles[slave_number].motorctrl_out = 12;
+//slv_handles[slave_number].torque_setpoint = 200;
+//slv_handles[slave_number].speed_setpoint = 4000;
+//slv_handles[slave_number].position_setpoint = 10000;
+//slv_handles[slave_number].operation_mode = 125;
 //
-//	/* Initialize EtherCAT Master */
-//	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//
-//	printf("starting Master application\n");
-//	while(1)
-//	{
-//		/* Update the process data (EtherCAT packets) sent/received from the node */
-//		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//
-//		if(master_setup.op_flag) /*Check if the master is active*/
-//		{
-//			/* Write Process data */
-//			slv_handles[slave_number].motorctrl_out = 12;
-//			slv_handles[slave_number].torque_setpoint = 200;
-//			slv_handles[slave_number].speed_setpoint = 4000;
-//			slv_handles[slave_number].position_setpoint = 10000;
-//			slv_handles[slave_number].operation_mode = 125;
-//
-//			/* Read Process data */
-//			printf("Status: %d\n", slv_handles[slave_number].motorctrl_status_in);
-//			printf("Position: %d \n", slv_handles[slave_number].position_in);
-//			printf("Speed: %d\n", slv_handles[slave_number].speed_in);
-//			printf("Torque: %d\n", slv_handles[slave_number].torque_in);
-//			printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
-//		}
-//	}
-//
-//	return 0;
-//}
+///* Read Process data */
+//printf("Status: %d\n", slv_handles[slave_number].motorctrl_status_in);
+//printf("Position: %d \n", slv_handles[slave_number].position_in);
+//printf("Speed: %d\n", slv_handles[slave_number].speed_in);
+//printf("Torque: %d\n", slv_handles[slave_number].torque_in);
+//printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
+
 
 void draw(char dc)
 {
@@ -92,12 +73,11 @@ int main()
     int value = 0;
     char mode = 0;
     int sign = 1;
-    int last_value = 0;
-    int last_mode;
     int ack = 0;
     int quit = 0;
     int offset_clk = 0, offset_cclk=0, sensor_offset = 0;
     int winding_type = 0, polarity = 0, field_control_flag = 0;
+    int pole_pairs = 0;
 
     /* Write Process data */
     slv_handles[slave_number].motorctrl_out = 0;
@@ -114,13 +94,14 @@ int main()
         if (quit > 100)
             break;
 
-        if (slv_handles[slave_number].operation_mode_disp == 6) {
+        if (slv_handles[slave_number].operation_mode_disp & 0x80) {
             slv_handles[slave_number].operation_mode = 6;
         } else {
             if (slv_handles[slave_number].operation_mode == 6 && quit) //quit enabled and received
                 quit++;
         }
 
+        //receive and print data
         if(master_setup.op_flag) /*Check if the master is active*/
         {   //print
             move(0, 0);
@@ -131,18 +112,25 @@ int main()
                     peak_current, slv_handles[slave_number].speed_in, field, slv_handles[slave_number].torque_in);
             move(1, 0);
             clrtoeol();
-            int status_mux = slv_handles[slave_number].motorctrl_status_in >> 14;
-            if (status_mux == 0) {
-                offset_clk = 0xfff & slv_handles[slave_number].motorctrl_status_in;
-                polarity = (slv_handles[slave_number].motorctrl_status_in & 0x2000) >> 13;
-                winding_type = (slv_handles[slave_number].motorctrl_status_in & 0x1000) >> 12;
-            } else if (status_mux == 1) {
-                offset_cclk = 0xfff & slv_handles[slave_number].motorctrl_status_in;
-                field_control_flag = (slv_handles[slave_number].motorctrl_status_in & 0x1000) >> 12;
-            } else {
-                sensor_offset = 0x7fff & slv_handles[slave_number].motorctrl_status_in;
+            int status_mux = slv_handles[slave_number].operation_mode_disp & 0x7f;
+            switch(status_mux) {
+            case 0:
+                offset_clk = slv_handles[slave_number].motorctrl_status_in;
+                break;
+            case 1:
+                offset_cclk = slv_handles[slave_number].motorctrl_status_in;
+                break;
+            case 2:
+                sensor_offset = slv_handles[slave_number].motorctrl_status_in;
+                break;
+            case 3:
+                winding_type = (slv_handles[slave_number].motorctrl_status_in & 0b001);
+                polarity = (slv_handles[slave_number].motorctrl_status_in & 0b010);
+                field_control_flag = (slv_handles[slave_number].motorctrl_status_in & 0b100);
+                pole_pairs = slv_handles[slave_number].motorctrl_status_in >> 3;
             }
-            printw("Offset clk %4d   | Offset cclk %4d | Sensor Offset %5d", offset_clk, offset_cclk, sensor_offset);
+            printw("Offset clk %4d   | Offset cclk %4d | Sensor Offset %5d | Pole pairs %2d",
+                   offset_clk, offset_cclk, sensor_offset, pole_pairs);
             move(2, 0);
             clrtoeol();
             if (polarity)
@@ -159,6 +147,7 @@ int main()
                 printw("Field control off");
         }
 
+        //read user input
         d = getch(); // curses call to input from keyboard
         if (d == 'q') {
             slv_handles[slave_number].position_setpoint = 0;
@@ -166,6 +155,7 @@ int main()
             quit = 1;
         } else if (d != ERR) {
             draw(d); // draw the character
+            //parse input
             if(isdigit(d)>0) {
                 value *= 10;
                 value += d - '0';
@@ -175,6 +165,7 @@ int main()
                 mode = d;
             }
 
+            //set command
             if (d == '\n') {
                 move(4, 0);
                 clrtoeol();
@@ -182,9 +173,6 @@ int main()
                 clrtoeol();
                 value *= sign;
                 printw("value %d, mode %c", value, mode);
-//                slv_handles[slave_number].motorctrl_out = -20;
-                last_value = value;
-                last_mode = mode;
                 slv_handles[slave_number].position_setpoint = value;
                 slv_handles[slave_number].operation_mode = mode;
                 value = 0;

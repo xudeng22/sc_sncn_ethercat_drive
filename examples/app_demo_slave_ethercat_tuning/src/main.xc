@@ -1,7 +1,7 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
 #include <CORE_C22-rev-a.bsp>
 #include <COM_ECAT-rev-a.bsp>
-#include <IFM_DC1K-rev-c3.bsp>
+#include <IFM_BOARD_REQUIRED>
 
 /**
  * @file main.xc
@@ -40,81 +40,6 @@ HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
 
 #define POSITION_LIMIT 0 //+/- 4095
 
-
-
-/* Test application handling pdos from EtherCat */
-static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
-{
-	timer t;
-
-	unsigned int delay = 100000;
-	unsigned int time = 0;
-
-	uint16_t status = 255;
-	int i = 0;
-	ctrl_proto_values_t InOut;
-	ctrl_proto_values_t InOutOld;
-	InOut = init_ctrl_proto();
-	t :> time;
-
-	while(1)
-	{
-		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
-
-		i++;
-		if(i >= 999) {
-			i = 100;
-                }
-
-		InOut.position_actual = i;
-		InOut.torque_actual = i;
-		InOut.velocity_actual = i;
-		InOut.status_word = status;
-		InOut.operation_mode_display = InOut.operation_mode;
-
-
-
-
-		if(InOut.control_word) {
-			printstr("Command: ");
-			printintln(sext(InOut.control_word, 16));
-		}
-//
-		if(InOut.operation_mode ) {
-			printstr("Operation mode: ");
-			printintln(sext(InOut.operation_mode, 8));
-		}
-//
-//		if(InOutOld.target_position != InOut.target_position)
-//		{
-//			printstr("\nPosition: ");
-//			printintln(InOut.target_position);
-//		}
-//
-//		if(InOutOld.target_velocity != InOut.target_velocity)
-//		{
-//			printstr("\nSpeed: ");
-//			printintln(InOut.target_velocity);
-//		}
-//
-//		if(InOutOld.target_torque != InOut.target_torque )
-//		{
-//			printstr("\nTorque: ");
-//			printintln(InOut.target_torque);
-//		}
-	   InOutOld.control_word 	= InOut.control_word;
-//	   InOutOld.target_position = InOut.target_position;
-//	   InOutOld.target_velocity = InOut.target_velocity;
-//	   InOutOld.target_torque = InOut.target_torque;
-	   InOutOld.operation_mode = InOut.operation_mode;
-
-	   t when timerafter(time+delay) :> time;
-
-	}
-
-}
-
-
 int main(void)
 {
 	chan coe_in;  	 	// CAN from module_ethercat to consumer
@@ -135,7 +60,6 @@ int main(void)
     interface ADCInterface i_adc[2];
     interface MotorcontrolInterface i_motorcontrol[4];
     interface PositionControlInterface i_position_control[3];
-    interface TuningInterface i_tuning;
     interface BrakeInterface i_brake;
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
     interface BISSInterface i_biss[5];
@@ -147,37 +71,26 @@ int main(void)
 
 	par
 	{
-        /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] : {
+        on tile[COM_TILE] : par {
+            /* EtherCAT Communication Handler Loop */
             ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
-                    foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
-        }
-
-        /* Firmware Update Loop over EtherCAT */
-        on tile[COM_TILE] :
-        {
+                             foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
+            /* Firmware Update Loop over EtherCAT */
             fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
         }
 
-        /* Test application handling pdos from EtherCat */
-//        on tile[APP_TILE_2] :
-//        {
-//            pdo_handler(coe_out, pdo_out, pdo_in);
-//        }
-
-        /* WARNING: only one blocking task is possible per tile. */
-        /* Waiting for a user input blocks other tasks on the same tile from execution. */
-        on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_tuning, i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], null, i_biss[1], null);
-
-
+        /* tuning service */
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
-//        on tile[APP_TILE_2]: tuning_service(i_tuning, i_motorcontrol[1], i_adc[1], i_position_control[0], null, i_biss[1], null);
+        on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
+                                             i_position_control[0], null, i_biss[1], null);
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
-        on tile[APP_TILE_2]: tuning_service(i_tuning, i_motorcontrol[1], i_adc[1], i_position_control[0], null, null, i_ams[1]);
+        on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
+                                             i_position_control[0], null, null, i_ams[1]);
 #else
-        on tile[APP_TILE_2]: tuning_service(i_tuning, i_motorcontrol[1], i_adc[1], i_position_control[0], i_hall[1], null, null);
+        on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
+                                             i_position_control[0], i_hall[1], null, null);
 #endif
+
 
         on tile[APP_TILE_2]:
         /* Position Control Loop */
@@ -260,7 +173,7 @@ int main(void)
                     ams_service(ams_ports, ams_config, i_ams);
                 }
 #else
-    /* Hall sensor Service */
+                /* Hall sensor Service */
                 {
                     HallConfig hall_config;
                     hall_config.pole_pairs = POLE_PAIRS;
@@ -273,7 +186,7 @@ int main(void)
                 {
                     MotorcontrolConfig motorcontrol_config;
                     motorcontrol_config.motor_type = BLDC_MOTOR;
-                    motorcontrol_config.polarity_type = NORMAL_POLARITY;
+                    motorcontrol_config.polarity_type = MOTOR_POLARITY;
                     motorcontrol_config.commutation_method = FOC;
                     motorcontrol_config.commutation_sensor = MOTOR_COMMUTATION_SENSOR;
                     motorcontrol_config.bldc_winding_type = BLDC_WINDING_TYPE;

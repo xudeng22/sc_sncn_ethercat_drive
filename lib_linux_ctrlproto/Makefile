@@ -1,18 +1,23 @@
-# Installation directory of the  EtherCAT Master by IgH EtherLAB
-ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
+# Makefile for libsncn shared and static libraries
+#
+# 2016-03-16 Synapticon GmbH
 
-LIBS += -lethercat -lm
+#
+# Common compiler settings
+#
 
-ETHERCAT_PATH := ..
-MOTORCONTROL_PATH := ..
+CC = gcc
+LD = gcc
+AR = ar
+RM = rm
+INSTALL = install
 
-ifneq (,$(wildcard ../../sc_sncn_ethercat/.))
-	ETHERCAT_PATH := ../../sc_sncn_ethercat
-endif
+CFLAGS = -g -Wall -Wextra  -O0
+LDFLAGS = -g
+ARFLAGS =
 
-ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
-	MOTORCONTROL_PATH := ../../sc_sncn_motorcontrol
-endif
+LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
+LIBS += -lethercat -lm -lstdc++ 
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I include
@@ -29,34 +34,84 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 
-LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
+#
+# Check if this is a Linux machine
+#
 
-# Needed for checking if Linux machine
 UNAME := $(shell uname)
-
-all:
-
 ifneq "$(UNAME)" "Linux"
-		@echo "----------------------------------------------------------------------------------------------------"
-		@echo "||Your System isn't Linux, so the ctrlproto libary for the Linux EtherCAT Master can not be built!||"
-		@echo "----------------------------------------------------------------------------------------------------"
-else
-		@if test -d $(ETHERCAT_MASTER_INSTALLDIR); \
-		then \
-		mkdir lib -p;\
-		gcc src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.so -lstdc++ -shared -fPIC;\
-		gcc -c src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
-		ar rcs lib/libsncn_ctrlproto.a lib/*.o;\
-		rm -f lib/*.o;\
-		rm -f lib/*.so;\
-		else echo \
-		"\n\
-		-----------------------------------------------------------------------------------------------------------------\n\
-		||EtherCAT Master is not installed at given directory if you installed it elsewhere change location in Makefile||\n\
-		-----------------------------------------------------------------------------------------------------------------\n";\
-		fi
+  $(error Your System is not Linux, so the ctrlproto libary for the Linux EtherCAT Master can not be built!)
 endif
 
+#
+# Special defines for compile options
+#
+
+TIME_MEASUREMENT = 0
+
+CFLAGS += -DMAKE_TIME_MEASUREMENT=$(TIME_MEASUREMENT)
+
+#
+# Necessary paths
+#
+
+# Installation directory of the  EtherCAT Master by IgH EtherLAB
+ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
+
+ifeq (,$(wildcard $(ETHERCAT_MASTER_INSTALLDIR)))
+  $(error Master is not installed at given directory if you installed it elsewhere change location in Makefile.)
+endif
+
+ETHERCAT_PATH := ..
+MOTORCONTROL_PATH := ..
+
+ifneq (,$(wildcard ../../sc_sncn_ethercat/.))
+	ETHERCAT_PATH := ../../sc_sncn_ethercat
+endif
+
+ifneq (,$(wildcard ../../sc_sncn_motorcontrol/.))
+	MOTORCONTROL_PATH := ../../sc_sncn_motorcontrol
+endif
+
+
+OUTDIR ?= ./lib
+TARGET_DIR = /opt/synapticon/lib
+
+#
+# prototype to compile object files
+#
+
+src/%.o: src/%.c
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c -o $@ $^
+
+src/%.s.o: src/%.c
+	$(CC) $(CFLAGS) -fPIC $(INCLUDE_DIRS) -c -o $@ $^
+
+# Phony targets
+.PHONY: clean install uninstall
+
+# build rules
+
+all: prerequisite libsncn_ctrlproto.so libsncn_ctrlproto.a
+
+prerequisite:
+	@mkdir -p $(OUTDIR)
+
+libsncn_ctrlproto.so: src/ctrlproto_m.s.o
+	$(LD) $(LDFLGAGS) -shared -o $(OUTDIR)/$@ $^ $(LIB_DIRS) $(LIB)
+
+libsncn_ctrlproto.a: src/ctrlproto_m.o
+	$(AR) rcs $(OUTDIR)/$@ $^
+
+# simple lib installation, use -L to reference to $(TARGET_DIR)
+install:
+	#$(INSTALL) -D $(OUTDIR)/libsncn_ctrlproto.so $(TARGET_DIR)
+	$(INSTALL) -D $(OUTDIR)/libsncn_ctrlproto.a $(TARGET_DIR)
+
+uninstall:
+	$(RM) -f $(TARGET_DIR)/libsncn_ctrlproto.a
+	$(RM) -f $(TARGET_DIR)/libsncn_ctrlproto.so
+
 clean:
-	rm -f lib/*.so
-	rm -f lib/*.a
+	$(RM) -f lib/*.so lib/*.a src/*.o
+	$(RM) -d $(OUTDIR)

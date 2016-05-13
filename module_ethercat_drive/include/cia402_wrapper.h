@@ -39,6 +39,12 @@ typedef struct
     int32_t target_velocity;
     int32_t target_position;
 
+    /* User defined PDOs */
+    int32_t user1_in;
+    int32_t user2_in;
+    int32_t user3_in;
+    int32_t user4_in;
+
 
     uint8_t operation_mode_display; //      Modes of Operation Display
     uint16_t status_word;                   //  Status Word
@@ -47,6 +53,11 @@ typedef struct
     int32_t velocity_actual;
     int32_t position_actual;
 
+    /* User defined PDOs */
+    int32_t user1_out;
+    int32_t user2_out;
+    int32_t user3_out;
+    int32_t user4_out;
 } ctrl_proto_values_t;
 
 

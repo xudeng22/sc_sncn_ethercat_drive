@@ -73,8 +73,9 @@ void check_master_state(master_setup_variables_t *master_setup)
     master_setup->master_state = ms;
 }
 
-/****************************************************************************
+/****************************************************************************/
 
+/*
 void check_slave_config_states(void)
 {
     ec_slave_config_state_t s;
@@ -91,12 +92,13 @@ void check_slave_config_states(void)
 
     sc_data_in_state = s;
 }
+ */
 
 /****************************************************************************/
 
 int read_sdo(ec_sdo_request_t *req)
 {
-	int sdo_read_value;
+	int sdo_read_value = 0;
     switch (ecrt_sdo_request_state(req)) {
         case EC_REQUEST_UNUSED: // request was not used yet
             ecrt_sdo_request_read(req); // trigger first read
@@ -142,6 +144,8 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 			return 0;
 			break;
 	}
+
+	return 0;
 }
 
 /****************************************************************************/
@@ -152,8 +156,6 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         int update_sequence, int slave_number)
 {
-	int slv;
-
 	if(sig_alarms == user_alarms) pause();
 	while (sig_alarms != user_alarms)
 	{
@@ -165,7 +167,7 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_domain_process(master_setup->domain);
 
 
-		//for (slv = 0; slv < total_no_of_slaves; ++slv)
+		//for (int slv = 0; slv < total_no_of_slaves; ++slv)
 		{
 			slv_handles[slave_number].motor_config_param = \
 					sdo_motor_config_update(slv_handles[slave_number].motor_config_param, \
@@ -198,12 +200,51 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 	}
 }
 
+#if MAKE_TIME_MEASUREMENT == 0
+#include <time.h>
+
+static double calc_mean(double mean, double current)
+{
+	static unsigned int counter = 0;
+	double K = 1.0 / ( counter + 1);
+	double new = mean + K * (current - mean);
+	counter++;
+
+	return new;
+}
+
+struct timespec timespec_diff(struct timespec *start, struct timespec *end)
+{
+	struct timespec temp;
+
+	if ( (end->tv_nsec - start->tv_nsec) < 0) {
+		temp.tv_sec = end->tv_sec - start->tv_sec - 1;
+		temp.tv_nsec = 1000000000 + end->tv_nsec - start->tv_nsec;
+	} else {
+		temp.tv_sec = end->tv_sec - start->tv_sec;
+		temp.tv_nsec = end->tv_nsec - start->tv_nsec;
+	}
+
+	return temp;
+}
+#endif /* MAKE_TIME_MEASUREMENT */
 
 void pdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         unsigned int total_no_of_slaves)
 {
-	int slv;
+	unsigned int slv;
+
+#if MAKE_TIME_MEASUREMENT == 1
+	static struct timespec g_timer = { 0, 0 };
+	static double mean = 0.0;
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	struct timespec tdiff = timespec_diff(&g_timer, &ts);
+	mean = calc_mean(mean, (1.0 * tdiff.tv_nsec));
+	printf("[%s] time diff %ld ns (%.2f ns)\n", __func__,  tdiff.tv_nsec, mean);
+	g_timer.tv_nsec = ts.tv_nsec;
+#endif /* MAKE_TIME_MEASUREMENT */
 
 	if(sig_alarms == user_alarms) pause();
 	while (sig_alarms != user_alarms)
@@ -233,6 +274,11 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 			slv_handles[slv].position_in = EC_READ_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[2]);
 			slv_handles[slv].speed_in = EC_READ_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[3]);
 			slv_handles[slv].torque_in = EC_READ_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[4]);
+			/* Read user PDOs */
+			slv_handles[slv].user1_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[5]);
+			slv_handles[slv].user2_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[6]);
+			slv_handles[slv].user3_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[7]);
+			slv_handles[slv].user4_in = EC_READ_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[8]);
 		}
 
 /*		printf("\n%x", 	slv_handles[slv].motorctrl_status_in);
@@ -249,6 +295,11 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 			EC_WRITE_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[2], (slv_handles[slv].torque_setpoint)&0xffff);
 			EC_WRITE_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[3], slv_handles[slv].position_setpoint);
 			EC_WRITE_U32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[4], slv_handles[slv].speed_setpoint);
+			/* Write user PDOs */
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[5], slv_handles[slv].user1_out);
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[6], slv_handles[slv].user2_out);
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[7], slv_handles[slv].user3_out);
+			EC_WRITE_S32(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[8], slv_handles[slv].user4_out);
 		}
 
 		// send process data
@@ -305,7 +356,7 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 
 void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int total_no_of_slaves)
 {
-	int slv;
+    unsigned int slv;
 
     struct sigaction sa;
     struct itimerval tv;

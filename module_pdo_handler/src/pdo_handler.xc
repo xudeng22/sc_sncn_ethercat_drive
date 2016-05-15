@@ -1,12 +1,11 @@
 /**
- * @file pdo_parser.xc
+ * @file pdo_handler.xc
  * @brief Control Protocol PDO Parser
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <refclk.h>
 #include <ethercat_service.h>
-#include <pdo_parser.h>
+#include <pdo_handler.h>
 #include <foefs.h>
 
 #define MAX_PDO_SIZE    15

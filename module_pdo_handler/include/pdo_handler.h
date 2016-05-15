@@ -1,5 +1,5 @@
 /**
- * @file pdo_parser.h
+ * @file pdo_handler.h
  * @brief Control Protocol for PDOs
  * @author Synapticon GmbH <support@synapticon.com>
  */

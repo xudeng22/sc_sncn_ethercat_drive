@@ -171,6 +171,7 @@ static const uint16_t g_listobjects[] = {
    SENSOR_POLARITY
 };
 
+/* Array objects also need the subindex for complete addressing */
 static const uint16_t g_listarrayobjects[] = {
    CIA402_SUPPORTED_DRIVE_MODES, 1,
    /* Sub 01 = nominal current, Sub 02 = ???, Sub 03 = pole pair number, Sub 04 = max motor speed, Sub 05 = motor torque constant */

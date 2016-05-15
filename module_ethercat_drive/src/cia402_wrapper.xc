@@ -10,102 +10,102 @@
 #include <foefs.h>
 
 
-void config_sdo_handler(chanend coe_out)
+void config_sdo_handler(client interface i_coe_communication i_coe)
 {
 	int sdo_value;
-    GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, sdo_value); // Number of pole pairs
+    sdo_value = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3); // Number of pole pairs
     printstr("Number of pole pairs: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, sdo_value); // Nominal Current
+    sdo_value = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 1); // Nominal Current
     printstr("Nominal Current: ");printintln(sdo_value);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, sdo_value);  //motor torque constant
+	sdo_value = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);  //motor torque constant
 	printstr("motor torque constant: ");printintln(sdo_value);
-    GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, sdo_value); //Commutation offset CLKWISE
+    sdo_value = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0); //Commutation offset CLKWISE
     printstr("Commutation offset CLKWISE: ");printintln(sdo_value);
-    GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, sdo_value); //Commutation offset CCLKWISE
+    sdo_value = i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0); //Commutation offset CCLKWISE
     printstr("Commutation offset CCLKWISE: ");printintln(sdo_value);
-    GET_SDO_DATA(MOTOR_WINDING_TYPE, 0, sdo_value); //Motor Winding type STAR = 1, DELTA = 2
+    sdo_value = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); //Motor Winding type STAR = 1, DELTA = 2
     printstr("Motor Winding type: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, sdo_value);//Max Speed
+    sdo_value = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);//Max Speed
     printstr("Max Speed: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sdo_value);//Position Sensor Types HALL = 1, QEI_INDEX = 2, QEI_NO_INDEX = 3
+    sdo_value = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);//Position Sensor Types HALL = 1, QEI_INDEX = 2, QEI_NO_INDEX = 3
     printstr("Position Sensor Types: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_GEAR_RATIO, 0, sdo_value);//Gear ratio
+    sdo_value = i_coe.get_object_value(CIA402_GEAR_RATIO, 0);//Gear ratio
     printstr("Gear ratio: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, sdo_value);//QEI resolution
+    sdo_value = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);//QEI resolution
     printstr("QEI resolution: ");printintln(sdo_value);
-    GET_SDO_DATA(SENSOR_POLARITY, 0, sdo_value);//QEI_POLARITY_NORMAL = 0, QEI_POLARITY_INVERTED = 1
+    sdo_value = i_coe.get_object_value(SENSOR_POLARITY, 0);//QEI_POLARITY_NORMAL = 0, QEI_POLARITY_INVERTED = 1
     printstr("QEI POLARITY: ");printintln(sdo_value);
-	GET_SDO_DATA(CIA402_MAX_TORQUE, 0, sdo_value);//MAX_TORQUE
+	sdo_value = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);//MAX_TORQUE
 	printstr("MAX TORQUE: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, sdo_value);//negative positioning limit
+    sdo_value = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);//negative positioning limit
     printstr("negative positioning limit: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, sdo_value);//positive positioning limit
+    sdo_value = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);//positive positioning limit
     printstr("positive positioning limit: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_POLARITY, 0, sdo_value);//motor driving polarity
+    sdo_value = i_coe.get_object_value(CIA402_POLARITY, 0);//motor driving polarity
     printstr("motor driving polarity: ");printintln(sdo_value);  // -1 in 2'complement 255
-	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, sdo_value);//MAX PROFILE VELOCITY
+	sdo_value = i_coe.get_object_value(CIA402_MAX_PROFILE_VELOCITY, 0);//MAX PROFILE VELOCITY
 	printstr("MAX PROFILE VELOCITY: ");printintln(sdo_value);
-	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, sdo_value);//PROFILE VELOCITY
+	sdo_value = i_coe.get_object_value(CIA402_PROFILE_VELOCITY, 0);//PROFILE VELOCITY
 	printstr("PROFILE VELOCITY: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, sdo_value);//MAX ACCELERATION
+    sdo_value = i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0);//MAX ACCELERATION
     printstr("MAX ACCELERATION: ");printintln(sdo_value);
-	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, sdo_value);//PROFILE ACCELERATION
+	sdo_value = i_coe.get_object_value(CIA402_PROFILE_ACCELERATION, 0);//PROFILE ACCELERATION
 	printstr("PROFILE ACCELERATION: ");printintln(sdo_value);
-	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, sdo_value);//PROFILE DECELERATION
+	sdo_value = i_coe.get_object_value(CIA402_PROFILE_DECELERATION, 0);//PROFILE DECELERATION
 	printstr("PROFILE DECELERATION: ");printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);//QUICK STOP DECELERATION
+	sdo_value = i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0);//QUICK STOP DECELERATION
 	printstr("QUICK STOP DECELERATION: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, sdo_value);//TORQUE SLOPE
+    sdo_value = i_coe.get_object_value(CIA402_TORQUE_SLOPE, 0);//TORQUE SLOPE
     printstr("TORQUE SLOPE: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_POSITION_GAIN, 1, sdo_value);//Position P-Gain
+    sdo_value = i_coe.get_object_value(CIA402_POSITION_GAIN, 1);//Position P-Gain
     printstr("Position P-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_POSITION_GAIN, 2, sdo_value);//Position I-Gain
+    sdo_value = i_coe.get_object_value(CIA402_POSITION_GAIN, 2);//Position I-Gain
     printstr("Position I-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_POSITION_GAIN, 3, sdo_value);//Position D-Gain
+    sdo_value = i_coe.get_object_value(CIA402_POSITION_GAIN, 3);//Position D-Gain
     printstr("Position D-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, sdo_value);//Velocity P-Gain
+    sdo_value = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1);//Velocity P-Gain
     printstr("Velocity P-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, sdo_value);//Velocity I-Gain
+    sdo_value = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2);//Velocity I-Gain
     printstr("Velocity I-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, sdo_value);//Velocity D-Gain
+    sdo_value = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 3);//Velocity D-Gain
     printstr("Velocity D-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, sdo_value);//Current P-Gain
+    sdo_value = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);//Current P-Gain
     printstr("Current P-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, sdo_value);//Current I-Gain
+    sdo_value = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);//Current I-Gain
     printstr("Current I-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_CURRENT_GAIN, 3, sdo_value);//Current D-Gain
+    sdo_value = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);//Current D-Gain
     printstr("Current D-Gain: ");printintln(sdo_value);
-    GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, sdo_value);//LIMIT SWITCH TYPE: ACTIVE_HIGH = 1, ACTIVE_LOW = 2
+    sdo_value = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);//LIMIT SWITCH TYPE: ACTIVE_HIGH = 1, ACTIVE_LOW = 2
     printstr("LIMIT SWITCH TYPE: ");printintln(sdo_value);
-    GET_SDO_DATA(CIA402_HOMING_METHOD, 0, sdo_value);//HOMING METHOD: HOMING_NEGATIVE_SWITCH = 1, HOMING_POSITIVE_SWITCH = 2
+    sdo_value = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);//HOMING METHOD: HOMING_NEGATIVE_SWITCH = 1, HOMING_POSITIVE_SWITCH = 2
     printstr("HOMING METHOD: ");printintln(sdo_value);
 }
 
-{int, int} homing_sdo_update(chanend coe_out)
+{int, int} homing_sdo_update(client interface i_coe_communication i_coe)
 {
 	int homing_method;
 	int limit_switch_type;
 
-	GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, limit_switch_type);
-	GET_SDO_DATA(CIA402_HOMING_METHOD, 0, homing_method);
+	limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
+	homing_method = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
 
 	return {homing_method, limit_switch_type};
 }
 
-{int, int, int} commutation_sdo_update(chanend coe_out)
+{int, int, int} commutation_sdo_update(client interface i_coe_communication i_coe)
 {
 	int hall_offset_clk;
 	int hall_offset_cclk;
 	int winding_type;
 
-	GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, hall_offset_clk);
-	GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, hall_offset_cclk);
-	GET_SDO_DATA(MOTOR_WINDING_TYPE, 0, winding_type);
+	hall_offset_clk = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0);
+	hall_offset_cclk = i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0);
+	winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0);
 
 	return {hall_offset_clk, hall_offset_cclk, winding_type};
 }
 
-{int, int, int, int, int, int, int, int, int} pp_sdo_update(chanend coe_out)
+{int, int, int, int, int, int, int, int, int} pp_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_profile_velocity;
 	int profile_acceleration;
@@ -117,20 +117,20 @@ void config_sdo_handler(chanend coe_out)
 	int polarity;
 	int max_acc;
 
-	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
-	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, profile_velocity);
-	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
-	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
-	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acc);
+	max_profile_velocity = i_coe.get_object_value(CIA402_MAX_PROFILE_VELOCITY, 0);
+	profile_velocity = i_coe.get_object_value(CIA402_PROFILE_VELOCITY, 0);
+	profile_acceleration = i_coe.get_object_value(CIA402_PROFILE_ACCELERATION, 0);
+	profile_deceleration = i_coe.get_object_value(CIA402_PROFILE_DECELERATION, 0);
+	quick_stop_deceleration = i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0);
+	min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
+	max = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
+	polarity = i_coe.get_object_value(CIA402_POLARITY, 0);
+	max_acc = i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0);
 
 	return {max_profile_velocity, profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, min, max, polarity, max_acc};
 }
 
-{int, int, int, int, int} pv_sdo_update(chanend coe_out)
+{int, int, int, int, int} pv_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_profile_velocity;
 	int profile_acceleration;
@@ -138,50 +138,50 @@ void config_sdo_handler(chanend coe_out)
 	int quick_stop_deceleration;
 	int polarity;
 
-	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
-	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
-	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
-	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	max_profile_velocity = i_coe.get_object_value(CIA402_MAX_PROFILE_VELOCITY, 0);
+	profile_acceleration = i_coe.get_object_value(CIA402_PROFILE_ACCELERATION, 0);
+	profile_deceleration = i_coe.get_object_value(CIA402_PROFILE_DECELERATION, 0);
+	quick_stop_deceleration = i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0);
+	polarity = i_coe.get_object_value(CIA402_POLARITY, 0);
 	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, polarity};
 }
 
-{int, int} pt_sdo_update(chanend coe_out)
+{int, int} pt_sdo_update(client interface i_coe_communication i_coe)
 {
 	int torque_slope;
 	int polarity;
-	GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, torque_slope);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	torque_slope = i_coe.get_object_value(CIA402_TORQUE_SLOPE, 0);
+	polarity = i_coe.get_object_value(CIA402_POLARITY, 0);
 	return {torque_slope, polarity};
 }
 
-{int, int, int} position_sdo_update(chanend coe_out)
+{int, int, int} position_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
 	int Ki;
 	int Kd;
 
-	GET_SDO_DATA(CIA402_POSITION_GAIN, 1, Kp);
-	GET_SDO_DATA(CIA402_POSITION_GAIN, 2, Ki);
-	GET_SDO_DATA(CIA402_POSITION_GAIN, 3, Kd);
+	Kp = i_coe.get_object_value(CIA402_POSITION_GAIN, 1);
+	Ki = i_coe.get_object_value(CIA402_POSITION_GAIN, 2);
+	Kd = i_coe.get_object_value(CIA402_POSITION_GAIN, 3);
 
 	return {Kp, Ki, Kd};
 }
 
-{int, int, int} torque_sdo_update(chanend coe_out)
+{int, int, int} torque_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
 	int Ki;
 	int Kd;
 
-	GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, Kp);
-	GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, Ki);
-	GET_SDO_DATA(CIA402_CURRENT_GAIN, 3, Kd);
+	Kp = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
+	Ki = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
+	Kd = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
 
 	return {Kp, Ki, Kd};
 }
 
-{int, int, int} cst_sdo_update(chanend coe_out)
+{int, int, int} cst_sdo_update(client interface i_coe_communication i_coe)
 {
 	//int  nominal_current;
 	int max_motor_speed;
@@ -189,17 +189,17 @@ void config_sdo_handler(chanend coe_out)
 	int max_torque;
 	//int motor_torque_constant;
 
-	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MAX_TORQUE, 0, max_torque);
-	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
+	//nominal_current = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 1);
+	max_motor_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+	polarity = i_coe.get_object_value(CIA402_POLARITY, 0);
+	max_torque = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
+	//motor_torque_constant = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
 
 	//return {nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant};
 	return {max_motor_speed, polarity, max_torque};
 }
 
-{int, int, int} csv_sdo_update(chanend coe_out)
+{int, int, int} csv_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_motor_speed;
 	//int nominal_current;
@@ -207,24 +207,24 @@ void config_sdo_handler(chanend coe_out)
 	//int motor_torque_constant;
 	int max_acceleration;
 
-	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
-	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
+	//nominal_current = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 1);
+	max_motor_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+	//motor_torque_constant = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
 
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration);
+	polarity = i_coe.get_object_value(CIA402_POLARITY, 0);
+	max_acceleration = i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0);
 	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
 	return {max_motor_speed, polarity, max_acceleration};
 }
 
-int speed_sdo_update(chanend coe_out)
+int speed_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_motor_speed;
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
+	max_motor_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
 	return max_motor_speed;
 }
 
-{int, int, int, int, int} csp_sdo_update(chanend coe_out)
+{int, int, int, int, int} csp_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_motor_speed;
 	int polarity;
@@ -233,53 +233,53 @@ int speed_sdo_update(chanend coe_out)
 	int max;
 	int max_acc;
 
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	//GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
-	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acc);
+	max_motor_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+	polarity = i_coe.get_object_value(CIA402_POLARITY, 0);
+	//nominal_current = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 1);
+	min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
+	max = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
+	max_acc = i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0);
 
 	return {max_motor_speed, polarity, min, max, max_acc};
 }
 
-int sensor_select_sdo(chanend coe_out)
+int sensor_select_sdo(client interface i_coe_communication i_coe)
 {
     int sensor_select;
-    GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sensor_select);
+    sensor_select = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
     if(sensor_select == 2 || sensor_select == 3)
         sensor_select = 2; //qei
     return sensor_select;
 }
-{int, int, int} velocity_sdo_update(chanend coe_out)
+{int, int, int} velocity_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
 	int Ki;
 	int Kd;
 
-	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, Kp);
-	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, Ki);
-	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, Kd);
+	Kp = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1);
+	Ki = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2);
+	Kd = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 3);
 
 	return {Kp, Ki, Kd};
 }
 
-int hall_sdo_update(chanend coe_out)
+int hall_sdo_update(client interface i_coe_communication i_coe)
 {
 	int pole_pairs;
 	//int min;
 	//int max;
 
-	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
-	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, pole_pairs);
+	//min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
+	//max = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
+	pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
 
 	return pole_pairs; //{pole_pairs, max, min};
 }
 
 
 
-{int, int, int} qei_sdo_update(chanend coe_out)
+{int, int, int} qei_sdo_update(client interface i_coe_communication i_coe)
 {
 	int ticks_resolution;
 	int qei_type;
@@ -287,11 +287,11 @@ int hall_sdo_update(chanend coe_out)
 	//int max;
 	int sensor_polarity;
 
-	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
-	//GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, ticks_resolution);
-	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
-	GET_SDO_DATA(SENSOR_POLARITY, 0, sensor_polarity);
+	//min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
+	//max = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
+	ticks_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
+	qei_type = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
+	sensor_polarity = i_coe.get_object_value(SENSOR_POLARITY, 0);
 
 	if(qei_type == QEI_WITH_INDEX)
 		return {ticks_resolution, QEI_WITH_INDEX, sensor_polarity};
@@ -302,37 +302,39 @@ int hall_sdo_update(chanend coe_out)
 }
 
 
-void init_sdo(chanend coe_out)
+void init_sdo(client interface i_coe_communication i_coe)
 {
+#if 0 /* this doesn't make sense! */
     unsigned int tmp;
     unsigned char status = 0;
     timer t;
     unsigned int time;
-    coe_out <: CAN_GET_OBJECT;
-    coe_out <: CAN_OBJ_ADR(0x60b0, 0);
-    coe_out :> tmp;
+    i_coe <: CAN_GET_OBJECT;
+    i_coe <: CAN_OBJ_ADR(0x60b0, 0);
+    i_coe :> tmp;
     status= (unsigned char)(tmp&0xff);
     if (status == 0) {
-        coe_out <: CAN_SET_OBJECT;
-        coe_out <: CAN_OBJ_ADR(0x60b0, 0);
+        i_coe <: CAN_SET_OBJECT;
+        i_coe <: CAN_OBJ_ADR(0x60b0, 0);
         status = 0xaf;
-        coe_out <: (unsigned)status;
-        coe_out :> tmp;
+        i_coe <: (unsigned)status;
+        i_coe :> tmp;
         if (tmp == status) {
             t :> time;
             t when timerafter(time + 500*100000) :> time;
         }
     }
+#endif
 }
 
 
-void update_hall_config_ecat(HallConfig &hall_config, chanend coe_out)
+void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_communication i_coe)
 {
     //int min;
     //int max;
 
-    //{hall_config.pole_pairs, max, min} = hall_sdo_update(coe_out);
-    hall_config.pole_pairs = hall_sdo_update(coe_out);
+    //{hall_config.pole_pairs, max, min} = hall_sdo_update(i_coe);
+    hall_config.pole_pairs = hall_sdo_update(i_coe);
 
     //min = abs(min);
     //max = abs(max);
@@ -343,12 +345,12 @@ void update_hall_config_ecat(HallConfig &hall_config, chanend coe_out)
     //hall_config.max_ticks += hall_config.max_ticks_per_turn;
 }
 
-void update_qei_param_ecat(QEIConfig &qei_params, chanend coe_out)
+void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communication i_coe)
 {
     //int min;
     //int max;
 
-    { qei_params.ticks_resolution, qei_params.index_type, qei_params.sensor_polarity } = qei_sdo_update(coe_out);
+    { qei_params.ticks_resolution, qei_params.index_type, qei_params.sensor_polarity } = qei_sdo_update(i_coe);
 
     //min = abs(min);
     //max = abs(max);
@@ -357,15 +359,15 @@ void update_qei_param_ecat(QEIConfig &qei_params, chanend coe_out)
     //qei_params.max_ticks += qei_params.max_ticks_per_turn;  // tolerance
 }
 
-void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, chanend coe_out)
+void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface i_coe_communication i_coe)
 {
     {commutation_params.hall_offset[0], commutation_params.hall_offset[1],
-            commutation_params.bldc_winding_type} = commutation_sdo_update(coe_out);
+            commutation_params.bldc_winding_type} = commutation_sdo_update(i_coe);
 }
 
-void update_cst_param_ecat(ProfilerConfig &cst_params, chanend coe_out)
+void update_cst_param_ecat(ProfilerConfig &cst_params, client interface i_coe_communication i_coe)
 {
-    {cst_params.max_velocity, cst_params.polarity, cst_params.max_current} = cst_sdo_update(coe_out);
+    {cst_params.max_velocity, cst_params.polarity, cst_params.max_current} = cst_sdo_update(i_coe);
 
     if (cst_params.polarity >= 0) {
         cst_params.polarity = 1;
@@ -374,11 +376,11 @@ void update_cst_param_ecat(ProfilerConfig &cst_params, chanend coe_out)
     }
 }
 
-void update_csv_param_ecat(ProfilerConfig &csv_params, chanend coe_out)
+void update_csv_param_ecat(ProfilerConfig &csv_params, client interface i_coe_communication i_coe)
 {
     {csv_params.max_velocity,
         csv_params.polarity,
-        csv_params.max_acceleration} = csv_sdo_update(coe_out);
+        csv_params.max_acceleration} = csv_sdo_update(i_coe);
 
     if (csv_params.polarity >= 0) {
         csv_params.polarity = 1;
@@ -387,10 +389,10 @@ void update_csv_param_ecat(ProfilerConfig &csv_params, chanend coe_out)
     }
 }
 
-void update_csp_param_ecat(ProfilerConfig &csp_params, chanend coe_out)
+void update_csp_param_ecat(ProfilerConfig &csp_params, client interface i_coe_communication i_coe)
 {
     {csp_params.max_velocity, csp_params.polarity, csp_params.min_position, csp_params.max_position,
-            csp_params.max_acceleration} = csp_sdo_update(coe_out);
+            csp_params.max_acceleration} = csp_sdo_update(i_coe);
     if (csp_params.polarity >= 0) {
         csp_params.polarity = 1;
     } else if (csp_params.polarity < 0) {
@@ -398,9 +400,9 @@ void update_csp_param_ecat(ProfilerConfig &csp_params, chanend coe_out)
     }
 }
 
-void update_pt_param_ecat(ProfilerConfig &pt_params, chanend coe_out)
+void update_pt_param_ecat(ProfilerConfig &pt_params, client interface i_coe_communication i_coe)
 {
-    {pt_params.current_slope, pt_params.polarity} = pt_sdo_update(coe_out);
+    {pt_params.current_slope, pt_params.polarity} = pt_sdo_update(i_coe);
     if (pt_params.polarity >= 0) {
         pt_params.polarity = 1;
     } else if (pt_params.polarity < 0) {
@@ -408,15 +410,15 @@ void update_pt_param_ecat(ProfilerConfig &pt_params, chanend coe_out)
     }
 }
 
-void update_pv_param_ecat(ProfilerConfig &pv_params, chanend coe_out)
+void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_communication i_coe)
 {
     {pv_params.max_velocity, pv_params.acceleration,
             pv_params.deceleration,
             pv_params.max_deceleration,
-            pv_params.polarity} = pv_sdo_update(coe_out);
+            pv_params.polarity} = pv_sdo_update(i_coe);
 }
 
-void update_pp_param_ecat(ProfilerConfig &pp_params, chanend coe_out)
+void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_communication i_coe)
 {
     {pp_params.max_velocity, pp_params.velocity,
             pp_params.acceleration, pp_params.deceleration,
@@ -424,12 +426,12 @@ void update_pp_param_ecat(ProfilerConfig &pp_params, chanend coe_out)
             pp_params.min_position,
             pp_params.max_position,
             pp_params.polarity,
-            pp_params.max_acceleration} = pp_sdo_update(coe_out);
+            pp_params.max_acceleration} = pp_sdo_update(i_coe);
 }
 
-void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, chanend coe_out)
+void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client interface i_coe_communication i_coe)
 {
-    {torque_ctrl_params.Kp_n, torque_ctrl_params.Ki_n, torque_ctrl_params.Kd_n} = torque_sdo_update(coe_out);
+    {torque_ctrl_params.Kp_n, torque_ctrl_params.Ki_n, torque_ctrl_params.Kd_n} = torque_sdo_update(i_coe);
    // torque_ctrl_params.Kp_d = 65536;                // 16 bit precision PID gains
    // torque_ctrl_params.Ki_d = 65536;
    // torque_ctrl_params.Kd_d = 65536;
@@ -446,9 +448,9 @@ void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, chanend co
 }
 
 
-void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, chanend coe_out)
+void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client interface i_coe_communication i_coe)
 {
-    {velocity_ctrl_params.Kp_n, velocity_ctrl_params.Ki_n, velocity_ctrl_params.Kd_n} = velocity_sdo_update(coe_out);
+    {velocity_ctrl_params.Kp_n, velocity_ctrl_params.Ki_n, velocity_ctrl_params.Kd_n} = velocity_sdo_update(i_coe);
     //velocity_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
     //velocity_ctrl_params.Ki_d = 65536;
     //velocity_ctrl_params.Kd_d = 65536;
@@ -465,9 +467,9 @@ void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, chanen
     return;
 }
 
-void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, chanend coe_out)
+void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client interface i_coe_communication i_coe)
 {
-    {position_ctrl_params.Kp_n, position_ctrl_params.Ki_n, position_ctrl_params.Kd_n} = position_sdo_update(coe_out);
+    {position_ctrl_params.Kp_n, position_ctrl_params.Ki_n, position_ctrl_params.Kd_n} = position_sdo_update(i_coe);
     //position_ctrl_params.Kp_d = 65536;              // 16 bit precision PID gains
     //position_ctrl_params.Ki_d = 65536;
     //position_ctrl_params.Kd_d = 65536;

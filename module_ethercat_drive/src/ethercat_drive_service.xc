@@ -45,7 +45,8 @@
 //#pragma xta command "set required - 1.0 ms"
 
 void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in, chanend coe_out,
+                            chanend pdo_out, chanend pdo_in,
+                            client interface i_coe_communication i_coe,
                             interface MotorcontrolInterface client i_commutation,
                             interface HallInterface client ?i_hall,
                             interface QEIInterface client ?i_qei,
@@ -338,16 +339,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             if (setup_loop_flag == 0) {
                 if (controlword == 6) {
-                    coe_out <: CAN_GET_OBJECT;
-                    coe_out <: CAN_OBJ_ADR(0x60b0, 0);
-                    coe_out :> tmp;
+                    tmp = i_coe.get_object_value(0x60b0, 0);
                     status = (unsigned char)(tmp&0xff);
                     if (status == 0) {
-                        coe_out <: CAN_SET_OBJECT;
-                        coe_out <: CAN_OBJ_ADR(0x60b0, 0);
                         status = 0xaf;
-                        coe_out <: (unsigned)status;
-                        coe_out :> tmp;
+                        i_coe.set_object_value(0x60b0, 0, status);
+                        tmp = i_coe.get_object_value(0x60b0, 0);
                         if (tmp == status) {
                             t :> c_time;
                             t when timerafter(c_time + 500*MSEC_STD) :> c_time;
@@ -360,25 +357,25 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
                 /* Read Motor Configuration sent from the EtherCAT Master Application */
                 if (controlword == 5) {
-                    update_commutation_param_ecat(commutation_params, coe_out);
-                    sensor_select = sensor_select_sdo(coe_out);
+                    update_commutation_param_ecat(commutation_params, i_coe);
+                    sensor_select = sensor_select_sdo(i_coe);
 
                     //if (sensor_select == HALL_SENSOR)  /* FIXME (?)
                     //{
-                    update_hall_config_ecat(hall_config, coe_out);
+                    update_hall_config_ecat(hall_config, i_coe);
                     //}
                     biss_config.pole_pairs = hall_config.pole_pairs;
                     ams_config.pole_pairs = hall_config.pole_pairs;
                     if (sensor_select >= QEI_SENSOR) { /* FIXME QEI with Index defined as 2 and without Index as 3  */
-                        update_qei_param_ecat(qei_params, coe_out);
+                        update_qei_param_ecat(qei_params, i_coe);
                     }
-                    nominal_speed = speed_sdo_update(coe_out);
-                    update_pp_param_ecat(profiler_config, coe_out);
+                    nominal_speed = speed_sdo_update(i_coe);
+                    update_pp_param_ecat(profiler_config, i_coe);
                     polarity = profiler_config.polarity;//profile_position_config.velocity_config.polarity;
                     //qei_params.poles = hall_config.pole_pairs;
 
-                    //config_sdo_handler(coe_out);
-                    {homing_method, limit_switch_type} = homing_sdo_update(coe_out);
+                    //config_sdo_handler(i_coe);
+                    {homing_method, limit_switch_type} = homing_sdo_update(i_coe);
                     if (homing_method == HOMING_NEGATIVE_SWITCH)
                         limit_switch = -1;
                     else if (homing_method == HOMING_POSITIVE_SWITCH)
@@ -455,8 +452,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Profile Position Mode initialization */
                 case PP:
                     if (op_set_flag == 0) {
-                        update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
+                        update_position_ctrl_param_ecat(position_ctrl_params, i_coe);
+                        sensor_select = sensor_select_sdo(i_coe);
 
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
@@ -488,7 +485,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_pp_param_ecat(profiler_config, coe_out);
+                        update_pp_param_ecat(profiler_config, i_coe);
                         init_position_profile_limits(profiler_config.max_acceleration,
                                                      profiler_config.max_velocity,
                                                      qei_params, hall_config, biss_config, ams_config, sensor_select,
@@ -501,8 +498,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Profile Torque Mode initialization */
                 case TQ:
                     if (op_set_flag == 0) {
-                        update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
+                        update_torque_ctrl_param_ecat(torque_ctrl_params, i_coe);
+                        sensor_select = sensor_select_sdo(i_coe);
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
                         } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
@@ -535,8 +532,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             ack = 0;
                             shutdown_ack = 0;
 
-                            update_cst_param_ecat(profiler_config, coe_out);
-                            update_pt_param_ecat(profiler_config, coe_out);
+                            update_cst_param_ecat(profiler_config, i_coe);
+                            update_pt_param_ecat(profiler_config, i_coe);
                             init_linear_profile_limits(profiler_config.max_current, profiler_config.polarity);
 
                             InOut.operation_mode_display = TQ;
@@ -551,8 +548,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_cst_param_ecat(profiler_config, coe_out);
-                        update_pt_param_ecat(profiler_config, coe_out);
+                        update_cst_param_ecat(profiler_config, i_coe);
+                        update_pt_param_ecat(profiler_config, i_coe);
                         init_linear_profile_limits(profiler_config.max_current, profiler_config.polarity);
 
                         InOut.operation_mode_display = TQ;
@@ -562,8 +559,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Profile Velocity Mode initialization */
                 case PV:
                     if (op_set_flag == 0) {
-                        update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
+                        update_velocity_ctrl_param_ecat(velocity_ctrl_params, i_coe);
+                        sensor_select = sensor_select_sdo(i_coe);
 
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
@@ -596,7 +593,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_pv_param_ecat(profiler_config, coe_out);
+                        update_pv_param_ecat(profiler_config, i_coe);
                         init_velocity_profile_limits(profiler_config.max_velocity,profiler_config.max_deceleration,
                                                         profiler_config.max_deceleration);//profile_velocity_config.quick_stop_deceleration);
                         InOut.operation_mode_display = PV;
@@ -606,8 +603,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Cyclic synchronous position mode initialization */
                 case CSP:
                     if (op_set_flag == 0) {
-                        update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
+                        update_position_ctrl_param_ecat(position_ctrl_params, i_coe);
+                        sensor_select = sensor_select_sdo(i_coe);
 
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
@@ -638,7 +635,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_csp_param_ecat(profiler_config, coe_out);
+                        update_csp_param_ecat(profiler_config, i_coe);
                         InOut.operation_mode_display = CSP;
                     }
                     break;
@@ -646,8 +643,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Cyclic synchronous velocity mode initialization */
                 case CSV:   //csv mode index
                     if (op_set_flag == 0) {
-                        update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
+                        update_velocity_ctrl_param_ecat(velocity_ctrl_params, i_coe);
+                        sensor_select = sensor_select_sdo(i_coe);
 
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
@@ -678,7 +675,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_csv_param_ecat(profiler_config, coe_out);
+                        update_csv_param_ecat(profiler_config, i_coe);
                         InOut.operation_mode_display = CSV;
                     }
                     break;
@@ -686,8 +683,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     /* Cyclic synchronous torque mode initialization */
                 case CST:
                     if (op_set_flag == 0) {
-                        update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
+                        update_torque_ctrl_param_ecat(torque_ctrl_params, i_coe);
+                        sensor_select = sensor_select_sdo(i_coe);
 
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);
@@ -723,8 +720,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             ack = 0;
                             shutdown_ack = 0;
 
-                            update_cst_param_ecat(profiler_config, coe_out);
-                            update_pt_param_ecat(profiler_config, coe_out);
+                            update_cst_param_ecat(profiler_config, i_coe);
+                            update_pt_param_ecat(profiler_config, i_coe);
                             //torque_offstate = (cyclic_sync_torque_config.max_torque * 15) / (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
                             InOut.operation_mode_display = CST;
                         }
@@ -737,8 +734,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         ack = 0;
                         shutdown_ack = 0;
 
-                        update_cst_param_ecat(profiler_config, coe_out);
-                        update_pt_param_ecat(profiler_config, coe_out);
+                        update_cst_param_ecat(profiler_config, i_coe);
+                        update_pt_param_ecat(profiler_config, i_coe);
                         //torque_offstate = (cyclic_sync_torque_config.max_torque * 15) / (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
                         InOut.operation_mode_display = CST;
                     }

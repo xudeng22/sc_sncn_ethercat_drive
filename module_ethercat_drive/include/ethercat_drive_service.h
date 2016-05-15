@@ -10,6 +10,7 @@
 #include <hall_service.h>
 #include <qei_service.h>
 #include <gpio_service.h>
+#include <ethercat_service.h>
 
 #include <velocity_ctrl_service.h>
 #include <position_ctrl_service.h>
@@ -45,7 +46,8 @@
  * @param i_position_control Interface to Position Control Loop Service.
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in, chanend coe_out,
+                            chanend pdo_out, chanend pdo_in,
+                            client interface i_coe_communication i_ceo,
                             interface MotorcontrolInterface client i_motorcontrol,
                             interface HallInterface client ?i_hall,
                             interface QEIInterface client ?i_qei,

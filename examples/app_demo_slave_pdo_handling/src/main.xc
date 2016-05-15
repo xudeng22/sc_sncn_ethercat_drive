@@ -44,11 +44,12 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 		InOut.status_word = InOut.control_word;
 		InOut.operation_mode_display = InOut.operation_mode;
 
-		/* Mirror user defined fields */
+#if 0 /* Mirror user defined fields */
 		InOut.user1_out = InOut.user1_in;
 		InOut.user2_out = InOut.user2_in;
 		InOut.user3_out = InOut.user3_in;
 		InOut.user4_out = InOut.user4_in;
+#endif
 
 		if(InOutOld.control_word != InOut.control_word)
 		{
@@ -79,7 +80,14 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 			printstr("\nTorque: ");
 			printintln(InOut.target_torque);
 		}
-#if 0
+
+	   InOutOld.control_word 	= InOut.control_word;
+	   InOutOld.target_position = InOut.target_position;
+	   InOutOld.target_velocity = InOut.target_velocity;
+	   InOutOld.target_torque = InOut.target_torque;
+	   InOutOld.operation_mode = InOut.operation_mode;
+
+#if 0 /* Print user PDOs */
 	   if (InOutOld.user1_in != InOut.user1_in)
 	   {
 	       printstr("\nUser 1 Data: ");
@@ -103,18 +111,12 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 	       printstr("User 1 Data: ");
 	       printhexln(InOut.user4_in);
 	   }
-#endif
 
-	   InOutOld.control_word 	= InOut.control_word;
-	   InOutOld.target_position = InOut.target_position;
-	   InOutOld.target_velocity = InOut.target_velocity;
-	   InOutOld.target_torque = InOut.target_torque;
-	   InOutOld.operation_mode = InOut.operation_mode;
 	   InOutOld.user1_in        = InOut.user1_in;
 	   InOutOld.user2_in        = InOut.user2_in;
 	   InOutOld.user3_in        = InOut.user3_in;
 	   InOutOld.user4_in        = InOut.user4_in;
-
+#endif
 
 	   t when timerafter(time+delay) :> time;
 	}

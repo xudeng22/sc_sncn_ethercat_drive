@@ -10,7 +10,7 @@
 
 #include <canod.h>
 #include <ethercat_service.h>
-#include <cia402_wrapper.h>
+#include <pdo_parser.h>
 
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;

@@ -12,10 +12,41 @@
 #include <ethercat_service.h>
 #include <pdo_handler.h>
 
+#define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
-static void sdo_configuration(client interface i_coe_communication i_coe);
+/* function declaration of later used functions */
+static void read_od_config(client interface i_coe_communication i_coe);
+
+/* Wait until the EtherCAT enters operation mode. At this point the master
+ * should have finished all client configuration. */
+static void sdo_configuration(client interface i_coe_communication i_coe)
+{
+    timer t;
+    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
+    unsigned int time;
+
+    int sdo_configured = 0;
+
+    while (sdo_configured == 0) {
+        select {
+            case i_coe.configuration_ready():
+                printstrln("Master requests OP mode - cyclic operation is about to start.");
+                sdo_configured = 1;
+                break;
+        }
+
+        t when timerafter(time+delay) :> time;
+    }
+
+    /* comment in the read_od_config() function to print the object values */
+//    read_od_config(i_coe);
+    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
+
+    /* clear the notification before proceeding the operation */
+    i_coe.configuration_done();
+}
 
 /* Test application handling pdos from EtherCat */
 static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_out, chanend pdo_in)
@@ -129,7 +160,7 @@ static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_
 
 }
 
-#define MAX_TIME_TO_WAIT_SDO      100000
+/* DEBUG output to check the values of the objects in the object dictionary */
 
 /* list of OD objects, excluding PDO mapped and device specific objects */
 static const uint16_t g_listobjects[] = {
@@ -198,6 +229,7 @@ static const uint16_t g_listarrayobjects[] = {
    CIA402_POSITION_GAIN, 3,
 };
 
+/* This function simply iterates throuch the objects given in /see g_listobjects and /see g_listarrayobjects. */
 static void read_od_config(client interface i_coe_communication i_coe)
 {
     /* Read the values of hand picked objects */
@@ -220,32 +252,7 @@ static void read_od_config(client interface i_coe_communication i_coe)
 
     return;
 }
-
-/* Wait until the EtherCAT enters operation mode. At this point the master
- * should have finished all client configuration. */
-static void sdo_configuration(client interface i_coe_communication i_coe)
-{
-    timer t;
-    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
-    unsigned int time;
-
-    int sdo_configured = 0;
-
-    while (sdo_configured == 0) {
-        select {
-            case i_coe.configuration_ready():
-                printstrln("Master requests OP mode - cyclic operation is about to start.");
-                sdo_configured = 1;
-                break;
-        }
-
-        t when timerafter(time+delay) :> time;
-    }
-
-//    read_od_config(i_coe);
-    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
-    i_coe.configuration_done(); /* clear notification */
-}
+/*/DEBUG */
 
 int main(void)
 {

@@ -45,7 +45,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 		InOut.status_word = InOut.control_word;
 		InOut.operation_mode_display = InOut.operation_mode;
 
-#if 0 /* Mirror user defined fields */
+#if 1 /* Mirror user defined fields */
 		InOut.user1_out = InOut.user1_in;
 		InOut.user2_out = InOut.user2_in;
 		InOut.user3_out = InOut.user3_in;
@@ -112,12 +112,12 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	       printstr("User 1 Data: ");
 	       printhexln(InOut.user4_in);
 	   }
+#endif
 
 	   InOutOld.user1_in        = InOut.user1_in;
 	   InOutOld.user2_in        = InOut.user2_in;
 	   InOutOld.user3_in        = InOut.user3_in;
 	   InOutOld.user4_in        = InOut.user4_in;
-#endif
 
 	   t when timerafter(time+delay) :> time;
 	}

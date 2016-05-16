@@ -71,7 +71,6 @@ int main(void)
     interface GPIOInterface i_gpio[1];
 #endif
 
-    interface TorqueControlInterface i_torque_control[3];
     interface PositionControlInterface i_position_control[3];
     interface VelocityControlInterface i_velocity_control[3];
 
@@ -126,22 +125,22 @@ int main(void)
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
                                     i_motorcontrol[3], null, null, i_biss[4], null, null,
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
                                     i_motorcontrol[3], i_hall[4], i_qei[4], null, null, i_gpio[0],
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
                                     i_motorcontrol[3], null, null, null, i_ams[4], null,
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #else
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, coe_out,
                                     i_motorcontrol[3], i_hall[4], null, null, null, i_gpio[0],
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #endif
         }
 
@@ -204,35 +203,6 @@ int main(void)
 #else
                     velocity_control_service(velocity_control_config, i_hall[2], null, null, null, i_motorcontrol[1],
                                              i_velocity_control);
-#endif
-                }
-
-                /* Torque Control Loop */
-                {
-                    /* Torque Control Loop */
-                    ControlConfig torque_control_config;
-
-                    torque_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
-
-                    torque_control_config.Kp_n = TORQUE_Kp;
-                    torque_control_config.Ki_n = TORQUE_Ki;
-                    torque_control_config.Kd_n = TORQUE_Kd;
-
-                    torque_control_config.control_loop_period = CONTROL_LOOP_PERIOD; // us
-
-                    /* Control Loop */
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], i_hall[3], i_qei[3], null, null, i_motorcontrol[2],
-                                                i_torque_control);
-#elif (MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], null, null, null, i_ams[3], i_motorcontrol[2],
-                                                i_torque_control);
-#elif (MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], null, null, i_biss[3], null, i_motorcontrol[2],
-                                                i_torque_control);
-#else
-                    torque_control_service(torque_control_config, i_adc[1], i_hall[3], null, null, null, i_motorcontrol[2],
-                                                i_torque_control);
 #endif
                 }
 

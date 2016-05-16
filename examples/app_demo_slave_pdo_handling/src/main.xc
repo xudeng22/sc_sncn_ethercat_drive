@@ -15,8 +15,10 @@
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
+static void sdo_configuration(client interface i_coe_communication i_coe);
+
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(chanend pdo_out, chanend pdo_in)
+static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
@@ -30,6 +32,9 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	InOut = init_ctrl_proto();
 	t :> time;
 
+	sdo_configuration(i_coe);
+
+	printstrln("Starting PDO protocol");
 	while(1)
 	{
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
@@ -266,8 +271,7 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_handler(pdo_out, pdo_in);
-			sdo_handler(i_coecomm);
+			pdo_handler(i_coecomm, pdo_out, pdo_in);
 		}
 	}
 

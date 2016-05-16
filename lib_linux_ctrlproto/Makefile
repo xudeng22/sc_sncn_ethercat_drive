@@ -19,6 +19,15 @@ ARFLAGS =
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 LIBS += -lethercat -lm -lstdc++ 
 
+#
+# Necessary paths
+#
+
+# Installation directory of the  EtherCAT Master by IgH EtherLAB
+ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
+ETHERCAT_PATH := ..
+MOTORCONTROL_PATH := ..
+
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I include
 INCLUDE_DIRS += -I ../inc_ctrlproto-common/
@@ -51,19 +60,9 @@ TIME_MEASUREMENT = 0
 
 CFLAGS += -DMAKE_TIME_MEASUREMENT=$(TIME_MEASUREMENT)
 
-#
-# Necessary paths
-#
-
-# Installation directory of the  EtherCAT Master by IgH EtherLAB
-ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
-
 ifeq (,$(wildcard $(ETHERCAT_MASTER_INSTALLDIR)))
   $(error Master is not installed at given directory if you installed it elsewhere change location in Makefile.)
 endif
-
-ETHERCAT_PATH := ..
-MOTORCONTROL_PATH := ..
 
 ifneq (,$(wildcard ../../sc_sncn_ethercat/.))
 	ETHERCAT_PATH := ../../sc_sncn_ethercat
@@ -113,5 +112,5 @@ uninstall:
 	$(RM) -f $(TARGET_DIR)/libsncn_ctrlproto.so
 
 clean:
-	$(RM) -f lib/*.so lib/*.a src/*.o
-	$(RM) -d $(OUTDIR)
+	$(RM) -f $(OUTDIR)/*.so $(OUTDIR)/*.a src/*.o
+	$(RM) -f -d $(OUTDIR)

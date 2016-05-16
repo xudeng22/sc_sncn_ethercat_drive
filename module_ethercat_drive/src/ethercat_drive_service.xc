@@ -51,7 +51,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface BISSInterface client ?i_biss,
                             interface AMSInterface client ?i_ams,
                             interface GPIOInterface client ?i_gpio,
-                            interface TorqueControlInterface client i_torque_control,
+                            interface TorqueControlInterface client ?i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control)
 {
@@ -378,7 +378,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             i_ams.set_ams_config(ams_config);
                         }
                         i_position_control.set_position_control_config(position_ctrl_params);
-                        if(motorcontrol_config.commutation_method == SINE){
+                        if(motorcontrol_config.commutation_method == SINE && !isnull(i_torque_control)){
                             i_torque_control.set_torque_sensor(sensor_select);
                         }
                         i_velocity_control.set_velocity_sensor(sensor_select);
@@ -583,7 +583,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if(motorcontrol_config.commutation_method == FOC){
                 send_actual_torque( i_commutation.get_torque_actual(), InOut );
             } else {
-                send_actual_torque( i_torque_control.get_torque() * polarity, InOut );
+                if(!isnull(i_torque_control))
+                    send_actual_torque( i_torque_control.get_torque() * polarity, InOut );
             }
             //send_actual_torque( get_torque(c_torque_ctrl) * polarity, InOut );
             send_actual_position(actual_position * polarity, InOut);

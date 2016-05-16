@@ -20,6 +20,8 @@ int main()
 	/* Initialize EtherCAT Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	master_activate_operation(&master_setup);
+
 	printf("starting Master application\n");
 	while(1)
 	{

@@ -216,31 +216,30 @@ static void read_od_config(client interface i_coe_communication i_coe)
     return;
 }
 
-static void sdo_handler(client interface i_coe_communication i_coe)
+/* Wait until the EtherCAT enters operation mode. At this point the master
+ * should have finished all client configuration. */
+static void sdo_configuration(client interface i_coe_communication i_coe)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
     unsigned int time;
 
-    int read_config = 0;
+    int sdo_configured = 0;
 
-    while (1) {
+    while (sdo_configured == 0) {
         select {
             case i_coe.configuration_ready():
                 printstrln("Master requests OP mode - cyclic operation is about to start.");
-                read_config = 1;
+                sdo_configured = 1;
                 break;
         }
 
-        if (read_config) {
-            read_od_config(i_coe);
-            printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
-            i_coe.configuration_done(); /* clear notification */
-        }
-
         t when timerafter(time+delay) :> time;
-
     }
+
+//    read_od_config(i_coe);
+    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
+    i_coe.configuration_done(); /* clear notification */
 }
 
 int main(void)

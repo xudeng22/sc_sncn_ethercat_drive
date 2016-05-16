@@ -154,6 +154,24 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     velocity_ctrl_params = i_velocity_control.get_velocity_control_config();
     MotorcontrolConfig motorcontrol_config = i_commutation.get_config();
 
+ //ToDo parameters to be updated over ethercat:
+ // hall_config
+ // qei_params
+ // biss_config
+ // ams_config
+ // velocity_ctrl_params
+ // position_ctrl_params
+ // torque_ctrl_params
+ // motorcontrol_config
+ // profiler_config
+ // commutation_params
+ //
+ // sensor_select
+ // nominal_speed
+ // homing_method, limit_switch_type
+ // polarity
+
+
     t :> time;
     while (1) {
 //#pragma xta endpoint "ecatloop"

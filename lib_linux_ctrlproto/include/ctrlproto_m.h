@@ -196,6 +196,14 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 }
 
 
+/* Replikastructure to hold the index, subindex and byte count of every available object */
+typedef struct {
+	ec_slave_config_t *slave_config;
+	uint16_t index;
+	uint8_t  subindex;
+	uint8_t  bytecount;
+} sdo_entries_t;
+
 /**
  * This struct is for creating a slave handle for each Somanet Module
  */
@@ -217,8 +225,7 @@ typedef struct
 	/**
 	 * The SDO entries
 	 */
-
-	ec_sdo_request_t *__request[MAX_SDO_COUNT];
+	sdo_entries_t *sdo_entries[MAX_SDO_COUNT];
 
 	/**
 	 * The PDO entries

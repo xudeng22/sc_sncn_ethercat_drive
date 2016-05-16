@@ -150,54 +150,20 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 
 /****************************************************************************/
 
-motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[], int update_sequence);
+motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[], int update_sequence);
 
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         int update_sequence, int slave_number)
 {
-	if(sig_alarms == user_alarms) pause();
-	while (sig_alarms != user_alarms)
-	{
-		/* sync the dc clock of the slaves */
-		//	ecrt_master_sync_slave_clocks(master);
 
-		// receive process data
-		ecrt_master_receive(master_setup->master);
-		ecrt_domain_process(master_setup->domain);
+    //for (int slv = 0; slv < total_no_of_slaves; ++slv)
+    {
+        slv_handles[slave_number].motor_config_param = \
+                sdo_motor_config_update(master_setup, slave_number, slv_handles[slave_number].motor_config_param, \
+                        slv_handles[slave_number].sdo_entries, update_sequence);
+    }
 
-
-		//for (int slv = 0; slv < total_no_of_slaves; ++slv)
-		{
-			slv_handles[slave_number].motor_config_param = \
-					sdo_motor_config_update(slv_handles[slave_number].motor_config_param, \
-							slv_handles[slave_number].__request, update_sequence);
-		}
-
-		// send process data
-		ecrt_domain_queue(master_setup->domain);
-		ecrt_master_send(master_setup->master);
-
-		//Check for master und domain state
-		ecrt_master_state(master_setup->master, &master_setup->master_state);
-		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
-
-		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->op_flag)
-		{
-			//printf("System up!\n");
-			master_setup->op_flag = 1;
-		}
-		else
-		{
-			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->op_flag)
-			{
-				//printf("System down!\n");
-				master_setup->op_flag = 0;
-			}
-		}
-
-		user_alarms++;
-	}
 }
 
 #if MAKE_TIME_MEASUREMENT == 0
@@ -352,7 +318,7 @@ static void logmsg(int lvl, const char *format, ...)
 
 
 
-void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[]);
+void motor_config_request(ec_slave_config_t *slave_config, sdo_entries_t *request[]);
 
 void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int total_no_of_slaves)
 {
@@ -384,7 +350,7 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 		}
 
 	//#if PARAMETER_UPDATE
-		motor_config_request(slv_handles[slv].slave_config, slv_handles[slv].__request);
+		motor_config_request(slv_handles[slv].slave_config, slv_handles[slv].sdo_entries);
 	//#endif
 	}
 
@@ -430,21 +396,21 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
     }
 
     logmsg(0, "Started.\n");
-
 }
 
 /****************************************************************************/
-ec_sdo_request_t* _config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request, int index, int sub_index, int bytes)
+sdo_entries_t* _config_sdo_request(ec_slave_config_t *slave_config, sdo_entries_t *request, int index, int sub_index, int bytes)
 {
-	if (!(request = ecrt_slave_config_create_sdo_request(slave_config, index, sub_index, bytes))) {
-		fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", index);
-		exit(-1);
-	}
-	ecrt_sdo_request_timeout(request, 10500);
+    request = malloc(sizeof(sdo_entries_t));
+    request->slave_config = slave_config;
+    request->index = index;
+    request->subindex = sub_index;
+    request->bytecount = bytes;
+
 	return request;
 }
 
-void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[])
+void motor_config_request(ec_slave_config_t *slave_config, sdo_entries_t *request[])
 {
 	request[0] = _config_sdo_request(slave_config, request[0], CIA402_GEAR_RATIO, 0, 2);
 	request[1] = _config_sdo_request(slave_config, request[1], CIA402_MAX_ACCELERATION, 0, 4);
@@ -507,263 +473,121 @@ int _motor_config_update(ec_sdo_request_t *request, int update, int value, int s
     return update;
 }
 
-motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[], int update_sequence)
+/* Write the configuration to the slave and check if the download was successfull.
+ * FIXME rename parameters to make more sense.
+ */
+static int sdo_download(ec_master_t *master, int slave_number, sdo_entries_t *request, uint32_t value)
 {
-    if(update_sequence == MOTOR_PARAM_UPDATE)
-    {
-        if(!motor_config_param.s_gear_ratio.update_state)
-            motor_config_param.s_gear_ratio.update_state = _motor_config_update(request[0], \
-                motor_config_param.s_gear_ratio.update_state, motor_config_param.s_gear_ratio.gear_ratio, 1);
+    uint32_t abort_code = 0;
+    uint8_t *val_ptr = (uint8_t *)(&value);
 
-        if(motor_config_param.s_gear_ratio.update_state && !motor_config_param.s_max_acceleration.update_state)
-            motor_config_param.s_max_acceleration.update_state = _motor_config_update(request[1], \
-                motor_config_param.s_max_acceleration.update_state, motor_config_param.s_max_acceleration.max_acceleration, 2);
+    ecrt_master_sdo_download(master, slave_number, request->index, request->subindex, val_ptr, request->bytecount, &abort_code);
 
-        if(motor_config_param.s_max_acceleration.update_state && !motor_config_param.s_pole_pair.update_state)
-            motor_config_param.s_pole_pair.update_state = _motor_config_update(request[5], \
-                motor_config_param.s_pole_pair.update_state,   motor_config_param.s_pole_pair.pole_pair, 3);
-
-        if(motor_config_param.s_pole_pair.update_state && !motor_config_param.s_position_encoder_resolution.update_state)
-            motor_config_param.s_position_encoder_resolution.update_state = _motor_config_update(request[6], \
-                motor_config_param.s_position_encoder_resolution.update_state,  \
-                motor_config_param.s_position_encoder_resolution.position_encoder_resolution, 4);
-
-        if(motor_config_param.s_position_encoder_resolution.update_state && !motor_config_param.s_sensor_selection_code.update_state)
-            motor_config_param.s_sensor_selection_code.update_state = _motor_config_update(request[7], \
-                motor_config_param.s_sensor_selection_code.update_state,  \
-                motor_config_param.s_sensor_selection_code.sensor_selection_code, 5);
-
-        if(motor_config_param.s_sensor_selection_code.update_state && !motor_config_param.s_polarity.update_state)
-            motor_config_param.s_polarity.update_state = _motor_config_update(request[4], \
-                motor_config_param.s_polarity.update_state,  motor_config_param.s_polarity.polarity, 6);
-
-        if(motor_config_param.s_polarity.update_state && !motor_config_param.s_motor_torque_constant.update_state)
-            motor_config_param.s_motor_torque_constant.update_state = _motor_config_update(request[21], \
-                motor_config_param.s_motor_torque_constant.update_state,  \
-                motor_config_param.s_motor_torque_constant.motor_torque_constant, 7);
-
-        if(motor_config_param.s_motor_torque_constant.update_state && !motor_config_param.s_nominal_motor_speed.update_state)
-            motor_config_param.s_nominal_motor_speed.update_state = _motor_config_update(request[3],\
-                motor_config_param.s_nominal_motor_speed.update_state,  \
-                motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 8);
-
-        if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_commutation_offset_clk.update_state)
-            motor_config_param.s_commutation_offset_clk.update_state = _motor_config_update(request[27],\
-                motor_config_param.s_commutation_offset_clk.update_state,  \
-                motor_config_param.s_commutation_offset_clk.commutation_offset_clk, 9);
-
-        if(motor_config_param.s_commutation_offset_clk.update_state && !motor_config_param.s_commutation_offset_cclk.update_state)
-            motor_config_param.s_commutation_offset_cclk.update_state = _motor_config_update(request[28],\
-                motor_config_param.s_commutation_offset_cclk.update_state,  \
-                motor_config_param.s_commutation_offset_cclk.commutation_offset_cclk, 10);
-
-        if(motor_config_param.s_commutation_offset_cclk.update_state && !motor_config_param.s_motor_winding_type.update_state)
-            motor_config_param.s_motor_winding_type.update_state = _motor_config_update(request[29],\
-                motor_config_param.s_motor_winding_type.update_state,  \
-                motor_config_param.s_motor_winding_type.motor_winding_type, 11);
-
-
-        if(motor_config_param.s_motor_winding_type.update_state && !motor_config_param.s_limit_switch_type.update_state)
-            motor_config_param.s_limit_switch_type.update_state = _motor_config_update(request[31],\
-                    motor_config_param.s_limit_switch_type.update_state,  \
-                    motor_config_param.s_limit_switch_type.limit_switch_type, 12);
-
-        if(motor_config_param.s_limit_switch_type.update_state && !motor_config_param.s_homing_method.update_state)
-            motor_config_param.s_homing_method.update_state = _motor_config_update(request[30],\
-                    motor_config_param.s_homing_method.update_state,  \
-                    motor_config_param.s_homing_method.homing_method, 13);
-
-        if(motor_config_param.s_homing_method.update_state && !motor_config_param.s_software_position_min.update_state)
-                motor_config_param.s_software_position_min.update_state = _motor_config_update(request[14], \
-                    motor_config_param.s_software_position_min.update_state,  \
-                    motor_config_param.s_software_position_min.software_position_min, 14);
-
-        if(motor_config_param.s_software_position_min.update_state && !motor_config_param.s_software_position_max.update_state)
-            motor_config_param.s_software_position_max.update_state = _motor_config_update(request[15], \
-                motor_config_param.s_software_position_max.update_state,  \
-                motor_config_param.s_software_position_max.software_position_max, 15);
-
-        if(motor_config_param.s_software_position_max.update_state && !motor_config_param.s_sensor_polarity.update_state)
-            motor_config_param.s_sensor_polarity.update_state = _motor_config_update(request[32], \
-                motor_config_param.s_sensor_polarity.update_state,  \
-                motor_config_param.s_sensor_polarity.sensor_polarity, 16);
-
-        motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
-            & motor_config_param.s_max_acceleration.update_state \
-            & motor_config_param.s_pole_pair.update_state \
-            & motor_config_param.s_position_encoder_resolution.update_state \
-            & motor_config_param.s_sensor_selection_code.update_state \
-            & motor_config_param.s_polarity.update_state \
-            & motor_config_param.s_motor_torque_constant.update_state\
-            & motor_config_param.s_nominal_motor_speed.update_state\
-            & motor_config_param.s_commutation_offset_clk.update_state\
-            & motor_config_param.s_commutation_offset_cclk.update_state\
-            & motor_config_param.s_motor_winding_type.update_state\
-            & motor_config_param.s_limit_switch_type.update_state\
-            & motor_config_param.s_homing_method.update_state\
-            & motor_config_param.s_software_position_min.update_state\
-            & motor_config_param.s_software_position_max.update_state\
-            & motor_config_param.s_sensor_polarity.update_state;
-
+    if (abort_code != 0) {
+        fprintf(stderr, "ERROR %s: could not download to object: 0x%04x ... giving up\n", __func__, request->index);
+        return -1;
     }
 
-    else if(update_sequence == CST_MOTOR_UPDATE)
-    {
-        if(!motor_config_param.s_max_torque.update_state)
-            motor_config_param.s_max_torque.update_state = _motor_config_update(request[22],\
-                motor_config_param.s_max_torque.update_state, \
-                motor_config_param.s_max_torque.max_torque, 1);
+    /* Test if the value is transfered correctly */
+    uint8_t result[4] = { 0 }; /* max of 4 byte words supported */
+    size_t result_size = 4;
+    size_t read_size = 0;
 
-        motor_config_param.update_flag = motor_config_param.s_max_torque.update_state;
+    ecrt_master_sdo_upload(master, slave_number, request->index, request->subindex, result, result_size, &read_size, &abort_code);
+
+    if (abort_code != 0) {
+        fprintf(stderr, "ERROR %s: could not upload object: 0x%04x ... abort code %d\n", __func__, request->index, abort_code);
+        return -1;
     }
 
-    else if(update_sequence == CSV_MOTOR_UPDATE)
-    {
-        if(!motor_config_param.s_nominal_current.update_state)
-            motor_config_param.s_nominal_current.update_state = _motor_config_update(request[2], \
-                motor_config_param.s_nominal_current.update_state,\
-                motor_config_param.s_nominal_current.nominal_current, 1);
-
-        motor_config_param.update_flag = motor_config_param.s_nominal_current.update_state;
+    uint32_t *r = (uint32_t *)result;
+    if (*r != value) {
+        fprintf(stderr, "ERROR %s: set object 0x%04x failed!\n", __func__, request->index);
+        fprintf(stderr,      "expected %d - received after send %d\n", value, *r);
+        return -1;
     }
 
-    else if(update_sequence == TORQUE_CTRL_UPDATE)
-    {
-        if(!motor_config_param.s_torque_p_gain.update_state)
-            motor_config_param.s_torque_p_gain.update_state = _motor_config_update(request[24], \
-                motor_config_param.s_torque_p_gain.update_state,  \
-                motor_config_param.s_torque_p_gain.p_gain, 1);
+    return 0;
+}
 
-        if(motor_config_param.s_torque_p_gain.update_state && !motor_config_param.s_torque_i_gain.update_state)
-            motor_config_param.s_torque_i_gain.update_state = _motor_config_update(request[25], \
-                motor_config_param.s_torque_i_gain.update_state,  \
-                motor_config_param.s_torque_i_gain.i_gain, 2);
+motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[], int update_sequence)
+{
+    (void)update_sequence;
 
-        if(motor_config_param.s_torque_i_gain.update_state  && !motor_config_param.s_torque_d_gain.update_state)
-            motor_config_param.s_torque_d_gain.update_state = _motor_config_update(request[26], \
-                motor_config_param.s_torque_d_gain.update_state,  \
-                motor_config_param.s_torque_d_gain.d_gain, 3);
+    sdo_download(master_setup->master, slave_number, request[0],   motor_config_param.s_gear_ratio.gear_ratio);
 
-        motor_config_param.update_flag = motor_config_param.s_torque_p_gain.update_state \
-            & motor_config_param.s_torque_i_gain.update_state \
-            & motor_config_param.s_torque_d_gain.update_state;
-    }
+    sdo_download(master_setup->master, slave_number, request[1],   motor_config_param.s_max_acceleration.max_acceleration);
 
-    else if(update_sequence == VELOCITY_CTRL_UPDATE)
-    {
-        if(!motor_config_param.s_velocity_p_gain.update_state)
-            motor_config_param.s_velocity_p_gain.update_state = _motor_config_update(request[8], \
-                motor_config_param.s_velocity_p_gain.update_state,  \
-                motor_config_param.s_velocity_p_gain.p_gain, 1);
+    sdo_download(master_setup->master, slave_number, request[5],    motor_config_param.s_pole_pair.pole_pair);
 
-        if(motor_config_param.s_velocity_p_gain.update_state && !motor_config_param.s_velocity_i_gain.update_state)
-            motor_config_param.s_velocity_i_gain.update_state = _motor_config_update(request[9], \
-                motor_config_param.s_velocity_i_gain.update_state,  \
-                motor_config_param.s_velocity_i_gain.i_gain, 2);
+    sdo_download(master_setup->master, slave_number, request[6],    motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
 
-        if(motor_config_param.s_velocity_i_gain.update_state  && !motor_config_param.s_velocity_d_gain.update_state)
-            motor_config_param.s_velocity_d_gain.update_state = _motor_config_update(request[10], \
-                motor_config_param.s_velocity_d_gain.update_state,  \
-                motor_config_param.s_velocity_d_gain.d_gain, 3);
+    sdo_download(master_setup->master, slave_number, request[7],    motor_config_param.s_sensor_selection_code.sensor_selection_code);
 
-        motor_config_param.update_flag = motor_config_param.s_velocity_p_gain.update_state \
-            & motor_config_param.s_velocity_i_gain.update_state \
-            & motor_config_param.s_velocity_d_gain.update_state;
-    }
+    sdo_download(master_setup->master, slave_number, request[4],    motor_config_param.s_polarity.polarity);
 
-    else if(update_sequence == POSITION_CTRL_UPDATE)
-    {
-        if(!motor_config_param.s_position_p_gain.update_state)
-             motor_config_param.s_position_p_gain.update_state = _motor_config_update(request[11], \
-                motor_config_param.s_position_p_gain.update_state,  \
-                motor_config_param.s_position_p_gain.p_gain, 1);
+    sdo_download(master_setup->master, slave_number, request[21],    motor_config_param.s_motor_torque_constant.motor_torque_constant);
 
-        if(motor_config_param.s_position_p_gain.update_state && !motor_config_param.s_position_i_gain.update_state)
-            motor_config_param.s_position_i_gain.update_state = _motor_config_update(request[12], \
-                motor_config_param.s_position_i_gain.update_state,  \
-                motor_config_param.s_position_i_gain.i_gain, 2);
+    sdo_download(master_setup->master, slave_number, request[3],    motor_config_param.s_nominal_motor_speed.nominal_motor_speed);
 
-        if(motor_config_param.s_position_i_gain.update_state  && !motor_config_param.s_position_d_gain.update_state)
-            motor_config_param.s_position_d_gain.update_state = _motor_config_update(request[13], \
-                motor_config_param.s_position_d_gain.update_state,  \
-                motor_config_param.s_position_d_gain.d_gain, 3);
+    sdo_download(master_setup->master, slave_number, request[27],    motor_config_param.s_commutation_offset_clk.commutation_offset_clk);
 
-        motor_config_param.update_flag = motor_config_param.s_position_p_gain.update_state \
-            & motor_config_param.s_position_i_gain.update_state \
-            & motor_config_param.s_position_d_gain.update_state;
-    }
+    sdo_download(master_setup->master, slave_number, request[28],    motor_config_param.s_commutation_offset_cclk.commutation_offset_cclk);
 
-    else if(update_sequence == TQ_MOTOR_UPDATE)
-    {
-        if(!motor_config_param.s_torque_slope.update_state)
-             motor_config_param.s_torque_slope.update_state = _motor_config_update(request[23], \
-                motor_config_param.s_torque_slope.update_state,  \
-                motor_config_param.s_torque_slope.torque_slope, 1);
+    sdo_download(master_setup->master, slave_number, request[29],    motor_config_param.s_motor_winding_type.motor_winding_type);
 
-        motor_config_param.update_flag = motor_config_param.s_torque_slope.update_state;
-    }
 
-    else if(update_sequence == PV_MOTOR_UPDATE)
-    {
-        if(!motor_config_param.s_max_profile_velocity.update_state)
-             motor_config_param.s_max_profile_velocity.update_state = _motor_config_update(request[16], \
-                motor_config_param.s_max_profile_velocity.update_state,  \
-                motor_config_param.s_max_profile_velocity.max_profile_velocity, 1);
+    sdo_download(master_setup->master, slave_number, request[31],    motor_config_param.s_limit_switch_type.limit_switch_type);
 
-        if(motor_config_param.s_max_profile_velocity.update_state && !motor_config_param.s_quick_stop_deceleration.update_state)
-            motor_config_param.s_quick_stop_deceleration.update_state = _motor_config_update(request[20], \
-                motor_config_param.s_quick_stop_deceleration.update_state,  \
-                motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration, 2);
+    sdo_download(master_setup->master, slave_number, request[30],    motor_config_param.s_homing_method.homing_method);
 
-        if(motor_config_param.s_quick_stop_deceleration.update_state && !motor_config_param.s_profile_acceleration.update_state)
-            motor_config_param.s_profile_acceleration.update_state = _motor_config_update(request[18], \
-                motor_config_param.s_profile_acceleration.update_state,  \
-                motor_config_param.s_profile_acceleration.profile_acceleration, 3);
+    sdo_download(master_setup->master, slave_number, request[14],    motor_config_param.s_software_position_min.software_position_min);
 
-        if(motor_config_param.s_profile_acceleration.update_state && !motor_config_param.s_profile_deceleration.update_state)
-            motor_config_param.s_profile_deceleration.update_state = _motor_config_update(request[19], \
-                motor_config_param.s_profile_deceleration.update_state,  \
-                motor_config_param.s_profile_deceleration.profile_deceleration, 4);
+    sdo_download(master_setup->master, slave_number, request[15],    motor_config_param.s_software_position_max.software_position_max);
 
-        motor_config_param.update_flag = motor_config_param.s_max_profile_velocity.update_state \
-            & motor_config_param.s_quick_stop_deceleration.update_state \
-            & motor_config_param.s_profile_acceleration.update_state \
-            & motor_config_param.s_profile_deceleration.update_state;
-    }
+    sdo_download(master_setup->master, slave_number, request[32],    motor_config_param.s_sensor_polarity.sensor_polarity);
 
-    else if(update_sequence == PP_MOTOR_UPDATE)
-    {
-        if(!motor_config_param.s_max_profile_velocity.update_state)
-            motor_config_param.s_max_profile_velocity.update_state = _motor_config_update(request[16], \
-                motor_config_param.s_max_profile_velocity.update_state,  \
-                motor_config_param.s_max_profile_velocity.max_profile_velocity, 1);
+    sdo_download(master_setup->master, slave_number, request[22],    motor_config_param.s_max_torque.max_torque);
 
-        if(motor_config_param.s_max_profile_velocity.update_state && !motor_config_param.s_profile_velocity.update_state)
-            motor_config_param.s_profile_velocity.update_state = _motor_config_update(request[17], \
-                motor_config_param.s_profile_velocity.update_state,  \
-                motor_config_param.s_profile_velocity.profile_velocity, 2);
+    sdo_download(master_setup->master, slave_number, request[2],    motor_config_param.s_nominal_current.nominal_current);
 
-        if(motor_config_param.s_profile_velocity.update_state && !motor_config_param.s_profile_acceleration.update_state)
-            motor_config_param.s_profile_acceleration.update_state = _motor_config_update(request[18], \
-                motor_config_param.s_profile_acceleration.update_state,  \
-                motor_config_param.s_profile_acceleration.profile_acceleration, 3);
+    sdo_download(master_setup->master, slave_number, request[24],    motor_config_param.s_torque_p_gain.p_gain);
 
-        if(motor_config_param.s_profile_acceleration.update_state && !motor_config_param.s_profile_deceleration.update_state)
-            motor_config_param.s_profile_deceleration.update_state = _motor_config_update(request[19], \
-                motor_config_param.s_profile_deceleration.update_state,  \
-                motor_config_param.s_profile_deceleration.profile_deceleration, 4);
+    sdo_download(master_setup->master, slave_number, request[25],    motor_config_param.s_torque_i_gain.i_gain);
 
-        if(motor_config_param.s_profile_deceleration.update_state && !motor_config_param.s_quick_stop_deceleration.update_state)
-            motor_config_param.s_quick_stop_deceleration.update_state = _motor_config_update(request[20], \
-                motor_config_param.s_quick_stop_deceleration.update_state,  \
-                motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration, 5);
+    sdo_download(master_setup->master, slave_number, request[26],    motor_config_param.s_torque_d_gain.d_gain);
 
-        motor_config_param.update_flag = motor_config_param.s_max_profile_velocity.update_state \
-            & motor_config_param.s_profile_velocity.update_state \
-            & motor_config_param.s_profile_acceleration.update_state \
-            & motor_config_param.s_profile_deceleration.update_state \
-            & motor_config_param.s_quick_stop_deceleration.update_state ;
-    }
+    sdo_download(master_setup->master, slave_number, request[8],    motor_config_param.s_velocity_p_gain.p_gain);
+
+    sdo_download(master_setup->master, slave_number, request[9],    motor_config_param.s_velocity_i_gain.i_gain);
+
+    sdo_download(master_setup->master, slave_number, request[10],    motor_config_param.s_velocity_d_gain.d_gain);
+
+    sdo_download(master_setup->master, slave_number, request[11],    motor_config_param.s_position_p_gain.p_gain);
+
+    sdo_download(master_setup->master, slave_number, request[12],    motor_config_param.s_position_i_gain.i_gain);
+
+    sdo_download(master_setup->master, slave_number, request[13],    motor_config_param.s_position_d_gain.d_gain);
+
+    sdo_download(master_setup->master, slave_number, request[23],    motor_config_param.s_torque_slope.torque_slope);
+
+    sdo_download(master_setup->master, slave_number, request[16],    motor_config_param.s_max_profile_velocity.max_profile_velocity);
+
+    sdo_download(master_setup->master, slave_number, request[20],    motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
+
+    sdo_download(master_setup->master, slave_number, request[18],    motor_config_param.s_profile_acceleration.profile_acceleration);
+
+    sdo_download(master_setup->master, slave_number, request[19],    motor_config_param.s_profile_deceleration.profile_deceleration);
+
+    sdo_download(master_setup->master, slave_number, request[16],    motor_config_param.s_max_profile_velocity.max_profile_velocity);
+
+    sdo_download(master_setup->master, slave_number, request[17],    motor_config_param.s_profile_velocity.profile_velocity);
+
+    sdo_download(master_setup->master, slave_number, request[18],    motor_config_param.s_profile_acceleration.profile_acceleration);
+
+    sdo_download(master_setup->master, slave_number, request[19],    motor_config_param.s_profile_deceleration.profile_deceleration);
+
+    sdo_download(master_setup->master, slave_number, request[20],    motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
 
     return motor_config_param;
 }

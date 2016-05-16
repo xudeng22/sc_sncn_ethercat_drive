@@ -274,6 +274,11 @@ void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *sl
     int i;
     for(i = 0; i<total_no_of_slaves;i++)
     {
+        printf("Updating motor parameters for node %i\n", i);
+        fflush(stdout);
+	sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, i); // motor config update
+
+#if 0
         initialize_torque(i, slv_handles);
         set_controlword(6, i, slv_handles);
         while(1)
@@ -312,350 +317,51 @@ void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *sl
         }
         printf ("\n");
         fflush(stdout);
-
         set_controlword(5, i, slv_handles);
+#endif
     }
 }
 
-int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+
+int set_operation_mode(int operation_mode, int slave_number, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
+	
 	int ready = 0;
-	int switch_enable = 0;
 	int status_word = 0;
-	int switch_on_state = 0;
-	int op_enable_state = 0;
 
-	int actual_position;
-	int i = 0;
-
-
-	/**********************check ready***********************/
-	while(!ready)
+	while (!ready)
 	{
 		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-		if(master_setup->op_flag)
-		{
-			//check ready
-			status_word = read_statusword(slave_number, slv_handles);
-			ready = check_ready(status_word);
-		}
-		else
-			continue;
+		status_word = read_statusword(slave_number, slv_handles);
+		ready = check_ready(status_word);
 	}
 
-	#ifndef print_slave
-	printf("ready\n");
-	fflush(stdout);
-	#endif
-
-	/**********************check switch_enable***********************/
-	while(!switch_enable)
-	{
-		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-		if(master_setup->op_flag)
-		{
-			//check switch
-			status_word = read_statusword(slave_number, slv_handles);
-			switch_enable = check_switch_enable(status_word);
-		}
-		else
-			continue;
-	}
-
-	#ifndef print_slave
-	printf("switch_enable\n");
-	fflush(stdout);
-	#endif
-
-
-	/************************output switch on**************************/
-	while(!switch_on_state)
-	{
-		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-		if(master_setup->op_flag)
-		{
-			set_controlword(SWITCH_ON_CONTROL, slave_number, slv_handles);
-			/*************check switch_on_state***************/
-			status_word = read_statusword(slave_number, slv_handles);
-			switch_on_state = check_switch_on(status_word);
-		}
-		else
-			continue;
-	}
-
-	#ifndef print_slave
-	printf("switch_on_state\n");
-	fflush(stdout);
-	#endif
-
-
-	printf("updating control parameters\n");
-	fflush(stdout);
-	/***** Set up Parameters *****/
-
-	slv_handles[slave_number].motor_config_param.update_flag = 0;
-	if(operation_mode == CST || operation_mode == TQ)
-	{
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, CST_MOTOR_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, TORQUE_CTRL_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope = \
-						ceil( (float) slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope / slv_handles[slave_number].factor_torq);
-
-				sdo_handle_ecat(master_setup, slv_handles, TQ_MOTOR_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-	}
-
-
-	else if (operation_mode == CSV)
-	{
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0; // reset to update next set of paramaters
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, VELOCITY_CTRL_UPDATE, slave_number);  //Velocity PID gains
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//nominal current updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-	}
-	else if (operation_mode == CSP)
-	{
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, POSITION_CTRL_UPDATE, slave_number);		//mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-	}
-
-	else if (operation_mode == PV)
-	{
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0; // reset to update next set of paramaters
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, VELOCITY_CTRL_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, PV_MOTOR_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-	}
-
-	else if (operation_mode == PP)
-	{
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, POSITION_CTRL_UPDATE, slave_number);		//mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		slv_handles[slave_number].motor_config_param.update_flag = 0;
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, PP_MOTOR_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-	}
-	printf ("\n");
-	fflush(stdout);
-
-
-
-
-	/**********************output Mode of Operation******************/
 	while(1)
 	{
-			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-			if(master_setup->op_flag)
-			{
-				slv_handles[slave_number].operation_mode = operation_mode;
-				/*************check operation_mode display**************/
-				if (slv_handles[slave_number].operation_mode_disp == operation_mode)
-					break;
+		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+		slv_handles[slave_number].operation_mode = operation_mode;
 
-				//printf("operation_mode in loop\n");
-			}
-			else
-				continue;
+		if (slv_handles[slave_number].operation_mode_disp == operation_mode)
+			break;
 	}
-	#ifndef print_slave
-	printf("operation_mode enabled\n");
-	fflush(stdout);
-	#endif
 
 	return 1;
 }
 
 
-int enable_operation(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+int enable_operation(int slave_number, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int op_enable_state = 0;
 	int status_word = 0;
-	int actual_position;
 
-	while(!op_enable_state && master_setup->op_flag)
+	while(!op_enable_state)
 	{
 		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-		if(master_setup->op_flag)
-		{
-			set_controlword(SWITCH_ON, slave_number, slv_handles);
-			/*************check op_enable_state**************/
-			status_word = read_statusword(slave_number, slv_handles);
-			op_enable_state = check_op_enable(status_word);
-			actual_position = get_position_actual_ticks(slave_number, slv_handles);
-			//printf("actual_position %d\n", actual_position);;
-			set_profile_position_ticks(actual_position, slave_number, slv_handles);
-		}
-		else
-			continue;
+
+		set_controlword(SWITCH_ON, slave_number, slv_handles);
+		/*************check op_enable_state**************/
+		status_word = read_statusword(slave_number, slv_handles);
+		op_enable_state = check_op_enable(status_word);
 	}
 
 	#ifndef print_slave

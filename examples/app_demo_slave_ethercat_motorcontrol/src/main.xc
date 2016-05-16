@@ -25,6 +25,7 @@
 
 #include <ethercat_service.h>
 #include <fw_update_service.h>
+#include <memory_manager.h>
 
 // Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
@@ -71,6 +72,7 @@ int main(void)
     interface GPIOInterface i_gpio[1];
 #endif
 
+    interface shared_memory_interface i_shared_memory[2];
     interface PositionControlInterface i_position_control[3];
     interface VelocityControlInterface i_velocity_control[3];
 
@@ -297,6 +299,8 @@ int main(void)
                     biss_service(biss_ports, biss_config, i_biss);
                 }
 #endif
+
+                memory_manager(i_shared_memory, 2);
 
                 /* Motor Commutation Service */
                 {

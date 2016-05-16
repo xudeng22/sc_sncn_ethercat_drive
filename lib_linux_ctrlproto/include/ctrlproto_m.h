@@ -455,6 +455,13 @@ void init_master(master_setup_variables_t *master_setup,
 				 unsigned int total_no_of_slaves);
 
 /**
+ * Activate the master cyclic operation, i.e. OP mode
+ *
+ * @param master_setup      Master object
+ */
+void master_activate_operation(master_setup_variables_t *master_setup);
+
+/**
  * This function handles the ethercat master communication,
  * it wraps around the master loop around the functions standing
  * below.

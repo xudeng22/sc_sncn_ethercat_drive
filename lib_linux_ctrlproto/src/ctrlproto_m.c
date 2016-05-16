@@ -324,9 +324,6 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 {
     unsigned int slv;
 
-    struct sigaction sa;
-    struct itimerval tv;
-
     master_setup->master = ecrt_request_master(0);
     if (!master_setup->master)
         exit(-1);
@@ -337,7 +334,7 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 
 	for (slv = 0; slv < total_no_of_slaves; ++slv)
 	{
-		if (!( slv_handles[slv].slave_config= ecrt_master_slave_config(   //sc_data_in
+		if (!( slv_handles[slv].slave_config = ecrt_master_slave_config(   //sc_data_in
 						master_setup->master, slv_handles[slv].slave_alias, slv_handles[slv].slave_pos , slv_handles[slv].slave_vendorid, slv_handles[slv].slave_productid))) {
 			fprintf(stderr, "Failed to get slave configuration.\n");
 			exit(-1);
@@ -363,6 +360,16 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 		fprintf(stderr, "failed to set send interval\n");
 		exit(-1);
 	}
+
+    logmsg(0, "Master configured, about to configure slaves\n");
+}
+
+void master_activate_operation(master_setup_variables_t *master_setup)
+{
+    struct sigaction sa;
+    struct itimerval tv;
+
+
     logmsg(1, "Activating master...\n");
     if (ecrt_master_activate(master_setup->master))
         exit(-1);
@@ -370,8 +377,6 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
     if (!(master_setup->domain_pd = ecrt_domain_data(master_setup->domain))) {
         exit(-1);
     }
-
-
     pid_t pid = getpid();
     if (setpriority(PRIO_PROCESS, pid, -19))
         fprintf(stderr, "Warning: Failed to set priority: %s\n",

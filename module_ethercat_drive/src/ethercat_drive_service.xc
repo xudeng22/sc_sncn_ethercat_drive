@@ -226,8 +226,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
                     } else if (sensor_select == QEI_SENSOR){    /* QEI */
                         sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                    } else if (sensor_select == BISS_SENSOR){    /* QEI */
+                    } else if (sensor_select == BISS_SENSOR){    /* BISS */
                         sensor_ticks = (1 << biss_config.singleturn_resolution);
+                    } else if (sensor_select == AMS_SENSOR){    /* AMS */
+                        sensor_ticks = (1 << ams_config.resolution_bits);
                     }
 
                     steps = init_quick_stop_position_profile(

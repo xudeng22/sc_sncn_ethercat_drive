@@ -222,8 +222,14 @@ int main(void)
                 /* PWM Service */
                 pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl, null);
 
-                /* Watchdog Service */
-                watchdog_service(wd_ports, i_watchdog);
+
+                [[combine]]
+                par{
+                    /* Watchdog Service */
+                    watchdog_service(wd_ports, i_watchdog);
+                    /* GPIO Digital Service */
+                    gpio_service(gpio_ports, i_gpio);
+                }
 
 #if(MOTOR_FEEDBACK_SENSOR != BISS_SENSOR && MOTOR_FEEDBACK_SENSOR != AMS_SENSOR)
                 /* Hall sensor Service */
@@ -234,8 +240,7 @@ int main(void)
                     hall_service(hall_ports, hall_config, i_hall);
                 }
 
-                /* GPIO Digital Service */
-                gpio_service(gpio_ports, i_gpio);
+
 #endif
 #if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
                 /* Quadrature encoder sensor Service */

@@ -67,9 +67,6 @@ int main() {
         printf("Motor %d start position: %i ticks\n", slaveid, start_position[slaveid]);
     }
     for (int slaveid=0 ; slaveid<TOTAL_NUM_OF_SLAVES ; slaveid++) {
-        /* Initialize torque parameters */
-        initialize_torque(slaveid, slv_handles);
-
         /* Initialize the node specified with ECAT_SLAVE_0 with CSP configurations (specified in config)*/
         set_operation_mode(CSP, slaveid, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

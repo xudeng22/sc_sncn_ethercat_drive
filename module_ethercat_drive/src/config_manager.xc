@@ -43,6 +43,10 @@ void cm_sync_config_qei(
     qei_config.index_type = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
     qei_config.sensor_polarity = i_coe.get_object_value(SENSOR_POLARITY, 0);
 
+    /* FIXME add min and max? */
+    //min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
+    //max = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
+
     i_qei.set_qei_config(qei_config);
 }
 

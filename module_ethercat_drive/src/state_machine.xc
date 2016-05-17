@@ -63,7 +63,7 @@ void update_checklist(check_list &check_list_param, int mode,
                         interface BISSInterface client ?i_biss,
                         interface AMSInterface client ?i_ams,
                         interface ADCInterface client ?i_adc,
-                                interface TorqueControlInterface client i_torque_control,
+                                interface TorqueControlInterface client ?i_torque_control,
                                 interface VelocityControlInterface client i_velocity_control,
                                 interface PositionControlInterface client i_position_control)
 
@@ -106,7 +106,10 @@ void update_checklist(check_list &check_list_param, int mode,
         break;
     case INIT:
         if (~check_list_param._torque_init && mode == 1) {
-            check_list_param._torque_init = i_torque_control.check_busy();//__check_torque_init(c_torque_ctrl);
+            if(!isnull(i_torque_control))
+                check_list_param._torque_init = i_torque_control.check_busy();//__check_torque_init(c_torque_ctrl);
+            else
+                check_list_param._torque_init = 1;
         }
         if (~check_list_param._velocity_init && mode == 2) {
             check_list_param._velocity_init = i_velocity_control.check_busy();//__check_velocity_init(c_velocity_ctrl);

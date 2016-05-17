@@ -25,6 +25,7 @@
 
 #include <ethercat_service.h>
 #include <fw_update_service.h>
+#include <memory_manager.h>
 
 // Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
@@ -71,13 +72,12 @@ int main(void)
     interface GPIOInterface i_gpio[1];
 #endif
 
-    interface TorqueControlInterface i_torque_control[3];
+    interface shared_memory_interface i_shared_memory[2];
     interface PositionControlInterface i_position_control[3];
     interface VelocityControlInterface i_velocity_control[3];
 
     /* EtherCat Communication channels */
-    chan coe_in;          // CAN from module_ethercat to consumer
-    chan coe_out;         // CAN from consumer to module_ethercat
+    interface i_coe_communication i_coe;
     chan eoe_in;          // Ethernet from module_ethercat to consumer
     chan eoe_out;         // Ethernet from consumer to module_ethercat
     chan eoe_sig;
@@ -96,7 +96,7 @@ int main(void)
         /* EtherCAT Communication Handler Loop */
         on tile[COM_TILE] :
         {
-            ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
+            ethercat_service(i_coe, eoe_out, eoe_in, eoe_sig,
                                 foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
         }
 
@@ -124,24 +124,24 @@ int main(void)
 
 #if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], null, null, i_biss[4], null, null,
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], i_hall[4], i_qei[4], null, null, i_gpio[0],
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], null, null, null, i_ams[4], null,
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #else
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], i_hall[4], null, null, null, i_gpio[0],
-                                    i_torque_control[0], i_velocity_control[0], i_position_control[0]);
+                                    null, i_velocity_control[0], i_position_control[0]);
 #endif
         }
 
@@ -207,35 +207,6 @@ int main(void)
 #endif
                 }
 
-                /* Torque Control Loop */
-                {
-                    /* Torque Control Loop */
-                    ControlConfig torque_control_config;
-
-                    torque_control_config.feedback_sensor = MOTOR_FEEDBACK_SENSOR;
-
-                    torque_control_config.Kp_n = TORQUE_Kp;
-                    torque_control_config.Ki_n = TORQUE_Ki;
-                    torque_control_config.Kd_n = TORQUE_Kd;
-
-                    torque_control_config.control_loop_period = CONTROL_LOOP_PERIOD; // us
-
-                    /* Control Loop */
-#if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], i_hall[3], i_qei[3], null, null, i_motorcontrol[2],
-                                                i_torque_control);
-#elif (MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], null, null, null, i_ams[3], i_motorcontrol[2],
-                                                i_torque_control);
-#elif (MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
-                    torque_control_service(torque_control_config, i_adc[1], null, null, i_biss[3], null, i_motorcontrol[2],
-                                                i_torque_control);
-#else
-                    torque_control_service(torque_control_config, i_adc[1], i_hall[3], null, null, null, i_motorcontrol[2],
-                                                i_torque_control);
-#endif
-                }
-
             }
         }
 
@@ -252,8 +223,14 @@ int main(void)
                 /* PWM Service */
                 pwm_triggered_service(pwm_ports, c_adctrig, c_pwm_ctrl, null);
 
-                /* Watchdog Service */
-                watchdog_service(wd_ports, i_watchdog);
+
+                [[combine]]
+                par{
+                    /* Watchdog Service */
+                    watchdog_service(wd_ports, i_watchdog);
+                    /* GPIO Digital Service */
+                    gpio_service(gpio_ports, i_gpio);
+                }
 
 #if(MOTOR_FEEDBACK_SENSOR != BISS_SENSOR && MOTOR_FEEDBACK_SENSOR != AMS_SENSOR)
                 /* Hall sensor Service */
@@ -264,8 +241,7 @@ int main(void)
                     hall_service(hall_ports, hall_config, i_hall);
                 }
 
-                /* GPIO Digital Service */
-                gpio_service(gpio_ports, i_gpio);
+
 #endif
 #if(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
                 /* Quadrature encoder sensor Service */
@@ -322,6 +298,8 @@ int main(void)
                     biss_service(biss_ports, biss_config, i_biss);
                 }
 #endif
+
+                memory_manager(i_shared_memory, 2);
 
                 /* Motor Commutation Service */
                 {

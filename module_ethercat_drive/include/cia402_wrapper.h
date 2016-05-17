@@ -22,11 +22,6 @@
 /* internal qei single variable selection code */
 #define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX
 
-#define GET_SDO_DATA(index, sub_index, value) \
-    coe_out <: CAN_GET_OBJECT;                \
-    coe_out <: CAN_OBJ_ADR(index, sub_index); \
-    coe_out :> value;
-
 /*
  * FIXME: documentation missing
  */

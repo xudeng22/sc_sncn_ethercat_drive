@@ -30,6 +30,8 @@ void config_sdo_handler(client interface i_coe_communication i_coe);
 /**
  * @brief read sensor select from EtherCAT
  *
+ * obsoleted by direct call
+ *
  * @return sensor_select HALL/QEI
  *
  */
@@ -37,6 +39,8 @@ int sensor_select_sdo(client interface i_coe_communication i_coe);
 
 /**
  * @brief read qei params from EtherCAT
+ *
+ * obsoleted by sm_sync_config_qei()
  *
  * @return real counts
  * @return max position
@@ -50,6 +54,7 @@ int sensor_select_sdo(client interface i_coe_communication i_coe);
 /**
  * @brief read hall params from EtherCAT
  *
+ * obsolete by cm_sync_config_hall()
  * @return pole pairs
  *
  */
@@ -151,6 +156,8 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
 /**
  * @brief read torque control params from EtherCAT
  *
+ * obsolete by cm_sync_config_rotque_control()
+ *
  * @return Kp
  * @return Ki
  * @return Kd
@@ -160,6 +167,8 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
 
 /**
  * @brief read velocity control params from EtherCAT
+ *
+ * obsolete by cm_sync_config_velocity_control()
  *
  * @return Kp
  * @return Ki
@@ -171,6 +180,8 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
 /**
  * @brief read position control params from EtherCAT
  *
+ * obsolete by cm_sync_config_position_control()
+ *
  * @return Kp
  * @return Ki
  * @return Kd
@@ -181,6 +192,8 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
 /**
  * @brief read nominal speed from EtherCAT
  *
+ * obsoleted by direct call
+ *
  * @return nominal_speed
  *
  */
@@ -188,6 +201,8 @@ int speed_sdo_update(client interface i_coe_communication i_coe);
 
 /**
  * @brief Update Hall sensor parameters from EtherCAT
+ *
+ * obsoleted by cm_sync_config_hall()
  *
  * @param hall_config struct defines the pole-pairs and gear ratio
  * @param coe_out
@@ -197,13 +212,17 @@ void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_com
 /**
  * @brief Update QEI sensor parameters from EtherCAT
  *
+ * obsoleted by sm_sync_config_qei()
+ *
  * @param qei_params struct defines the quadrature encoder (QEI) resolution, sensor type and
  *    gear-ratio used for the motor
  * @param coe_out
  */
 void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communication i_coe);
 
+/* obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
 void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface i_coe_communication i_coe);
+
 
 /**
  * @brief Update cyclic synchronous torque parameters from EtherCAT
@@ -249,6 +268,8 @@ void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_comm
 /**
  * @brief Update profile position parameters from EtherCAT
  *
+ * obsoleted by cm_sync_config_profiler
+ *
  * @param pp_params struct defines the profile position params
  * @param coe_out
  */
@@ -256,6 +277,8 @@ void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_comm
 
 /**
  * @brief Update torque control PID parameters from EtherCAT
+ *
+ * obsoleted by cm_sync_config_velocity_control()
  *
  * @param torque_ctrl_params struct defines torque control PID params
  * @param coe_out
@@ -265,6 +288,8 @@ void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client int
 /**
  * @brief Update velocity control PID parameters from EtherCAT
  *
+ * obsolete by cm_sync_config_velocity_control()
+ *
  * @param velocity_ctrl_params struct defines velocity control PID params
  * @param coe_out
  */
@@ -272,6 +297,8 @@ void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client
 
 /**
  * @brief Update position control PID params from EtherCAT
+ *
+ * obsolete by cm_sync_config_position_control()
  *
  * @param position_ctrl_params struct defines position control PID params
  * @param coe_out

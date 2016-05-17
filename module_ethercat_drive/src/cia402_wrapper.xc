@@ -9,6 +9,7 @@
 #include <cia402_wrapper.h>
 #include <foefs.h>
 
+#define CIA402WRAPPER_USE_OBSOLETE    0
 
 void config_sdo_handler(client interface i_coe_communication i_coe)
 {
@@ -93,7 +94,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 }
 
 /* FIXME obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 {int, int, int} commutation_sdo_update(client interface i_coe_communication i_coe)
 {
 	int hall_offset_clk;
@@ -109,7 +110,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 #endif
 
 /* FIXME obsoleted by cm_sync_config_profiler */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 {int, int, int, int, int, int, int, int, int} pp_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_profile_velocity;
@@ -162,7 +163,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 }
 
 /* FIXME obsolete by cm_sync_config_position_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 {int, int, int} position_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -178,7 +179,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 #endif
 
 /* FIXME obsolete by cm_sync_config_rotque_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 {int, int, int} torque_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -230,7 +231,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 }
 
 /* FIXME obsoleted by direct call */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 int speed_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_motor_speed;
@@ -259,7 +260,7 @@ int speed_sdo_update(client interface i_coe_communication i_coe)
 }
 
 /* FIXME obsoleted by direct call */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 int sensor_select_sdo(client interface i_coe_communication i_coe)
 {
     int sensor_select;
@@ -271,7 +272,7 @@ int sensor_select_sdo(client interface i_coe_communication i_coe)
 #endif
 
 /* FIXME obsolete by cm_sync_config_velocity_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 {int, int, int} velocity_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -287,7 +288,7 @@ int sensor_select_sdo(client interface i_coe_communication i_coe)
 #endif
 
 /* FIXME obsolete by cm_sync_config_hall() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 int hall_sdo_update(client interface i_coe_communication i_coe)
 {
 	int pole_pairs;
@@ -305,7 +306,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe)
 
 
 /* FIXME obsoleted by sm_sync_config_qei() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 {int, int, int} qei_sdo_update(client interface i_coe_communication i_coe)
 {
 	int ticks_resolution;
@@ -357,7 +358,7 @@ void init_sdo(client interface i_coe_communication i_coe)
 
 
 /* FIXME obsoleted by cm_sync_config_hall() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_communication i_coe)
 {
     //int min;
@@ -377,7 +378,7 @@ void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_com
 #endif
 
 /* FIXME obsoleted by sm_sync_config_qei() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communication i_coe)
 {
     //int min;
@@ -394,7 +395,7 @@ void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communi
 #endif
 
 /* FIXME obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface i_coe_communication i_coe)
 {
     {commutation_params.hall_offset[0], commutation_params.hall_offset[1],
@@ -456,7 +457,7 @@ void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_comm
 }
 
 /* FIXME obsoleted by cm_sync_config_profiler */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_communication i_coe)
 {
     {pp_params.max_velocity, pp_params.velocity,
@@ -470,7 +471,7 @@ void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_comm
 #endif
 
 /* FIXME obsoleted by cm_sync_config_velocity_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client interface i_coe_communication i_coe)
 {
     {torque_ctrl_params.Kp_n, torque_ctrl_params.Ki_n, torque_ctrl_params.Kd_n} = torque_sdo_update(i_coe);
@@ -492,7 +493,7 @@ void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client int
 
 
 /* FIXME obsolete by cm_sync_config_velocity_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client interface i_coe_communication i_coe)
 {
     {velocity_ctrl_params.Kp_n, velocity_ctrl_params.Ki_n, velocity_ctrl_params.Kd_n} = velocity_sdo_update(i_coe);
@@ -514,7 +515,7 @@ void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client
 #endif
 
 /* FIXME obsolete by cm_sync_config_position_control() */
-#if 0
+#if CIA402WRAPPER_USE_OBSOLETE
 void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client interface i_coe_communication i_coe)
 {
     {position_ctrl_params.Kp_n, position_ctrl_params.Ki_n, position_ctrl_params.Kd_n} = position_sdo_update(i_coe);

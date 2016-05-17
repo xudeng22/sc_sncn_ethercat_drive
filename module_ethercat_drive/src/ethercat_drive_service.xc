@@ -7,7 +7,7 @@
 #include <ethercat_drive_service.h>
 #include <refclk.h>
 #include <cia402_wrapper.h>
-#include <pdo_parser.h>
+#include <pdo_handler.h>
 #include <statemachine.h>
 #include <state_modes.h>
 #include <profile.h>

@@ -41,6 +41,35 @@
     return {actual_position, direction};
 }
 
+#define MAX_TIME_TO_WAIT_SDO      100000
+
+static void sdo_wait_first_config(client interface i_coe_communication i_coe)
+{
+    timer t;
+    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
+    unsigned int time;
+
+    int sdo_configured = 0;
+
+    while (sdo_configured == 0) {
+        select {
+            case i_coe.configuration_ready():
+                printstrln("Master requests OP mode - cyclic operation is about to start.");
+                sdo_configured = 1;
+                break;
+        }
+
+        t when timerafter(time+delay) :> time;
+    }
+
+    /* comment in the read_od_config() function to print the object values */
+    //read_od_config(i_coe);
+    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
+
+    /* clear the notification before proceeding the operation */
+    i_coe.configuration_done();
+}
+
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
@@ -173,6 +202,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
  // homing_method, limit_switch_type
  // polarity
 
+    /* check if the slave enters the operation mode. If this happens we assume the configuration values are
+     * written into the object dictionary. So we reread the object dictionary values and continue operation.
+     *
+     * This should be done before we configure anything.
+     */
+    sdo_wait_first_config(i_coe);
 
     t :> time;
     while (1) {

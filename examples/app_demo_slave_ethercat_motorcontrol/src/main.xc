@@ -77,8 +77,7 @@ int main(void)
     interface VelocityControlInterface i_velocity_control[3];
 
     /* EtherCat Communication channels */
-    chan coe_in;          // CAN from module_ethercat to consumer
-    chan coe_out;         // CAN from consumer to module_ethercat
+    interface i_coe_communication i_coe;
     chan eoe_in;          // Ethernet from module_ethercat to consumer
     chan eoe_out;         // Ethernet from consumer to module_ethercat
     chan eoe_sig;
@@ -97,7 +96,7 @@ int main(void)
         /* EtherCAT Communication Handler Loop */
         on tile[COM_TILE] :
         {
-            ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
+            ethercat_service(i_coe, eoe_out, eoe_in, eoe_sig,
                                 foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
         }
 
@@ -125,22 +124,22 @@ int main(void)
 
 #if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], null, null, i_biss[4], null, null,
                                     null, i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == QEI_SENSOR)
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], i_hall[4], i_qei[4], null, null, i_gpio[0],
                                     null, i_velocity_control[0], i_position_control[0]);
 #elif(MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], null, null, null, i_ams[4], null,
                                     null, i_velocity_control[0], i_position_control[0]);
 #else
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, coe_out,
+                                    pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[3], i_hall[4], null, null, null, i_gpio[0],
                                     null, i_velocity_control[0], i_position_control[0]);
 #endif

@@ -92,6 +92,8 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 	return {homing_method, limit_switch_type};
 }
 
+/* FIXME obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
+#if 0
 {int, int, int} commutation_sdo_update(client interface i_coe_communication i_coe)
 {
 	int hall_offset_clk;
@@ -104,7 +106,10 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 
 	return {hall_offset_clk, hall_offset_cclk, winding_type};
 }
+#endif
 
+/* FIXME obsoleted by cm_sync_config_profiler */
+#if 0
 {int, int, int, int, int, int, int, int, int} pp_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_profile_velocity;
@@ -129,6 +134,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 
 	return {max_profile_velocity, profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, min, max, polarity, max_acc};
 }
+#endif
 
 {int, int, int, int, int} pv_sdo_update(client interface i_coe_communication i_coe)
 {
@@ -156,6 +162,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 }
 
 /* FIXME obsolete by cm_sync_config_position_control() */
+#if 0
 {int, int, int} position_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -168,8 +175,10 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 
 	return {Kp, Ki, Kd};
 }
+#endif
 
 /* FIXME obsolete by cm_sync_config_rotque_control() */
+#if 0
 {int, int, int} torque_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -182,6 +191,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 
 	return {Kp, Ki, Kd};
 }
+#endif
 
 {int, int, int} cst_sdo_update(client interface i_coe_communication i_coe)
 {
@@ -219,12 +229,15 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 	return {max_motor_speed, polarity, max_acceleration};
 }
 
+/* FIXME obsoleted by direct call */
+#if 0
 int speed_sdo_update(client interface i_coe_communication i_coe)
 {
 	int max_motor_speed;
 	max_motor_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
 	return max_motor_speed;
 }
+#endif
 
 {int, int, int, int, int} csp_sdo_update(client interface i_coe_communication i_coe)
 {
@@ -245,6 +258,8 @@ int speed_sdo_update(client interface i_coe_communication i_coe)
 	return {max_motor_speed, polarity, min, max, max_acc};
 }
 
+/* FIXME obsoleted by direct call */
+#if 0
 int sensor_select_sdo(client interface i_coe_communication i_coe)
 {
     int sensor_select;
@@ -253,8 +268,10 @@ int sensor_select_sdo(client interface i_coe_communication i_coe)
         sensor_select = 2; //qei
     return sensor_select;
 }
+#endif
 
 /* FIXME obsolete by cm_sync_config_velocity_control() */
+#if 0
 {int, int, int} velocity_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -267,8 +284,10 @@ int sensor_select_sdo(client interface i_coe_communication i_coe)
 
 	return {Kp, Ki, Kd};
 }
+#endif
 
 /* FIXME obsolete by cm_sync_config_hall() */
+#if 0
 int hall_sdo_update(client interface i_coe_communication i_coe)
 {
 	int pole_pairs;
@@ -281,9 +300,12 @@ int hall_sdo_update(client interface i_coe_communication i_coe)
 
 	return pole_pairs; //{pole_pairs, max, min};
 }
+#endif
 
 
 
+/* FIXME obsoleted by sm_sync_config_qei() */
+#if 0
 {int, int, int} qei_sdo_update(client interface i_coe_communication i_coe)
 {
 	int ticks_resolution;
@@ -305,6 +327,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe)
 	else
 		return {ticks_resolution, QEI_WITH_INDEX, sensor_polarity};	//default
 }
+#endif
 
 
 void init_sdo(client interface i_coe_communication i_coe)
@@ -334,6 +357,7 @@ void init_sdo(client interface i_coe_communication i_coe)
 
 
 /* FIXME obsoleted by cm_sync_config_hall() */
+#if 0
 void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_communication i_coe)
 {
     //int min;
@@ -350,7 +374,10 @@ void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_com
     //hall_config.max_ticks_per_turn = hall_config.pole_pairs * HALL_POSITION_INTERPOLATED_RANGE;
     //hall_config.max_ticks += hall_config.max_ticks_per_turn;
 }
+#endif
 
+/* FIXME obsoleted by sm_sync_config_qei() */
+#if 0
 void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communication i_coe)
 {
     //int min;
@@ -364,12 +391,16 @@ void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communi
     //qei_params.max_ticks = (max > min) ? max : min;
     //qei_params.max_ticks += qei_params.max_ticks_per_turn;  // tolerance
 }
+#endif
 
+/* FIXME obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
+#if 0
 void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface i_coe_communication i_coe)
 {
     {commutation_params.hall_offset[0], commutation_params.hall_offset[1],
             commutation_params.bldc_winding_type} = commutation_sdo_update(i_coe);
 }
+#endif
 
 void update_cst_param_ecat(ProfilerConfig &cst_params, client interface i_coe_communication i_coe)
 {
@@ -425,6 +456,7 @@ void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_comm
 }
 
 /* FIXME obsoleted by cm_sync_config_profiler */
+#if 0
 void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_communication i_coe)
 {
     {pp_params.max_velocity, pp_params.velocity,
@@ -435,7 +467,10 @@ void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_comm
             pp_params.polarity,
             pp_params.max_acceleration} = pp_sdo_update(i_coe);
 }
+#endif
 
+/* FIXME obsoleted by cm_sync_config_velocity_control() */
+#if 0
 void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client interface i_coe_communication i_coe)
 {
     {torque_ctrl_params.Kp_n, torque_ctrl_params.Ki_n, torque_ctrl_params.Kd_n} = torque_sdo_update(i_coe);
@@ -453,8 +488,11 @@ void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client int
  //       torque_ctrl_params.Integral_limit = 0;
     return;
 }
+#endif
 
 
+/* FIXME obsolete by cm_sync_config_velocity_control() */
+#if 0
 void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client interface i_coe_communication i_coe)
 {
     {velocity_ctrl_params.Kp_n, velocity_ctrl_params.Ki_n, velocity_ctrl_params.Kd_n} = velocity_sdo_update(i_coe);
@@ -473,7 +511,10 @@ void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client
    */
     return;
 }
+#endif
 
+/* FIXME obsolete by cm_sync_config_position_control() */
+#if 0
 void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client interface i_coe_communication i_coe)
 {
     {position_ctrl_params.Kp_n, position_ctrl_params.Ki_n, position_ctrl_params.Kd_n} = position_sdo_update(i_coe);
@@ -492,3 +533,4 @@ void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client
   */
     return;
 }
+#endif

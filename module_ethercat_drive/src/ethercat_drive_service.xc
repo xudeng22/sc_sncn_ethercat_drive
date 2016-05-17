@@ -387,20 +387,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
                 /* Read Motor Configuration sent from the EtherCAT Master Application */
                 if (controlword == 5) {
-                    update_commutation_param_ecat(commutation_params, i_coe);
-                    sensor_select = sensor_select_sdo(i_coe);
 
-                    //if (sensor_select == HALL_SENSOR)  /* FIXME (?)
-                    //{
-                    update_hall_config_ecat(hall_config, i_coe);
-                    //}
                     biss_config.pole_pairs = hall_config.pole_pairs;
                     ams_config.pole_pairs = hall_config.pole_pairs;
-                    if (sensor_select >= QEI_SENSOR) { /* FIXME QEI with Index defined as 2 and without Index as 3  */
-                        update_qei_param_ecat(qei_params, i_coe);
-                    }
-                    nominal_speed = speed_sdo_update(i_coe);
-                    update_pp_param_ecat(profiler_config, i_coe);
                     polarity = profiler_config.polarity;//profile_position_config.velocity_config.polarity;
                     //qei_params.poles = hall_config.pole_pairs;
 
@@ -452,8 +441,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 //FixMe: initialization should take place before we start PDO communication
                 case CSP:
                     if (op_set_flag == 0) {
-                        update_position_ctrl_param_ecat(position_ctrl_params, i_coe);
-                        sensor_select = sensor_select_sdo(i_coe);
 
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                             i_hall.set_hall_config(hall_config);

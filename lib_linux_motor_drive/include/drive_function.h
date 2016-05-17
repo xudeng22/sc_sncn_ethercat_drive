@@ -81,7 +81,7 @@ void start_homing(master_setup_variables_t *master_setup, ctrlproto_slv_handle *
  * @param slv_handles 			The handle struct for the slaves
  * @param total_no_of_slaves 	Number of connected slaves to the master
  */
-int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup,\
+int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, \
 		ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
 
@@ -93,7 +93,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
  * @param slv_handles 			The handle struct for the slaves
  * @param total_no_of_slaves 	Number of connected slaves to the master
  */
-int enable_operation(int slave_number, master_setup_variables_t *master_setup, \
+int enable_operation(int slave_number,  master_setup_variables_t *master_setup, \
 		ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
 

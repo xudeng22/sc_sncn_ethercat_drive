@@ -11,6 +11,7 @@
 #include <statemachine.h>
 #include <state_modes.h>
 #include <profile.h>
+#include <config_manager.h>
 
 {int, int} static inline get_position_absolute(int sensor_select, interface HallInterface client ?i_hall,
                                                 interface QEIInterface client ?i_qei, interface BISSInterface client ?i_biss, interface AMSInterface client ?i_ams)

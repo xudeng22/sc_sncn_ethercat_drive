@@ -26,11 +26,6 @@ void cm_sync_config_hall(
         interface HallInterface client ?i_hall,
         HallConfig &hall_config);
 
-void cm_sync_config_motor_control(
-        client interface i_coe_communication i_coe,
-        interface MotorcontrolInterface client i_commutation,
-        MotorcontrolConfig &commutation_params);
-
 void cm_sync_config_qei(
         client interface i_coe_communication i_coe,
         interface QEIInterface client ?i_qei,
@@ -46,6 +41,11 @@ void cm_sync_config_ams(
         interface AMSInterface client ?i_ams,
         AMSConfig &ams_config);
 
+void cm_sync_config_motor_control(
+        client interface i_coe_communication i_coe,
+        interface MotorcontrolInterface client ?i_commutation,
+        MotorcontrolConfig &commutation_params);
+
 void cm_sync_config_torque_control(
         client interface i_coe_communication i_coe,
         interface TorqueControlInterface client ?i_torque_control,
@@ -53,10 +53,18 @@ void cm_sync_config_torque_control(
 
 void cm_sync_config_velocity_control(
         client interface i_coe_communication i_coe,
-        interface VelocityControlInterface client i_velocity_control,
+        interface VelocityControlInterface client ?i_velocity_control,
         ControlConfig &velocity_ctrl_params);
 
 void cm_sync_config_position_control(
         client interface i_coe_communication i_coe,
-        interface PositionControlInterface client i_position_control,
+        interface PositionControlInterface client ?i_position_control,
         ControlConfig &position_ctrl_params);
+
+void cm_sync_config_profiler(
+        client interface i_coe_communication i_coe,
+        ProfilerConfig &profiler);
+
+void cm_sync_config_motor_commutation(
+        client interface i_coe_communication i_coe,
+        MotorcontrolConfig &mc_config);

@@ -155,6 +155,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 	return {torque_slope, polarity};
 }
 
+/* FIXME obsolete by cm_sync_config_position_control() */
 {int, int, int} position_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -168,6 +169,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 	return {Kp, Ki, Kd};
 }
 
+/* FIXME obsolete by cm_sync_config_rotque_control() */
 {int, int, int} torque_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -251,6 +253,8 @@ int sensor_select_sdo(client interface i_coe_communication i_coe)
         sensor_select = 2; //qei
     return sensor_select;
 }
+
+/* FIXME obsolete by cm_sync_config_velocity_control() */
 {int, int, int} velocity_sdo_update(client interface i_coe_communication i_coe)
 {
 	int Kp;
@@ -264,6 +268,7 @@ int sensor_select_sdo(client interface i_coe_communication i_coe)
 	return {Kp, Ki, Kd};
 }
 
+/* FIXME obsolete by cm_sync_config_hall() */
 int hall_sdo_update(client interface i_coe_communication i_coe)
 {
 	int pole_pairs;
@@ -328,6 +333,7 @@ void init_sdo(client interface i_coe_communication i_coe)
 }
 
 
+/* FIXME obsoleted by cm_sync_config_hall() */
 void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_communication i_coe)
 {
     //int min;
@@ -418,6 +424,7 @@ void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_comm
             pv_params.polarity} = pv_sdo_update(i_coe);
 }
 
+/* FIXME obsoleted by cm_sync_config_profiler */
 void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_communication i_coe)
 {
     {pp_params.max_velocity, pp_params.velocity,

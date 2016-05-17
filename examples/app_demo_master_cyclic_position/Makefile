@@ -1,8 +1,17 @@
-FLAGS = -static
-FLAGS += -std=c99
+# Makefile for app_demo_master_cyclic_position_handling
 
-LIBS += -lsncn_ctrlproto -lsncn_motor_drive
-LIBS += -lethercat -lm
+CC = gcc
+LD = gcc
+MKDIR = mkdir
+RM = rm -f
+RMDIR = rm -f -d
+
+CFLAGS = -g -Wall -Wextra  -O0 -std=c99 -static
+LDFLAGS = -static
+
+#
+# Include and Library paths
+#
 
 # Installation directory of the  EtherCAT Master by IgH EtherLAB
 ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
@@ -13,6 +22,15 @@ MOTORCONTROL_PATH := ../../.
 ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
 endif
+
+
+LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
+LIB_DIRS += -L $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/lib
+LIB_DIRS += -L $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive/lib
+
+
+LIBS += -lsncn_ctrlproto -lsncn_motor_drive
+LIBS += -lethercat -lm
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../config_motor_master
@@ -31,42 +49,62 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 
-LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
-LIB_DIRS += -L $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/lib
-LIB_DIRS += -L $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive/lib
-
-# Needed for checking if Linux machine
+#
+# Check for Linux machine
+#
 UNAME := $(shell uname)
 
-all:
-		@echo Bulding dependency: lib_linux_ctrlproto...
-		@cd $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto; make
-		@echo 
-		@echo Bulding dependency: lib_linux_motor_drive...
-		@cd $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive; make
-		@echo 
-		@echo Bulding application...
-ifneq "$(UNAME)" "Linux"
-		@echo
-		@echo "------------------------------------------------------------------------------------------------------"
-		@echo "||Your System isn't Linux, so the Master Application for the Linux EtherCAT Master can not be built.||"
-		@echo "------------------------------------------------------------------------------------------------------"
-		@echo
-else
-		@if test -d $(ETHERCAT_MASTER_INSTALLDIR); \
-		then \
-		mkdir bin -p;\
-		gcc src/main.c  $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/$(notdir $(shell pwd)); \
-		echo ;\
-		echo "Run your application by typing: sudo bin/$(notdir $(shell pwd))" ;\
-		echo ;\
-		else echo \
-		"\n\
-		-----------------------------------------------------------------------------------------------------------------\n\
-		||EtherCAT Master is not installed at given directory if you installed it elsewhere change location in Makefile||\n\
-		-----------------------------------------------------------------------------------------------------------------\n";\
-		fi
+ifneq ($(UNAME),Linux)
+  $(error This software only runs on Linux.)
 endif
 
+#
+# Directories
+#
+
+SOURCE_DIRS = src
+BUILD_DIR = build
+OUT_DIR = bin
+
+
+#
+# Targets and Objects
+#
+
+TARGET = app_demo_master_pdo_handling
+OBJECTS = main.o
+
+#
+# Implicit Target
+#
+
+$(BUILD_DIR)/%.o: $(SOURCE_DIRS)/%.c
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c -o $@ $^
+
+#
+# Target
+#
+
+all: prerequisite $(TARGET)
+
+$(TARGET): $(BUILD_DIR)/main.o
+	$(LD) $(LDFLAGS) -o $(OUT_DIR)/$@ $^ $(LIB_DIRS) $(LIBS)
+	@echo "Build finished: $(OUTDIR)/$(TARGET)"
+
+.PHONY: clean prerequisite justpreprocess
+
+justpreprocess:
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -E -o main.preproc.c $(SOURCE_DIRS)/main.c
+
+prerequisite: prerequisite_controlproto prerequisite_motorcontrol
+	$(MKDIR) -p $(BUILD_DIR) $(OUT_DIR)
+
+prerequisite_controlproto:
+	$(MAKE) -C $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto
+
+prerequisite_motorcontrol:
+	$(MAKE) -C $(ETHERCAT_DRIVE_PATH)/lib_linux_motor_drive
+
 clean:
-	rm -f bin/$(notdir $(shell pwd))
+	$(RM) $(BUILD_DIR)/*.o $(OUT_DIR)/$(TARGET)
+	$(RMDIR) $(OUT_DIR) $(BUILD_DIR)

@@ -323,7 +323,7 @@ void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *sl
 }
 
 
-int set_operation_mode(int operation_mode, int slave_number, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	
 	int ready = 0;
@@ -349,7 +349,7 @@ int set_operation_mode(int operation_mode, int slave_number, ctrlproto_slv_handl
 }
 
 
-int enable_operation(int slave_number, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+int enable_operation(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int op_enable_state = 0;
 	int status_word = 0;

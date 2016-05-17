@@ -66,10 +66,10 @@ int main() {
      */
 
     /* Initialize the node specified with ECAT_SLAVE_0 with CSP configurations (specified in config)*/
-    set_operation_mode(CSP, ECAT_SLAVE_0, slv_handles, TOTAL_NUM_OF_SLAVES);
+    set_operation_mode(CSP, ECAT_SLAVE_0, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
     /* Enable operation of node in CSP mode */
-    enable_operation(ECAT_SLAVE_0, slv_handles, TOTAL_NUM_OF_SLAVES);
+    enable_operation(ECAT_SLAVE_0, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
     /* Initialize position profile parameters */
     initialize_position_profile_limits(ECAT_SLAVE_0, slv_handles);

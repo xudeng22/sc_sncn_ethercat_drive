@@ -96,6 +96,13 @@ void check_slave_config_states(void)
 
 /****************************************************************************/
 
+/*
+ * Access SDOs during cyclic operation (in real time context)
+ *
+ * First create the object ec_sdo_request_t and then schedule the master send
+ * the SDO request.
+ */
+
 int read_sdo(ec_sdo_request_t *req)
 {
 	int sdo_read_value = 0;
@@ -158,12 +165,9 @@ void sdo_write_configuration(master_setup_variables_t *master_setup,
 {
     (void)update_sequence; /* FIXME silence compiler for now TODO remove from API */
 
-    //for (int slv = 0; slv < total_no_of_slaves; ++slv)
-    {
-        slv_handles[slave_number].motor_config_param = \
-                sdo_motor_config_update(master_setup, slave_number, slv_handles[slave_number].motor_config_param, \
-                        slv_handles[slave_number].sdo_entries, update_sequence);
-    }
+    slv_handles[slave_number].motor_config_param = \
+            sdo_motor_config_update(master_setup, slave_number, slv_handles[slave_number].motor_config_param, \
+                    slv_handles[slave_number].sdo_entries);
 
 }
 

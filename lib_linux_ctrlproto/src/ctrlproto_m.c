@@ -519,80 +519,43 @@ motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int
 {
     (void)update_sequence;
 
-    sdo_download(master_setup->master, slave_number, request[0],   motor_config_param.s_gear_ratio.gear_ratio);
-
-    sdo_download(master_setup->master, slave_number, request[1],   motor_config_param.s_max_acceleration.max_acceleration);
-
-    sdo_download(master_setup->master, slave_number, request[5],    motor_config_param.s_pole_pair.pole_pair);
-
-    sdo_download(master_setup->master, slave_number, request[6],    motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
-
-    sdo_download(master_setup->master, slave_number, request[7],    motor_config_param.s_sensor_selection_code.sensor_selection_code);
-
-    sdo_download(master_setup->master, slave_number, request[4],    motor_config_param.s_polarity.polarity);
-
-    sdo_download(master_setup->master, slave_number, request[21],    motor_config_param.s_motor_torque_constant.motor_torque_constant);
-
-    sdo_download(master_setup->master, slave_number, request[3],    motor_config_param.s_nominal_motor_speed.nominal_motor_speed);
-
-    sdo_download(master_setup->master, slave_number, request[27],    motor_config_param.s_commutation_offset_clk.commutation_offset_clk);
-
-    sdo_download(master_setup->master, slave_number, request[28],    motor_config_param.s_commutation_offset_cclk.commutation_offset_cclk);
-
-    sdo_download(master_setup->master, slave_number, request[29],    motor_config_param.s_motor_winding_type.motor_winding_type);
-
-
-    sdo_download(master_setup->master, slave_number, request[31],    motor_config_param.s_limit_switch_type.limit_switch_type);
-
-    sdo_download(master_setup->master, slave_number, request[30],    motor_config_param.s_homing_method.homing_method);
-
-    sdo_download(master_setup->master, slave_number, request[14],    motor_config_param.s_software_position_min.software_position_min);
-
-    sdo_download(master_setup->master, slave_number, request[15],    motor_config_param.s_software_position_max.software_position_max);
-
-    sdo_download(master_setup->master, slave_number, request[32],    motor_config_param.s_sensor_polarity.sensor_polarity);
-
-    sdo_download(master_setup->master, slave_number, request[22],    motor_config_param.s_max_torque.max_torque);
-
-    sdo_download(master_setup->master, slave_number, request[2],    motor_config_param.s_nominal_current.nominal_current);
-
-    sdo_download(master_setup->master, slave_number, request[24],    motor_config_param.s_torque_p_gain.p_gain);
-
-    sdo_download(master_setup->master, slave_number, request[25],    motor_config_param.s_torque_i_gain.i_gain);
-
-    sdo_download(master_setup->master, slave_number, request[26],    motor_config_param.s_torque_d_gain.d_gain);
-
-    sdo_download(master_setup->master, slave_number, request[8],    motor_config_param.s_velocity_p_gain.p_gain);
-
-    sdo_download(master_setup->master, slave_number, request[9],    motor_config_param.s_velocity_i_gain.i_gain);
-
-    sdo_download(master_setup->master, slave_number, request[10],    motor_config_param.s_velocity_d_gain.d_gain);
-
-    sdo_download(master_setup->master, slave_number, request[11],    motor_config_param.s_position_p_gain.p_gain);
-
-    sdo_download(master_setup->master, slave_number, request[12],    motor_config_param.s_position_i_gain.i_gain);
-
-    sdo_download(master_setup->master, slave_number, request[13],    motor_config_param.s_position_d_gain.d_gain);
-
-    sdo_download(master_setup->master, slave_number, request[23],    motor_config_param.s_torque_slope.torque_slope);
-
-    sdo_download(master_setup->master, slave_number, request[16],    motor_config_param.s_max_profile_velocity.max_profile_velocity);
-
-    sdo_download(master_setup->master, slave_number, request[20],    motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
-
-    sdo_download(master_setup->master, slave_number, request[18],    motor_config_param.s_profile_acceleration.profile_acceleration);
-
-    sdo_download(master_setup->master, slave_number, request[19],    motor_config_param.s_profile_deceleration.profile_deceleration);
-
-    sdo_download(master_setup->master, slave_number, request[16],    motor_config_param.s_max_profile_velocity.max_profile_velocity);
-
-    sdo_download(master_setup->master, slave_number, request[17],    motor_config_param.s_profile_velocity.profile_velocity);
-
-    sdo_download(master_setup->master, slave_number, request[18],    motor_config_param.s_profile_acceleration.profile_acceleration);
-
-    sdo_download(master_setup->master, slave_number, request[19],    motor_config_param.s_profile_deceleration.profile_deceleration);
-
-    sdo_download(master_setup->master, slave_number, request[20],    motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
+    sdo_download(master_setup->master, slave_number, request[0],  motor_config_param.s_gear_ratio.gear_ratio);
+    sdo_download(master_setup->master, slave_number, request[1],  motor_config_param.s_max_acceleration.max_acceleration);
+    sdo_download(master_setup->master, slave_number, request[5],  motor_config_param.s_pole_pair.pole_pair);
+    sdo_download(master_setup->master, slave_number, request[6],  motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
+    sdo_download(master_setup->master, slave_number, request[7],  motor_config_param.s_sensor_selection_code.sensor_selection_code);
+    sdo_download(master_setup->master, slave_number, request[4],  motor_config_param.s_polarity.polarity);
+    sdo_download(master_setup->master, slave_number, request[21], motor_config_param.s_motor_torque_constant.motor_torque_constant);
+    sdo_download(master_setup->master, slave_number, request[3],  motor_config_param.s_nominal_motor_speed.nominal_motor_speed);
+    sdo_download(master_setup->master, slave_number, request[27], motor_config_param.s_commutation_offset_clk.commutation_offset_clk);
+    sdo_download(master_setup->master, slave_number, request[28], motor_config_param.s_commutation_offset_cclk.commutation_offset_cclk);
+    sdo_download(master_setup->master, slave_number, request[29], motor_config_param.s_motor_winding_type.motor_winding_type);
+    sdo_download(master_setup->master, slave_number, request[31], motor_config_param.s_limit_switch_type.limit_switch_type);
+    sdo_download(master_setup->master, slave_number, request[30], motor_config_param.s_homing_method.homing_method);
+    sdo_download(master_setup->master, slave_number, request[14], motor_config_param.s_software_position_min.software_position_min);
+    sdo_download(master_setup->master, slave_number, request[15], motor_config_param.s_software_position_max.software_position_max);
+    sdo_download(master_setup->master, slave_number, request[32], motor_config_param.s_sensor_polarity.sensor_polarity);
+    sdo_download(master_setup->master, slave_number, request[22], motor_config_param.s_max_torque.max_torque);
+    sdo_download(master_setup->master, slave_number, request[2],  motor_config_param.s_nominal_current.nominal_current);
+    sdo_download(master_setup->master, slave_number, request[24], motor_config_param.s_torque_p_gain.p_gain);
+    sdo_download(master_setup->master, slave_number, request[25], motor_config_param.s_torque_i_gain.i_gain);
+    sdo_download(master_setup->master, slave_number, request[26], motor_config_param.s_torque_d_gain.d_gain);
+    sdo_download(master_setup->master, slave_number, request[8],  motor_config_param.s_velocity_p_gain.p_gain);
+    sdo_download(master_setup->master, slave_number, request[9],  motor_config_param.s_velocity_i_gain.i_gain);
+    sdo_download(master_setup->master, slave_number, request[10], motor_config_param.s_velocity_d_gain.d_gain);
+    sdo_download(master_setup->master, slave_number, request[11], motor_config_param.s_position_p_gain.p_gain);
+    sdo_download(master_setup->master, slave_number, request[12], motor_config_param.s_position_i_gain.i_gain);
+    sdo_download(master_setup->master, slave_number, request[13], motor_config_param.s_position_d_gain.d_gain);
+    sdo_download(master_setup->master, slave_number, request[23], motor_config_param.s_torque_slope.torque_slope);
+    sdo_download(master_setup->master, slave_number, request[16], motor_config_param.s_max_profile_velocity.max_profile_velocity);
+    sdo_download(master_setup->master, slave_number, request[20], motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
+    sdo_download(master_setup->master, slave_number, request[18], motor_config_param.s_profile_acceleration.profile_acceleration);
+    sdo_download(master_setup->master, slave_number, request[19], motor_config_param.s_profile_deceleration.profile_deceleration);
+    sdo_download(master_setup->master, slave_number, request[16], motor_config_param.s_max_profile_velocity.max_profile_velocity);
+    sdo_download(master_setup->master, slave_number, request[17], motor_config_param.s_profile_velocity.profile_velocity);
+    sdo_download(master_setup->master, slave_number, request[18], motor_config_param.s_profile_acceleration.profile_acceleration);
+    sdo_download(master_setup->master, slave_number, request[19], motor_config_param.s_profile_deceleration.profile_deceleration);
+    sdo_download(master_setup->master, slave_number, request[20], motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
 
     return motor_config_param;
 }

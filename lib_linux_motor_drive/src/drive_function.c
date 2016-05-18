@@ -276,7 +276,7 @@ void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *sl
     {
         printf("Updating motor parameters for node %i\n", i);
         fflush(stdout);
-	sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, i); // motor config update
+        sdo_write_configuration(master_setup, slv_handles, MOTOR_PARAM_UPDATE, i); // motor config update
 
 #if 0
         initialize_torque(i, slv_handles);

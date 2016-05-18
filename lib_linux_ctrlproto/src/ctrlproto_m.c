@@ -152,7 +152,7 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 
 static motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[]);
 
-void sdo_handle_ecat(master_setup_variables_t *master_setup,
+void sdo_write_configuration(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         int update_sequence, int slave_number)
 {

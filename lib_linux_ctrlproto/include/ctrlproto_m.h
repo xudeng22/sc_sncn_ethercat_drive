@@ -477,12 +477,16 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 /**
  * This function updates the motor parameters via ethercat
  *
+ * The slave object dictionary is updated with the recent configuration values.
+ * This function should not be called in real time context, i.e. after
+ * 'master_activate()'!
+ *
  * @param master_setup 			A struct containing the variables for the master
  * @param slv_handles 			The handle array for the slaves *
  * @param update_sequence       Specify set of motor parameter to be configured
  * @param slave_number			Specify the slave number to which the motor is connected
  */
-void sdo_handle_ecat(master_setup_variables_t *master_setup,
+void sdo_write_configuration(master_setup_variables_t *master_setup,
         			ctrlproto_slv_handle *slv_handles,
         			int update_sequence,
         			int slave_number);

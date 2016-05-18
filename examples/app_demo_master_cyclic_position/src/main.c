@@ -51,9 +51,6 @@ int main() {
     /* Initialize EtherCAT Master */
     init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-    /* Initialize torque parameters */
-    initialize_torque(ECAT_SLAVE_0, slv_handles);
-
     /* Initialize all connected nodes with Mandatory Motor Configurations (specified in config)*/
     init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

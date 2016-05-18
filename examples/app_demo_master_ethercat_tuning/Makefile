@@ -61,7 +61,5 @@ else
 		fi
 endif
 
-##Add clean Master Application
-clean: masterAppClean
-masterAppClean:
-	rm -r bin/
+clean:
+	rm -f bin/$(notdir $(shell pwd))

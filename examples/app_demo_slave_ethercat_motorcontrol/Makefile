@@ -9,7 +9,7 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_ethercat_motorcontrol
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = config_motor_slave module_adc module_ams_rotary_sensor module_biss module_board-support module_ctrl_loops module_ethercat module_ethercat_drive module_ethercat_fwupdate module_foc module_gpio module_hall module_misc module_motorcontrol module_profile module_pwm_symmetrical module_qei module_spi_master module_watchdog
+USED_MODULES = config_motor_slave module_adc module_ams_rotary_sensor module_biss module_board-support module_ctrl_loops module_ethercat module_ethercat_drive module_ethercat_fwupdate module_filters module_foc module_gpio module_hall module_memory_manager module_misc module_motorcontrol module_profile module_pwm_symmetrical module_qei module_spi_master module_watchdog
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
@@ -20,7 +20,7 @@ XCC_FLAGS_Debug = -g -O0 -lflash -report
 XCC_FLAGS_Release = -g -O0 -lflash
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
-VERBOSE = 0
+VERBOSE = 1
 
 XMOS_MAKE_PATH ?= ../..
 -include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.common

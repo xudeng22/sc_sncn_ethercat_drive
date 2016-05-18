@@ -39,6 +39,10 @@ extern "C"
 #define TQ_MOTOR_UPDATE			9
 #define QEI_CALIBRATE_UPDATE   		10
 
+#define MAX_SDO_COUNT                   50
+
+#define PDO_RX_COUNT                    9
+#define PDO_TX_COUNT                    9
 
 #define SOMANET_ID     0x000022d2, 0x00000201
 #define CAN_OD_CONTROL_WORD    	0x6040 		/* RX; 16 bit */
@@ -52,6 +56,15 @@ extern "C"
 #define CAN_OD_VELOCITY_TARGET	0x60ff 		/* RX; 32 bit */
 #define CAN_OD_VELOCITY_VALUE	0x606C 		/* TX; 32 bit */
 
+/* user defined PDO values */
+#define CAN_OD_USER_TX_1        0x4010
+#define CAN_OD_USER_TX_2        0x4020
+#define CAN_OD_USER_TX_3        0x4030
+#define CAN_OD_USER_TX_4        0x4040
+#define CAN_OD_USER_RX_1        0x4011
+#define CAN_OD_USER_RX_2        0x4021
+#define CAN_OD_USER_RX_3        0x4031
+#define CAN_OD_USER_RX_4        0x4041
 
 /**
  * This creates the defines for a SOMANET device running CTRLPROTO
@@ -63,16 +76,24 @@ ec_pdo_entry_info_t ctrlproto_pdo_entries[] = {\
 	    {CAN_OD_TORQUE_TARGET, 0x00, 16},\
 	    {CAN_OD_POSITION_TARGET, 0x00, 32},\
 	    {CAN_OD_VELOCITY_TARGET, 0x00, 32},\
+            {CAN_OD_USER_TX_1, 0x00, 32}, \
+            {CAN_OD_USER_TX_2, 0x00, 32}, \
+            {CAN_OD_USER_TX_3, 0x00, 32}, \
+            {CAN_OD_USER_TX_4, 0x00, 32}, \
 	    {CAN_OD_STATUS_WORD, 0x00, 16},\
 	    {CAN_OD_MODES_DISPLAY, 0x00, 8},\
 	    {CAN_OD_POSITION_VALUE, 0x00, 32},\
 	    {CAN_OD_VELOCITY_VALUE, 0x00, 32},\
 	    {CAN_OD_TORQUE_VALUE, 0x00, 16},\
+            {CAN_OD_USER_RX_1, 0x00, 32}, \
+            {CAN_OD_USER_RX_2, 0x00, 32}, \
+            {CAN_OD_USER_RX_3, 0x00, 32}, \
+            {CAN_OD_USER_RX_4, 0x00, 32}, \
 };\
 \
 ec_pdo_info_t ctrlproto_pdos[] = {\
-    {0x1600, 5, ctrlproto_pdo_entries + 0},\
-    {0x1a00, 5, ctrlproto_pdo_entries + 5},\
+    {0x1600, PDO_RX_COUNT, ctrlproto_pdo_entries + 0},\
+    {0x1a00, PDO_TX_COUNT, ctrlproto_pdo_entries + PDO_RX_COUNT},\
 };\
 \
 ec_sync_info_t ctrlproto_syncs[] = {\
@@ -93,8 +114,8 @@ ec_sync_info_t ctrlproto_syncs[] = {\
  */
 #define SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(ALIAS, POSITION, CONFIG_NUMBER)\
 {\
-	{0,0,0,0,0},\
-	{0,0,0,0,0},\
+	{0, 0, 0, 0, 0, 0, 0, 0, 0},\
+	{0, 0, 0, 0, 0, 0, 0, 0, 0},\
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},\
 	ctrlproto_pdo_entries,\
 	ctrlproto_pdos,\
@@ -104,6 +125,14 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 	0,\
 	ALIAS, POSITION,\
 	SOMANET_ID,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
 	0,\
 	0,\
 	0,\
@@ -162,7 +191,8 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{QEI_SENSOR_POLARITY(CONFIG_NUMBER), 0},\
 		\
 		0},\
-		0.0f,\
+	 	0.0f,\
+		0, 0, 0, \
 }
 
 
@@ -175,20 +205,20 @@ typedef struct
 	 * This links to the output variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int __ecat_slave_out[5];
+	unsigned int __ecat_slave_out[PDO_TX_COUNT];
 
 
 	/**
 	 * This links to the input variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int __ecat_slave_in[5];
+	unsigned int __ecat_slave_in[PDO_RX_COUNT];
 
 	/**
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[34];
+	ec_sdo_request_t *__request[MAX_SDO_COUNT];
 
 	/**
 	 * The PDO entries
@@ -292,6 +322,22 @@ typedef struct
 	uint8_t operation_mode_disp;		/*only 8 bits valid*/
 
 	/**
+	 * User defined RX fields
+	 */
+	int32_t user1_in;
+	int32_t user2_in;
+	int32_t user3_in;
+	int32_t user4_in;
+
+	/**
+	 * User defined TX fields
+	 */
+	int32_t user1_out;
+	int32_t user2_out;
+	int32_t user3_out;
+	int32_t user4_out;
+
+	/**
 	 * motor config struct
 	 */
 	motor_config motor_config_param; /*set via bldc_motor_config header file*/
@@ -320,11 +366,21 @@ typedef struct
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[2])},\
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_POSITION_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[3])},\
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_VELOCITY_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[4])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_TX_1, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[5])}, \
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_TX_2, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[6])}, \
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_TX_3, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[7])}, \
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_TX_4, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[8])}, \
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_STATUS_WORD, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[0])},\
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_MODES_DISPLAY,  	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[1])},\
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_POSITION_VALUE, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[2])},\
 {ALIAS, POSITION, SOMANET_ID, CAN_OD_VELOCITY_VALUE, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[3])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_VALUE, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[4])}
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_VALUE, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[4])}, \
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_RX_1, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[5])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_RX_2, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[6])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_RX_3, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[7])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_USER_RX_4, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[8])}\
+
+
 
 typedef struct
 {

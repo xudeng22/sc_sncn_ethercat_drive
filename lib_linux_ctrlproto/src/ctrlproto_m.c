@@ -150,12 +150,13 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 
 /****************************************************************************/
 
-motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[], int update_sequence);
+static motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[]);
 
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         int update_sequence, int slave_number)
 {
+    (void)update_sequence; /* FIXME silence compiler for now TODO remove from API */
 
     //for (int slv = 0; slv < total_no_of_slaves; ++slv)
     {
@@ -515,10 +516,8 @@ static int sdo_download(ec_master_t *master, int slave_number, sdo_entries_t *re
     return 0;
 }
 
-motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[], int update_sequence)
+static motor_config sdo_motor_config_update(master_setup_variables_t *master_setup, int slave_number, motor_config motor_config_param, sdo_entries_t *request[])
 {
-    (void)update_sequence;
-
     sdo_download(master_setup->master, slave_number, request[0],  motor_config_param.s_gear_ratio.gear_ratio);
     sdo_download(master_setup->master, slave_number, request[1],  motor_config_param.s_max_acceleration.max_acceleration);
     sdo_download(master_setup->master, slave_number, request[5],  motor_config_param.s_pole_pair.pole_pair);

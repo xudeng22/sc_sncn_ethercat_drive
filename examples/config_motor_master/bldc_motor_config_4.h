@@ -37,8 +37,8 @@
 #define QEI_SENSOR_POLARITY_4           QEI_POLARITY_NORMAL
 
 /* Commutation offset (range 0-4095) (HALL sensor based commutation) */
-#define COMMUTATION_OFFSET_CLK_4        2474
-#define COMMUTATION_OFFSET_CCLK_4       2460
+#define COMMUTATION_OFFSET_CLK_4        235
+#define COMMUTATION_OFFSET_CCLK_4       0
 
 /* Motor Winding type (STAR_WINDING/DELTA_WINDING) */
 #define WINDING_TYPE_4                  STAR_WINDING
@@ -99,7 +99,7 @@
     #define MAX_POSITION_LIMIT_4            POLE_PAIRS_4*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_4 * 10     // ticks (max range: 2^30, limited for safe operation) qei/hall/any position sensor
     #define MIN_POSITION_LIMIT_4            -POLE_PAIRS_4*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_4 * 10    // ticks (min range: -2^30, limited for safe operation) qei/hall/any position sensor
 #else // PID gains for position control with other Encoders
-    #define POSITION_Kp_NUMERATOR_4     100    //Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_4     1000    //Denominator is 10000
     #define POSITION_Ki_NUMERATOR_4     1   //Denominator is 10000
     #define POSITION_Kd_NUMERATOR_4     0   //Denominator is 10000
 

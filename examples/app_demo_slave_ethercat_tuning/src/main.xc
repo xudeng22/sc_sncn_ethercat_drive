@@ -26,19 +26,12 @@ EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
 BISSPorts biss_ports = SOMANET_IFM_BISS_PORTS;
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
-AMSPorts ams_ports = { {
-        IFM_TILE_CLOCK_2,
-        IFM_TILE_CLOCK_3,
-        SOMANET_IFM_GPIO_D3, //D3,    //mosi
-        SOMANET_IFM_GPIO_D1, //D1,    //sclk
-        SOMANET_IFM_GPIO_D2  },//D2     //miso
-        SOMANET_IFM_GPIO_D0 //D0         //slave select
-};
+AMSPorts ams_ports = SOMANET_IFM_AMS_PORTS;
 #else
 HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
 #endif
 
-#define POSITION_LIMIT 0 //+/- 4095
+#define POSITION_LIMIT 4000000 //+/- 4095
 
 int main(void)
 {
@@ -82,13 +75,13 @@ int main(void)
         /* tuning service */
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
         on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], null, i_biss[1], null);
+                                             i_position_control[0], null, null, i_biss[1], null);
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
         on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], null, null, i_ams[1]);
+                                             i_position_control[0], null, null, null, i_ams[1]);
 #else
         on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], i_hall[1], null, null);
+                                             i_position_control[0], null, i_hall[1], null, null);
 #endif
 
 

@@ -258,6 +258,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     t :> time;
     while (1) {
 //#pragma xta endpoint "ecatloop"
+        /* FIXME reduce code duplication with above init sequence */
         /* Check if we reenter the operation mode. If so, update the configuration please. */
         select {
             case i_coe.configuration_ready():
@@ -340,6 +341,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          * If communication is inactive, trigger quick stop mode if motor is in motion 
          *********************************************************************************/
         if (inactive_timeout_flag == 1) {
+            //printstrln("Triggering quick stop mode");
 
             /* quick stop for torque mode */
             if (op_mode == CST)
@@ -354,6 +356,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             /* quick stop for position mode */
             else if (op_mode == CSP) {
+                //printstrln("We are in OP mode CSP");
                 if (sensor_select == HALL_SENSOR && !isnull(i_hall))
                     actual_velocity = i_hall.get_hall_velocity();
                 else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
@@ -421,6 +424,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          * EtherCAT communication is Active
          *********************************************************************************/
         if (comm_inactive_flag == 0) {
+            //printstrln("EtherCAT comm active");
             /* Read controlword from the received from EtherCAT Master application */
             controlword = InOut.control_word;
 
@@ -559,12 +563,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                     /* continuous controlword */
                 case SWITCH_ON: //switch on cyclic
-                    //printstrln("cyclic");
                     if (op_mode == CSV) {
                         //ToDo: implement CSV
                     } else if (op_mode == CST) {
                         //ToDo: implement CST
                     } else if (op_mode == CSP) {
+                    //printstrln("SWITCH ON: cyclic position mode");
                         target_position = get_target_position(InOut);
                         i_position_control.set_position(position_limit( (target_position) * profiler_config.polarity,
                                                         profiler_config.max_position, profiler_config.min_position));
@@ -572,6 +576,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                         actual_position = i_position_control.get_position() * profiler_config.polarity;//cyclic_sync_position_config.velocity_config.polarity;
                         send_actual_position(actual_position, InOut);
+                        //printintln(actual_position);
                         //safety_state = read_gpio_digital_input(c_gpio, 1);        // read port 1
                         //value = (port_3_value<<3 | port_2_value<<2 | port_1_value <<1| safety_state );  pack values if more than one port inputs
                     }
@@ -585,6 +590,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     } else if (op_mode == CSP) {
                         //FixMe: verify if we are doing it right
                         i_position_control.disable_position_ctrl();
+                        //printstrln("CSP disabled.");
                         shutdown_ack = 1;
                         op_set_flag = 0;
                         init = 0;

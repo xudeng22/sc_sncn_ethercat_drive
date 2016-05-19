@@ -4,7 +4,7 @@ CC = gcc
 LD = gcc
 MKDIR = mkdir
 RM = rm -f
-RMDIR = rm -f -d
+RMDIR = rm -f -r
 
 CFLAGS = -g -Wall -Wextra  -O0 -std=c99 -static
 LDFLAGS = -static
@@ -71,7 +71,7 @@ OUT_DIR = bin
 # Targets and Objects
 #
 
-TARGET = app_demo_master_pdo_handling
+TARGET = app_demo_master_cyclic_position
 OBJECTS = main.o
 
 #

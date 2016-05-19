@@ -229,8 +229,10 @@ int main(void)
                 par{
                     /* Watchdog Service */
                     watchdog_service(wd_ports, i_watchdog);
+#if(MOTOR_FEEDBACK_SENSOR != BISS_SENSOR && MOTOR_FEEDBACK_SENSOR != AMS_SENSOR)
                     /* GPIO Digital Service */
                     gpio_service(gpio_ports, i_gpio);
+#endif
                 }
 
 #if(MOTOR_FEEDBACK_SENSOR != BISS_SENSOR && MOTOR_FEEDBACK_SENSOR != AMS_SENSOR)

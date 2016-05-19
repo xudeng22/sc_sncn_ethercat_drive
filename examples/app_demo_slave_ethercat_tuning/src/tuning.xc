@@ -238,11 +238,17 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                         offset = (offset + 2048) & 4095;
                         i_commutation.set_sensor_offset(offset);
                     } else if (motorcontrol_config.commutation_sensor == AMS_SENSOR) {
-                        motorcontrol_config.hall_offset[0] = (motorcontrol_config.hall_offset[0] + 2048) & 4095;
+                        if (motorcontrol_config.commutation_method == FOC) {
+                            motorcontrol_config.hall_offset[0] = (motorcontrol_config.hall_offset[0] + 2048) & 4095;
+                        } else {
+                            int temp = motorcontrol_config.hall_offset[0];
+                            motorcontrol_config.hall_offset[0] = (motorcontrol_config.hall_offset[1] + 2048) & 4095;
+                            motorcontrol_config.hall_offset[1] = (temp + 2048) & 4095;
+                        }
                         i_commutation.set_config(motorcontrol_config);
                     }
                     break;
-                    //reverse motor winding type
+                //reverse motor winding type
                 case 'w':
                     if (motorcontrol_config.bldc_winding_type == STAR_WINDING)
                         motorcontrol_config.bldc_winding_type = DELTA_WINDING;
@@ -278,10 +284,13 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                     break;
                 //reverse motor polarity
                 case 'm':
-                    if (motorcontrol_config.polarity_type == NORMAL_POLARITY)
+                    if (motorcontrol_config.polarity_type == NORMAL_POLARITY) {
                         motorcontrol_config.polarity_type = INVERTED_POLARITY;
-                    else
+                        motorcontrol_config.bldc_winding_type = DELTA_WINDING;
+                    } else {
                         motorcontrol_config.polarity_type = NORMAL_POLARITY;
+                        motorcontrol_config.bldc_winding_type = STAR_WINDING;
+                    }
                     i_commutation.set_config(motorcontrol_config);
                     break;
                 //set offset

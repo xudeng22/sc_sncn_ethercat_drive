@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
     char d;
     WINDOW *wnd;
     int slave_number = 0;
+    //take arg 1 as slave number (1 is the first slave)
     if (argc > 1)
         slave_number = strtol(argv[1], NULL, 10)-1;
 

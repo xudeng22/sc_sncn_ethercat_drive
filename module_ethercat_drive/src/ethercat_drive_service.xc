@@ -241,6 +241,16 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     if(sensor_select == 2 || sensor_select == 3)
         sensor_select = 2; //qei
 
+    i_velocity_control.set_velocity_sensor(sensor_select);
+    i_position_control.set_position_sensor(sensor_select);
+
+    /* Configuration of GPIO Digital ports for limit switches */
+    if (!isnull(i_gpio)) {
+        i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
+        i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
+        i_gpio.config_dio_done();//end_config_gpio(c_gpio);
+    }
+
     /* start operation */
 
     int read_configuration = 0;
@@ -290,9 +300,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if(sensor_select == 2 || sensor_select == 3)
                 sensor_select = 2; //qei
 
+            i_velocity_control.set_velocity_sensor(sensor_select);
+            i_position_control.set_position_sensor(sensor_select);
 
             read_configuration = 0;
             i_coe.configuration_done();
+
+            /* Configuration of GPIO Digital ports for limit switches */
+            if (!isnull(i_gpio)) {
+                i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
+                i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
+                i_gpio.config_dio_done();//end_config_gpio(c_gpio);
+            }
         }
 
         /* Read/Write packets to ethercat Master application */
@@ -418,54 +437,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             if (setup_loop_flag == 0) {
                 if (controlword == 6) {
-                    tmp = i_coe.get_object_value(0x60b0, 0);
-                    status = (unsigned char)(tmp&0xff);
-                    if (status == 0) {
-                        status = 0xaf;
-                        i_coe.set_object_value(0x60b0, 0, status);
-                        tmp = i_coe.get_object_value(0x60b0, 0);
-                        if (tmp == status) {
-                            t :> c_time;
-                            t when timerafter(c_time + 500*MSEC_STD) :> c_time;
-                            InOut.operation_mode_display = 105;
-
-                        }
-                    } else if (status == 0xaf) {
-                        InOut.operation_mode_display = 105;
-                    }
+                    InOut.operation_mode_display = 105;
                 }
                 /* Read Motor Configuration sent from the EtherCAT Master Application */
                 if (controlword == 5) {
-
-                    biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-                    ams_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-                    polarity = profiler_config.polarity;//profile_position_config.velocity_config.polarity;
-                    //qei_params.poles = hall_config.pole_pairs;
-
-                    //config_sdo_handler(i_coe);
-                    {homing_method, limit_switch_type} = homing_sdo_update(i_coe);
-                    if (homing_method == HOMING_NEGATIVE_SWITCH)
-                        limit_switch = -1;
-                    else if (homing_method == HOMING_POSITIVE_SWITCH)
-                        limit_switch = 1;
-
-                    /* Configuration of GPIO Digital ports follows here */
-                    if (!isnull(i_gpio)) {
-                        i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
-                        i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
-                        i_gpio.config_dio_done();//end_config_gpio(c_gpio);
-                    }
-                    if (!isnull(i_hall))
-                        i_hall.set_hall_config(hall_config); //set_hall_conifg_ecat(c_hall, hall_config);
-                    if (homing_done == 0 && !isnull(i_qei))
-                        i_qei.set_qei_config(qei_params);
-                    if (!isnull(i_biss))
-                        i_biss.set_biss_config(biss_config);
-                    if (!isnull(i_ams))
-                        i_ams.set_ams_config(ams_config);
-                    i_commutation.set_all_parameters(hall_config, qei_params,
-                                               commutation_params);
-
                     setup_loop_flag = 1;
                     op_set_flag = 0;
                 }
@@ -490,27 +465,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 //FixMe: initialization should take place before we start PDO communication
                 case CSP:
                     if (op_set_flag == 0) {
-
-                        if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
-                            i_hall.set_hall_config(hall_config);
-                        } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) { /* BiSS */
-                            i_biss.set_biss_config(biss_config);
-                        } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) { /* AMS */
-                            i_ams.set_ams_config(ams_config);
-                        }
-                        i_position_control.set_position_control_config(position_ctrl_params);
-                        if(motorcontrol_config.commutation_method == SINE && !isnull(i_torque_control)){
-                            i_torque_control.set_torque_sensor(sensor_select);
-                        }
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-
                         ctrl_state = i_velocity_control.check_busy();
-                        if (ctrl_state == 1)
+                        if (ctrl_state == 1) {
                             i_velocity_control.disable_velocity_ctrl();
-                            init_position_control(i_position_control);
+                        }
+                        init_position_control(i_position_control);
                     }
                     if (i_position_control.check_busy() == INIT) {
                         op_set_flag = 1;
@@ -546,6 +505,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     else if (op_mode == CSV) {
                         //ToDo: implement quickstop for CSV
                     } else if (op_mode == CSP) {
+                        /* FIXME WTF? why again reading the config? -> remove */
                         if (sensor_select == HALL_SENSOR && !isnull(i_hall))
                             actual_velocity = i_hall.get_hall_velocity();
                         else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
@@ -554,6 +514,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             actual_velocity = i_ams.get_ams_velocity();
                         else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
                             actual_velocity = i_qei.get_qei_velocity();
+
                         actual_position = i_position_control.get_position();
 
                         if (actual_velocity>=500 || actual_velocity<=-500) {

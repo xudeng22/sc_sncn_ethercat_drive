@@ -229,8 +229,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     /* Update values with current configuration */
     polarity = profiler_config.polarity;
     /* FIXME use cm_sync_config_{biss,ams}() */
-    biss_config.pole_pairs = hall_config.pole_pairs;
-    ams_config.pole_pairs  = hall_config.pole_pairs;
+    biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+    ams_config.pole_pairs  = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
 
 	nominal_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
 	limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
@@ -278,8 +278,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* Update values with current configuration */
             polarity = profiler_config.polarity;
             /* FIXME use cm_sync_config_{biss,ams}() */
-            biss_config.pole_pairs = hall_config.pole_pairs;
-            ams_config.pole_pairs  = hall_config.pole_pairs;
+            biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+            ams_config.pole_pairs  = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
 
             nominal_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
             limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
@@ -437,8 +437,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* Read Motor Configuration sent from the EtherCAT Master Application */
                 if (controlword == 5) {
 
-                    biss_config.pole_pairs = hall_config.pole_pairs;
-                    ams_config.pole_pairs = hall_config.pole_pairs;
+                    biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+                    ams_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
                     polarity = profiler_config.polarity;//profile_position_config.velocity_config.polarity;
                     //qei_params.poles = hall_config.pole_pairs;
 

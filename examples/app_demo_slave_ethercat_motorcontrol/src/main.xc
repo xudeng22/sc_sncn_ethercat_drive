@@ -241,7 +241,7 @@ int main(void)
                     HallConfig hall_config;
                     hall_config.pole_pairs = POLE_PAIRS;
 
-                    hall_service(hall_ports, hall_config, i_hall);
+                    hall_service(hall_ports, hall_config, null, i_hall);
                 }
 
 
@@ -255,7 +255,7 @@ int main(void)
                      qei_config.ticks_resolution = QEI_SENSOR_RESOLUTION;    // Encoder resolution
                      qei_config.sensor_polarity = QEI_SENSOR_POLARITY;       // CW
 
-                     qei_service(qei_ports, qei_config, i_qei);
+                     qei_service(qei_ports, qei_config, null, i_qei);
                 }
 #elif (MOTOR_FEEDBACK_SENSOR == AMS_SENSOR)
                 /* AMS Rotary Sensor Service */
@@ -277,7 +277,7 @@ int main(void)
                     ams_config.cache_time = AMS_CACHE_TIME;
                     ams_config.velocity_loop = AMS_VELOCITY_LOOP;
 
-                    ams_service(ams_ports, ams_config, i_ams);
+                    ams_service(ams_ports, ams_config, null, i_ams);
                 }
 #elif (MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
                 /* BiSS service */
@@ -298,7 +298,7 @@ int main(void)
                     biss_config.velocity_loop = BISS_VELOCITY_LOOP;
                     biss_config.offset_electrical = BISS_OFFSET_ELECTRICAL;
 
-                    biss_service(biss_ports, biss_config, i_biss);
+                    biss_service(biss_ports, biss_config, null, i_biss);
                 }
 #endif
 

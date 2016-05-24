@@ -204,7 +204,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
  // polarity
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
-     * written into the object dictionary. So we reread the object dictionary values and continue operation.
+     * written into the object dictionary. So we read the object dictionary values and continue operation.
      *
      * This should be done before we configure anything.
      */

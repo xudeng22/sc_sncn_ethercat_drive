@@ -304,15 +304,15 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             i_velocity_control.set_velocity_sensor(sensor_select);
             i_position_control.set_position_sensor(sensor_select);
 
-            read_configuration = 0;
-            i_coe.configuration_done();
-
             /* Configuration of GPIO Digital ports for limit switches */
             if (!isnull(i_gpio)) {
                 i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
                 i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
                 i_gpio.config_dio_done();//end_config_gpio(c_gpio);
             }
+
+            read_configuration = 0;
+            i_coe.configuration_done();
         }
 
         /* Read/Write packets to ethercat Master application */

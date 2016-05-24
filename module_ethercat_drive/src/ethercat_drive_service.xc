@@ -282,7 +282,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             cm_sync_config_profiler(i_coe, profiler_config);
 
-            /* FIXME similar but not the same */
+            /* FIXME commutation_params and motorcontrol_config are similar but not the same */
             cm_sync_config_motor_control(i_coe, i_commutation, commutation_params);
             cm_sync_config_motor_commutation(i_coe, motorcontrol_config);
 

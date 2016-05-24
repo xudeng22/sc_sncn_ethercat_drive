@@ -210,50 +210,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
      */
     sdo_wait_first_config(i_coe);
 
-    /* update structures */
-    cm_sync_config_hall(i_coe, i_hall, hall_config);
-    cm_sync_config_qei(i_coe, i_qei, qei_params);
-    cm_sync_config_ams(i_coe, i_ams, ams_config);
-    cm_sync_config_biss(i_coe, i_biss, biss_config);
-
-    cm_sync_config_torque_control(i_coe, i_torque_control, torque_ctrl_params);
-    cm_sync_config_velocity_control(i_coe, i_velocity_control, velocity_ctrl_params);
-    cm_sync_config_position_control(i_coe, i_position_control, position_ctrl_params);
-
-    cm_sync_config_profiler(i_coe, profiler_config);
-
-    /* FIXME similar but not the same */
-    cm_sync_config_motor_control(i_coe, i_commutation, commutation_params);
-    cm_sync_config_motor_commutation(i_coe, motorcontrol_config);
-
-    /* Update values with current configuration */
-    polarity = profiler_config.polarity;
-    /* FIXME use cm_sync_config_{biss,ams}() */
-    biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-    ams_config.pole_pairs  = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-
-	nominal_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-	limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
-	homing_method = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
-
-	/* FIXME this is weired, 3 === 2? is this python? */
-    sensor_select = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-    if(sensor_select == 2 || sensor_select == 3)
-        sensor_select = 2; //qei
-
-    i_velocity_control.set_velocity_sensor(sensor_select);
-    i_position_control.set_position_sensor(sensor_select);
-
-    /* Configuration of GPIO Digital ports for limit switches */
-    if (!isnull(i_gpio)) {
-        i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
-        i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
-        i_gpio.config_dio_done();//end_config_gpio(c_gpio);
-    }
-
     /* start operation */
-
-    int read_configuration = 0;
+    int read_configuration = 1;
 
     t :> time;
     while (1) {

@@ -59,7 +59,7 @@ int main(void)
 
     interface WatchdogInterface i_watchdog[2];
     interface ADCInterface i_adc[2];
-    interface HallInterface i_hall[5];
+    interface HallInterface i_hall[5]; /* FIXME what is this magic doing here? */
     interface MotorcontrolInterface i_motorcontrol[4];
 #if(MOTOR_FEEDBACK_SENSOR == BISS_SENSOR)
     interface BISSInterface i_biss[5];
@@ -241,7 +241,7 @@ int main(void)
                     HallConfig hall_config;
                     hall_config.pole_pairs = POLE_PAIRS;
 
-                    hall_service(hall_ports, hall_config, i_hall);
+                    hall_service(hall_ports, hall_config, i_shared_memory[0], i_hall);
                 }
 
 

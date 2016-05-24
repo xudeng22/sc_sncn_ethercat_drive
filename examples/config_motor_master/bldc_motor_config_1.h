@@ -11,7 +11,7 @@
  * Define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_1  				5	 	// Number of pole pairs
+#define POLE_PAIRS_1  				2	 	// Number of pole pairs
 #define MAX_NOMINAL_SPEED_1  			4000	// rpm
 #define MAX_NOMINAL_CURRENT_1  			2		// A
 #define MOTOR_TORQUE_CONSTANT_1			72		// mNm/A
@@ -29,15 +29,15 @@
 
 /* Position Sensor Types (select your sensor type here)
  * (HALL/ QEI_WITH_INDEX/ QEI_NO_INDEX) */
-#define SENSOR_SELECTION_CODE_1         AMS_SENSOR
+#define SENSOR_SELECTION_CODE_1         HALL_SENSOR
 
 /* Polarity is used to keep all position sensors to count ticks in the same direction
  *  (QEI_POLARITY_NORMAL/QEI_POLARITY_INVERTED) */
 #define QEI_SENSOR_POLARITY_1           QEI_POLARITY_NORMAL
 
 /* Commutation offset (range 0-4095) (HALL sensor based commutation) */
-#define COMMUTATION_OFFSET_CLK_1        0
-#define COMMUTATION_OFFSET_CCLK_1       0
+#define COMMUTATION_OFFSET_CLK_1        3835
+#define COMMUTATION_OFFSET_CCLK_1       316
 
 /* Motor Winding type (STAR_WINDING/DELTA_WINDING) */
 #define WINDING_TYPE_1                  STAR_WINDING
@@ -89,7 +89,7 @@
     #define MIN_POSITION_LIMIT_1        -0x7fffffff // ticks (min range: -2^30, limited for safe operation)
 
 #else // PID gains for position control with other Encoders
-    #define POSITION_Kp_NUMERATOR_1     1000    //Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_1     100    //Denominator is 10000
     #define POSITION_Ki_NUMERATOR_1     1   //Denominator is 10000
     #define POSITION_Kd_NUMERATOR_1     0   //Denominator is 10000
 

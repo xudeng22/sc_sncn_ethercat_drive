@@ -37,11 +37,11 @@
 #define QEI_SENSOR_POLARITY_2           QEI_POLARITY_NORMAL
 
 /* Commutation offset (range 0-4095) (HALL sensor based commutation) */
-#define COMMUTATION_OFFSET_CLK_2        4020
-#define COMMUTATION_OFFSET_CCLK_2       0
+#define COMMUTATION_OFFSET_CLK_2        3066
+#define COMMUTATION_OFFSET_CCLK_2       2460
 
 /* Motor Winding type (STAR_WINDING/DELTA_WINDING) */
-#define WINDING_TYPE_2                  STAR_WINDING
+#define WINDING_TYPE_2                  DELTA_WINDING
 
 /* Specify Switch Types (ACTIVE_HIGH/ACTIVE_LOW) when switch is closed
  * (Only if you have any limit switches in the system for safety/homing ) */
@@ -99,7 +99,7 @@
     #define MAX_POSITION_LIMIT_2            POLE_PAIRS_2*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_2 * 10     // ticks (max range: 2^30, limited for safe operation) qei/hall/any position sensor
     #define MIN_POSITION_LIMIT_2            -POLE_PAIRS_2*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_2 * 10    // ticks (min range: -2^30, limited for safe operation) qei/hall/any position sensor
 #else // PID gains for position control with other Encoders
-    #define POSITION_Kp_NUMERATOR_2     1000    //Denominator is 10000
+    #define POSITION_Kp_NUMERATOR_2     100    //Denominator is 10000
     #define POSITION_Ki_NUMERATOR_2     1   //Denominator is 10000
     #define POSITION_Kd_NUMERATOR_2     0   //Denominator is 10000
 

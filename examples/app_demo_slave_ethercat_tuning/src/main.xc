@@ -26,12 +26,19 @@ EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
 BISSPorts biss_ports = SOMANET_IFM_BISS_PORTS;
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
-AMSPorts ams_ports = SOMANET_IFM_AMS_PORTS;
+AMSPorts ams_ports = { {
+        IFM_TILE_CLOCK_2,
+        IFM_TILE_CLOCK_3,
+        SOMANET_IFM_GPIO_D3, //D3,    //mosi
+        SOMANET_IFM_GPIO_D1, //D1,    //sclk
+        SOMANET_IFM_GPIO_D2  },//D2     //miso
+        SOMANET_IFM_GPIO_D0 //D0         //slave select
+};
 #else
 HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
 #endif
 
-#define POSITION_LIMIT 4000000 //+/- 4095
+#define POSITION_LIMIT 0 //+/- 4095
 
 int main(void)
 {
@@ -75,13 +82,13 @@ int main(void)
         /* tuning service */
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
         on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], null, null, i_biss[1], null);
+                                             i_position_control[0], null, i_biss[1], null);
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
         on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], null, null, null, i_ams[1]);
+                                             i_position_control[0], null, null, i_ams[1]);
 #else
         on tile[APP_TILE]: run_offset_tuning(POSITION_LIMIT, i_motorcontrol[0], i_adc[1], coe_out, pdo_out, pdo_in,
-                                             i_position_control[0], null, i_hall[1], null, null);
+                                             i_position_control[0], i_hall[1], null, null);
 #endif
 
 
@@ -141,7 +148,7 @@ int main(void)
                     biss_config.velocity_loop = BISS_VELOCITY_LOOP;
                     biss_config.offset_electrical = BISS_OFFSET_ELECTRICAL;
 
-                    biss_service(biss_ports, biss_config, null, i_biss);
+                    biss_service(biss_ports, biss_config, i_biss);
                 }
 #elif(MOTOR_COMMUTATION_SENSOR == AMS_SENSOR)
                 /* AMS Rotary Sensor Service */
@@ -163,7 +170,7 @@ int main(void)
                     ams_config.cache_time = AMS_CACHE_TIME;
                     ams_config.velocity_loop = AMS_VELOCITY_LOOP;
 
-                    ams_service(ams_ports, ams_config, null, i_ams);
+                    ams_service(ams_ports, ams_config, i_ams);
                 }
 #else
                 /* Hall sensor Service */
@@ -171,7 +178,7 @@ int main(void)
                     HallConfig hall_config;
                     hall_config.pole_pairs = POLE_PAIRS;
 
-                    hall_service(hall_ports, hall_config, null, i_hall);
+                    hall_service(hall_ports, hall_config, i_hall);
                 }
 #endif
 

@@ -16,48 +16,17 @@ SOMANET_C22_CTRLPROTO_CSTRUCT();
 
 /* Slave Handles Array for single node
   Note: Each array entry defines handle struct for a node */
-//static ctrlproto_slv_handle slv_handles[]=
-//{
-//    SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0, 0, 1), /* ALIAS / POSITION / CONFIG_NUMBER */
-//    SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             1,     2)
-//};
 static ctrlproto_slv_handle slv_handles[]=
-{                                               //ALIAS / POSITION / CONFIG_NUMBER
-        SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             0,     1),
-        SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             1,     2),
-        SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             2,     3),
-        SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             3,     4),
-        SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             4,     5),
-        SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             5,     6)
+{
+    SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0, 0, 1) /* ALIAS / POSITION / CONFIG_NUMBER */
 };
 
 /* Domain entries for the pdos
  * Note: Each array entry define pdos for a node
  */
-//const static ec_pdo_entry_reg_t domain_regs[] = {
-//    SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0, 0, 0),  /* ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES */
-//    SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0, 1, 1),  /* ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES */
-//    {0}
-//};
 const static ec_pdo_entry_reg_t domain_regs[] = {
-                                                //ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES
-            SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,        0,          0),
-#if(TOTAL_NUM_OF_SLAVES >= 2)
-            SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,        1,          1),
-#endif
-#if(TOTAL_NUM_OF_SLAVES >= 3)
-            SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,        2,          2),
-#endif
-#if(TOTAL_NUM_OF_SLAVES >= 4)
-            SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,        3,          3),
-#endif
-#if(TOTAL_NUM_OF_SLAVES >= 5)
-            SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,        4,          4),
-#endif
-#if(TOTAL_NUM_OF_SLAVES >= 6)
-            SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,        5,          5),
-#endif
-{0}
+    SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0, 0, 0),  /* ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES */
+    {0}
 };
 
 /*

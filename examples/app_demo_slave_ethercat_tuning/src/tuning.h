@@ -32,6 +32,6 @@ interface TuningInterface {
 
 void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_commutation,
                        interface ADCInterface client ?i_adc, chanend coe_out, chanend pdo_out, chanend pdo_in,
-                       interface PositionControlInterface client ?i_position_control,
+                       interface PositionControlInterface client ?i_position_control, interface BrakeInterface client ?i_brake,
                        interface HallInterface client ?i_hall, interface BISSInterface client ?i_biss, interface AMSInterface client ?i_ams);
 

@@ -32,11 +32,11 @@ void  INThandler(int sig)
 
 int main() {
 
-    int target_position[6] = { 1048576, 1048576, 1048576, 1048576, 1048576, 0 }; // ticks
-//    int target_position[6] = { 0, 0, 0, 0, 262144, 0 }; // ticks
+//    int target_position[6] = { 1048576, 1048576, 1048576, 1048576, 1048576, 1048576 }; // ticks
+    int target_position[6] = { 0, 0, 26214400, 0, 0, 0 }; // ticks
     int acceleration[6] = { 20, 50, 50, 50, 50, 50 }; // rpm/s
     int deceleration[6] = { 20, 50, 50, 50, 50, 50 }; // rpm/s
-    int velocity[6] = { 100, 100, 100, 100, 100, 50 }; // rpm
+    int velocity[6] = { 50, 50, 50, 50, 50, 50 }; // rpm
 
     int actual_position[6]; // ticks
     int start_position[6];
@@ -167,8 +167,8 @@ int main() {
 
         // display motors positon
         if (master_setup.op_flag) {/*Check if the master is active*/
-            printf("A1:%8.d A2:%8.d A3:%8.d A4:%8.d A5:%8.d \r",
-                    actual_position[0], actual_position[1], actual_position[2], actual_position[3], actual_position[4]);
+            printf("A1:%8.d A2:%8.d A3:%8.d A4:%8.d A5:%8.d A6:%8.d \r",
+                    actual_position[0], actual_position[1], actual_position[2], actual_position[3], actual_position[4], actual_position[5]);
         }
     }
 

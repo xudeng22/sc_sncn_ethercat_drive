@@ -50,11 +50,14 @@ void draw(char dc)
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     char d;
     WINDOW *wnd;
     int slave_number = 0;
+    //take arg 1 as slave number (1 is the first slave)
+    if (argc > 1)
+        slave_number = strtol(argv[1], NULL, 10)-1;
 
     /* Initialize EtherCAT Master */
     init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);

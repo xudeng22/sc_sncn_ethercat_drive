@@ -313,11 +313,21 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         if (inactive_timeout_flag == 1) {
             //printstrln("Triggering quick stop mode");
 
-            if(controlword != controlword_old || state != state_old || statusword != statusword_old || InOut.operation_mode != op_mode_commanded_old || op_mode != op_mode_old){
+            if(controlword != controlword_old
+                    || state != state_old
+                    || statusword != statusword_old
+                    || InOut.operation_mode != op_mode_commanded_old
+                    || op_mode != op_mode_old) {
                 printf("Inactive_COMM!!!, Control_word: %d  |  State: %s  |   Statusword: %d  |   Op_mode_commanded %d, Op_mode_assigned %d\n",
                         controlword, state_names[state], statusword, InOut.operation_mode, op_mode);
             }
-            controlword_old = controlword; state_old = state; statusword_old = statusword; op_mode_commanded_old = InOut.operation_mode; op_mode_old = op_mode;
+
+            controlword_old = controlword;
+            state_old = state;
+            statusword_old = statusword;
+            op_mode_commanded_old = InOut.operation_mode;
+            op_mode_old = op_mode;
+
 
             /* quick stop for torque mode */
             if (op_mode == CST)
@@ -415,11 +425,20 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             statusword = update_statusword(statusword, state, ack, quick_active, shutdown_ack);
             InOut.status_word = statusword;
 
-            if(controlword != controlword_old || state != state_old || statusword != statusword_old || InOut.operation_mode != op_mode_commanded_old || op_mode != op_mode_old){
+            if(controlword != controlword_old
+                    || state != state_old
+                    || statusword != statusword_old
+                    || InOut.operation_mode != op_mode_commanded_old
+                    || op_mode != op_mode_old) {
                 printf("Active_COMM, Control_word: %d  |  State: %s  |   Statusword: %d  |   Op_mode_commanded %d, Op_mode_assigned %d\n",
                         controlword, state_names[state], statusword, InOut.operation_mode, op_mode);
             }
-            controlword_old = controlword; state_old = state; statusword_old = statusword; op_mode_commanded_old = InOut.operation_mode; op_mode_old = op_mode;
+
+            controlword_old       = controlword;
+            state_old             = state;
+            statusword_old        = statusword;
+            op_mode_commanded_old = InOut.operation_mode;
+            op_mode_old           = op_mode;
 
 
 

@@ -163,7 +163,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int tmp=0;
 
     //int torque_offstate = 0;
-    int mode_selected = 0;
+    int mode_selected = 0; /* valid values: { 0, 1, 3, 100 } - WTF? */
     check_list checklist;
 
     int home_velocity = 0;

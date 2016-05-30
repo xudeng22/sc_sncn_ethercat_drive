@@ -15,6 +15,9 @@
 #include <velocity_ctrl_service.h>
 #include <torque_ctrl_service.h>
 
+#define QUICK_STOP_INIT           0x01
+#define QUICK_STOP_FINISHED       0x02
+
 typedef int bool;
 #define true 1
 #define false 0
@@ -95,7 +98,7 @@ void update_checklist(check_list &check_list_param, int mode,
 
 int16_t update_statusword(int current_status, int state_reached, int ack, int q_active, int shutdown_ack);
 
-int get_next_state(int in_state, check_list &checklist, int controlword);
+int get_next_state(int in_state, check_list &checklist, int controlword, int localcontrol);
 
 int read_controlword_switch_on(int control_word);
 

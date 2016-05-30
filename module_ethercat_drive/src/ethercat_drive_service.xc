@@ -81,6 +81,70 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     i_coe.configuration_done();
 }
 
+enum eDirection {
+    DIRECTION_NEUTRAL = 0
+    ,DIRECTION_CLK    = 1
+    ,DIRECTION_CCLK   = -1
+};
+
+static int quick_stop_perform(int steps, enum eDirection direction,
+                                ProfilerConfig &profiler_config,
+                                interface PositionControlInterface client i_position_control)
+{
+    static int step = 0;
+
+    if (step >= steps)
+        return 1;
+
+    int target_position = quick_stop_position_profile_generate(step, direction);
+    i_position_control.set_position(position_limit(target_position,
+            profiler_config.max_position,
+            profiler_config.min_position));
+
+    step++;
+
+    return 0;
+}
+
+/*static */{ int, int } quick_stop_init(int op_mode,
+                                int actual_velocity,
+                                int sensor_resolution,
+                                ProfilerConfig &profiler_config,
+                                interface PositionControlInterface client i_position_control)
+{
+
+    if (op_mode == CST || op_mode == CSV) {
+        /* TODO implement quick stop profile */
+    }
+
+    int actual_position = i_position_control.get_position();
+
+    /* FIXME maybe get the velocity here directly? */
+    if (actual_velocity < 0) {
+        actual_velocity = -actual_velocity;
+    }
+
+    int steps = 0;
+    /* WTF? WTF? WTF? */
+    //if (actual_velocity >= 500)
+    {
+
+        int deceleration = profiler_config.max_deceleration;
+
+
+        steps = init_quick_stop_position_profile(
+                (actual_velocity * sensor_resolution) / 60,
+                actual_position,
+                (deceleration * sensor_resolution) / 60);
+
+    }
+
+    enum eDirection direction = DIRECTION_NEUTRAL;
+    //{actual_position, direction} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
+
+    return { steps, direction };
+}
+
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
@@ -93,7 +157,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface BISSInterface client ?i_biss,
                             interface AMSInterface client ?i_ams,
                             interface GPIOInterface client ?i_gpio,
-                            interface ADCInterface client i_adc,
                             interface TorqueControlInterface client ?i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control)
@@ -109,7 +172,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int target_position = 0;
     int actual_position = 0;
 
-    int direction = 0;
+    enum eDirection direction = DIRECTION_NEUTRAL;
+    int direction_temp;
 
     int position_ramp = 0;
     int prev_position = 0;
@@ -140,7 +204,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     ctrl_proto_values_t InOut;
 
     int setup_loop_flag = 0;
-    int sense;
 
     int ack = 0;
     int quick_active = 0;
@@ -327,77 +390,27 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             op_mode_commanded_old = InOut.operation_mode;
             op_mode_old = op_mode;
 
-
-            /* quick stop for torque mode */
-            if (op_mode == CST)
-            {
-                //ToDo: implement quick stop for CST
+            int sensor_resolution = 0;
+            int actual_velocity = 0;
+            if (sensor_select == HALL_SENSOR) {
+                sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
+                actual_velocity = i_hall.get_hall_velocity();
+            } else if (sensor_select == QEI_SENSOR){    /* QEI */
+                sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
+                actual_velocity = i_qei.get_qei_velocity();
+            } else if (sensor_select == BISS_SENSOR){    /* BiSS */
+                sensor_resolution = (1 << biss_config.singleturn_resolution);
+                actual_velocity = i_biss.get_biss_velocity();
+            } else if (sensor_select == AMS_SENSOR){    /* AMS */
+                sensor_resolution = (1 << ams_config.resolution_bits);
+                actual_velocity = i_ams.get_ams_velocity();
             }
 
-            /* quick stop for velocity mode */
-            if (op_mode == CSV) {
-                //ToDo: implement quick stop for CSV
-            }
+            { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
+            { steps, direction_temp } = quick_stop_init(op_mode, actual_velocity, sensor_resolution, profiler_config, i_position_control);
+            quick_active = 1;
 
-            /* quick stop for position mode */
-            else if (op_mode == CSP) {
-                //printstrln("We are in OP mode CSP");
-                if (sensor_select == HALL_SENSOR && !isnull(i_hall))
-                    actual_velocity = i_hall.get_hall_velocity();
-                else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                    actual_velocity = i_biss.get_biss_velocity();
-                else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                    actual_velocity = i_qei.get_qei_velocity();
-                else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
-                    actual_velocity = i_ams.get_ams_velocity();
-                actual_position = i_position_control.get_position();
-
-                int deceleration;
-                int max_position_limit;
-                int min_position_limit;
-                //int polarity;
-                deceleration = profiler_config.max_acceleration;
-                max_position_limit = profiler_config.max_position;
-                min_position_limit = profiler_config.min_position;
-                //polarity = cyclic_sync_position_config.velocity_config.polarity;
-
-                if (actual_velocity>=500 || actual_velocity<=-500) {
-                    if (actual_velocity < 0) {
-                        actual_velocity = -actual_velocity;
-                    }
-
-                    int sensor_ticks;
-                    if (sensor_select == HALL_SENSOR) {
-                        sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-                    } else if (sensor_select == QEI_SENSOR){    /* QEI */
-                        sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                    } else if (sensor_select == BISS_SENSOR){    /* BISS */
-                        sensor_ticks = (1 << biss_config.singleturn_resolution);
-                    } else if (sensor_select == AMS_SENSOR){    /* AMS */
-                        sensor_ticks = (1 << ams_config.resolution_bits);
-                    }
-
-                    steps = init_quick_stop_position_profile(
-                        (actual_velocity * sensor_ticks) / 60,
-                        actual_position,
-                        (deceleration * sensor_ticks) / 60);
-
-                    mode_selected = 3; // non interruptible mode
-                    mode_quick_flag = 0;
-                }
-
-                {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
-
-                t :> c_time;
-                for (int i=0; i<steps; i++) {
-                    target_position = quick_stop_position_profile_generate(i, sense);
-                    i_position_control.set_position(position_limit( target_position, max_position_limit,
-                                                                    min_position_limit));
-
-                    //send_actual_position(actual_position * polarity, InOut);
-                    t when timerafter(c_time + MSEC_STD) :> c_time;
-                }
-            }
+            /* FIXME safe to get rid off? */
             mode_selected = 0;
             setup_loop_flag = 0;
             op_set_flag = 0;
@@ -418,7 +431,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                              i_torque_control, i_velocity_control, i_position_control);
 
             /* Update state machine */
-            state = get_next_state(state, checklist, controlword);
+            state = get_next_state(state, checklist, controlword, 0);
 
             /* Update statusword sent to the EtherCAT Master Application */
             statusword = update_statusword(statusword, state, ack, quick_active, shutdown_ack);
@@ -470,11 +483,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             if (!checklist.fault)
             {
+#if 0 /* the i_adc got lost somehow, somewhere... */
                 /* Temperature */
                 if (i_adc.get_temperature() > TEMP_THRESHOLD) {
                     checklist.fault = true;
 
                 }
+#endif
 
                 /* Speed */
 
@@ -525,62 +540,25 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if (mode_selected == 1) {
                 switch (controlword) {
                 case QUICK_STOP:
-                    if (op_mode == CST) {
-                        //ToDo: implement quickstop for CST
+                    int sensor_resolution = 0;
+                    int actual_velocity = 0;
+                    if (sensor_select == HALL_SENSOR) {
+                        sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
+                        actual_velocity = i_hall.get_hall_velocity();
+                    } else if (sensor_select == QEI_SENSOR){    /* QEI */
+                        sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
+                        actual_velocity = i_qei.get_qei_velocity();
+                    } else if (sensor_select == BISS_SENSOR){    /* BiSS */
+                        sensor_resolution = (1 << biss_config.singleturn_resolution);
+                        actual_velocity = i_biss.get_biss_velocity();
+                    } else if (sensor_select == AMS_SENSOR){    /* AMS */
+                        sensor_resolution = (1 << ams_config.resolution_bits);
+                        actual_velocity = i_ams.get_ams_velocity();
                     }
-                    else if (op_mode == CSV) {
-                        //ToDo: implement quickstop for CSV
-                    } else if (op_mode == CSP) {
-                        /* FIXME WTF? why again reading the config? -> remove */
-                        if (sensor_select == HALL_SENSOR && !isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
-                            actual_velocity = i_ams.get_ams_velocity();
-                        else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
 
-                        actual_position = i_position_control.get_position();
-
-                        if (actual_velocity>=500 || actual_velocity<=-500) {
-                            if (actual_velocity < 0) {
-                                actual_velocity = -actual_velocity;
-                            }
-
-                            int deceleration;
-                            if (op_mode == CSP) {
-                                deceleration = profiler_config.max_acceleration;
-                            } else { /* op_ode == PP */
-                                deceleration = profiler_config.max_deceleration;
-                            }
-
-                            int sensor_ticks;
-                            if (sensor_select == HALL_SENSOR) {
-                                sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-                            } else if (sensor_select == QEI_SENSOR){    /* QEI */
-                                sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                            } else if (sensor_select == BISS_SENSOR){    /* BiSS */
-                                sensor_ticks = (1 << biss_config.singleturn_resolution);
-                            } else if (sensor_select == AMS_SENSOR){    /* AMS */
-                                sensor_ticks = (1 << ams_config.resolution_bits);
-                            }
-
-                            steps = init_quick_stop_position_profile(
-                                (actual_velocity * sensor_ticks) / 60,
-                                actual_position,
-                                (deceleration * sensor_ticks) / 60);
-
-                            i = 0;
-                            mode_selected = 3; // non interruptible mode
-                            mode_quick_flag = 0;
-                        } else {
-                            mode_selected = 100;
-                            op_set_flag = 0;
-                            init = 0;
-                            mode_quick_flag = 0;
-                        }
-                    }
+                    { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
+                    { steps, direction_temp } = quick_stop_init(op_mode, actual_velocity, sensor_resolution, profiler_config, i_position_control);
+                    state = get_next_state(state, checklist, controlword, QUICK_STOP_INIT);
                     break;
 
                     /* continuous controlword */
@@ -623,52 +601,19 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
             }
 
+            /* If we are in QUICK_STOP state we shouldn't do or check anything else. */
+            /* FIXME remove this flag, if we are in state S_QUICK_STOP_ACTIVE then we do this stuff! */
+            if (state == S_QUICK_STOP_ACTIVE) {
+                int ret = quick_stop_perform(steps, direction, profiler_config, i_position_control);
+                if (ret != 0) {
+                    state = get_next_state(state, checklist, 0, QUICK_STOP_FINISHED);
+                }
+            }
+
             /* quick stop controlword routine */
             else if (mode_selected == 3) { // non interrupt
-                if (op_mode == CST) {
-                    //ToDO: implement CST quick stop execution routine here
-                } else if (op_mode == CSV) {
-                    //ToDO: implement CSV quick stop execution routine here
-                } else if (op_mode == CSP) {
-                    {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
+                //perform_quick_stop();
 
-                    t :> c_time;
-                    while (i < steps) {
-                        target_position = quick_stop_position_profile_generate(i, sense);
-                        if (op_mode == CSP) {
-                            i_position_control.set_position(position_limit(target_position,
-                                                                    profiler_config.max_position,
-                                                                    profiler_config.min_position));
-                                                                 //  cyclic_sync_position_config.max_position_limit,
-                                                                 //  cyclic_sync_position_config.min_position_limit));
-                        } else if (op_mode == PP) {
-                            i_position_control.set_position(position_limit(target_position,
-                                                            profiler_config.max_position,
-                                                            profiler_config.min_position));
-                        }
-                        t when timerafter(c_time + MSEC_STD) :> c_time;
-                        i++;
-                    }
-
-                    if (i == steps) {
-                        t when timerafter(c_time + 100*MSEC_STD) :> c_time;
-                    }
-                    if (i >= steps) {
-                        if (sensor_select == HALL_SENSOR && !isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
-                        else if (sensor_select == AMS_SENSOR && !isnull(i_ams))
-                            actual_velocity = i_ams.get_ams_velocity();
-                        if (actual_velocity < 50 || actual_velocity > -50) {
-                            mode_selected = 100;
-                            op_set_flag = 0;
-                            init = 0;
-                        }
-                    }
-                }
             } else if (mode_selected == 100) {
                 if (mode_quick_flag == 0)
                     quick_active = 1;

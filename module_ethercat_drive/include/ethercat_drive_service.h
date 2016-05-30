@@ -55,7 +55,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface BISSInterface client ?i_biss,
                             interface AMSInterface client ?i_ams,
                             interface GPIOInterface client ?i_gpio,
-                            interface ADCInterface client i_adc,
                             interface TorqueControlInterface client ?i_torque_control,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control);

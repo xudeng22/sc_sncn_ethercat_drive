@@ -63,6 +63,13 @@ bool ctrl_enable_op(int control_word) {
         && read_controlword_enable_voltage(control_word);
 }
 
+bool ctrl_quick_stop_enable(int control) {
+    return ((control & QUICK_STOP_INIT) == 0 ? 0 : 1);
+}
+
+bool ctrl_quick_stop_finished(int control) {
+    return ((control & QUICK_STOP_FINISHED) == 0 ? 0 : 1);
+}
 
 bool __check_bdc_init(chanend c_signal)
 {
@@ -180,6 +187,7 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
 
     switch (state_reached) {
         case S_NOT_READY_TO_SWITCH_ON:
+            //printstrln("Warning reaching state which is not supposed to be reached!\n");
             status_word = current_status & ~READY_TO_SWITCH_ON_STATE
                 & ~SWITCHED_ON_STATE & ~OPERATION_ENABLED_STATE
                 & ~VOLTAGE_ENABLED_STATE;
@@ -229,7 +237,8 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
     return status_word;
 }
 
-int get_next_state(int in_state, check_list &checklist, int controlword) {
+/* localcontrol is used for internal (aka automatic) state transitions */
+int get_next_state(int in_state, check_list &checklist, int controlword, int localcontrol) {
     int out_state = -1;
     int ctrl_input;
 
@@ -295,6 +304,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
                 out_state = S_SWITCH_ON_DISABLED;
             else if ( ctrl_enable_op(controlword))
                 out_state = S_OPERATION_ENABLE;
+            else if (ctrl_quick_stop_enable(localcontrol))
+                out_state = S_QUICK_STOP_ACTIVE;
             else
                 out_state = S_OPERATION_ENABLE;
             break;
@@ -303,6 +314,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword) {
             if (checklist.fault)
                 out_state = S_FAULT;
             else if (ctrl_disable_volt(controlword))
+                out_state = S_SWITCH_ON_DISABLED;
+            else if (ctrl_quick_stop_finished(localcontrol))
                 out_state = S_SWITCH_ON_DISABLED;
             else
                 out_state = S_QUICK_STOP_ACTIVE;

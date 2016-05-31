@@ -148,6 +148,10 @@ static int quick_stop_perform(int steps, enum eDirection direction,
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
+/* NOTE:
+ * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
+ * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
+ */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in,
                             client interface i_coe_communication i_coe,
@@ -301,6 +305,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 break;
         }
 
+        /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
             /* update structures */
             cm_sync_config_hall(i_coe, i_hall, hall_config);
@@ -410,7 +415,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             { steps, direction_temp } = quick_stop_init(op_mode, actual_velocity, sensor_resolution, profiler_config, i_position_control);
             quick_active = 1;
 
-            /* FIXME safe to get rid off? */
+            /* FIXME safe to get rid of? */
             mode_selected = 0;
             setup_loop_flag = 0;
             op_set_flag = 0;
@@ -454,6 +459,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
 
 
+            /* FIXME - deprecated since the configuration is checked in the beginning of the loop
+             * WRONG! There is no controlword '5' in std. controls, only
+             * possibility "Disable Voltage" but Bit 0 and 2 are don't care!
+             * Besides, op mode 105 is in the reserved are of valid values! */
             if (setup_loop_flag == 0) {
                 if (controlword == 6) {
                     InOut.operation_mode_display = 105;
@@ -464,6 +473,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     op_set_flag = 0;
                 }
             }
+
+            /* FIXME unify this, either read everything in the beginning but only fetch the value once!
+             * BTW, where is torque and position read? */
             /* Read Position Sensor */
             if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
                 actual_velocity = i_hall.get_hall_velocity();
@@ -491,11 +503,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
 #endif
 
-                /* Speed */
+                profiler_config.max_velocity;
+                /* Speed - FIXME add check if actual speed is > than speed limits */
 
-                /* Over current */
+                /* Over current - FIXME add check if we have over-current - from where? */
 
-                /* Over voltage */
+                /* Over voltage - FIXME add check for over-voltage - from where? */
             }
 
 
@@ -601,8 +614,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
             }
 
-            /* If we are in QUICK_STOP state we shouldn't do or check anything else. */
-            /* FIXME remove this flag, if we are in state S_QUICK_STOP_ACTIVE then we do this stuff! */
+            /* If we are in state S_QUICK_STOP_ACTIVE then we perform the quick stop steps! */
             if (state == S_QUICK_STOP_ACTIVE) {
                 int ret = quick_stop_perform(steps, direction, profiler_config, i_position_control);
                 if (ret != 0) {

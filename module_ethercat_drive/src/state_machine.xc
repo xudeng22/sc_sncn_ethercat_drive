@@ -110,7 +110,7 @@ void update_checklist(check_list &check_list_param, int mode,
                         interface BISSInterface client ?i_biss,
                         interface AMSInterface client ?i_ams,
                         interface ADCInterface client ?i_adc,
-			interface TorqueControlInterface client ?i_torque_control,
+                        interface TorqueControlInterface client ?i_torque_control,
                         interface VelocityControlInterface client i_velocity_control,
                         interface PositionControlInterface client i_position_control)
 {

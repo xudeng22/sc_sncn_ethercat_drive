@@ -55,6 +55,46 @@ const char * state_names[] = {"u shouldn't see me",
     return {actual_position, direction};
 }
 
+static int get_actual_velocity(int sensor_select,
+                            interface HallInterface client ?i_hall,
+                            interface QEIInterface client ?i_qei,
+                            interface BISSInterface client ?i_biss,
+                            interface AMSInterface client ?i_ams)
+{
+    int velocity = 0;
+
+    if (sensor_select == HALL_SENSOR) {
+        velocity = i_hall.get_hall_velocity();
+    } else if (sensor_select == QEI_SENSOR){    /* QEI */
+        velocity = i_qei.get_qei_velocity();
+    } else if (sensor_select == BISS_SENSOR){    /* BiSS */
+        velocity = i_biss.get_biss_velocity();
+    } else if (sensor_select == AMS_SENSOR){    /* AMS */
+        velocity = i_ams.get_ams_velocity();
+    }
+
+    return velocity;
+}
+
+static int get_sensor_resolution(int sensor_select,
+        HallConfig hall_config, QEIConfig qei_params,
+        BISSConfig biss_config, AMSConfig ams_config)
+{
+    int sensor_resolution = 0;
+
+    if (sensor_select == HALL_SENSOR) {
+        sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION; /* max_ticks_per_turn; */
+    } else if (sensor_select == QEI_SENSOR){    /* QEI */
+        sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
+    } else if (sensor_select == BISS_SENSOR){    /* BiSS */
+        sensor_resolution = (1 << biss_config.singleturn_resolution);
+    } else if (sensor_select == AMS_SENSOR){    /* AMS */
+        sensor_resolution = (1 << ams_config.resolution_bits);
+    }
+
+    return sensor_resolution;
+}
+
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 static void sdo_wait_first_config(client interface i_coe_communication i_coe)
@@ -332,6 +372,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if(sensor_select == 2 || sensor_select == 3)
                 sensor_select = 2; //qei
 
+            sensor_resolution = get_sensor_resolution(sensor_select, hall_config, qei_params, biss_config, ams_config);
+
             i_velocity_control.set_velocity_sensor(sensor_select);
             i_position_control.set_position_sensor(sensor_select);
 
@@ -349,19 +391,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          *  Update actual velocity, torque and position
          */
-        if (sensor_select == HALL_SENSOR) {
-            sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-            actual_velocity = i_hall.get_hall_velocity();
-        } else if (sensor_select == QEI_SENSOR){    /* QEI */
-            sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-            actual_velocity = i_qei.get_qei_velocity();
-        } else if (sensor_select == BISS_SENSOR){    /* BiSS */
-            sensor_resolution = (1 << biss_config.singleturn_resolution);
-            actual_velocity = i_biss.get_biss_velocity();
-        } else if (sensor_select == AMS_SENSOR){    /* AMS */
-            sensor_resolution = (1 << ams_config.resolution_bits);
-            actual_velocity = i_ams.get_ams_velocity();
-        }
+        actual_velocity = get_actual_velocity(sensor_select, i_hall, i_qei, i_biss, i_ams);
 
         { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
 

@@ -13,6 +13,9 @@
 #include <profile.h>
 #include <config_manager.h>
 
+/* FIXME move to some stdlib */
+#define ABSOLUTE_VALUE(x)   (x < 0 ? -x : x)
+
 const char * state_names[] = {"u shouldn't see me",
 "S_NOT_READY_TO_SWITCH_ON",
 "S_SWITCH_ON_DISABLED",
@@ -505,6 +508,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                 profiler_config.max_velocity;
                 /* Speed - FIXME add check if actual speed is > than speed limits */
+                if (ABSOLUTE_VALUE(actual_velocity) > profiler_config.max_velocity) {
+                    checklist.fault = true;
+                    /* FIXME start new transition to -> FAULT state and initiate appropreate operations */
+                }
 
                 /* Over current - FIXME add check if we have over-current - from where? */
 

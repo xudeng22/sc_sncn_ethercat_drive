@@ -109,18 +109,16 @@ static int quick_stop_perform(int steps, enum eDirection direction,
     return 0;
 }
 
-/*static */{ int, int } quick_stop_init(int op_mode,
+static int quick_stop_init(int op_mode,
                                 int actual_velocity,
                                 int sensor_resolution,
-                                ProfilerConfig &profiler_config,
-                                interface PositionControlInterface client i_position_control)
+                                int actual_position,
+                                ProfilerConfig &profiler_config)
 {
 
     if (op_mode == CST || op_mode == CSV) {
         /* TODO implement quick stop profile */
     }
-
-    int actual_position = i_position_control.get_position();
 
     /* FIXME maybe get the velocity here directly? */
     if (actual_velocity < 0) {
@@ -128,24 +126,17 @@ static int quick_stop_perform(int steps, enum eDirection direction,
     }
 
     int steps = 0;
+    int deceleration = profiler_config.max_deceleration;
     /* WTF? WTF? WTF? */
     //if (actual_velocity >= 500)
     {
-
-        int deceleration = profiler_config.max_deceleration;
-
-
         steps = init_quick_stop_position_profile(
                 (actual_velocity * sensor_resolution) / 60,
                 actual_position,
                 (deceleration * sensor_resolution) / 60);
-
     }
 
-    enum eDirection direction = DIRECTION_NEUTRAL;
-    //{actual_position, direction} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
-
-    return { steps, direction };
+    return steps;
 }
 
 //#pragma xta command "analyze loop ecatloop"
@@ -180,7 +171,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int actual_position = 0;
 
     enum eDirection direction = DIRECTION_NEUTRAL;
-    int direction_temp;
 
     int position_ramp = 0;
     int prev_position = 0;
@@ -255,6 +245,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     state       = init_state(); // init state
     checklist   = init_checklist();
     InOut       = init_ctrl_proto();
+    int sensor_resolution = 0;
 
     if (!isnull(i_hall))
         hall_config = i_hall.get_hall_config();
@@ -355,6 +346,39 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             i_coe.configuration_done();
         }
 
+        /*
+         *  Update actual velocity, torque and position
+         */
+        if (sensor_select == HALL_SENSOR) {
+            sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
+            actual_velocity = i_hall.get_hall_velocity();
+        } else if (sensor_select == QEI_SENSOR){    /* QEI */
+            sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
+            actual_velocity = i_qei.get_qei_velocity();
+        } else if (sensor_select == BISS_SENSOR){    /* BiSS */
+            sensor_resolution = (1 << biss_config.singleturn_resolution);
+            actual_velocity = i_biss.get_biss_velocity();
+        } else if (sensor_select == AMS_SENSOR){    /* AMS */
+            sensor_resolution = (1 << ams_config.resolution_bits);
+            actual_velocity = i_ams.get_ams_velocity();
+        }
+
+        { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
+
+#if 0
+        actual_torque = i_position_control.get_torque(); /* FIXME expected future implementation! */
+#else
+        if (isnull(i_torque_control))
+            actual_torque = i_commutation.get_torque_actual();
+        else
+            actual_torque = i_torque_control.get_torque();
+#endif
+
+
+        send_actual_velocity(actual_velocity, InOut);
+        send_actual_torque(actual_torque, InOut );
+        send_actual_position(actual_position * polarity, InOut);
+
         /* Read/Write packets to ethercat Master application */
         communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
 
@@ -398,24 +422,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             op_mode_commanded_old = InOut.operation_mode;
             op_mode_old = op_mode;
 
-            int sensor_resolution = 0;
-            int actual_velocity = 0;
-            if (sensor_select == HALL_SENSOR) {
-                sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-                actual_velocity = i_hall.get_hall_velocity();
-            } else if (sensor_select == QEI_SENSOR){    /* QEI */
-                sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                actual_velocity = i_qei.get_qei_velocity();
-            } else if (sensor_select == BISS_SENSOR){    /* BiSS */
-                sensor_resolution = (1 << biss_config.singleturn_resolution);
-                actual_velocity = i_biss.get_biss_velocity();
-            } else if (sensor_select == AMS_SENSOR){    /* AMS */
-                sensor_resolution = (1 << ams_config.resolution_bits);
-                actual_velocity = i_ams.get_ams_velocity();
-            }
-
-            { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
-            { steps, direction_temp } = quick_stop_init(op_mode, actual_velocity, sensor_resolution, profiler_config, i_position_control);
+            steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
             quick_active = 1;
 
             /* FIXME safe to get rid of? */
@@ -476,21 +483,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     op_set_flag = 0;
                 }
             }
-
-            /* FIXME unify this, either read everything in the beginning but only fetch the value once!
-             * BTW, where is torque and position read? */
-            /* Read Position Sensor */
-            if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
-                actual_velocity = i_hall.get_hall_velocity();
-            } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) {
-                actual_velocity = i_qei.get_qei_velocity();
-               //printintln(actual_velocity);
-            } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) {
-                actual_velocity = i_biss.get_biss_velocity();
-            } else if (sensor_select == AMS_SENSOR && !isnull(i_ams)) {
-                actual_velocity = i_ams.get_ams_velocity();
-            }
-            send_actual_velocity(actual_velocity * polarity, InOut);
 
             /* ################################
              * Error Handling
@@ -560,24 +552,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if (mode_selected == 1) {
                 switch (controlword) {
                 case QUICK_STOP:
-                    int sensor_resolution = 0;
-                    int actual_velocity = 0;
-                    if (sensor_select == HALL_SENSOR) {
-                        sensor_resolution = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-                        actual_velocity = i_hall.get_hall_velocity();
-                    } else if (sensor_select == QEI_SENSOR){    /* QEI */
-                        sensor_resolution = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                        actual_velocity = i_qei.get_qei_velocity();
-                    } else if (sensor_select == BISS_SENSOR){    /* BiSS */
-                        sensor_resolution = (1 << biss_config.singleturn_resolution);
-                        actual_velocity = i_biss.get_biss_velocity();
-                    } else if (sensor_select == AMS_SENSOR){    /* AMS */
-                        sensor_resolution = (1 << ams_config.resolution_bits);
-                        actual_velocity = i_ams.get_ams_velocity();
-                    }
-
-                    { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
-                    { steps, direction_temp } = quick_stop_init(op_mode, actual_velocity, sensor_resolution, profiler_config, i_position_control);
+                    steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
                     state = get_next_state(state, checklist, controlword, QUICK_STOP_INIT);
                     break;
 
@@ -594,8 +569,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                                                         profiler_config.max_position, profiler_config.min_position));
                        // set_position_csp(profiler_config, target_position, 0, 0, 0, i_position_control);
 
-                        actual_position = i_position_control.get_position() * profiler_config.polarity;//cyclic_sync_position_config.velocity_config.polarity;
-                        send_actual_position(actual_position, InOut);
                         //printintln(actual_position);
                         //safety_state = read_gpio_digital_input(c_gpio, 1);        // read port 1
                         //value = (port_3_value<<3 | port_2_value<<2 | port_1_value <<1| safety_state );  pack values if more than one port inputs
@@ -653,17 +626,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
             }
 
-            /* Read Torque and Position */
-            {actual_position, direction} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
-
-            if(motorcontrol_config.commutation_method == FOC){
-                send_actual_torque( i_commutation.get_torque_actual(), InOut );
-            } else {
-                if(!isnull(i_torque_control))
-                    send_actual_torque( i_torque_control.get_torque() * polarity, InOut );
-            }
-            //send_actual_torque( get_torque(c_torque_ctrl) * polarity, InOut );
-            send_actual_position(actual_position * polarity, InOut);
             t when timerafter(time + MSEC_STD) :> time;
         }
 

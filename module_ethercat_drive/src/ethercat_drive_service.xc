@@ -199,19 +199,19 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control)
 {
-    int i = 0;
     int mode = 40;
     int steps = 0;
 
-    int target_torque = 0;
+    //int target_torque = 0; /* used for CST */
     int actual_torque = 0;
-    int target_velocity = 0;
+    //int target_velocity = 0; /* used for CSV */
     int actual_velocity = 0;
     int target_position = 0;
     int actual_position = 0;
 
     enum eDirection direction = DIRECTION_NEUTRAL;
 
+#if 0 /* collection of currently unused variables */
     int position_ramp = 0;
     int prev_position = 0;
 
@@ -220,6 +220,24 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     int torque_ramp = 0;
     int prev_torque = 0;
+
+    int status=0;
+    int tmp=0;
+
+    int home_velocity = 0;
+    int home_acceleration = 0;
+
+    int limit_switch = -1;      // positive negative limit switches
+    int reset_counter = 0;
+
+    int home_state = 0;
+    int safety_state = 0;
+    int capture_position = 0;
+    int current_position = 0;
+    int home_offset = 0;
+    int homing_done = 0;
+    int end_state = 0;
+#endif
 
     int nominal_speed;
     timer t;
@@ -258,30 +276,14 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int statusword = 0, statusword_old = 0;
     int controlword = 0, controlword_old = 0;
 
-    int status=0;
-    int tmp=0;
-
     //int torque_offstate = 0;
     int mode_selected = 0; /* valid values: { 0, 1, 3, 100 } - WTF? */
     check_list checklist;
 
-    int home_velocity = 0;
-    int home_acceleration = 0;
-
-    int limit_switch = -1;      // positive negative limit switches
-    int reset_counter = 0;
-
-    int home_state = 0;
-    int safety_state = 0;
-    int capture_position = 0;
-    int current_position = 0;
-    int home_offset = 0;
-    int end_state = 0;
     int ctrl_state;
     int limit_switch_type;
     int homing_method;
     int polarity = 1;
-    int homing_done = 0;
     state       = init_state(); // init state
     checklist   = init_checklist();
     InOut       = init_ctrl_proto();
@@ -528,7 +530,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
 #endif
 
-                profiler_config.max_velocity;
                 /* Speed - FIXME add check if actual speed is > than speed limits */
                 if (ABSOLUTE_VALUE(actual_velocity) > profiler_config.max_velocity) {
                     checklist.fault = true;

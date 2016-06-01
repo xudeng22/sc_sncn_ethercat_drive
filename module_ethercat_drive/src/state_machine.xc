@@ -324,7 +324,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
             if (checklist.fault)
                 out_state = S_FAULT;
             else if (ctrl_disable_volt(controlword))
-                out_state = S_SWITCH_ON_DISABLED;
+                out_state = S_SWITCH_ON_DISABLED; /* FIXME Warning: quick stop has to be finished before switch back to SOD */
             else if (ctrl_quick_stop_finished(localcontrol))
                 out_state = S_SWITCH_ON_DISABLED;
             else

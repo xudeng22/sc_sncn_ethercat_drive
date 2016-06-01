@@ -506,7 +506,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*********************************************************************************
          * EtherCAT communication is Active
          *********************************************************************************/
-        if (comm_inactive_flag == 0) {
+        if (comm_inactive_flag == 0) { /* communication active, i.e. PDOs arrive */
             //printstrln("EtherCAT comm active");
             /* Read controlword from the received from EtherCAT Master application */
             controlword = InOut.control_word;
@@ -681,12 +681,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 if (mode_quick_flag == 0)
                     quick_active = 1;
 
-                if (op_mode == CST) {
-                    //Here was just sending toque feedback, but why not always?
-                } else if (op_mode == CSV) {
-                    //Here was just sending velocity feedback, but why not always?
-                }
-                //FixMe: what is logic here?
+                //FixMe: what is logic here? - Nothing! 100 is a reserved op mode
                 switch (InOut.operation_mode) {
                 case 100:
                     mode_selected = 0;
@@ -697,6 +692,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 }
             }
 
+            /* FIXME this timer is only called if the communication is active, BUT shouldn't this function
+             * run in a specified timely manner, independentally if the communication is active or not?
+             */
             t when timerafter(time + MSEC_STD) :> time;
         }
 

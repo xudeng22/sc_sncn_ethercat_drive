@@ -64,11 +64,15 @@ bool ctrl_enable_op(int control_word) {
 }
 
 bool ctrl_quick_stop_enable(int control) {
-    return ((control & QUICK_STOP_INIT) == 0 ? 0 : 1);
+    return ((control & CTRL_QUICK_STOP_INIT) == 0 ? 0 : 1);
 }
 
 bool ctrl_quick_stop_finished(int control) {
-    return ((control & QUICK_STOP_FINISHED) == 0 ? 0 : 1);
+    return ((control & CTRL_QUICK_STOP_FINISHED) == 0 ? 0 : 1);
+}
+
+bool ctrl_communication_timeout(int control) {
+    return ((contol & CTRL_COMMUNICATION_TIMEOUT) == 0 ? false : true);
 }
 
 bool __check_bdc_init(chanend c_signal)
@@ -270,6 +274,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
             //    out_state = S_READY_TO_SWITCH_ON;
             else if ( (ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) ) && !checklist.ready)
                 out_state = S_SWITCH_ON_DISABLED;
+            else if (ctrl_communication_timeout(controlword))
+                out_state = S_SWITCH_ON_DISABLED;
             else
                 out_state = S_READY_TO_SWITCH_ON;
             break;
@@ -285,6 +291,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
             else if (ctrl_shutdown(controlword))
                 out_state = S_READY_TO_SWITCH_ON;
             else if ( ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) )
+                out_state = S_SWITCH_ON_DISABLED;
+            else if (ctrl_communication_timeout(controlword))
                 out_state = S_SWITCH_ON_DISABLED;
             else
                 out_state = S_SWITCH_ON;
@@ -306,6 +314,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
                 out_state = S_OPERATION_ENABLE;
             else if (ctrl_quick_stop_enable(localcontrol))
                 out_state = S_QUICK_STOP_ACTIVE;
+            else if (ctrl_communication_timeout(controlword))
+                out_state = S_QUICK_STOP_ACTIVE; /* if we are running, then first do a quick stop */
             else
                 out_state = S_OPERATION_ENABLE;
             break;

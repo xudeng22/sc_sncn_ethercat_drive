@@ -460,6 +460,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 t :> ts_comm_inactive;
                 if (ts_comm_inactive - c_time > 1*SEC_STD) {
                     //printstrln("comm inactive timeout");
+                    state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
                     t :> c_time;
                     t when timerafter(c_time + 2*SEC_STD) :> c_time;
                     inactive_timeout_flag = 1;
@@ -621,7 +622,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 switch (controlword) {
                 case QUICK_STOP:
                     steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
-                    state = get_next_state(state, checklist, controlword, QUICK_STOP_INIT);
+                    state = get_next_state(state, checklist, controlword, CTRL_QUICK_STOP_INIT);
+                    /* FIXME check for update state */
+                    statusword = update_statusword(state, state, ack, quick_active, shutdown_ack);
                     break;
 
                     /* continuous controlword */
@@ -666,7 +669,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if (state == S_QUICK_STOP_ACTIVE) {
                 int ret = quick_stop_perform(steps, direction, profiler_config, i_position_control);
                 if (ret != 0) {
-                    state = get_next_state(state, checklist, 0, QUICK_STOP_FINISHED);
+                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
                 }
             }
 

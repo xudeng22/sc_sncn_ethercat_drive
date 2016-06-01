@@ -15,8 +15,9 @@
 #include <velocity_ctrl_service.h>
 #include <torque_ctrl_service.h>
 
-#define QUICK_STOP_INIT           0x01
-#define QUICK_STOP_FINISHED       0x02
+#define CTRL_QUICK_STOP_INIT           0x01
+#define CTRL_QUICK_STOP_FINISHED       0x02
+#define CTRL_COMMUNICATION_TIMEOUT     0x8000
 
 typedef int bool;
 #define true 1

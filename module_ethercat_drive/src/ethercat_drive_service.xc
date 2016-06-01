@@ -179,6 +179,78 @@ static int quick_stop_init(int op_mode,
     return steps;
 }
 
+static void inline update_configuration(
+        client interface i_coe_communication      i_coe,
+        interface MotorcontrolInterface client    i_commutation,
+        interface HallInterface client            ?i_hall,
+        interface QEIInterface client             ?i_qei,
+        interface BISSInterface client            ?i_biss,
+        interface AMSInterface client             ?i_ams,
+        interface GPIOInterface client            ?i_gpio,
+        interface TorqueControlInterface client   ?i_torque_control,
+        interface VelocityControlInterface client i_velocity_control,
+        interface PositionControlInterface client i_position_control,
+        HallConfig            &hall_config,
+        QEIConfig             &qei_params,
+        AMSConfig             &ams_config,
+        BISSConfig            &biss_config,
+        ControlConfig         &torque_ctrl_params,
+        ControlConfig         &velocity_ctrl_params,
+        ControlConfig         &position_ctrl_params,
+        MotorcontrolConfig    &commutation_params,
+        MotorcontrolConfig    &motorcontrol_config,
+        ProfilerConfig        &profiler_config,
+        int &sensor_select,
+        int &limit_switch_type,
+        int &polarity,
+        int &sensor_resolution,
+        int &nominal_speed,
+        int &homing_method)
+{
+            /* update structures */
+            cm_sync_config_hall(i_coe, i_hall, hall_config);
+            cm_sync_config_qei(i_coe, i_qei, qei_params);
+            cm_sync_config_ams(i_coe, i_ams, ams_config);
+            cm_sync_config_biss(i_coe, i_biss, biss_config);
+
+            cm_sync_config_torque_control(i_coe, i_torque_control, torque_ctrl_params);
+            cm_sync_config_velocity_control(i_coe, i_velocity_control, velocity_ctrl_params);
+            cm_sync_config_position_control(i_coe, i_position_control, position_ctrl_params);
+
+            cm_sync_config_profiler(i_coe, profiler_config);
+
+            /* FIXME commutation_params and motorcontrol_config are similar but not the same */
+            cm_sync_config_motor_control(i_coe, i_commutation, commutation_params);
+            cm_sync_config_motor_commutation(i_coe, motorcontrol_config);
+
+            /* Update values with current configuration */
+            polarity = profiler_config.polarity;
+            /* FIXME use cm_sync_config_{biss,ams}() */
+            biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+            ams_config.pole_pairs  = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+
+            nominal_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+            limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
+            homing_method = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
+
+            /* FIXME this is weired, 3 === 2? is this python? */
+            sensor_select = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
+            if(sensor_select == 2 || sensor_select == 3)
+                sensor_select = 2; //qei
+
+            sensor_resolution = get_sensor_resolution(sensor_select, hall_config, qei_params, biss_config, ams_config);
+
+            i_velocity_control.set_velocity_sensor(sensor_select);
+            i_position_control.set_position_sensor(sensor_select);
+
+            /* Configuration of GPIO Digital ports for limit switches */
+            if (!isnull(i_gpio)) {
+                i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
+                i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
+                i_gpio.config_dio_done();//end_config_gpio(c_gpio);
+            }
+}
+
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
@@ -343,48 +415,14 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
-            /* update structures */
-            cm_sync_config_hall(i_coe, i_hall, hall_config);
-            cm_sync_config_qei(i_coe, i_qei, qei_params);
-            cm_sync_config_ams(i_coe, i_ams, ams_config);
-            cm_sync_config_biss(i_coe, i_biss, biss_config);
-
-            cm_sync_config_torque_control(i_coe, i_torque_control, torque_ctrl_params);
-            cm_sync_config_velocity_control(i_coe, i_velocity_control, velocity_ctrl_params);
-            cm_sync_config_position_control(i_coe, i_position_control, position_ctrl_params);
-
-            cm_sync_config_profiler(i_coe, profiler_config);
-
-            /* FIXME commutation_params and motorcontrol_config are similar but not the same */
-            cm_sync_config_motor_control(i_coe, i_commutation, commutation_params);
-            cm_sync_config_motor_commutation(i_coe, motorcontrol_config);
-
-            /* Update values with current configuration */
-            polarity = profiler_config.polarity;
-            /* FIXME use cm_sync_config_{biss,ams}() */
-            biss_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-            ams_config.pole_pairs  = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-
-            nominal_speed = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-            limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
-            homing_method = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
-
-            /* FIXME this is weired, 3 === 2? is this python? */
-            sensor_select = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-            if(sensor_select == 2 || sensor_select == 3)
-                sensor_select = 2; //qei
-
-            sensor_resolution = get_sensor_resolution(sensor_select, hall_config, qei_params, biss_config, ams_config);
-
-            i_velocity_control.set_velocity_sensor(sensor_select);
-            i_position_control.set_position_sensor(sensor_select);
-
-            /* Configuration of GPIO Digital ports for limit switches */
-            if (!isnull(i_gpio)) {
-                i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
-                i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
-                i_gpio.config_dio_done();//end_config_gpio(c_gpio);
-            }
+            update_configuration(i_coe, i_commutation,
+                    i_hall, i_qei, i_biss, i_ams, i_gpio,
+                    i_torque_control, i_velocity_control, i_position_control,
+                    hall_config, qei_params, ams_config, biss_config,
+                    torque_ctrl_params, velocity_ctrl_params, position_ctrl_params,
+                     commutation_params, motorcontrol_config, profiler_config,
+                    sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method
+                    );
 
             read_configuration = 0;
             i_coe.configuration_done();
@@ -405,7 +443,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         else
             actual_torque = i_torque_control.get_torque();
 #endif
-
 
         send_actual_velocity(actual_velocity, InOut);
         send_actual_torque(actual_torque, InOut );

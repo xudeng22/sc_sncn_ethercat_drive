@@ -62,7 +62,10 @@
 #define READY_TO_SWITCH_ON_STATE          0x1
 #define SWITCHED_ON_STATE                 0x2
 #define OPERATION_ENABLED_STATE           0x4
+#define FAULT_REACTION_ACTIVE_STATE       0x0f
+#define FAULT_REACTION_ACTIVE_MASQ        0x4f
 #define FAULT_STATE                       0x8
+#define FAULT_MASQ                        0x4f
 #define VOLTAGE_ENABLED_STATE             0x10
 #define QUICK_STOP_STATE                  0x20
 #define SWITCH_ON_DISABLED_STATE          0x40

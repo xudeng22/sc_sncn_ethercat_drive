@@ -18,6 +18,7 @@
 #define CTRL_QUICK_STOP_INIT           0x01
 #define CTRL_QUICK_STOP_FINISHED       0x02
 #define CTRL_COMMUNICATION_TIMEOUT     0x8000
+#define CTRL_FAULT_REACTION_FINISHED   0x4000
 
 typedef int bool;
 #define true 1
@@ -57,6 +58,7 @@ typedef enum e_States {
     S_SWITCH_ON = 4,
     S_OPERATION_ENABLE = 5,
     S_QUICK_STOP_ACTIVE = 6,
+    S_FAULT_REACTION_ACTIVE = 8,
     S_FAULT = 7
 } states;
 

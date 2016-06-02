@@ -71,6 +71,11 @@ bool ctrl_quick_stop_finished(int control) {
     return ((control & CTRL_QUICK_STOP_FINISHED) == 0 ? 0 : 1);
 }
 
+bool ctrl_fault_reaction_finished(int control)
+{
+    return ((control & CTRL_FAULT_REACTION_FINISHED) == 0 ? false : true);
+}
+
 bool ctrl_communication_timeout(int control) {
     return ((contol & CTRL_COMMUNICATION_TIMEOUT) == 0 ? false : true);
 }
@@ -219,8 +224,12 @@ int16_t update_statusword(int current_status, int state_reached, int ack, int q_
             status_word = current_status | OPERATION_ENABLED_STATE;
             break;
 
+        case S_FAULT_REACTION_ACTIVE:
+            status_word = (current_status & ~(FAULT_REACTION_ACTIVE_MASQ)) | FAULT_REACTION_ACTIVE_STATE; /* Note: garantee bits which has to be '0' are '0' */
+            break;
+
         case S_FAULT:
-            status_word = current_status | FAULT_STATE;
+            status_word = (current_status& ~(FAULT_MASQ)) | FAULT_STATE; /* Note: garantee bits which has to be '0' are '0' */
             break;
 
         case S_QUICK_STOP_ACTIVE:
@@ -250,14 +259,14 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
     {
         case S_NOT_READY_TO_SWITCH_ON:
             if (checklist.fault)
-                out_state = S_FAULT;
+                out_state = S_FAULT_REACTION_ACTIVE;
             else 
                 out_state = S_SWITCH_ON_DISABLED;
             break;
 
         case S_SWITCH_ON_DISABLED:
             if (checklist.fault)
-                out_state = S_FAULT;
+                out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_shutdown(controlword) || checklist.ready) // aka ready
                 out_state = S_READY_TO_SWITCH_ON;
             else
@@ -267,7 +276,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
         case S_READY_TO_SWITCH_ON:
             ctrl_input = read_controlword_switch_on(controlword);
             if (checklist.fault)
-                out_state = S_FAULT;
+                out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_switch_on(controlword))
                 out_state = S_SWITCH_ON;
             //else if (ctrl_shutdown(controlword))
@@ -283,7 +292,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
         case S_SWITCH_ON:
             ctrl_input = read_controlword_enable_op(controlword);
             if (checklist.fault)
-                out_state = S_FAULT;
+                out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_enable_op(controlword))
                 out_state = S_OPERATION_ENABLE;
             else if (ctrl_switch_on(controlword))
@@ -301,7 +310,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
         case S_OPERATION_ENABLE:
             ctrl_input = read_controlword_quick_stop(controlword); //quick stop
             if (checklist.fault)
-                out_state = S_FAULT;
+                out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_disable_op(controlword))
                 out_state = S_SWITCH_ON;
             else if (ctrl_shutdown(controlword))
@@ -322,13 +331,21 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_QUICK_STOP_ACTIVE:
             if (checklist.fault)
-                out_state = S_FAULT;
+                out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_disable_volt(controlword))
                 out_state = S_SWITCH_ON_DISABLED; /* FIXME Warning: quick stop has to be finished before switch back to SOD */
             else if (ctrl_quick_stop_finished(localcontrol))
                 out_state = S_SWITCH_ON_DISABLED;
             else
                 out_state = S_QUICK_STOP_ACTIVE;
+            break;
+
+        case S_FAULT_REACTION_ACTIVE:
+            if (ctrl_fault_reaction_finished(localcontrol))
+                out_state = S_FAULT;
+            else
+                out_state = S_FAULT_REACTION_ACTIVE;
+
             break;
 
         case S_FAULT:

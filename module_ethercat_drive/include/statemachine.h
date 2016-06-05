@@ -62,6 +62,8 @@ typedef enum e_States {
     S_FAULT = 7
 } states;
 
+typedef states DriveState_t;
+
 bool __check_bdc_init(chanend c_signal);
 
 int init_state(void);
@@ -99,7 +101,7 @@ void update_checklist(check_list &check_list_param, int mode,
                         interface VelocityControlInterface client i_velocity_control,
                         interface PositionControlInterface client i_position_control);
 
-int16_t update_statusword(int current_status, int state_reached, int ack, int q_active, int shutdown_ack);
+int16_t update_statusword(int current_status, DriveState_t state_reached, int ack, int q_active, int shutdown_ack);
 
 int get_next_state(int in_state, check_list &checklist, int controlword, int localcontrol);
 

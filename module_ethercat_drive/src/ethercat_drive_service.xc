@@ -271,8 +271,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control)
 {
-    int mode = 40;
-    int steps = 0;
+    int mode = 3; /* only used for update_checklist to verify if position_control is initialized (use 1 for torque and 2 for velocity) */
+    int quick_stop_steps = 0;
 
     //int target_torque = 0; /* used for CST */
     int actual_torque = 0;
@@ -347,8 +347,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int inactive_timeout_flag = 0;
 
     unsigned int time;
-    int state, state_old;
-    int statusword = 0, statusword_old = 0;
+    enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
+    enum e_States state_old = state;
+
+    uint16_t statusword = update_statusword(0, state, 0, 0, 0);
+    uint16_t statusword_old = 0;
     int controlword = 0, controlword_old = 0;
 
     //int torque_offstate = 0;
@@ -359,7 +362,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int limit_switch_type;
     int homing_method;
     int polarity = 1;
-    state       = init_state(); // init state
+
     checklist   = init_checklist();
     InOut       = init_ctrl_proto();
     int sensor_resolution = 0;
@@ -432,8 +435,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         }
 
         /*
-         *  Update actual velocity, torque and position
+         *  local state variables
          */
+        statusword     = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+        controlword    = get_controlword(InOut);
+        opmode_request = get_opmode(InOut);
+
         actual_velocity = get_actual_velocity(sensor_select, i_hall, i_qei, i_biss, i_ams);
 
         { actual_position, direction } = get_position_absolute(sensor_select, i_hall, i_qei, i_biss, i_ams);
@@ -447,9 +454,16 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             actual_torque = i_torque_control.get_torque();
 #endif
 
+
+        /*
+         *  update values to send
+         */
+        send_statusword(statusword, InOut);
+        send_opmode_display(opmode, InOut);
         send_actual_velocity(actual_velocity, InOut);
         send_actual_torque(actual_torque, InOut );
         send_actual_position(actual_position * polarity, InOut);
+
 
         /* Read/Write packets to ethercat Master application */
         communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
@@ -469,11 +483,95 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     inactive_timeout_flag = 1;
                 }
             }
-        } else if (communication_active >= 1) {
-            comm_inactive_flag = 0;
-            inactive_timeout_flag = 0;
         }
 
+        update_checklist(checklist, mode, i_commutation, i_hall, i_qei, i_biss, i_ams, null,
+                i_torque_control, i_velocity_control, i_position_control);
+
+        /*
+         * new, perform actions according to state
+         */
+
+        switch (state) {
+        case S_NOT_READY_TO_SWITCH_ON:
+            printstrln("S_NOT_READY_TO_SWITCH_ON");
+            /* internal stuff, automatic transition (1) to next state */
+            state = get_next_state(state, checklist, 0, 0);
+            break;
+
+        case S_SWITCH_ON_DISABLED:
+            printstrln("S_SWITCH_ON_DISABLED");
+            if (opmode_request != OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
+                opmode = OPMODE_NONE;
+            } else {
+                opmode = opmode_request;
+            }
+
+            /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
+            state = get_next_state(state, checklist, controlword, 0);
+            break;
+
+        case S_READY_TO_SWITCH_ON:
+            printstrln("S_READY_TO_SWITCH_ON");
+            /* nothing special, transition form local (when?) or control device */
+            state = get_next_state(state, checklist, controlword, 0);
+            break;
+
+        case S_SWITCH_ON:
+            printstrln("S_SWITCH_ON");
+            /* high power shall be switched on  */
+            state = get_next_state(state, checklist, controlword, 0);
+            break;
+
+        case S_OPERATION_ENABLE:
+            printstrln("S_OPERATION_ENABLE");
+            /* drive function shall be enabled and internal set-points are cleared */
+            /* FIXME add motor control call(s) */
+
+            state = get_next_state(state, checklist, controlword, 0);
+            /* update motor/control parameters and let the motor turn */
+            if (state == S_QUICK_STOP_ACTIVE) {
+                 quick_stop_steps =quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
+            }
+            break;
+
+        case S_QUICK_STOP_ACTIVE:
+            printstrln("S_QUICK_STOP_ACTIVE");
+            /* quick stop function shall be started and running */
+            int ret = quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control);
+            if (ret != 0) {
+                state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                quick_stop_steps = 0;
+            }
+            break;
+
+        case S_FAULT_REACTION_ACTIVE:
+            printstrln("S_FAULT_REACTION_ACTIVE");
+            /* a fault is detected, perform fault recovery actions like a quick_stop */
+            if (quick_stop_steps == 0) {
+                quick_stop_steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+            }
+
+            if (quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control) == 1) {
+                state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
+            }
+            break;
+
+        case S_FAULT:
+            printstrln("S_FAULT");
+            /* wait until fault reset from the control device appears */
+            state = get_next_state(state, checklist, InOut.control_word, 0);
+            break;
+
+        default: /* should never happen! */
+            state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
+            break;
+        }
+
+        /*
+         * current way of doing things
+         */
+#if 0
         /*********************************************************************************
          * If communication is inactive, trigger quick stop mode if motor is in motion 
          *********************************************************************************/
@@ -495,7 +593,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             op_mode_commanded_old = InOut.operation_mode;
             op_mode_old = op_mode;
 
-            steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+            quick_stop_steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+            state = get_next_state(state, checklist, controlword, CTRL_QUICK_STOP_INIT);
+
             quick_active = 1;
 
             /* FIXME safe to get rid of? */
@@ -505,6 +605,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             op_mode = 256;      /* FIXME: why 256? */
         }
 
+        /* state:                   action to perform:
+         * NO_READY_TO_SWITCH_ON -> self test, self initialisation (if appropreate)
+         * SWITCH_ON_DISABLED    -> Communication shall be activated (basically as soon as we enter the loop)
+         * READY_TO_SWITCH_ON    -> none (command from control device)
+         * SWITCHED_ON           -> local (which?) signal or control device, high-level power shall be switched on if possible
+         * OPERATION_ENABLED     -> local (which?) signal or control device, enable drive function
+         */
 
         /*********************************************************************************
          * EtherCAT communication is Active
@@ -624,7 +731,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             if (mode_selected == 1) {
                 switch (controlword) {
                 case QUICK_STOP:
-                    steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+                    quick_stop_steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
                     state = get_next_state(state, checklist, controlword, CTRL_QUICK_STOP_INIT);
                     /* FIXME check for update state */
                     statusword = update_statusword(state, state, ack, quick_active, shutdown_ack);
@@ -670,7 +777,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             /* If we are in state S_QUICK_STOP_ACTIVE then we perform the quick stop steps! */
             if (state == S_QUICK_STOP_ACTIVE) {
-                int ret = quick_stop_perform(steps, direction, profiler_config, i_position_control);
+                int ret = quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control);
                 if (ret != 0) {
                     state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
                 }
@@ -700,6 +807,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
              */
             t when timerafter(time + MSEC_STD) :> time;
         }
+#endif
+        /* wait 1 ms to respect timing */
+        t when timerafter(time + MSEC_STD) :> time;
 
 //#pragma xta endpoint "ecatloop_stop"
     }

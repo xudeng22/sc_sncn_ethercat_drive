@@ -191,7 +191,7 @@ int init_state(void) {
     return S_NOT_READY_TO_SWITCH_ON;
 }
 
-int16_t update_statusword(int current_status, int state_reached, int ack, int q_active, int shutdown_ack) {
+int16_t update_statusword(int current_status, DriveState_t state_reached, int ack, int q_active, int shutdown_ack) {
     int16_t status_word;
 
     switch (state_reached) {

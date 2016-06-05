@@ -15,7 +15,7 @@ ctrl_proto_values_t init_ctrl_proto(void)
 	ctrl_proto_values_t InOut;
 
 	InOut.control_word    = 0x00;    		// shutdown
-	InOut.operation_mode  = 0xff;  			// undefined
+	InOut.operation_mode  = 0x00;  			// undefined
 
 	InOut.target_torque   = 0x0;
 	InOut.target_velocity = 0x0;
@@ -27,7 +27,7 @@ ctrl_proto_values_t init_ctrl_proto(void)
 	InOut.user4_in        = 0x0;
 
 	InOut.status_word     = 0x0000;  		// not set
-	InOut.operation_mode_display = 0xff; 	// undefined
+	InOut.operation_mode_display = 0x00; 	/* no operation mode selected */
 
 	InOut.torque_actual   = 0x0;
 	InOut.velocity_actual = 0x0;

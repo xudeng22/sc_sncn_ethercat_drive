@@ -103,6 +103,27 @@ int get_target_velocity(ctrl_proto_values_t InOut);
 int get_target_position(ctrl_proto_values_t InOut);
 
 /**
+ * @brief Get the current controlword
+ *
+ * @param PDO object
+ * @return current controlword
+ */
+int get_controlword(ctrl_proto_values_t InOut);
+
+/**
+ * @brief Get current operation mode request
+ *
+ * Please keep in mind, the operation mode will only change in state "Switch on
+ * Disabled". While the device is not in "Switch on Disable" the new opmode is
+ * stored and set after the device comes back to "Switch on Disabled" and will
+ * be set there.
+ *
+ * @param PDO object
+ * @return current operation mode request
+ */
+int get_opmode(ctrl_proto_values_t InOut);
+
+/**
  * @brief Send actual torque to EtherCAT
  *
  * @param[in] actual_torque sent to EtherCAT in range [0 - mNm * Current Resolution]
@@ -125,3 +146,19 @@ void send_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut);
  * @param InOut Structure containing all PDO data
  */
 void send_actual_position(int actual_position, ctrl_proto_values_t &InOut);
+
+/**
+ * @brief Send the current status
+ *
+ * @param statusword  the current statusword
+ * @param InOut PDO object
+ */
+void send_statusword(int statusword, ctrl_proto_values_t &InOut);
+
+/**
+ * @brief Send to currently active operation mode
+ *
+ * @param opmode the currently active operation mode
+ * @param InOut PDO object
+ */
+void send_opmode_display(int opmode, ctrl_proto_values_t &InOut);

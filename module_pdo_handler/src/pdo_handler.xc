@@ -118,6 +118,16 @@ int get_target_position(ctrl_proto_values_t InOut)
     return InOut.target_position;
 }
 
+int get_controlword(ctrl_proto_values_t InOut)
+{
+    return InOut.control_word;
+}
+
+int get_opmode(ctrl_proto_values_t InOut)
+{
+    return InOut.operation_mode;
+}
+
 void send_actual_torque(int actual_torque, ctrl_proto_values_t &InOut)
 {
     InOut.torque_actual = actual_torque;
@@ -131,4 +141,14 @@ void send_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut)
 void send_actual_position(int actual_position, ctrl_proto_values_t &InOut)
 {
     InOut.position_actual = actual_position;
+}
+
+void send_statusword(int statusword, ctrl_proto_values_t &InOut)
+{
+    InOut.status_word = statusword & 0xffff;
+}
+
+void send_opmode_display(int opmode, ctrl_proto_values_t &InOut)
+{
+    InOut.operation_mode_display = opmode & 0xff;
 }

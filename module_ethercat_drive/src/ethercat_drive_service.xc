@@ -156,7 +156,7 @@ static int quick_stop_init(int op_mode,
                                 ProfilerConfig &profiler_config)
 {
 
-    if (op_mode == CST || op_mode == CSV) {
+    if (op_mode == OPMODE_CST || op_mode == OPMODE_CSV) {
         /* TODO implement quick stop profile */
     }
 
@@ -317,6 +317,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int init = 0;
     int op_set_flag = 0;
     int op_mode = 0, op_mode_old = 0, op_mode_commanded_old = 0;
+
+    int opmode = 0;
+    int opmode_request = 0;
 
     ControlConfig position_ctrl_params;
     ControlConfig torque_ctrl_params;

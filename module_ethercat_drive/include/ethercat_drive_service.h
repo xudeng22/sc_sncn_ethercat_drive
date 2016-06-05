@@ -19,16 +19,18 @@
 
 #include <profile_control.h>
 
-#define PP      1   /* [O] Profile Position mode */
-#define VL      2   /* [O] Velocity mode (frequency converter) */
-#define PV      3   /* [O] Profile velocity mode */
-#define TQ      4   /* [O] Torque profile mode */
-#define HM      6   /* [O] Homing mode */
-#define IP      7   /* [O] Interpolated position mode */
-#define CSP     8   /* [C] Cyclic synchronous position mode */
-#define CSV     9   /* [C] Cyclic synchronous velocity mode */
-#define CST     10  /* [C] Cyclic synchronous torque mode */
-#define CSTCA   11  /* [O] Cyclic synchronous torque mode with commutation angle */
+/* List of operation modes, not all modes are supported by this device */
+#define OPMODE_NONE    0   /* No operation mode selected */
+#define OPMODE_PP      1   /* [O] Profile Position mode */
+#define OPMODE_VL      2   /* [O] Velocity mode (frequency converter) */
+#define OPMODE_PV      3   /* [O] Profile velocity mode */
+#define OPMODE_TQ      4   /* [O] Torque profile mode */
+#define OPMODE_HM      6   /* [O] Homing mode */
+#define OPMODE_IP      7   /* [O] Interpolated position mode */
+#define OPMODE_CSP     8   /* [C] Cyclic synchronous position mode */
+#define OPMODE_CSV     9   /* [C] Cyclic synchronous velocity mode */
+#define OPMODE_CST     10  /* [C] Cyclic synchronous torque mode */
+#define OPMODE_CSTCA   11  /* [O] Cyclic synchronous torque mode with commutation angle */
 
 /**
  * @brief This Service enables motor drive functions via EtherCAT.

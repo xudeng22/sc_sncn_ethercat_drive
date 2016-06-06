@@ -235,8 +235,6 @@ static void inline update_configuration(
 
             /* FIXME this is weired, 3 === 2? is this python? */
             sensor_select = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-            if(sensor_select == 2 || sensor_select == 3)
-                sensor_select = 2; //qei
 
             sensor_resolution = get_sensor_resolution(sensor_select, hall_config, qei_params, biss_config, ams_config);
 

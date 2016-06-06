@@ -565,6 +565,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* FIXME add motor control call(s) */
 
             /* update motor/control parameters and let the motor turn */
+
+            /* check if state change occured */
+            state = get_next_state(state, checklist, controlword, 0);
+
+            /* if quick stop is requested start immediately */
             if (state == S_QUICK_STOP_ACTIVE) {
                  quick_stop_steps =quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
             }

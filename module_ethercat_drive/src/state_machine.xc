@@ -197,6 +197,7 @@ int16_t update_statusword(int current_status, DriveState_t state_reached, int ac
     switch (state_reached) {
         case S_NOT_READY_TO_SWITCH_ON:
             //printstrln("Warning reaching state which is not supposed to be reached!\n");
+            /* FIXME double check if this makes sense */
             status_word = current_status & ~READY_TO_SWITCH_ON_STATE
                 & ~SWITCHED_ON_STATE & ~OPERATION_ENABLED_STATE
                 & ~VOLTAGE_ENABLED_STATE;

@@ -610,7 +610,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
 #if 0
         /*********************************************************************************
-         * If communication is inactive, trigger quick stop mode if motor is in motion 
+         * If communication is inactive, trigger quick stop mode if motor is in motion
          *********************************************************************************/
         if (inactive_timeout_flag == 1) {
             //printstrln("Triggering quick stop mode");

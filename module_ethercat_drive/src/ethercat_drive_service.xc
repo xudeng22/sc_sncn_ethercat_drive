@@ -346,6 +346,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int home_offset = 0;
     int homing_done = 0;
     int end_state = 0;
+
+    int op_mode = 0, op_mode_old = 0, op_mode_commanded_old = 0;
+    int mode_selected = 0; /* valid values: { 0, 1, 3, 100 } - WTF? */
 #endif
 
     int nominal_speed;
@@ -353,7 +356,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     int init = 0;
     int op_set_flag = 0;
-    int op_mode = 0, op_mode_old = 0, op_mode_commanded_old = 0;
 
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
@@ -368,7 +370,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     AMSConfig ams_config;
 
     MotorcontrolConfig commutation_params;
-    ctrl_proto_values_t InOut;
+    ctrl_proto_values_t InOut = init_ctrl_proto();
 
     int setup_loop_flag = 0;
 
@@ -385,23 +387,21 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
-    enum e_States state_old = state;
+    //enum e_States state_old = state; /* necessary for something??? */
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     uint16_t statusword_old = 0;
-    int controlword = 0, controlword_old = 0;
+    int controlword = 0;
+    int controlword_old = 0;
 
     //int torque_offstate = 0;
-    int mode_selected = 0; /* valid values: { 0, 1, 3, 100 } - WTF? */
-    check_list checklist;
+    check_list checklist = init_checklist();
 
     int ctrl_state;
     int limit_switch_type;
     int homing_method;
     int polarity = 1;
 
-    checklist   = init_checklist();
-    InOut       = init_ctrl_proto();
     int sensor_resolution = 0;
 
     if (!isnull(i_hall))

@@ -96,96 +96,16 @@ bool __check_adc_init()
 check_list init_checklist(void)
 {
     check_list check_list_param;
-    check_list_param._adc_init = INIT_BUSY;
-    check_list_param._commutation_init = INIT_BUSY;
-    check_list_param._hall_init = INIT_BUSY;
-    check_list_param._position_init = INIT_BUSY;
-    check_list_param._qei_init = INIT_BUSY;
-    check_list_param._torque_init = INIT_BUSY;
-    check_list_param._velocity_init = INIT_BUSY;
 
-    check_list_param.mode_op = false;
     check_list_param.fault = false;
-    check_list_param.operation_enable = false;
-    check_list_param.ready = false;
-    check_list_param.switch_on = false;
     return check_list_param;
 }
 
-void update_checklist(check_list &check_list_param, int mode,
-                        interface MotorcontrolInterface client i_motorcontrol,
-                        interface HallInterface client ?i_hall,
-                        interface QEIInterface client ?i_qei,
-                        interface BISSInterface client ?i_biss,
-                        interface AMSInterface client ?i_ams,
-                        interface ADCInterface client ?i_adc,
-                        interface TorqueControlInterface client ?i_torque_control,
-                        interface VelocityControlInterface client i_velocity_control,
-                        interface PositionControlInterface client i_position_control)
+void update_checklist(check_list &check_list_param, int mode, int fault)
 {
-    bool check;
-    bool skip = true;
-    check =  check_list_param._commutation_init 
-        & check_list_param._hall_init & check_list_param._qei_init;
-
-    switch(check) {
-        case INIT_BUSY:
-            if (~check_list_param._commutation_init) {
-                check_list_param._commutation_init = i_motorcontrol.check_busy();
-                if(check_list_param._commutation_init) {
-                    skip = false;
-                }
-            }
-
-            if (~skip && ~check_list_param._adc_init) {
-                check_list_param._adc_init = 0; // TODO NEED TO IMPLEMENT STATUS CHECKING HERE
-            }
-
-            if (~skip && ~check_list_param._hall_init && !isnull(i_hall)) {
-                check_list_param._hall_init = i_hall.check_busy();
-            }
-
-            if (~skip &&  ~check_list_param._qei_init && !isnull(i_qei)) {
-                check_list_param._qei_init = i_qei.check_busy();
-            }
-
-            if (~skip &&  ~check_list_param._biss_init && !isnull(i_biss)) {
-                i_biss.get_biss_position_fast();
-                check_list_param._biss_init = INIT;
-            }
-            if (~skip &&  ~check_list_param._ams_init && !isnull(i_ams)) {
-                i_ams.get_ams_position();
-                check_list_param._ams_init = INIT;
-            }
-            break;
-        case INIT:
-            if (~check_list_param._torque_init && mode == OPMODE_CST) {
-                check_list_param._torque_init = i_torque_control.check_busy();
-            }
-            if (~check_list_param._velocity_init && mode == OPMODE_CSV) {
-                check_list_param._velocity_init = i_velocity_control.check_busy();
-            }
-            if (~check_list_param._position_init && mode == OPMODE_CSP) {
-                check_list_param._position_init = i_position_control.check_busy();
-            }
-            break;
-    }
-
-    if (check_list_param._commutation_init && ~check_list_param.fault) {
-        check_list_param.ready = true;
-    }
-
-    if (check_list_param.ready 
-        && (check_list_param._hall_init || isnull(i_hall)) 
-        && (check_list_param._qei_init || isnull(i_qei)) 
-        && (check_list_param._biss_init || isnull(i_biss)) 
-        && (check_list_param._ams_init || isnull(i_ams)) && ~check_list_param.fault) 
-    {
-        check_list_param.switch_on = true;
-        check_list_param.mode_op = true;
-        check_list_param.operation_enable = true;
-    }
+    check_list_param.fault = fault;
 }
+
 
 int init_state(void) {
     return S_NOT_READY_TO_SWITCH_ON;
@@ -268,7 +188,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
         case S_SWITCH_ON_DISABLED:
             if (checklist.fault || ctrl_communication_timeout(localcontrol))
                 out_state = S_FAULT_REACTION_ACTIVE;
-            else if (ctrl_shutdown(controlword) || checklist.ready) // aka ready
+            else if (ctrl_shutdown(controlword)) // aka ready
                 out_state = S_READY_TO_SWITCH_ON;
             else
                 out_state = S_SWITCH_ON_DISABLED;
@@ -282,7 +202,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
                 out_state = S_SWITCH_ON;
             //else if (ctrl_shutdown(controlword))
             //    out_state = S_READY_TO_SWITCH_ON;
-            else if ( (ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) ) && !checklist.ready)
+            else if ( (ctrl_disable_volt(controlword) || ctrl_quick_stop(controlword) ))
                 out_state = S_SWITCH_ON_DISABLED;
             else if (ctrl_communication_timeout(controlword))
                 out_state = S_SWITCH_ON_DISABLED;

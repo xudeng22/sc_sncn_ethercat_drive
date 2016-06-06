@@ -7,15 +7,10 @@
 #pragma once
 
 #include <motorcontrol_service.h>
-#include <hall_service.h>
-#include <qei_service.h>
-#include <gpio_service.h>
 #include <ethercat_service.h>
-#include <adc_service.h>
 
-#include <velocity_ctrl_service.h>
 #include <position_ctrl_service.h>
-#include <torque_ctrl_service.h>
+#include <position_feedback_service.h>
 
 #include <profile_control.h>
 
@@ -37,13 +32,7 @@
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
                             chanend pdo_out, chanend pdo_in,
-                            client interface i_coe_communication i_ceo,
-                            interface MotorcontrolInterface client i_motorcontrol,
-                            interface HallInterface client ?i_hall,
-                            interface QEIInterface client ?i_qei,
-                            interface BISSInterface client ?i_biss,
-                            interface AMSInterface client ?i_ams,
-                            interface GPIOInterface client ?i_gpio,
-                            interface TorqueControlInterface client ?i_torque_control,
-                            interface VelocityControlInterface client i_velocity_control,
-                            interface PositionControlInterface client i_position_control);
+                            client interface i_coe_communication i_coe,
+                            client interface MotorcontrolInterface i_motorcontrol,
+                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionFeedbackInterface i_position_feedback);

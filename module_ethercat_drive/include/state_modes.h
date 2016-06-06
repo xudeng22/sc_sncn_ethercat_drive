@@ -18,6 +18,24 @@
 #define QUICK_STOP              0x000B
 #define CLEAR_FAULT             0x0080
 
+/* Controlword commands (without the leading bits */
+#define CMD_SHUTDOWN                 0x0006
+#define CMD_SHUTDOWN_MASQ            0x0007
+#define CMD_SWITCH_ON                0x0007
+#define CMD_SWITCH_ON_MASQ           0x000F
+#define CMD_SWITCH_ON_ENABLE         0x000F
+#define CMD_SWITCH_ON_ENABLE_MASQ    0x000F
+#define CMD_DISABLE_VOLTAGE          0x0000 /* Attention: Bit 1 has to be 0, the others are don't care */
+#define CMD_DISABLE_VOLTAGE_MASQ     0x0002
+#define CMD_QUICK_STOP               0x0002 /* Bit 2 has to be '0', Bits 0 and 3 are don't care */
+#define CMD_QUICK_STOP_MASQ          0x0006 /* Bit 2 has to be '0', Bits 0 and 3 are don't care */
+#define CMD_DISABLE_OP               0x0007 /* This (transition 5) is the same as switch on (transition 3) with the same target state */
+#define CMD_DISABLE_OP_MASQ          0x000F /* This (transition 5) is the same as switch on (transition 3) with the same target state */
+#define CMD_ENABLE_OP                0x000F /* same as switch on + enable */
+#define CMD_ENABLE_OP_MASQ           0x000F /* same as switch on + enable */
+#define CMD_FAULT_RESET              0x0080
+#define CMD_FAULT_RESET_MASQ         0x0080
+
 //Operation Mode specific control words (complies with CiA402)
 
 /* Homing mode */

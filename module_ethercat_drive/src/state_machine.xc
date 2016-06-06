@@ -226,11 +226,11 @@ int16_t update_statusword(int current_status, DriveState_t state_reached, int ac
             break;
 
         case S_FAULT_REACTION_ACTIVE:
-            status_word = (current_status & ~(FAULT_REACTION_ACTIVE_MASQ)) | FAULT_REACTION_ACTIVE_STATE; /* Note: garantee bits which has to be '0' are '0' */
+            status_word = (current_status & ~FAULT_REACTION_ACTIVE_MASQ) | FAULT_REACTION_ACTIVE_STATE; /* Note: guarantee bits which has to be '0' are '0' */
             break;
 
         case S_FAULT:
-            status_word = (current_status& ~(FAULT_MASQ)) | FAULT_STATE; /* Note: garantee bits which has to be '0' are '0' */
+            status_word = (current_status& ~FAULT_MASQ) | FAULT_STATE; /* Note: guarantee bits which has to be '0' are '0' */
             break;
 
         case S_QUICK_STOP_ACTIVE:

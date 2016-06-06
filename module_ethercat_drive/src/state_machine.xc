@@ -159,13 +159,13 @@ void update_checklist(check_list &check_list_param, int mode,
             }
             break;
         case INIT:
-            if (~check_list_param._torque_init && mode == 1) {
+            if (~check_list_param._torque_init && mode == OPMODE_CST) {
                 check_list_param._torque_init = i_torque_control.check_busy();
             }
-            if (~check_list_param._velocity_init && mode == 2) {
+            if (~check_list_param._velocity_init && mode == OPMODE_CSV) {
                 check_list_param._velocity_init = i_velocity_control.check_busy();
             }
-            if (~check_list_param._position_init && mode == 3) {
+            if (~check_list_param._position_init && mode == OPMODE_CSP) {
                 check_list_param._position_init = i_position_control.check_busy();
             }
             break;

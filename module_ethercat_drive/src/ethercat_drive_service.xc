@@ -149,14 +149,14 @@ static int quick_stop_perform(int steps, enum eDirection direction,
     return 0;
 }
 
-static int quick_stop_init(int op_mode,
+static int quick_stop_init(int opmode,
                                 int actual_velocity,
                                 int sensor_resolution,
                                 int actual_position,
                                 ProfilerConfig &profiler_config)
 {
 
-    if (op_mode == OPMODE_CST || op_mode == OPMODE_CSV) {
+    if (opmode == OPMODE_CST || opmode == OPMODE_CSV) {
         /* TODO implement quick stop profile */
     }
 
@@ -271,7 +271,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             interface VelocityControlInterface client i_velocity_control,
                             interface PositionControlInterface client i_position_control)
 {
-    int mode = 3; /* only used for update_checklist to verify if position_control is initialized (use 1 for torque and 2 for velocity) */
     int quick_stop_steps = 0;
 
     //int target_torque = 0; /* used for CST */
@@ -318,8 +317,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int op_set_flag = 0;
     int op_mode = 0, op_mode_old = 0, op_mode_commanded_old = 0;
 
-    int opmode = 0;
-    int opmode_request = 0;
+    int opmode = OPMODE_NONE;
+    int opmode_request = OPMODE_NONE;
 
     ControlConfig position_ctrl_params;
     ControlConfig torque_ctrl_params;
@@ -485,7 +484,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
         }
 
-        update_checklist(checklist, mode, i_commutation, i_hall, i_qei, i_biss, i_ams, null,
+        /* Check states of the motor drive, sensor drive and control servers */
+        update_checklist(checklist, opmode, i_commutation, i_hall, i_qei, i_biss, i_ams, null,
                 i_torque_control, i_velocity_control, i_position_control);
 
         /*
@@ -531,7 +531,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             state = get_next_state(state, checklist, controlword, 0);
             /* update motor/control parameters and let the motor turn */
             if (state == S_QUICK_STOP_ACTIVE) {
-                 quick_stop_steps =quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
+                 quick_stop_steps =quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
             }
             break;
 
@@ -549,7 +549,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             printstrln("S_FAULT_REACTION_ACTIVE");
             /* a fault is detected, perform fault recovery actions like a quick_stop */
             if (quick_stop_steps == 0) {
-                quick_stop_steps = quick_stop_init(op_mode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+                quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
             }
 
             if (quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control) == 1) {

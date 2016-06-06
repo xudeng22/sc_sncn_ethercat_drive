@@ -251,6 +251,46 @@ static void inline update_configuration(
             }
 }
 
+static void debug_print_state(DriveState_t state)
+{
+    static DriveState_t oldstate = 0;
+
+    if (state == oldstate)
+        return;
+
+    switch (state) {
+    case S_NOT_READY_TO_SWITCH_ON:
+        printstrln("S_NOT_READY_TO_SWITCH_ON");
+        break;
+    case S_SWITCH_ON_DISABLED:
+        printstrln("S_SWITCH_ON_DISABLED");
+        break;
+    case S_READY_TO_SWITCH_ON:
+        printstrln("S_READY_TO_SWITCH_ON");
+        break;
+    case S_SWITCH_ON:
+        printstrln("S_SWITCH_ON");
+        break;
+    case S_OPERATION_ENABLE:
+        printstrln("S_OPERATION_ENABLE");
+        break;
+    case S_QUICK_STOP_ACTIVE:
+        printstrln("S_QUICK_STOP_ACTIVE");
+        break;
+    case S_FAULT_REACTION_ACTIVE:
+        printstrln("S_FAULT_REACTION_ACTIVE");
+        break;
+    case S_FAULT:
+        printstrln("S_FAULT");
+        break;
+    default:
+        printstrln("Never happen State.");
+        break;
+    }
+
+    oldstate = state;
+}
+
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
@@ -491,16 +531,15 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          * new, perform actions according to state
          */
+        debug_print_state(state);
 
         switch (state) {
         case S_NOT_READY_TO_SWITCH_ON:
-            printstrln("S_NOT_READY_TO_SWITCH_ON");
             /* internal stuff, automatic transition (1) to next state */
             state = get_next_state(state, checklist, 0, 0);
             break;
 
         case S_SWITCH_ON_DISABLED:
-            printstrln("S_SWITCH_ON_DISABLED");
             if (opmode_request != OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
                 opmode = OPMODE_NONE;
             } else {
@@ -512,23 +551,19 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             break;
 
         case S_READY_TO_SWITCH_ON:
-            printstrln("S_READY_TO_SWITCH_ON");
             /* nothing special, transition form local (when?) or control device */
             state = get_next_state(state, checklist, controlword, 0);
             break;
 
         case S_SWITCH_ON:
-            printstrln("S_SWITCH_ON");
             /* high power shall be switched on  */
             state = get_next_state(state, checklist, controlword, 0);
             break;
 
         case S_OPERATION_ENABLE:
-            printstrln("S_OPERATION_ENABLE");
             /* drive function shall be enabled and internal set-points are cleared */
             /* FIXME add motor control call(s) */
 
-            state = get_next_state(state, checklist, controlword, 0);
             /* update motor/control parameters and let the motor turn */
             if (state == S_QUICK_STOP_ACTIVE) {
                  quick_stop_steps =quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
@@ -536,7 +571,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             break;
 
         case S_QUICK_STOP_ACTIVE:
-            printstrln("S_QUICK_STOP_ACTIVE");
             /* quick stop function shall be started and running */
             int ret = quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control);
             if (ret != 0) {
@@ -546,7 +580,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             break;
 
         case S_FAULT_REACTION_ACTIVE:
-            printstrln("S_FAULT_REACTION_ACTIVE");
             /* a fault is detected, perform fault recovery actions like a quick_stop */
             if (quick_stop_steps == 0) {
                 quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
@@ -558,7 +591,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             break;
 
         case S_FAULT:
-            printstrln("S_FAULT");
             /* wait until fault reset from the control device appears */
             state = get_next_state(state, checklist, InOut.control_word, 0);
             break;

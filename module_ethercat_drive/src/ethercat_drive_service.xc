@@ -266,9 +266,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //enum e_States state_old = state; /* necessary for something??? */
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
-    uint16_t statusword_old = 0;
+    //uint16_t statusword_old = 0; /* FIXME is the previous statusword send necessary? */
     int controlword = 0;
-    int controlword_old = 0;
+    //int controlword_old = 0; /* FIXME is the previous controlword received necessary? */
 
     //int torque_offstate = 0;
     check_list checklist = init_checklist();

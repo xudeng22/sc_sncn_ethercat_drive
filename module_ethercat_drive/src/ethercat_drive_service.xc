@@ -440,6 +440,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             if (quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control) == 1) {
                 state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
+                quick_stop_steps = 0;
             }
             break;
 

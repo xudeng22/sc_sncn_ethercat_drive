@@ -221,10 +221,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int quick_stop_steps = 0;
 
     //int target_torque = 0; /* used for CST */
-    int actual_torque = 0;
     //int target_velocity = 0; /* used for CSV */
-    int actual_velocity = 0;
     int target_position = 0;
+    int actual_torque = 0;
+    int actual_velocity = 0;
     int actual_position = 0;
 
     enum eDirection direction = DIRECTION_NEUTRAL;

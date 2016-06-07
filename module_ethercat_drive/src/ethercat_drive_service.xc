@@ -145,25 +145,25 @@ static void inline update_configuration(
         int &nominal_speed,
         int &homing_method)
 {
-            /* update structures */
-            position_feedback_config;
-            position_config;
+    /* update structures */
+    position_feedback_config;
+    position_config;
 
-            cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
-            cm_sync_config_profiler(i_coe, profiler_config);
-            cm_sync_config_motor_control(i_coe, i_commutation, motorcontrol_config);
+    cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
+    cm_sync_config_profiler(i_coe, profiler_config);
+    cm_sync_config_motor_control(i_coe, i_commutation, motorcontrol_config);
 
-            /* Update values with current configuration */
-            /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
-            profiler_config.ticks_per_turn = i_position_feedback.get_ticks_per_turn();
-            polarity = profiler_config.polarity;
+    /* Update values with current configuration */
+    /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
+    profiler_config.ticks_per_turn = i_position_feedback.get_ticks_per_turn();
+    polarity = profiler_config.polarity;
 
-            nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-            limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
-            homing_method     = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
-            sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
+    nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+    limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
+    homing_method     = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
+    sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
 
-            sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);
+    sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);
 }
 
 static void debug_print_state(DriveState_t state)

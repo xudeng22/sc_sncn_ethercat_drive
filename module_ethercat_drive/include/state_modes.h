@@ -95,6 +95,10 @@
 #define OPERATION_MODE_SPECIFIC_STATE     0x1000  // 12 CSP/CSV/CST  13
 #define MANUFACTURER_SPECIFIC_STATES      0xC000  // 14-15
 
+/* Statusword bit for CSP */
+#define SW_CSP_FOLLOWING_ERROR            0x2000
+#define SW_CSP_TARGET_POSITION_IGNORED    0x1000
+
 /* List of operation modes, not all modes are supported by this device */
 #define OPMODE_NONE    0   /* No operation mode selected */
 #define OPMODE_PP      1   /* [O] Profile Position mode */
@@ -107,3 +111,7 @@
 #define OPMODE_CSV     9   /* [C] Cyclic synchronous velocity mode */
 #define OPMODE_CST     10  /* [C] Cyclic synchronous torque mode */
 #define OPMODE_CSTCA   11  /* [O] Cyclic synchronous torque mode with commutation angle */
+
+/* Bitmanipulations */
+#define CLEAR_BIT(a, b)     (a & ~b)
+#define SET_BIT(a, b)       (a | b)

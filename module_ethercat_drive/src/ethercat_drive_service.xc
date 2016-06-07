@@ -337,6 +337,22 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         direction = (actual_velocity < 0) ? DIRECTION_CCLK : DIRECTION_CLK;
 
         /*
+         * Additionally used bits in statusword for...
+         *
+         * ...CSP:
+         * Bit 10: Reserved -> 0
+         * Bit 12: "Target Position Ignored"
+         *         -> 0 Target position ignored
+         *         -> 1 Target position shall be used as input to position control loop
+         * Bit 13: "Following Error"
+         *         -> 0 no error
+         *         -> 1 if target_position_value || position_offset is outside of following_error_window
+         *              around position_demand_value for longer than following_error_time_out
+         */
+        statusword = SET_BIT(statusword, SW_CSP_TARGET_POSITION_IGNORED);
+        statusword = CLEAR_BIT(statusword, SW_CSP_FOLLOWING_ERROR);
+
+        /*
          *  update values to send
          */
         pdo_set_statusword(statusword, InOut);

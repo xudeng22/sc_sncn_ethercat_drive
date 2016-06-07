@@ -397,6 +397,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         case S_SWITCH_ON:
             /* high power shall be switched on  */
+            init_position_profiler(profiler_config); /* FIXME here? */
+            /* FIXME should stay 500ms in this state until the profiler server starts ... Why 500ms and not 5ms? */
             state = get_next_state(state, checklist, controlword, 0);
             break;
 
@@ -405,6 +407,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* FIXME add motor control call(s) */
 
             /* update motor/control parameters and let the motor turn */
+            /* FIXME where does _velocity and _acceleration comes from?
+             * _velocity could be target_velocity
+             * _acceleration???
+             */
+            set_profile_position(target_position, profiler_config.velocity, profiler_config.acceleration, profiler_config.deceleration, i_position_control);
 
             /* check if state change occured */
             state = get_next_state(state, checklist, controlword, 0);

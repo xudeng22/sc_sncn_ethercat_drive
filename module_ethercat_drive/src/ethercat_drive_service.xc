@@ -446,7 +446,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         case S_FAULT:
             /* wait until fault reset from the control device appears */
-            state = get_next_state(state, checklist, InOut.control_word, 0);
+            state = get_next_state(state, checklist, controlword, 0);
             break;
 
         default: /* should never happen! */

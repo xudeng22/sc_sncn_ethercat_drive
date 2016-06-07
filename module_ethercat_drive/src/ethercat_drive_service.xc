@@ -83,21 +83,18 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     i_coe.configuration_done();
 }
 
-static int quick_stop_perform(int steps, enum eDirection direction,
-                                ProfilerConfig &profiler_config,
-                                client interface PositionVelocityCtrlInterface i_position_control)
+{int, int} quick_stop_perform(int steps, int velocity)
 {
     static int step = 0;
 
     if (step >= steps)
-        return 1;
+        return { 0, 0 };
 
-    int target_position = quick_stop_position_profile_generate(step, direction);
-    i_position_control.set_position(target_position);
+    int target_position = quick_stop_position_profile_generate(step, velocity);
 
     step++;
 
-    return 0;
+    return { target_position, steps-step };
 }
 
 static int quick_stop_init(int opmode,
@@ -111,21 +108,15 @@ static int quick_stop_init(int opmode,
         /* TODO implement quick stop profile */
     }
 
-    /* FIXME maybe get the velocity here directly? */
     if (actual_velocity < 0) {
         actual_velocity = -actual_velocity;
     }
 
-    int steps = 0;
     int deceleration = profiler_config.max_deceleration;
-    /* WTF? WTF? WTF? */
-    //if (actual_velocity >= 500)
-    {
-        steps = init_quick_stop_position_profile(
+    int steps = init_quick_stop_position_profile(
                 (actual_velocity * sensor_resolution) / 60,
                 actual_position,
                 (deceleration * sensor_resolution) / 60);
-    }
 
     return steps;
 }
@@ -223,10 +214,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface PositionFeedbackInterface i_position_feedback)
 {
     int quick_stop_steps = 0;
+    int quick_stop_steps_left = 0;
 
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
     int target_position = 0;
+    int qs_target_position = 0;
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
@@ -252,8 +245,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int setup_loop_flag = 0;
 
     int ack = 0;
-    int quick_active = 0;
-    int mode_quick_flag = 0;
     int shutdown_ack = 0;
     int sensor_select = -1;
 
@@ -284,6 +275,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
 
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
+
+    UpstreamControlData   txdata;
+    DownstreamControlData rxdata;
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
@@ -328,10 +322,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
 
+        rxdata.position_cmd = target_position;
+        if (quick_stop_steps != 0) {
+            rxdata.position_cmd = qs_target_position;
+        }
+
+        txdata = i_position_control.update_control_data(rxdata);
+
         /* i_position_control.get_all_feedbacks; */
-        actual_velocity = i_position_control.get_velocity();
-        actual_position = i_position_control.get_position();
-        //actual_torque = i_position_control.get_torque(); /* FIXME expected future implementation! */
+        actual_velocity = txdata.velocity; //i_position_control.get_velocity();
+        actual_position = txdata.position; //i_position_control.get_position();
+        actual_torque   = txdata.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
 
@@ -415,19 +416,20 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         case S_SWITCH_ON:
             /* high power shall be switched on  */
-            i_position_control.set_position(actual_position);
             state = get_next_state(state, checklist, controlword, 0);
+            if (state == S_OPERATION_ENABLE) {
+                i_position_control.enable_position_ctrl();
+            }
             break;
 
         case S_OPERATION_ENABLE:
             /* drive function shall be enabled and internal set-points are cleared */
-            /* FIXME add motor control call(s) */
-
-            /* update motor/control parameters and let the motor turn */
-            i_position_control.set_position(target_position);
 
             /* check if state change occured */
             state = get_next_state(state, checklist, controlword, 0);
+            if (state == S_SWITCH_ON || state == S_READY_TO_SWITCH_ON || state == S_SWITCH_ON_DISABLED) {
+                i_position_control.disable();
+            }
 
             /* if quick stop is requested start immediately */
             if (state == S_QUICK_STOP_ACTIVE) {
@@ -437,10 +439,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         case S_QUICK_STOP_ACTIVE:
             /* quick stop function shall be started and running */
-            int ret = quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control);
-            if (ret != 0) {
+            { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+            if (quick_stop_steps_left == 0 ) {
                 state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
                 quick_stop_steps = 0;
+                qs_target_position = actual_position;
+                i_position_control.disable();
             }
             break;
 
@@ -450,9 +454,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
             }
 
-            if (quick_stop_perform(quick_stop_steps, direction, profiler_config, i_position_control) == 1) {
+            { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+            if (quick_stop_steps_left == 0) {
                 state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                 quick_stop_steps = 0;
+                qs_target_position = actual_position;
+                i_position_control.disable();
             }
             break;
 

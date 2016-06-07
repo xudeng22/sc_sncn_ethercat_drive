@@ -147,12 +147,13 @@ static void inline update_configuration(
         int &homing_method)
 {
     /* update structures */
-    position_feedback_config;
-    position_config;
+    //position_feedback_config;
+    //position_config;
 
     cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
     cm_sync_config_profiler(i_coe, profiler_config);
     cm_sync_config_motor_control(i_coe, i_commutation, motorcontrol_config);
+    cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */

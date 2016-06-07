@@ -79,3 +79,36 @@ void cm_sync_config_profiler(
     profiler.max_acceleration =  i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0);
 }
 
+void cm_sync_config_pos_velocity_control(
+        client interface i_coe_communication i_coe,
+        client interface PositionVelocityCtrlInterface i_position_control,
+        PosVelocityControlConfig &position_config)
+{
+
+    position_config.int21_target_min_position = i_coe.get_object_value(CIA402_SOFWARE_POSITION_LIMIT, 1); /* -8000; */
+    position_config.int21_target_max_position = i_coe.get_object_value(CIA402_SOFWARE_POSITION_LIMIT, 2); /* 8000; */
+    position_config.int10_P_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+    position_config.int10_I_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+    position_config.int10_D_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+    position_config.int32_cmd_limit_position  = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* 15000; */
+    //position_config.int32_cmd_limit_position_min = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* 15000; */
+
+    position_config.int21_target_max_velocity = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
+    position_config.int21_target_min_velocity = -position_config.int21_target_max_velocity; /* -15000; */
+    position_config.int10_P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+    position_config.int10_I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+    position_config.int10_D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+
+    position_config.int21_target_max_torque   = i_coe.get_object_value(CIA402_MAX_TORQUE, 0); /* 1000; */
+    position_config.int21_target_min_torque   = -position_config.int21_target_max_torque; /* -1000; */
+
+    /* FIXME check if these parameters are somehow mappable to OD objects */
+    //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
+    //position_config.int21_P_error_limit_position = 10000;
+    //position_config.int21_I_error_limit_position = 0;
+    //position_config.int22_integral_limit_position = 0;
+    //position_config.int21_P_error_limit_velocity = 10000;
+    //position_config.int21_I_error_limit_velocity =10;
+    //position_config.int22_integral_limit_velocity = 1000;
+    //position_config.int32_cmd_limit_velocity = 200000;
+}

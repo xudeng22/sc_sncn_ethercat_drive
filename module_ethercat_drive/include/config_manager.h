@@ -32,3 +32,8 @@ void cm_sync_config_motor_control(
 void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
         ProfilerConfig &profiler);
+
+void cm_sync_config_pos_velocity_control(
+        client interface i_coe_communication i_coe,
+        client interface PositionVelocityCtrlInterface i_position_control,
+        PosVelocityControlConfig &position_config);

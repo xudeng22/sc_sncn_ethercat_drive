@@ -29,11 +29,6 @@ void cm_sync_config_motor_control(
         interface MotorcontrolInterface client ?i_commutation,
         MotorcontrolConfig &commutation_params);
 
-
 void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
         ProfilerConfig &profiler);
-
-void cm_sync_config_motor_commutation(
-        client interface i_coe_communication i_coe,
-        MotorcontrolConfig &mc_config);

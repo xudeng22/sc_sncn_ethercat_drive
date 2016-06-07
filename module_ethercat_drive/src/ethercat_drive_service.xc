@@ -403,7 +403,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             /* if quick stop is requested start immediately */
             if (state == S_QUICK_STOP_ACTIVE) {
-                 quick_stop_steps =quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
+                 quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
             }
             break;
 

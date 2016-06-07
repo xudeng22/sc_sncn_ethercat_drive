@@ -316,9 +316,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          *  local state variables
          */
-        statusword     = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
-        controlword    = get_controlword(InOut);
-        opmode_request = get_opmode(InOut);
+        statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+        controlword     = pdo_get_controlword(InOut);
+        opmode_request  = pdo_get_opmode(InOut);
+        target_position = pdo_get_target_position(InOut);
 
         /* i_position_control.get_all_feedbacks; */
         actual_velocity = i_position_control.get_velocity();
@@ -330,11 +331,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          *  update values to send
          */
-        send_statusword(statusword, InOut);
-        send_opmode_display(opmode, InOut);
-        send_actual_velocity(actual_velocity, InOut);
-        send_actual_torque(actual_torque, InOut );
-        send_actual_position(actual_position * polarity, InOut);
+        pdo_set_statusword(statusword, InOut);
+        pdo_set_opmode_display(opmode, InOut);
+        pdo_set_actual_velocity(actual_velocity, InOut);
+        pdo_set_actual_torque(actual_torque, InOut );
+        pdo_set_actual_position(actual_position * polarity, InOut);
 
 
         /* Read/Write packets to ethercat Master application */

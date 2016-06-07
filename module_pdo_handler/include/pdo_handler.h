@@ -82,7 +82,7 @@ ctrl_proto_values_t init_ctrl_proto(void);
  *
  * @return target torque from EtherCAT in range [0 - mNm * Current Resolution]
  */
-int get_target_torque(ctrl_proto_values_t InOut);
+int pdo_get_target_torque(ctrl_proto_values_t InOut);
 
 /**
  * @brief Get target velocity from EtherCAT
@@ -91,7 +91,7 @@ int get_target_torque(ctrl_proto_values_t InOut);
  *
  * @return target velocity from EtherCAT in rpm
  */
-int get_target_velocity(ctrl_proto_values_t InOut);
+int pdo_get_target_velocity(ctrl_proto_values_t InOut);
 
 /**
  * @brief Get target position from EtherCAT
@@ -100,7 +100,7 @@ int get_target_velocity(ctrl_proto_values_t InOut);
  *
  * @return target position from EtherCAT in ticks
  */
-int get_target_position(ctrl_proto_values_t InOut);
+int pdo_get_target_position(ctrl_proto_values_t InOut);
 
 /**
  * @brief Get the current controlword
@@ -108,7 +108,7 @@ int get_target_position(ctrl_proto_values_t InOut);
  * @param PDO object
  * @return current controlword
  */
-int get_controlword(ctrl_proto_values_t InOut);
+int pdo_get_controlword(ctrl_proto_values_t InOut);
 
 /**
  * @brief Get current operation mode request
@@ -121,7 +121,7 @@ int get_controlword(ctrl_proto_values_t InOut);
  * @param PDO object
  * @return current operation mode request
  */
-int get_opmode(ctrl_proto_values_t InOut);
+int pdo_get_opmode(ctrl_proto_values_t InOut);
 
 /**
  * @brief Send actual torque to EtherCAT
@@ -129,7 +129,7 @@ int get_opmode(ctrl_proto_values_t InOut);
  * @param[in] actual_torque sent to EtherCAT in range [0 - mNm * Current Resolution]
  * @param InOut Structure containing all PDO data
  */
-void send_actual_torque(int actual_torque, ctrl_proto_values_t &InOut);
+void pdo_set_actual_torque(int actual_torque, ctrl_proto_values_t &InOut);
 
 /**
  * @brief Send actual velocity to EtherCAT
@@ -137,7 +137,7 @@ void send_actual_torque(int actual_torque, ctrl_proto_values_t &InOut);
  * @param[in] actual_velocity sent to EtherCAT in rpm
  * @param InOut Structure containing all PDO data
  */
-void send_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut);
+void pdo_set_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut);
 
 /**
  * @brief Send actual position to EtherCAT
@@ -145,7 +145,7 @@ void send_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut);
  * @param[in] actual_position sent to EtherCAT in ticks
  * @param InOut Structure containing all PDO data
  */
-void send_actual_position(int actual_position, ctrl_proto_values_t &InOut);
+void pdo_set_actual_position(int actual_position, ctrl_proto_values_t &InOut);
 
 /**
  * @brief Send the current status
@@ -153,7 +153,7 @@ void send_actual_position(int actual_position, ctrl_proto_values_t &InOut);
  * @param statusword  the current statusword
  * @param InOut PDO object
  */
-void send_statusword(int statusword, ctrl_proto_values_t &InOut);
+void pdo_set_statusword(int statusword, ctrl_proto_values_t &InOut);
 
 /**
  * @brief Send to currently active operation mode
@@ -161,4 +161,4 @@ void send_statusword(int statusword, ctrl_proto_values_t &InOut);
  * @param opmode the currently active operation mode
  * @param InOut PDO object
  */
-void send_opmode_display(int opmode, ctrl_proto_values_t &InOut);
+void pdo_set_opmode_display(int opmode, ctrl_proto_values_t &InOut);

@@ -325,6 +325,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_position = i_position_control.get_position();
         //actual_torque = i_position_control.get_torque(); /* FIXME expected future implementation! */
 
+        direction = (actual_velocity < 0) ? DIRECTION_CCLK : DIRECTION_CLK;
 
         /*
          *  update values to send

@@ -29,6 +29,12 @@ const char * state_names[] = {"u shouldn't see me",
 "S_FAULT"
 };
 
+enum eDirection {
+    DIRECTION_NEUTRAL = 0
+    ,DIRECTION_CLK    = 1
+    ,DIRECTION_CCLK   = -1
+};
+
 static int get_sensor_resolution(int sensor_select, PositionFeedbackConfig position_feedback_config)
 {
     int sensor_resolution = 0;
@@ -76,12 +82,6 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     /* clear the notification before proceeding the operation */
     i_coe.configuration_done();
 }
-
-enum eDirection {
-    DIRECTION_NEUTRAL = 0
-    ,DIRECTION_CLK    = 1
-    ,DIRECTION_CCLK   = -1
-};
 
 static int quick_stop_perform(int steps, enum eDirection direction,
                                 ProfilerConfig &profiler_config,

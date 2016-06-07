@@ -229,6 +229,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int actual_velocity = 0;
     int actual_position = 0;
 
+    int follow_error = 0;
+    //int target_position_progress = 0; /* is current target_position necessary to remember??? */
+
     enum eDirection direction = DIRECTION_NEUTRAL;
 
     int nominal_speed;
@@ -327,6 +330,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_velocity = i_position_control.get_velocity();
         actual_position = i_position_control.get_position();
         //actual_torque = i_position_control.get_torque(); /* FIXME expected future implementation! */
+
+        follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
 
         direction = (actual_velocity < 0) ? DIRECTION_CCLK : DIRECTION_CLK;
 

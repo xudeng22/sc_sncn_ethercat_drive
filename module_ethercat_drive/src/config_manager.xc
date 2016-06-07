@@ -85,8 +85,8 @@ void cm_sync_config_pos_velocity_control(
         PosVelocityControlConfig &position_config)
 {
 
-    position_config.int21_target_min_position = i_coe.get_object_value(CIA402_SOFWARE_POSITION_LIMIT, 1); /* -8000; */
-    position_config.int21_target_max_position = i_coe.get_object_value(CIA402_SOFWARE_POSITION_LIMIT, 2); /* 8000; */
+    position_config.int21_target_min_position = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1); /* -8000; */
+    position_config.int21_target_max_position = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2); /* 8000; */
     position_config.int10_P_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
     position_config.int10_I_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
     position_config.int10_D_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */

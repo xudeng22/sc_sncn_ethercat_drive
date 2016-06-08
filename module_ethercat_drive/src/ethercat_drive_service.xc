@@ -67,7 +67,7 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     while (sdo_configured == 0) {
         select {
             case i_coe.configuration_ready():
-                printstrln("Master requests OP mode - cyclic operation is about to start.");
+                //printstrln("Master requests OP mode - cyclic operation is about to start.");
                 sdo_configured = 1;
                 break;
         }
@@ -296,7 +296,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /* Check if we reenter the operation mode. If so, update the configuration please. */
         select {
             case i_coe.configuration_ready():
-                printstrln("Master requests OP mode - cyclic operation is about to start.");
+                //printstrln("Master requests OP mode - cyclic operation is about to start.");
                 read_configuration = 1;
                 break;
             default:
@@ -377,6 +377,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 if (ts_comm_inactive - c_time > 1*SEC_STD) {
                     //printstrln("comm inactive timeout");
                     state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
+                    printstrln("Timeout Hit got to fault mode");
                     t :> c_time;
                     t when timerafter(c_time + 2*SEC_STD) :> c_time;
                     inactive_timeout_flag = 1;
@@ -392,7 +393,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          * new, perform actions according to state
          */
-        debug_print_state(state);
+        //debug_print_state(state);
 
         switch (state) {
         case S_NOT_READY_TO_SWITCH_ON:
@@ -471,6 +472,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             break;
 
         default: /* should never happen! */
+            //printstrln("Should never happen happend.");
             state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
             break;
         }

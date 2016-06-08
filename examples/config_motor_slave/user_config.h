@@ -17,9 +17,6 @@
 //////  APPLICATION CONFIGURATIONS
 ////////////////////////////////////////////
 
-/* FIXME target of deportation */
-#define MILLI_SQRT_TWO_THIRD 1224 //1000 * sqrt(2/3)
-
 #define VDC             48
 
 /////////////////////////////////////////////

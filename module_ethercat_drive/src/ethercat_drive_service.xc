@@ -135,7 +135,8 @@ static void inline update_configuration(
         int &polarity,
         int &sensor_resolution,
         int &nominal_speed,
-        int &homing_method)
+        int &homing_method,
+        int &opmode)
 {
     /* update structures */
     //position_feedback_config;
@@ -157,6 +158,8 @@ static void inline update_configuration(
     sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
 
     sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);
+
+    opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
 }
 
 static void debug_print_state(DriveState_t state)
@@ -307,7 +310,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         if (read_configuration) {
             update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
-                    sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method
+                    sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
+                    opmode
                     );
 
             read_configuration = 0;
@@ -403,7 +407,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         case S_SWITCH_ON_DISABLED:
             if (opmode_request != OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
-                opmode = OPMODE_NONE;
+                opmode = opmode;
             } else {
                 opmode = opmode_request;
             }

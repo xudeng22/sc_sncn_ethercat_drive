@@ -46,13 +46,15 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 
 	int buffer[64];
 	unsigned int count = 0;
-	int i;
+	int i = 0;
 
 
 	pdo_in <: DATA_REQUEST;
 	pdo_in :> count;
-	//printstr("count  ");
-	//printintln(count);
+//	printstr("count  "); printintln(count);
+	if (count == 0)
+	    return 0;
+
 	for (i = 0; i < count; i++) {
 		pdo_in :> buffer[i];
 		//printhexln(buffer[i]);

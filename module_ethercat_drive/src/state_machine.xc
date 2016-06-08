@@ -123,26 +123,26 @@ int16_t update_statusword(int current_status, DriveState_t state_reached, int ac
                 & ~VOLTAGE_ENABLED_STATE;
             break;
 
+        case S_SWITCH_ON_DISABLED:
+            status_word = (current_status & ~READY_TO_SWITCH_ON_STATE
+                           & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE
+                           & ~VOLTAGE_ENABLED_STATE & ~FAULT_STATE) | SWITCH_ON_DISABLED_STATE;
+            break;
+
         case S_READY_TO_SWITCH_ON:
             status_word = (current_status & ~OPERATION_ENABLED_STATE
                            & ~SWITCHED_ON_STATE & ~VOLTAGE_ENABLED_STATE
-                           & ~SWITCH_ON_DISABLED_STATE) | READY_TO_SWITCH_ON_STATE;
-            break;
-
-        case S_SWITCH_ON_DISABLED:
-            status_word = (current_status & READY_TO_SWITCH_ON_STATE
-                           & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE
-                           & ~VOLTAGE_ENABLED_STATE) | SWITCH_ON_DISABLED_STATE;
+                           & ~SWITCH_ON_DISABLED_STATE) | QUICK_STOP_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
         case S_SWITCH_ON:
             status_word = (current_status & ~SWITCH_ON_DISABLED_STATE
-                           & ~OPERATION_ENABLED_STATE) | SWITCHED_ON_STATE
+                           & ~OPERATION_ENABLED_STATE) | QUICK_STOP_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE
                            | VOLTAGE_ENABLED_STATE;
             break;
 
         case S_OPERATION_ENABLE:
-            status_word = current_status | OPERATION_ENABLED_STATE;
+            status_word = current_status | QUICK_STOP_STATE | OPERATION_ENABLED_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
         case S_FAULT_REACTION_ACTIVE:

@@ -326,12 +326,19 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
 
+        /*
+        printint(state);
+        printstr(" ");
+        printhexln(statusword);
+        */
+
         rxdata.position_cmd = target_position;
         if (quick_stop_steps != 0) {
             rxdata.position_cmd = qs_target_position;
         }
 
         txdata = i_position_control.update_control_data(rxdata);
+        //printintln(rxdata.position_cmd);
 
         /* i_position_control.get_all_feedbacks; */
         actual_velocity = txdata.velocity; //i_position_control.get_velocity();
@@ -426,6 +433,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             state = get_next_state(state, checklist, controlword, 0);
             if (state == S_OPERATION_ENABLE) {
                 i_position_control.enable_position_ctrl();
+                //printstr("switch on\n");
             }
             break;
 

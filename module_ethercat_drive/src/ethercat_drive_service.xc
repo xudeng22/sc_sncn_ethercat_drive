@@ -382,6 +382,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     inactive_timeout_flag = 1;
                 }
             }
+        } else {
+            comm_inactive_flag = 0;
         }
 
         /* Check states of the motor drive, sensor drive and control servers */

@@ -200,15 +200,23 @@ int main(void)
 
                 /* Motor Control Service */
                 {
+                    delay_milliseconds(2000);
+
                     MotorcontrolConfig motorcontrol_config;
-                    motorcontrol_config.motor_type = BLDC_MOTOR;
-                    motorcontrol_config.commutation_method = FOC;
-                    motorcontrol_config.polarity_type = MOTOR_POLARITY;
-                    motorcontrol_config.commutation_sensor = MOTOR_COMMUTATION_SENSOR;
-                    motorcontrol_config.bldc_winding_type = BLDC_WINDING_TYPE;
-                    motorcontrol_config.hall_offset[0] = COMMUTATION_OFFSET_CLK;
-                    motorcontrol_config.hall_offset[1] = COMMUTATION_OFFSET_CCLK;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
+                    motorcontrol_config.commutation_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.current_P_gain =  TORQUE_Kp;
+                    motorcontrol_config.pole_pair =  POLE_PAIRS;
+                    motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
+                    motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
+                    motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
+                    motorcontrol_config.v_dc =  VDC;
+
+                    /* FIXME figure out some sane settings or something */
+                    motorcontrol_config.protection_limit_over_current =  I_MAX;
+                    motorcontrol_config.protection_limit_over_voltage =  V_DC_MAX;
+                    motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
+
 
                     Motor_Control_Service( fet_driver_ports, motorcontrol_config, i_adc[0],
                             i_shared_memory[0],

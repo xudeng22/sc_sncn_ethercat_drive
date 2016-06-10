@@ -84,9 +84,10 @@ int main(int argc, char *argv[])
     int quit = 0;
     int offset = 0;
     int motor_polarity = 0, sensor_polarity = 0, torque_control_flag = 0, position_ctrl_flag = 0, brake_flag = 0;
-    int pole_pairs = 15;
-    int target_position = 123456;
-    int target_torque = 1234;
+    int pole_pairs = 0;
+    int target_position = 0;
+    int target_torque = 0;
+    int position_limit = 0;
 
 
     /* Write Process data */
@@ -132,6 +133,9 @@ int main(int argc, char *argv[])
             case 3://target torque
                 target_torque = slv_handles[slave_number].user4_in;
                 break;
+            case 4://position limit
+                position_limit = slv_handles[slave_number].user4_in;
+                break;
             default://target position
                 target_position = slv_handles[slave_number].user4_in;
                 break;
@@ -171,6 +175,9 @@ int main(int argc, char *argv[])
                 printw("Brake blocking");
             else
                 printw("Brake released");
+            if (position_limit > 0) {
+                printw("          | Position limit %d", position_limit);
+            }
         }
 
         //read user input

@@ -66,7 +66,7 @@ int main(void)
 
 
         /* tuning service */
-        on tile[APP_TILE]: run_offset_tuning(0, i_motorcontrol[1], i_position_control[0], i_position_feedback[0], i_position_limiter, pdo_out, pdo_in, i_coe);
+        on tile[APP_TILE]: run_offset_tuning(i_motorcontrol[1], i_position_control[0], i_position_feedback[0], i_position_limiter, pdo_out, pdo_in, i_coe);
 
 
         on tile[APP_TILE_2]:

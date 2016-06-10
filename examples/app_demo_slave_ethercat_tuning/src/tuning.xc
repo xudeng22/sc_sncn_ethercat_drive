@@ -30,7 +30,7 @@ int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
     return offset;
 }
 
-void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
+void run_offset_tuning(interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
                       client interface PositionFeedbackInterface ?i_position_feedback,
                       client interface PositionLimiterInterface ?i_position_limiter,
@@ -49,6 +49,7 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
     int pole_pairs = 0;
     int target_torque = 0;
     int target_position = 0;
+    int position_limit = 0;
     int status_mux = 0;
     int count = 0;
     int velocity = 0;
@@ -107,6 +108,9 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
     } else {
         motor_polarity = 1;
     }
+    if (!isnull(i_position_limiter)) {
+        position_limit = i_position_limiter.get_limit();
+    }
 
 
 
@@ -157,6 +161,9 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
             case 3: //target torque
                 InOut.user4_out = target_torque;
                 break;
+            case 4:
+                InOut.user4_out = position_limit;
+                break;
             default: //target position
                 InOut.user4_out = target_position;
                 status_mux = -1;
@@ -203,6 +210,7 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                 switch(mode_2) {
                 case 'p':
                     if (!isnull(i_position_feedback)) {
+                        position_ctrl_flag = 1;
                         printf("Go to %d with profile\n", target_position);
                         set_profile_position(target_position, 1000, 1000, 1000, i_position_control);
                     }
@@ -359,6 +367,7 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                 } else {
                     position_ctrl_flag = 0;
                     torque_control_flag = 0;
+                    brake_flag = 0;
                     i_position_control.disable();
                     printf("position ctrl disabled\n");
                 }
@@ -461,8 +470,10 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
 
             //position limiter
             case 'l':
-                if (!isnull(i_position_limiter))
+                if (!isnull(i_position_limiter)) {
                     i_position_limiter.set_limit(value * sign);
+                    position_limit = i_position_limiter.get_limit();
+                }
                 break;
 
             //auto offset tuning
@@ -522,6 +533,16 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                     i_motorcontrol.set_brake_status(brake_flag);
                 }
                 target_torque = value*sign;
+                if (target_torque) {
+                    if (brake_flag == 0) {
+                        brake_flag = 1;
+                        i_motorcontrol.set_brake_status(brake_flag);
+                    }
+                    if (torque_control_flag == 0) {
+                        torque_control_flag = 1;
+                        i_motorcontrol.set_torque_control_enabled();
+                    }
+                }
                 i_motorcontrol.set_torque(target_torque);
                 printf("Torque %d\n", target_torque);
                 break;
@@ -584,6 +605,10 @@ void position_limiter(int position_limit, interface PositionLimiterInterface ser
                 printf("Position limited to %d ticks\n", in_limit);
                 position_limit = in_limit;
             }
+            break;
+
+        case i_position_limiter.get_limit() -> int out_limit:
+            out_limit =  position_limit;
             break;
 
         }//end select

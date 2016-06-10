@@ -25,10 +25,11 @@
 
 interface PositionLimiterInterface {
     void set_limit(int limit);
+    int get_limit();
 };
 
 
-void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
+void run_offset_tuning(interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
                       client interface PositionFeedbackInterface ?i_position_feedback,
                       client interface PositionLimiterInterface ?i_position_limiter,

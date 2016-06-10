@@ -31,7 +31,8 @@ int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
 }
 
 void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
-                      interface PositionVelocityCtrlInterface client ?i_position_control,
+                      interface PositionVelocityCtrlInterface client i_position_control,
+                      client interface PositionFeedbackInterface ?i_position_feedback,
                       chanend pdo_out, chanend pdo_in, client interface i_coe_communication i_coe)
 {
     delay_milliseconds(500);
@@ -58,7 +59,7 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
     t :> ts;
     //parameters structs
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
-    offset = motorcontrol_config.commutation_offset;
+    offset = motorcontrol_config.commutation_angle_offset;
     PosVelocityControlConfig pos_velocity_ctrl_config;
     if (!isnull(i_position_control)) {
         pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
@@ -73,16 +74,17 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
 
 
     /* Initialise the position profile generator */
-//    if (!isnull(i_position_control)) {
-//        ProfilerConfig profiler_config;
-//        profiler_config.polarity = POLARITY;
-//        profiler_config.max_position = MAX_POSITION_LIMIT;
-//        profiler_config.min_position = MIN_POSITION_LIMIT;
-//        profiler_config.max_velocity = MAX_VELOCITY;
-//        profiler_config.max_acceleration = MAX_ACCELERATION;
-//        profiler_config.max_deceleration = MAX_DECELERATION;
-//        init_position_profiler(profiler_config, i_position_control, i_hall, null, i_biss, i_ams);
-//    }
+    if (!isnull(i_position_feedback)) {
+        ProfilerConfig profiler_config;
+        profiler_config.polarity = POLARITY;
+        profiler_config.max_position = MAX_POSITION_LIMIT;
+        profiler_config.min_position = MIN_POSITION_LIMIT;
+        profiler_config.max_velocity = MAX_VELOCITY;
+        profiler_config.max_acceleration = MAX_ACCELERATION;
+        profiler_config.max_deceleration = MAX_DECELERATION;
+        profiler_config.ticks_per_turn = i_position_feedback.get_ticks_per_turn();
+        init_position_profiler(profiler_config);
+    }
 
     fflush(stdout);
     //main loop
@@ -174,10 +176,20 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
             //go to position directly
             case 'p':
                 target_position = value*sign;
-                downstream_control_data.offset_torque = 0;
-                downstream_control_data.position_cmd = target_position;
-                i_position_control.update_control_data(downstream_control_data);
-                printf("Go to %d\n", target_position);
+                switch(mode_2) {
+                case 'p':
+                    if (!isnull(i_position_feedback)) {
+                        printf("Go to %d with profile\n", target_position);
+                        set_profile_position(target_position, 1000, 1000, 1000, i_position_control);
+                    }
+                    break;
+                default:
+                    downstream_control_data.offset_torque = 0;
+                    downstream_control_data.position_cmd = target_position;
+                    i_position_control.update_control_data(downstream_control_data);
+                    printf("Go to %d\n", target_position);
+                    break;
+                }
                 break;
 
             //set velocity

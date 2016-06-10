@@ -17,6 +17,7 @@
 #include <profile_control.h>
 #include <ethercat_service.h>
 #include <pdo_handler.h>
+#include <position_feedback_service.h>
 
 #include <xscope.h>
 #include <mc_internal_constants.h>
@@ -32,6 +33,7 @@ interface TuningInterface {
 
 
 void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
-                      interface PositionVelocityCtrlInterface client ?i_position_control,
+                      interface PositionVelocityCtrlInterface client i_position_control,
+                      client interface PositionFeedbackInterface ?i_position_feedback,
                       chanend pdo_out, chanend pdo_in, client interface i_coe_communication i_coe);
 

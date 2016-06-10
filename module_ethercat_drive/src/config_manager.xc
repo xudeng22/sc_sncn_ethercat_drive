@@ -58,9 +58,24 @@ void cm_sync_config_motor_control(
     motorcontrol_config = i_commutation.get_config();
 
     motorcontrol_config.bldc_winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); /* FIXME check if the object contains values that respect BLDCWindingType */
-    motorcontrol_config.hall_offset[0] = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0);;
-    motorcontrol_config.hall_offset[1] = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0);;
 
+    motorcontrol_config.pole_pair          = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+    motorcontrol_config.max_torque         = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
+    //motorcontrol_config.max_current        = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);
+    //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
+    //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
+    motorcontrol_config.commutation_offset = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0); /* FIXME name will change to commutation offset/angle */
+    //motorcontrol_config.torque_constant    = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
+    motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
+    motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
+    motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+
+    /* These are motor specific maybe we introduce a new object */
+    motorcontrol_config.phase_resistance   = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 2);
+    motorcontrol_config.phase_inductance   = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 5);
+//    motorcontrol_config.v_dc; /* FIXME currently not setable - should it be? */
+
+    motorcontrol_config.protection_limit_over_current = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);//motorcontrol_config.max_current;
     i_commutation.set_config(motorcontrol_config);
 }
 

@@ -45,11 +45,11 @@ static int get_sensor_resolution(int sensor_select, PositionFeedbackConfig posit
     } else if (sensor_select == QEI_SENSOR) {
         sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
     } else if (sensor_select == BISS_SENSOR) {
-        sensor_resolution = position_feedback_config.biss_config.singleturn_resolution;
+        sensor_resolution = 1<<position_feedback_config.biss_config.singleturn_resolution; /* bits -> ticks */
     } else if (sensor_select == AMS_SENSOR) {
         sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
     } else if (sensor_select == CONTELEC_SENSOR) {
-        sensor_resolution = position_feedback_config.contelec_config.resolution_bits;
+        sensor_resolution = 1<<position_feedback_config.contelec_config.resolution_bits; /* bits -> ticks */
     }
 
     return sensor_resolution;

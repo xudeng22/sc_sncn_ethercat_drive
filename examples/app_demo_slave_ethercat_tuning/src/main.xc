@@ -25,7 +25,7 @@ ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PositionFeedbackPorts position_feedback_ports = SOMANET_IFM_POSITION_FEEDBACK_PORTS;
 
-#define POSITION_LIMIT 0 //+/- 4095
+#define POSITION_LIMIT 5000000 //+/- 4095
 
 int main(void)
 {
@@ -47,6 +47,7 @@ int main(void)
     interface PositionVelocityCtrlInterface i_position_control[3];
     interface PositionFeedbackInterface i_position_feedback[3];
     interface shared_memory_interface i_shared_memory[2];
+    interface PositionLimiterInterface i_position_limiter;
 
     par
     {
@@ -65,7 +66,7 @@ int main(void)
 
 
         /* tuning service */
-        on tile[APP_TILE]: run_offset_tuning(0, i_motorcontrol[0], i_position_control[0], i_position_feedback[0], pdo_out, pdo_in, i_coe);
+        on tile[APP_TILE]: run_offset_tuning(0, i_motorcontrol[1], i_position_control[0], i_position_feedback[0], i_position_limiter, pdo_out, pdo_in, i_coe);
 
 
         on tile[APP_TILE_2]:
@@ -75,55 +76,31 @@ int main(void)
             /* Control Loop */
             pos_velocity_ctrl_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
 
-            //other
-            pos_velocity_ctrl_config.int21_min_position =-0x7fffffff;
-            pos_velocity_ctrl_config.int21_max_position = 0x7fffffff;
-            pos_velocity_ctrl_config.int21_max_speed = 2000;
-            pos_velocity_ctrl_config.int21_max_torque = 1000000;
+            pos_velocity_ctrl_config.int21_min_position = MIN_POSITION_LIMIT;
+            pos_velocity_ctrl_config.int21_max_position = MAX_POSITION_LIMIT;
+            pos_velocity_ctrl_config.int21_max_speed = MAX_VELOCITY;
+            pos_velocity_ctrl_config.int21_max_torque = MAX_TORQUE;
 
 
-            pos_velocity_ctrl_config.int10_P_position = 200;
-            pos_velocity_ctrl_config.int10_I_position =200;
-            pos_velocity_ctrl_config.int10_D_position = 0;
-            pos_velocity_ctrl_config.int21_P_error_limit_position = 200000;
-            pos_velocity_ctrl_config.int21_I_error_limit_position = 1;
-            pos_velocity_ctrl_config.int22_integral_limit_position = 1000;
+            pos_velocity_ctrl_config.int10_P_position = POSITION_Kp;
+            pos_velocity_ctrl_config.int10_I_position = POSITION_Ki;
+            pos_velocity_ctrl_config.int10_D_position = POSITION_Kd;
+            pos_velocity_ctrl_config.int21_P_error_limit_position = POSITION_P_ERROR_lIMIT;
+            pos_velocity_ctrl_config.int21_I_error_limit_position = POSITION_I_ERROR_lIMIT;
+            pos_velocity_ctrl_config.int22_integral_limit_position = POSITION_INTEGRAL_LIMIT;
 
-            pos_velocity_ctrl_config.int10_P_velocity = 5;
-            pos_velocity_ctrl_config.int10_I_velocity = 0;//50;
-            pos_velocity_ctrl_config.int10_D_velocity = 5;
-            pos_velocity_ctrl_config.int21_P_error_limit_velocity = 200000;
-            pos_velocity_ctrl_config.int21_I_error_limit_velocity = 2000;
-            pos_velocity_ctrl_config.int22_integral_limit_velocity = 60000;
-
+            pos_velocity_ctrl_config.int10_P_velocity = VELOCITY_Kp;
+            pos_velocity_ctrl_config.int10_I_velocity = VELOCITY_Ki;
+            pos_velocity_ctrl_config.int10_D_velocity = VELOCITY_Kd;
+            pos_velocity_ctrl_config.int21_P_error_limit_velocity = VELOCITY_P_ERROR_lIMIT;
+            pos_velocity_ctrl_config.int21_I_error_limit_velocity = VELOCITY_I_ERROR_lIMIT;
+            pos_velocity_ctrl_config.int22_integral_limit_velocity = VELOCITY_INTEGRAL_LIMIT;
 
             pos_velocity_ctrl_config.position_ref_fc = POSITION_REF_FC;
             pos_velocity_ctrl_config.position_fc = POSITION_FC;
             pos_velocity_ctrl_config.velocity_ref_fc = VELOCITY_REF_FC;
             pos_velocity_ctrl_config.velocity_fc = VELOCITY_FC;
             pos_velocity_ctrl_config.velocity_d_fc = VELOCITY_D_FC;
-
-
-            //MABI A1
-//            pos_velocity_ctrl_config.int21_min_position = -1000000;
-//            pos_velocity_ctrl_config.int21_max_position = 1000000;
-//            pos_velocity_ctrl_config.int21_max_speed = 200;
-//            pos_velocity_ctrl_config.int21_max_torque = 1200000;
-//
-//
-//            pos_velocity_ctrl_config.int10_P_position = 40;
-//            pos_velocity_ctrl_config.int10_I_position = 50;
-//            pos_velocity_ctrl_config.int10_D_position = 0;
-//            pos_velocity_ctrl_config.int21_P_error_limit_position = 40000;
-//            pos_velocity_ctrl_config.int21_I_error_limit_position = 5;
-//            pos_velocity_ctrl_config.int22_integral_limit_position = 10000;
-//
-//            pos_velocity_ctrl_config.int10_P_velocity = 60;
-//            pos_velocity_ctrl_config.int10_I_velocity = 0;
-//            pos_velocity_ctrl_config.int10_D_velocity = 65;
-//            pos_velocity_ctrl_config.int21_P_error_limit_velocity = 200000;
-//            pos_velocity_ctrl_config.int21_I_error_limit_velocity = 0;
-//            pos_velocity_ctrl_config.int22_integral_limit_velocity = 0;
 
             position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[3], i_position_control);
         }
@@ -133,6 +110,8 @@ int main(void)
         {
             par
             {
+                position_limiter(POSITION_LIMIT, i_position_limiter, i_motorcontrol[0]);
+
                 {
                     /* Watchdog Service */
                     delay_milliseconds(500);

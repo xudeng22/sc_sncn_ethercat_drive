@@ -23,17 +23,15 @@
 #include <mc_internal_constants.h>
 #include <user_config.h>
 
-interface TuningInterface {
-    void tune(int voltage);
+interface PositionLimiterInterface {
     void set_limit(int limit);
-    void set_position(int position);
-    void set_torque(int in_torque);
-    int get_velocity();
 };
 
 
 void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
                       client interface PositionFeedbackInterface ?i_position_feedback,
+                      client interface PositionLimiterInterface ?i_position_limiter,
                       chanend pdo_out, chanend pdo_in, client interface i_coe_communication i_coe);
 
+void position_limiter(int position_limit, interface PositionLimiterInterface server i_position_limiter, client interface MotorcontrolInterface i_motorcontrol);

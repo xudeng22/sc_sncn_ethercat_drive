@@ -33,6 +33,7 @@ int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
 void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
                       client interface PositionFeedbackInterface ?i_position_feedback,
+                      client interface PositionLimiterInterface ?i_position_limiter,
                       chanend pdo_out, chanend pdo_in, client interface i_coe_communication i_coe)
 {
     delay_milliseconds(500);
@@ -41,8 +42,8 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
 
     //variables
     int brake_flag = 0;
+    int torque_control_flag = 0;
     int position_ctrl_flag = 0;
-    int torque_control_flag = 1;
     int motor_polarity = 0, sensor_polarity = 0;
     int offset = 0;
     int pole_pairs = 0;
@@ -59,7 +60,7 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
     t :> ts;
     //parameters structs
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
-    offset = motorcontrol_config.commutation_angle_offset;
+    PositionFeedbackConfig position_feedback_config;
     PosVelocityControlConfig pos_velocity_ctrl_config;
     if (!isnull(i_position_control)) {
         pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
@@ -70,7 +71,9 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
 
     //brake and motorcontrol enable
     i_motorcontrol.set_brake_status(brake_flag);
-    i_motorcontrol.set_torque_control_enabled();
+    if (torque_control_flag == 1){
+        i_motorcontrol.set_torque_control_enabled();
+    }
 
 
     /* Initialise the position profile generator */
@@ -84,7 +87,28 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
         profiler_config.max_deceleration = MAX_DECELERATION;
         profiler_config.ticks_per_turn = i_position_feedback.get_ticks_per_turn();
         init_position_profiler(profiler_config);
+
+        position_feedback_config = i_position_feedback.get_config();
+        switch(position_feedback_config.sensor_type) {
+        case BISS_SENSOR:
+            sensor_polarity = position_feedback_config.biss_config.polarity;
+            break;
+        case CONTELEC_SENSOR:
+            sensor_polarity = position_feedback_config.contelec_config.polarity;
+            break;
+        }
     }
+
+    /* Initialise local variables */
+    pole_pairs = motorcontrol_config.pole_pair;
+    offset = motorcontrol_config.commutation_angle_offset;
+    if (motorcontrol_config.polarity_type == NORMAL_POLARITY) {
+        motor_polarity = 0;
+    } else {
+        motor_polarity = 1;
+    }
+
+
 
     fflush(stdout);
     //main loop
@@ -394,6 +418,53 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                         }
                 break;
 
+            //pole pairs
+            case 'P':
+                if (!isnull(i_position_feedback)) {
+                    pole_pairs = value;
+                    position_feedback_config.biss_config.pole_pairs = pole_pairs;
+                    position_feedback_config.contelec_config.pole_pairs = pole_pairs;
+                    motorcontrol_config.pole_pair = pole_pairs;
+                    i_position_feedback.set_config(position_feedback_config);
+                    i_motorcontrol.set_config(motorcontrol_config);
+                }
+                break;
+
+            //direction (motor polarity)
+            case 'd':
+                if (motorcontrol_config.polarity_type == NORMAL_POLARITY){
+                    motorcontrol_config.polarity_type = INVERTED_POLARITY;
+                    motor_polarity = 1;
+                } else {
+                    motorcontrol_config.polarity_type = NORMAL_POLARITY;
+                    motor_polarity = 0;
+                }
+                i_motorcontrol.set_config(motorcontrol_config);
+                torque_control_flag = 0;
+                break;
+
+            //sensor polarity
+            case 's':
+                if (!isnull(i_position_feedback)) {
+                    if (sensor_polarity == 0) {
+                        position_feedback_config.biss_config.polarity = 1;
+                        position_feedback_config.contelec_config.polarity = 1;
+                        sensor_polarity = 1;
+                    } else {
+                        position_feedback_config.biss_config.polarity = 0;
+                        position_feedback_config.contelec_config.polarity = 0;
+                        sensor_polarity = 0;
+                    }
+                    i_position_feedback.set_config(position_feedback_config);
+                }
+                break;
+
+            //position limiter
+            case 'l':
+                if (!isnull(i_position_limiter))
+                    i_position_limiter.set_limit(value * sign);
+                break;
+
             //auto offset tuning
             case 'a':
                 offset = 5000;
@@ -416,7 +487,7 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
 
             //enable and disable torque controller
             case 't':
-                if (torque_control_flag == 0) {
+                if (torque_control_flag == 0 || value == 1) {
                     torque_control_flag = 1;
                     i_motorcontrol.set_torque_control_enabled();
                     printf("Torque control activated\n");
@@ -428,12 +499,12 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
                 break;
             //set brake
             case 'b':
-                if (brake_flag) {
-                    brake_flag = 0;
-                    printf("Brake blocking\n");
-                } else {
+                if (brake_flag == 0 || value == 1) {
                     brake_flag = 1;
                     printf("Brake released\n");
+                } else {
+                    brake_flag = 0;
+                    printf("Brake blocking\n");
                 }
                 i_motorcontrol.set_brake_status(brake_flag);
                 break;
@@ -463,3 +534,58 @@ void run_offset_tuning(int position_limit, interface MotorcontrolInterface clien
         } //end select
     } //end while(1)
 }
+
+
+void position_limiter(int position_limit, interface PositionLimiterInterface server i_position_limiter, client interface MotorcontrolInterface i_motorcontrol)
+{
+    timer t;
+    unsigned ts;
+    t :> ts;
+    int print_position_limit = 0;
+    int count = 0;
+    int velocity = 0;
+
+    while(1) {
+        select {
+        case t when timerafter(ts) :> void:
+
+            count = i_motorcontrol.get_position_actual();
+            velocity = i_motorcontrol.get_velocity_actual();
+
+            //postion limiter
+            if (position_limit > 0) {
+                if (count >= position_limit && velocity > 10) {
+                    i_motorcontrol.set_torque_control_disabled();
+                    i_motorcontrol.set_safe_torque_off_enabled();
+                    i_motorcontrol.set_brake_status(0);
+                    if (print_position_limit >= 0) {
+                        print_position_limit = -1;
+                        printf("up limit reached\n");
+                    }
+                } else if (count <= -position_limit && velocity < -10) {
+                    i_motorcontrol.set_torque_control_disabled();
+                    i_motorcontrol.set_safe_torque_off_enabled();
+                    i_motorcontrol.set_brake_status(0);
+                    if (print_position_limit <= 0) {
+                        print_position_limit = 1;
+                        printf("down limit reached\n");
+                    }
+                }
+            }
+            t :> ts;
+            ts += USEC_FAST * 1000;
+            break;
+
+        case i_position_limiter.set_limit(int in_limit):
+            if (in_limit < 0) {
+                position_limit = in_limit;
+                printf("Position limit disabled\n");
+            } else if (in_limit > 0) {
+                printf("Position limited to %d ticks\n", in_limit);
+                position_limit = in_limit;
+            }
+            break;
+
+        }//end select
+    }//end while
+}//end function

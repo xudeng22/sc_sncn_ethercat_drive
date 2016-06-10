@@ -326,6 +326,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         controlword     = pdo_get_controlword(InOut);
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
+        send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
 
         /*
         printint(state);
@@ -393,7 +394,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_opmode_display(opmode, InOut);
         pdo_set_actual_velocity(actual_velocity, InOut);
         pdo_set_actual_torque(actual_torque, InOut );
-        pdo_set_actual_position(actual_position * polarity, InOut);
+        pdo_set_actual_position(actual_position, InOut);
+        InOut.user1_out = send_to_master.sensor_torque;
 
 
         /* Read/Write packets to ethercat Master application */

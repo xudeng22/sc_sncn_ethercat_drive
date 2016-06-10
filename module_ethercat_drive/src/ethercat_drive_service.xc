@@ -119,6 +119,11 @@ static int quick_stop_init(int opmode,
         /* TODO implement quick stop profile */
     }
 
+    /* FIXME avoid to accelerate to perform a quick stop */
+    if ((actual_velocity < 200) && (actual_velocity > -200)) {
+        return 0;
+    }
+
     if (actual_velocity < 0) {
         actual_velocity = -actual_velocity;
     }
@@ -216,6 +221,8 @@ static void debug_print_state(DriveState_t state)
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
+#define QUICK_STOP_WAIT_COUNTER    2000
+
 /* NOTE:
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
@@ -229,6 +236,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 {
     int quick_stop_steps = 0;
     int quick_stop_steps_left = 0;
+    int quick_stop_count = 0;
 
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
@@ -357,7 +365,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
         FaultCode fault = send_to_master.error_status;
 
-        xscope_int(TARGET_POSITION, target_position);
+        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
         xscope_int(ACTUAL_POSITION, actual_position);
         xscope_int(FAMOUS_FAULT, fault);
 
@@ -485,11 +493,16 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* quick stop function shall be started and running */
             { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
             if (quick_stop_steps_left == 0 ) {
-                state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                quick_stop_steps = 0;
+                quick_stop_count += 1;
                 qs_target_position = actual_position;
                 i_position_control.disable();
+                if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
+                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                    quick_stop_steps = 0;
+                    quick_stop_count = 0;
+                }
             }
+
             break;
 
         case S_FAULT_REACTION_ACTIVE:

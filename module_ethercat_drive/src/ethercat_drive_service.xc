@@ -63,22 +63,15 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
     unsigned int time;
 
-    int sdo_configured = 0;
-
-    while (sdo_configured == 0) {
-        select {
-            case i_coe.configuration_ready():
-                //printstrln("Master requests OP mode - cyclic operation is about to start.");
-                sdo_configured = 1;
-                break;
-        }
-
-        t when timerafter(time+delay) :> time;
+    select {
+    case i_coe.configuration_ready():
+        //printstrln("Master requests OP mode - cyclic operation is about to start.");
+        break;
     }
 
     /* comment in the read_od_config() function to print the object values */
     //read_od_config(i_coe);
-    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
+    printstrln("start cyclic operation");
 
     /* clear the notification before proceeding the operation */
     i_coe.configuration_done();

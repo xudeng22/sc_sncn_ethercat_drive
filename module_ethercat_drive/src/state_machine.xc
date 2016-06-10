@@ -64,7 +64,8 @@ bool ctrl_enable_op(int control_word) {
 }
 
 bool ctrl_quick_stop_enable(int control) {
-    return ((control & CTRL_QUICK_STOP_INIT) == 0 ? 0 : 1);
+    //return ((control & CTRL_QUICK_STOP_INIT) == 0 ? 0 : 1);
+    return ( ((control&0x0006) == 0x0002) ? true : false );
 }
 
 bool ctrl_quick_stop_finished(int control) {

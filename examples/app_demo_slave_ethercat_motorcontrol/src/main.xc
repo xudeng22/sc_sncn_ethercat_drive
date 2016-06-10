@@ -92,11 +92,17 @@ int main(void)
 
             profiler_config.max_current_slope = MAX_CURRENT_VARIATION;
             profiler_config.max_current = MAX_CURRENT;
-
+#if 0
+            ethercat_drive_service_debug( profiler_config,
+                                    pdo_out, pdo_in, i_coe,
+                                    i_motorcontrol[0],
+                                    i_position_control[0], i_position_feedback[0]);
+#else
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[0],
                                     i_position_control[0], i_position_feedback[0]);
+#endif
         }
 
         on tile[APP_TILE_2]:

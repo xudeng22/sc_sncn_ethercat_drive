@@ -64,7 +64,7 @@ void cm_sync_config_motor_control(
     //motorcontrol_config.max_current        = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);
     //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
     //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
-    motorcontrol_config.commutation_offset = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0); /* FIXME name will change to commutation offset/angle */
+    motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0);
     //motorcontrol_config.torque_constant    = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
     motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
     motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);

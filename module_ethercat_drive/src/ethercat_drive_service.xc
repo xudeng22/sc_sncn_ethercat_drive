@@ -815,7 +815,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
 
     printstr("Motorconfig\n");
     printstr("pole pair: "); printintln(motorcontrol_config.pole_pair);
-    printstr("commutation offset: "); printintln(motorcontrol_config.commutation_offset);
+    printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
 
     printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);
     printstr("Protecction limit over voltage: "); printintln(motorcontrol_config.protection_limit_over_voltage);

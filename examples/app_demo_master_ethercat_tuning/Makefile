@@ -63,3 +63,4 @@ endif
 
 clean:
 	rm -f bin/$(notdir $(shell pwd))
+	rmdir bin

@@ -6,7 +6,7 @@
 
 #include <ctrlproto_m.h>
 #include <ecrt.h>
-#include <motor_define.h>
+//#include <motor_define.h>
 #include <sys/time.h>
 #include <time.h>
 #include "ethercat_setup.h"
@@ -33,6 +33,7 @@ ncols; // number of columns in window
 //printf("Torque: %d\n", slv_handles[slave_number].torque_in);
 //printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
 
+#define DISPLAY_LINE 7
 
 void draw(char dc)
 {
@@ -46,18 +47,22 @@ void draw(char dc)
     if (c == ncols) {
         c = 0;
         r++;
-        if (r == nrows) r = 4;
+        if (r == nrows) r = DISPLAY_LINE;
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     char d;
     WINDOW *wnd;
     int slave_number = 0;
+    //take arg 1 as slave number (1 is the first slave)
+    if (argc > 1)
+        slave_number = strtol(argv[1], NULL, 10)-1;
 
     /* Initialize EtherCAT Master */
     init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+    master_activate_operation(&master_setup);
 
     //init ncurses
     wnd = initscr(); // curses call to initialize window
@@ -68,16 +73,21 @@ int main()
     refresh(); // curses call to implement all changes since last refresh
     nodelay(stdscr, TRUE); //no delay
 
-    r = 4; c = 0;
+    r = DISPLAY_LINE; c = 0;
     int i = 0;
     int value = 0;
-    char mode = 0;
+    char mode = '@';
+    char mode_2 = '@';
+    char mode_3 = '@';
     int sign = 1;
     int ack = 0;
     int quit = 0;
-    int offset_clk = 0, offset_cclk=0, sensor_offset = 0;
-    int winding_type = 0, polarity = 0, field_control_flag = 0;
-    int pole_pairs = 0;
+    int offset = 0;
+    int motor_polarity = 0, sensor_polarity = 0, torque_control_flag = 0, position_ctrl_flag = 0, brake_flag = 0;
+    int pole_pairs = 15;
+    int target_position = 123456;
+    int target_torque = 1234;
+
 
     /* Write Process data */
     slv_handles[slave_number].motorctrl_out = 0;
@@ -102,49 +112,65 @@ int main()
         }
 
         //receive and print data
-        if(master_setup.op_flag) /*Check if the master is active*/
-        {   //print
+        if(master_setup.op_flag) {/*Check if the master is active*/
+            //demux received data
+            int status_mux = slv_handles[slave_number].motorctrl_status_in;
+            switch(status_mux) {
+            case 0://flags
+                brake_flag = slv_handles[slave_number].user4_in & 1;
+                position_ctrl_flag = (slv_handles[slave_number].user4_in >> 1) & 1;
+                torque_control_flag = (slv_handles[slave_number].user4_in >> 2) & 1;
+                sensor_polarity = (slv_handles[slave_number].user4_in >> 3) & 1;
+                motor_polarity = (slv_handles[slave_number].user4_in >> 4) & 1;
+                break;
+            case 1://offset
+                offset = slv_handles[slave_number].user4_in;
+                break;
+            case 2://pole pairs
+                pole_pairs = slv_handles[slave_number].user4_in;
+                break;
+            case 3://target torque
+                target_torque = slv_handles[slave_number].user4_in;
+                break;
+            default://target position
+                target_position = slv_handles[slave_number].user4_in;
+                break;
+            }
+
+            //print
             move(0, 0);
             clrtoeol();
-            int16_t peak_current = slv_handles[slave_number].position_in >> 16;
-            int16_t field = slv_handles[slave_number].position_in;
-            printw("Peak current %4d | Velocity %4d    | Field %4d          | Torque %4d",
-                    peak_current, slv_handles[slave_number].speed_in, field, slv_handles[slave_number].torque_in);
+            printw("Position %14d | Velocity %4d | Torque %4d",
+                    slv_handles[slave_number].position_in, slv_handles[slave_number].speed_in, slv_handles[slave_number].torque_in);
             move(1, 0);
             clrtoeol();
-            int status_mux = slv_handles[slave_number].operation_mode_disp & 0x7f;
-            switch(status_mux) {
-            case 0:
-                offset_clk = slv_handles[slave_number].motorctrl_status_in;
-                break;
-            case 1:
-                offset_cclk = slv_handles[slave_number].motorctrl_status_in;
-                break;
-            case 2:
-                sensor_offset = slv_handles[slave_number].motorctrl_status_in;
-                break;
-            case 3:
-                winding_type = (slv_handles[slave_number].motorctrl_status_in & 0b001);
-                polarity = (slv_handles[slave_number].motorctrl_status_in & 0b010);
-                field_control_flag = (slv_handles[slave_number].motorctrl_status_in & 0b100);
-                pole_pairs = slv_handles[slave_number].motorctrl_status_in >> 3;
-            }
-            printw("Offset clk %4d   | Offset cclk %4d | Sensor Offset %5d | Pole pairs %2d",
-                   offset_clk, offset_cclk, sensor_offset, pole_pairs);
-            move(2, 0);
+            printw("Offset %4d             | Pole pairs %2d", offset, pole_pairs);
+            move(2,0);
             clrtoeol();
-            if (polarity)
-                printw("Polarity Inverted | ");
+            if (motor_polarity == 0)
+                printw("Motor polarity normal   | ");
             else
-                printw("Polarity  Normal  | ");
-            if (winding_type)
-                printw("Delta Winding    | ");
+                printw("Motor polarity inverted | ");
+            if (sensor_polarity == 0)
+                printw("Sensor polarity normal");
             else
-                printw("Star  Winding    | ");
-            if (field_control_flag)
-                printw("Field control on");
+                printw("Sensor polarity inverted");
+            move(3,0);
+            clrtoeol();
+            if (torque_control_flag == 0)
+                printw("Torque control off      | ");
             else
-                printw("Field control off");
+                printw("Torque control %8d | ", target_torque);
+            if (position_ctrl_flag == 0)
+                printw("Position control off");
+            else
+                printw("Position control %9d", target_position);
+            move(4,0);
+            clrtoeol();
+            if (brake_flag == 0)
+                printw("Brake blocking");
+            else
+                printw("Brake released");
         }
 
         //read user input
@@ -162,21 +188,30 @@ int main()
             } else if (d == '-') {
                 sign = -1;
             } else if (d != ' ' && d != '\n') {
-                mode = d;
+                if (mode == '@') {
+                    mode = d;
+                } else if (mode_2 == '@') {
+                    mode_2 = d;
+                } else {
+                    mode_3 = d;
+                }
             }
 
             //set command
             if (d == '\n') {
-                move(4, 0);
+                move(DISPLAY_LINE, 0);
                 clrtoeol();
-                move(3, 0);
+                move(DISPLAY_LINE-1, 0);
                 clrtoeol();
                 value *= sign;
-                printw("value %d, mode %c", value, mode);
+                printw("value %d, mode %c, mode_2 %c, mode_3 %c", value, mode, mode_2, mode_3);
                 slv_handles[slave_number].position_setpoint = value;
                 slv_handles[slave_number].operation_mode = mode;
+                slv_handles[slave_number].motorctrl_out = (mode_3 << 8 ) + mode_2;
                 value = 0;
-                mode = 0;
+                mode = '@';
+                mode_2 = '@';
+                mode_3 = '@';
                 sign = 1;
                 c = 0;
             }

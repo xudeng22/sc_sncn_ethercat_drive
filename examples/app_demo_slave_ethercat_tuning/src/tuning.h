@@ -15,7 +15,8 @@
 #include <adc_service.h>
 #include <position_ctrl_service.h>
 #include <profile_control.h>
-#include <cia402_wrapper.h>
+#include <ethercat_service.h>
+#include <pdo_handler.h>
 
 #include <xscope.h>
 #include <mc_internal_constants.h>
@@ -30,8 +31,7 @@ interface TuningInterface {
 };
 
 
-void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_commutation,
-                       interface ADCInterface client ?i_adc, chanend coe_out, chanend pdo_out, chanend pdo_in,
-                       interface PositionControlInterface client ?i_position_control,
-                       interface HallInterface client ?i_hall, interface BISSInterface client ?i_biss, interface AMSInterface client ?i_ams);
+void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
+                      interface PositionVelocityCtrlInterface client ?i_position_control,
+                      chanend pdo_out, chanend pdo_in, client interface i_coe_communication i_coe);
 

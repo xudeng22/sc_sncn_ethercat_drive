@@ -771,3 +771,72 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 //#pragma xta endpoint "ecatloop_stop"
     }
 }
+
+/*
+ * super simple test function for debugging without actual ethercat communication to just
+ * test if the motor will move.
+ */
+void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
+                            chanend pdo_out, chanend pdo_in,
+                            client interface i_coe_communication i_coe,
+                            client interface MotorcontrolInterface i_motorcontrol,
+                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionFeedbackInterface i_position_feedback)
+{
+    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
+    MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
+
+    UpstreamControlData   send_to_master;
+    DownstreamControlData send_to_control;
+    send_to_control.position_cmd = 0;
+    send_to_control.velocity_cmd = 0;
+    send_to_control.torque_cmd = 0;
+    send_to_control.offset_torque = 0;
+
+    int enabled = 0;
+
+    timer t;
+    unsigned time;
+
+    printstr("Motorconfig\n");
+    printstr("pole pair: "); printintln(motorcontrol_config.pole_pair);
+    printstr("commutation offset: "); printintln(motorcontrol_config.commutation_offset);
+
+    printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);
+    printstr("Protecction limit over voltage: "); printintln(motorcontrol_config.protection_limit_over_voltage);
+    printstr("Protecction limit under voltage: "); printintln(motorcontrol_config.protection_limit_under_voltage);
+
+    t :> time;
+//    i_motorcontrol.set_offset_detection_enabled();
+//    delay_milliseconds(30000);
+
+    while (1) {
+
+        send_to_master = i_position_control.update_control_data(send_to_control);
+
+        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+        xscope_int(ACTUAL_POSITION, send_to_master.position);
+        xscope_int(FAMOUS_FAULT,    send_to_master.error_status * 1000);
+
+        if (enabled == 0) {
+            //delay_milliseconds(2000);
+//            i_motorcontrol.set_torque_control_enabled();
+//            i_position_control.enable_torque_ctrl();
+           //i_position_control.enable_velocity_ctrl();
+           //printstr("enable\n");
+            i_position_control.enable_position_ctrl();
+            enabled = 1;
+        }
+        else {
+//            i_motorcontrol.set_torque(100);
+//            i_position_control.set_velocity(0);
+//            i_position_control.set_position(0);
+//            i_position_control.set_velocity(500);
+            send_to_control.position_cmd = 100000;
+//            send_to_control.offset_torque = 0;
+        }
+
+        t when timerafter(time + MSEC_STD) :> time;
+    }
+}

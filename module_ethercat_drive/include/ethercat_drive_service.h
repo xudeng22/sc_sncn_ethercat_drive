@@ -36,3 +36,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback);
+
+void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
+                            chanend pdo_out, chanend pdo_in,
+                            client interface i_coe_communication i_coe,
+                            client interface MotorcontrolInterface i_motorcontrol,
+                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionFeedbackInterface i_position_feedback);

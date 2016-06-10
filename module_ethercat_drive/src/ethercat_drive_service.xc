@@ -426,11 +426,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 unsigned ts_comm_inactive;
                 t :> ts_comm_inactive;
                 if (ts_comm_inactive - c_time > 1*SEC_STD) {
-                    //printstrln("comm inactive timeout");
                     state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
-                    printstrln("Timeout Hit got to fault mode");
-                    t :> c_time;
-                    t when timerafter(c_time + 2*SEC_STD) :> c_time;
                     inactive_timeout_flag = 1;
                 }
             }

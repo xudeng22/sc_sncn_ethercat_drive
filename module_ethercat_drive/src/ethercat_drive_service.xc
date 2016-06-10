@@ -88,8 +88,25 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
 {
     static int step = 0;
 
-    if (step >= steps)
+    if (step >= steps) {
+        step = 0;
         return { 0, 0 };
+    }
+
+#if 1
+    /* This looks like a quick and dirty hack and it is to make the quick_stop stop if we reach
+     * a minimal velocity. This avoids the reacceleration of the motor to reach the real quick stop
+     * position.
+     *
+     * FIXME maybe the profile generation is not correct
+     *
+     */
+
+    if ((velocity < 200) && (velocity > -200)) {
+        step = 0;
+        return { 0, 0 };
+    }
+#endif
 
     int target_position = quick_stop_position_profile_generate(step, velocity);
 

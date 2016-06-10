@@ -98,6 +98,10 @@
 /* Statusword bit for CSP */
 #define SW_CSP_FOLLOWING_ERROR            0x2000
 #define SW_CSP_TARGET_POSITION_IGNORED    0x1000
+#define SW_FAULT_OVER_CURRENT             0x4000
+#define SW_FAULT_UNDER_VOLTAGE            0x8000
+#define SW_FAULT_OVER_VOLTAGE             0xC000
+#define SW_FAULT_OVER_TEMPERATURE         0x0100
 
 /* List of operation modes, not all modes are supported by this device */
 #define OPMODE_NONE    0   /* No operation mode selected */

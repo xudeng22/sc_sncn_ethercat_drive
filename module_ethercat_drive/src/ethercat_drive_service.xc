@@ -15,6 +15,7 @@
 #include <position_ctrl_service.h>
 #include <position_feedback_service.h>
 #include <profile_control.h>
+#include <xscope.h>
 
 /* FIXME move to some stdlib */
 #define ABSOLUTE_VALUE(x)   (x < 0 ? -x : x)
@@ -332,18 +333,38 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        rxdata.position_cmd = target_position;
+        send_to_control.position_cmd = target_position;
         if (quick_stop_steps != 0) {
-            rxdata.position_cmd = qs_target_position;
+            send_to_control.position_cmd = qs_target_position;
         }
 
-        txdata = i_position_control.update_control_data(rxdata);
-        //printintln(rxdata.position_cmd);
+        send_to_master = i_position_control.update_control_data(send_to_control);
 
         /* i_position_control.get_all_feedbacks; */
-        actual_velocity = txdata.velocity; //i_position_control.get_velocity();
-        actual_position = txdata.position; //i_position_control.get_position();
-        actual_torque   = txdata.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
+        actual_velocity = send_to_master.velocity; //i_position_control.get_velocity();
+        actual_position = send_to_master.position; //i_position_control.get_position();
+        actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
+        FaultCode fault = send_to_master.error_status;
+
+        xscope_int(TARGET_POSITION, target_position);
+        xscope_int(ACTUAL_POSITION, actual_position);
+        xscope_int(FAMOUS_FAULT, fault);
+
+        /*
+         * Fault signaling to the master in the manufacturer specifc bit in the the statusword
+         */
+        if (fault != NO_FAULT) {
+            update_checklist(checklist, opmode, 1);
+            if (fault == OVER_CURRENT_PHASE_A || fault == OVER_CURRENT_PHASE_B || fault == OVER_CURRENT_PHASE_C) {
+                SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
+            } else if (fault == UNDER_VOLTAGE) {
+                SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
+            } else if (fault == OVER_VOLTAGE) {
+                SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
+            } else if (fault == 99/*OVER_TEMPERATURE*/) {
+                SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
+            }
+        }
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
 

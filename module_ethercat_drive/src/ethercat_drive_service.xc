@@ -280,8 +280,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
 
-    UpstreamControlData   txdata;
-    DownstreamControlData rxdata;
+    UpstreamControlData   send_to_master = { 0 };
+    DownstreamControlData send_to_control = { 0 };
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.

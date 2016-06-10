@@ -470,7 +470,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             state = get_next_state(state, checklist, controlword, 0);
             if (state == S_OPERATION_ENABLE) {
                 i_position_control.enable_position_ctrl();
-                //printstr("switch on\n");
             }
             break;
 
@@ -492,6 +491,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         case S_QUICK_STOP_ACTIVE:
             /* quick stop function shall be started and running */
             { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+
             if (quick_stop_steps_left == 0 ) {
                 quick_stop_count += 1;
                 qs_target_position = actual_position;
@@ -512,6 +512,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+
             if (quick_stop_steps_left == 0) {
                 state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                 quick_stop_steps = 0;

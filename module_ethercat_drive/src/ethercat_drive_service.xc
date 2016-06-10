@@ -510,6 +510,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         case S_FAULT:
             /* wait until fault reset from the control device appears */
             state = get_next_state(state, checklist, controlword, 0);
+
+            if (state != S_FAULT) {
+                CLEAR_BIT(statusword, SW_FAULT_OVER_CURRENT);
+                CLEAR_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
+                CLEAR_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
+                CLEAR_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
+            }
             break;
 
         default: /* should never happen! */

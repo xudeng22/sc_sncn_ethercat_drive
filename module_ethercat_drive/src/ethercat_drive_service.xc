@@ -365,9 +365,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
         FaultCode fault = send_to_master.error_status;
 
-        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-        xscope_int(ACTUAL_POSITION, actual_position);
-        xscope_int(FAMOUS_FAULT, fault);
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, actual_position);
+//        xscope_int(FAMOUS_FAULT, fault * 1000);
 
         /*
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
@@ -829,9 +829,9 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
 
         send_to_master = i_position_control.update_control_data(send_to_control);
 
-        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-        xscope_int(ACTUAL_POSITION, send_to_master.position);
-        xscope_int(FAMOUS_FAULT,    send_to_master.error_status * 1000);
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, send_to_master.position);
+//        xscope_int(FAMOUS_FAULT,    send_to_master.error_status * 1000);
 
         if (enabled == 0) {
             //delay_milliseconds(2000);

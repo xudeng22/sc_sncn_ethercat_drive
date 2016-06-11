@@ -436,7 +436,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         }
 
         /* Check states of the motor drive, sensor drive and control servers */
-        update_checklist(checklist, opmode, 0);
+        update_checklist(checklist, opmode, fault);
 
         /*
          * new, perform actions according to state
@@ -525,7 +525,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* wait until fault reset from the control device appears */
             state = get_next_state(state, checklist, controlword, 0);
 
-            if (state != S_FAULT) {
+            if (state == S_SWITCH_ON_DISABLED) {
                 CLEAR_BIT(statusword, SW_FAULT_OVER_CURRENT);
                 CLEAR_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
                 CLEAR_BIT(statusword, SW_FAULT_OVER_VOLTAGE);

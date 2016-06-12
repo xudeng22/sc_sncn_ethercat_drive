@@ -92,11 +92,17 @@ int main(void)
 
             profiler_config.max_current_slope = MAX_CURRENT_VARIATION;
             profiler_config.max_current = MAX_CURRENT;
-
+#if 0
+            ethercat_drive_service_debug( profiler_config,
+                                    pdo_out, pdo_in, i_coe,
+                                    i_motorcontrol[0],
+                                    i_position_control[0], i_position_feedback[0]);
+#else
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, i_coe,
                                     i_motorcontrol[0],
                                     i_position_control[0], i_position_feedback[0]);
+#endif
         }
 
         on tile[APP_TILE_2]:
@@ -109,26 +115,32 @@ int main(void)
 
                      pos_velocity_ctrl_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
 
-                     pos_velocity_ctrl_config.int21_min_position =-8000;
-                     pos_velocity_ctrl_config.int21_max_position = 8000;
-                     pos_velocity_ctrl_config.int10_P_position = POSITION_Kp;
-                     pos_velocity_ctrl_config.int10_I_position = POSITION_Ki;
-                     pos_velocity_ctrl_config.int10_D_position = POSITION_Kd;
-                     pos_velocity_ctrl_config.int21_P_error_limit_position = 10000;
-                     pos_velocity_ctrl_config.int21_I_error_limit_position = 0;
-                     pos_velocity_ctrl_config.int22_integral_limit_position = 0;
+                     pos_velocity_ctrl_config.int21_min_position = -0x7fffffff;
+                     pos_velocity_ctrl_config.int21_max_position =  0x7fffffff;
+                     pos_velocity_ctrl_config.int21_max_speed = 2000;
+                     pos_velocity_ctrl_config.int21_max_torque = 1000000;
+
+                     pos_velocity_ctrl_config.int10_P_position = 200; //POSITION_Kp;
+                     pos_velocity_ctrl_config.int10_I_position = 200; //POSITION_Ki;
+                     pos_velocity_ctrl_config.int10_D_position = 0; //POSITION_Kd;
+                     pos_velocity_ctrl_config.int21_P_error_limit_position = 1000000;
+                     pos_velocity_ctrl_config.int21_I_error_limit_position = 1;
+                     pos_velocity_ctrl_config.int22_integral_limit_position = 1000;
                      //pos_velocity_ctrl_config.int32_cmd_limit_position = 15000;
 
-                     pos_velocity_ctrl_config.int21_max_speed = 15000;
-                     pos_velocity_ctrl_config.int10_P_velocity = 18;
-                     pos_velocity_ctrl_config.int10_I_velocity = 22;
-                     pos_velocity_ctrl_config.int10_D_velocity =25;
-                     pos_velocity_ctrl_config.int21_P_error_limit_velocity = 10000;
-                     pos_velocity_ctrl_config.int21_I_error_limit_velocity =10;
-                     pos_velocity_ctrl_config.int22_integral_limit_velocity = 1000;
+                     pos_velocity_ctrl_config.int10_P_velocity = 5;
+                     pos_velocity_ctrl_config.int10_I_velocity = 0;
+                     pos_velocity_ctrl_config.int10_D_velocity = 5;
+                     pos_velocity_ctrl_config.int21_P_error_limit_velocity = 200000;
+                     pos_velocity_ctrl_config.int21_I_error_limit_velocity = 2000;
+                     pos_velocity_ctrl_config.int22_integral_limit_velocity = 60000;
                      //pos_velocity_ctrl_config.int32_cmd_limit_velocity = 200000;
 
-                     pos_velocity_ctrl_config.int21_max_torque = 1000;
+                     pos_velocity_ctrl_config.position_ref_fc = POSITION_REF_FC;
+                     pos_velocity_ctrl_config.position_fc = POSITION_FC;
+                     pos_velocity_ctrl_config.velocity_ref_fc = VELOCITY_REF_FC;
+                     pos_velocity_ctrl_config.velocity_fc = VELOCITY_FC;
+                     pos_velocity_ctrl_config.velocity_d_fc = VELOCITY_D_FC;
 
                      position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[1], i_position_control);
                 }
@@ -204,13 +216,14 @@ int main(void)
 
                     MotorcontrolConfig motorcontrol_config;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
-                    motorcontrol_config.commutation_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
                     motorcontrol_config.pole_pair =  POLE_PAIRS;
                     motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
                     motorcontrol_config.v_dc =  VDC;
+                    motorcontrol_config.polarity_type=MOTOR_POLARITY;
 
                     /* FIXME figure out some sane settings or something */
                     motorcontrol_config.protection_limit_over_current =  I_MAX;

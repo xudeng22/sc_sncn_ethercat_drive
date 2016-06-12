@@ -164,3 +164,9 @@
 #define RATED_CURRENT          5         // Amp
 #define PEAK_SPEED             9000      // rpm
 
+/* Scary new parameters hope they are correct for QMot */
+#define POSITION_REF_FC         25
+#define POSITION_FC             82
+#define VELOCITY_REF_FC         28
+#define VELOCITY_FC             77
+#define VELOCITY_D_FC           75

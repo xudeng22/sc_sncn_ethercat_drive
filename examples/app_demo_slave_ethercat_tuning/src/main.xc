@@ -15,7 +15,8 @@
 #include <torque_control.h>
 #include <position_feedback_service.h>
 #include <adc_service.h>
-#include <user_config.h>
+//#include <user_config.h>
+#include <user_config_speedy_A1.h>
 #include <tuning.h>
 
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -66,7 +67,17 @@ int main(void)
 
 
         /* tuning service */
-        on tile[APP_TILE]: run_offset_tuning(i_motorcontrol[1], i_position_control[0], i_position_feedback[0], i_position_limiter, pdo_out, pdo_in, i_coe);
+        on tile[APP_TILE]:
+        {
+            ProfilerConfig profiler_config;
+            profiler_config.polarity = POLARITY;
+            profiler_config.max_position = MAX_POSITION_LIMIT;
+            profiler_config.min_position = MIN_POSITION_LIMIT;
+            profiler_config.max_velocity = MAX_VELOCITY;
+            profiler_config.max_acceleration = MAX_ACCELERATION;
+            profiler_config.max_deceleration = MAX_DECELERATION;
+            run_offset_tuning(profiler_config, i_motorcontrol[1], i_position_control[0], i_position_feedback[0], i_position_limiter, pdo_out, pdo_in, i_coe);
+        }
 
 
         on tile[APP_TILE_2]:
@@ -79,7 +90,7 @@ int main(void)
             pos_velocity_ctrl_config.int21_min_position = MIN_POSITION_LIMIT;
             pos_velocity_ctrl_config.int21_max_position = MAX_POSITION_LIMIT;
             pos_velocity_ctrl_config.int21_max_speed = MAX_VELOCITY;
-            pos_velocity_ctrl_config.int21_max_torque = MAX_TORQUE;
+            pos_velocity_ctrl_config.int21_max_torque = TORQUE_CONTROL_LIMIT;
 
 
             pos_velocity_ctrl_config.int10_P_position = POSITION_Kp;
@@ -180,7 +191,7 @@ int main(void)
                     motorcontrol_config.v_dc =  VDC;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
                     motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
-                    motorcontrol_config.polarity_type=MOTOR_POLARITY;
+                    motorcontrol_config.polarity_type=POLARITY;
 
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
 

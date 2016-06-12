@@ -45,11 +45,11 @@ static int get_sensor_resolution(int sensor_select, PositionFeedbackConfig posit
     } else if (sensor_select == QEI_SENSOR) {
         sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
     } else if (sensor_select == BISS_SENSOR) {
-        sensor_resolution = position_feedback_config.biss_config.singleturn_resolution;
+        sensor_resolution = 1<<position_feedback_config.biss_config.singleturn_resolution; /* bits -> ticks */
     } else if (sensor_select == AMS_SENSOR) {
         sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
     } else if (sensor_select == CONTELEC_SENSOR) {
-        sensor_resolution = position_feedback_config.contelec_config.resolution_bits;
+        sensor_resolution = 1<<position_feedback_config.contelec_config.resolution_bits; /* bits -> ticks */
     }
 
     return sensor_resolution;
@@ -63,22 +63,15 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
     unsigned int time;
 
-    int sdo_configured = 0;
-
-    while (sdo_configured == 0) {
-        select {
-            case i_coe.configuration_ready():
-                //printstrln("Master requests OP mode - cyclic operation is about to start.");
-                sdo_configured = 1;
-                break;
-        }
-
-        t when timerafter(time+delay) :> time;
+    select {
+    case i_coe.configuration_ready():
+        //printstrln("Master requests OP mode - cyclic operation is about to start.");
+        break;
     }
 
     /* comment in the read_od_config() function to print the object values */
     //read_od_config(i_coe);
-    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
+    printstrln("start cyclic operation");
 
     /* clear the notification before proceeding the operation */
     i_coe.configuration_done();
@@ -88,8 +81,25 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
 {
     static int step = 0;
 
-    if (step >= steps)
+    if (step >= steps) {
+        step = 0;
         return { 0, 0 };
+    }
+
+#if 1
+    /* This looks like a quick and dirty hack and it is to make the quick_stop stop if we reach
+     * a minimal velocity. This avoids the reacceleration of the motor to reach the real quick stop
+     * position.
+     *
+     * FIXME maybe the profile generation is not correct
+     *
+     */
+
+    if ((velocity < 200) && (velocity > -200)) {
+        step = 0;
+        return { 0, 0 };
+    }
+#endif
 
     int target_position = quick_stop_position_profile_generate(step, velocity);
 
@@ -107,6 +117,11 @@ static int quick_stop_init(int opmode,
 
     if (opmode == OPMODE_CST || opmode == OPMODE_CSV) {
         /* TODO implement quick stop profile */
+    }
+
+    /* FIXME avoid to accelerate to perform a quick stop */
+    if ((actual_velocity < 200) && (actual_velocity > -200)) {
+        return 0;
     }
 
     if (actual_velocity < 0) {
@@ -206,6 +221,8 @@ static void debug_print_state(DriveState_t state)
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
+#define QUICK_STOP_WAIT_COUNTER    2000
+
 /* NOTE:
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
@@ -219,6 +236,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 {
     int quick_stop_steps = 0;
     int quick_stop_steps_left = 0;
+    int quick_stop_count = 0;
 
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
@@ -347,9 +365,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
         FaultCode fault = send_to_master.error_status;
 
-        xscope_int(TARGET_POSITION, target_position);
-        xscope_int(ACTUAL_POSITION, actual_position);
-        xscope_int(FAMOUS_FAULT, fault);
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, actual_position);
+//        xscope_int(FAMOUS_FAULT, fault * 1000);
 
         /*
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
@@ -409,11 +427,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 unsigned ts_comm_inactive;
                 t :> ts_comm_inactive;
                 if (ts_comm_inactive - c_time > 1*SEC_STD) {
-                    //printstrln("comm inactive timeout");
                     state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
-                    printstrln("Timeout Hit got to fault mode");
-                    t :> c_time;
-                    t when timerafter(c_time + 2*SEC_STD) :> c_time;
                     inactive_timeout_flag = 1;
                 }
             }
@@ -422,7 +436,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         }
 
         /* Check states of the motor drive, sensor drive and control servers */
-        update_checklist(checklist, opmode, 0);
+        update_checklist(checklist, opmode, fault);
 
         /*
          * new, perform actions according to state
@@ -456,7 +470,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             state = get_next_state(state, checklist, controlword, 0);
             if (state == S_OPERATION_ENABLE) {
                 i_position_control.enable_position_ctrl();
-                //printstr("switch on\n");
             }
             break;
 
@@ -478,12 +491,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         case S_QUICK_STOP_ACTIVE:
             /* quick stop function shall be started and running */
             { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+
             if (quick_stop_steps_left == 0 ) {
-                state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                quick_stop_steps = 0;
+                quick_stop_count += 1;
                 qs_target_position = actual_position;
                 i_position_control.disable();
+                if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
+                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                    quick_stop_steps = 0;
+                    quick_stop_count = 0;
+                }
             }
+
             break;
 
         case S_FAULT_REACTION_ACTIVE:
@@ -493,6 +512,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+
             if (quick_stop_steps_left == 0) {
                 state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                 quick_stop_steps = 0;
@@ -504,6 +524,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         case S_FAULT:
             /* wait until fault reset from the control device appears */
             state = get_next_state(state, checklist, controlword, 0);
+
+            if (state == S_SWITCH_ON_DISABLED) {
+                CLEAR_BIT(statusword, SW_FAULT_OVER_CURRENT);
+                CLEAR_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
+                CLEAR_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
+                CLEAR_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
+            }
             break;
 
         default: /* should never happen! */
@@ -756,5 +783,74 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         t when timerafter(time + MSEC_STD) :> time;
 
 //#pragma xta endpoint "ecatloop_stop"
+    }
+}
+
+/*
+ * super simple test function for debugging without actual ethercat communication to just
+ * test if the motor will move.
+ */
+void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
+                            chanend pdo_out, chanend pdo_in,
+                            client interface i_coe_communication i_coe,
+                            client interface MotorcontrolInterface i_motorcontrol,
+                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionFeedbackInterface i_position_feedback)
+{
+    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
+    MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
+
+    UpstreamControlData   send_to_master;
+    DownstreamControlData send_to_control;
+    send_to_control.position_cmd = 0;
+    send_to_control.velocity_cmd = 0;
+    send_to_control.torque_cmd = 0;
+    send_to_control.offset_torque = 0;
+
+    int enabled = 0;
+
+    timer t;
+    unsigned time;
+
+    printstr("Motorconfig\n");
+    printstr("pole pair: "); printintln(motorcontrol_config.pole_pair);
+    printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
+
+    printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);
+    printstr("Protecction limit over voltage: "); printintln(motorcontrol_config.protection_limit_over_voltage);
+    printstr("Protecction limit under voltage: "); printintln(motorcontrol_config.protection_limit_under_voltage);
+
+    t :> time;
+//    i_motorcontrol.set_offset_detection_enabled();
+//    delay_milliseconds(30000);
+
+    while (1) {
+
+        send_to_master = i_position_control.update_control_data(send_to_control);
+
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, send_to_master.position);
+//        xscope_int(FAMOUS_FAULT,    send_to_master.error_status * 1000);
+
+        if (enabled == 0) {
+            //delay_milliseconds(2000);
+//            i_motorcontrol.set_torque_control_enabled();
+//            i_position_control.enable_torque_ctrl();
+           //i_position_control.enable_velocity_ctrl();
+           //printstr("enable\n");
+            i_position_control.enable_position_ctrl();
+            enabled = 1;
+        }
+        else {
+//            i_motorcontrol.set_torque(100);
+//            i_position_control.set_velocity(0);
+//            i_position_control.set_position(0);
+//            i_position_control.set_velocity(500);
+            send_to_control.position_cmd = 100000;
+//            send_to_control.offset_torque = 0;
+        }
+
+        t when timerafter(time + MSEC_STD) :> time;
     }
 }

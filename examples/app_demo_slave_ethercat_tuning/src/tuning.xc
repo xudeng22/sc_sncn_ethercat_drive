@@ -30,7 +30,8 @@ int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
     return offset;
 }
 
-void run_offset_tuning(interface MotorcontrolInterface client i_motorcontrol,
+
+void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
                       client interface PositionFeedbackInterface ?i_position_feedback,
                       client interface PositionLimiterInterface ?i_position_limiter,
@@ -79,13 +80,6 @@ void run_offset_tuning(interface MotorcontrolInterface client i_motorcontrol,
 
     /* Initialise the position profile generator */
     if (!isnull(i_position_feedback)) {
-        ProfilerConfig profiler_config;
-        profiler_config.polarity = POLARITY;
-        profiler_config.max_position = MAX_POSITION_LIMIT;
-        profiler_config.min_position = MIN_POSITION_LIMIT;
-        profiler_config.max_velocity = MAX_VELOCITY;
-        profiler_config.max_acceleration = MAX_ACCELERATION;
-        profiler_config.max_deceleration = MAX_DECELERATION;
         profiler_config.ticks_per_turn = i_position_feedback.get_ticks_per_turn();
         init_position_profiler(profiler_config);
 

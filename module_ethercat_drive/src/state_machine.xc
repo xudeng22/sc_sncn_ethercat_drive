@@ -28,6 +28,9 @@ int read_controlword_fault_reset(int control_word) {
     return (control_word & FAULT_RESET_CONTROL) >> 7;
 }
 
+bool ctrl_fault_reset(int controlword) {
+    return ((controlword & FAULT_RESET_CONTROL) == 0 ? false : true);
+}
 bool ctrl_shutdown(int control_word) {
     return !read_controlword_switch_on(control_word)
         && read_controlword_enable_voltage(control_word)
@@ -64,7 +67,8 @@ bool ctrl_enable_op(int control_word) {
 }
 
 bool ctrl_quick_stop_enable(int control) {
-    return ((control & CTRL_QUICK_STOP_INIT) == 0 ? 0 : 1);
+    //return ((control & CTRL_QUICK_STOP_INIT) == 0 ? 0 : 1);
+    return ( ((control&0x0006) == 0x0002) ? true : false );
 }
 
 bool ctrl_quick_stop_finished(int control) {
@@ -150,7 +154,7 @@ int16_t update_statusword(int current_status, DriveState_t state_reached, int ac
             break;
 
         case S_FAULT:
-            status_word = (current_status& ~FAULT_MASQ) | FAULT_STATE; /* Note: guarantee bits which has to be '0' are '0' */
+            status_word = (current_status & ~FAULT_MASQ) | FAULT_STATE; /* Note: guarantee bits which has to be '0' are '0' */
             break;
 
         case S_QUICK_STOP_ACTIVE:
@@ -271,10 +275,11 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_FAULT:
             ctrl_input = read_controlword_fault_reset(controlword);
-            if (!ctrl_input)
-                out_state = S_FAULT;
-            else
+            if (ctrl_fault_reset(controlword)) {
                 out_state = S_SWITCH_ON_DISABLED;
+            } else {
+                out_state = S_FAULT;
+            }
             break;
     }
 

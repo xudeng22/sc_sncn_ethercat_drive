@@ -33,7 +33,7 @@ ncols; // number of columns in window
 //printf("Torque: %d\n", slv_handles[slave_number].torque_in);
 //printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
 
-#define DISPLAY_LINE 7
+#define DISPLAY_LINE 8
 
 void draw(char dc)
 {
@@ -142,14 +142,20 @@ int main(int argc, char *argv[])
             }
 
             //print
-            move(0, 0);
+            int line = 0;
+            move(line, 0);
             clrtoeol();
-            printw("Position %14d | Velocity %4d | Torque %4d",
-                    slv_handles[slave_number].position_in, slv_handles[slave_number].speed_in, slv_handles[slave_number].torque_in);
-            move(1, 0);
+            printw("Position %14d | Velocity %4d",  slv_handles[slave_number].position_in, slv_handles[slave_number].speed_in);
+            line++;
+            move(line, 0);
+            clrtoeol();
+            printw("Torque computed %4d    | Torque sensor %d", slv_handles[slave_number].torque_in, slv_handles[slave_number].user1_in);
+            line++;
+            move(line, 0);
             clrtoeol();
             printw("Offset %4d             | Pole pairs %2d", offset, pole_pairs);
-            move(2,0);
+            line++;
+            move(line,0);
             clrtoeol();
             if (motor_polarity == 0)
                 printw("Motor polarity normal   | ");
@@ -159,7 +165,8 @@ int main(int argc, char *argv[])
                 printw("Sensor polarity normal");
             else
                 printw("Sensor polarity inverted");
-            move(3,0);
+            line++;
+            move(line,0);
             clrtoeol();
             if (torque_control_flag == 0)
                 printw("Torque control off      | ");
@@ -169,7 +176,8 @@ int main(int argc, char *argv[])
                 printw("Position control off");
             else
                 printw("Position control %9d", target_position);
-            move(4,0);
+            line++;
+            move(line,0);
             clrtoeol();
             if (brake_flag == 0)
                 printw("Brake blocking");

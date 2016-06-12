@@ -68,6 +68,11 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
         pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
     }
     DownstreamControlData downstream_control_data;
+    downstream_control_data.velocity_cmd = 0;
+    downstream_control_data.torque_cmd = 0;
+    downstream_control_data.offset_torque = 0;
+    downstream_control_data.position_cmd = 0;
+    UpstreamControlData upstream_control_data;
     ctrl_proto_values_t InOut = init_ctrl_proto();
     InOut = init_ctrl_proto();
 
@@ -114,9 +119,12 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
         select {
         case t when timerafter(ts) :> void:
             //get position and velocity
-            count = i_position_control.get_position();
-            velocity = i_position_control.get_velocity();
-            xscope_int(VELOCITY, velocity);
+//            count = i_position_control.get_position();
+//            velocity = i_position_control.get_velocity();
+            upstream_control_data = i_position_control.update_control_data(downstream_control_data);
+            count = upstream_control_data.position;
+            velocity = upstream_control_data.velocity;
+
 
             //postion limiter
             if (position_limit > 0) {
@@ -137,7 +145,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
 
             //set output values
             InOut.velocity_actual = velocity;
-            InOut.torque_actual = -1000;
+            InOut.torque_actual = upstream_control_data.computed_torque;
             InOut.position_actual = count;
             InOut.operation_mode_display = (0x80 & InOut.operation_mode_display) | status_mux;
             InOut.status_word = status_mux;
@@ -201,17 +209,17 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //go to position directly
             case 'p':
                 target_position = value*sign;
+                downstream_control_data.offset_torque = 0;
+                downstream_control_data.position_cmd = target_position;
                 switch(mode_2) {
                 case 'p':
                     if (!isnull(i_position_feedback)) {
                         position_ctrl_flag = 1;
                         printf("Go to %d with profile\n", target_position);
-                        set_profile_position(target_position, 1000, 1000, 1000, i_position_control);
+                        set_profile_position(downstream_control_data, 1000, 1000, 1000, i_position_control);
                     }
                     break;
                 default:
-                    downstream_control_data.offset_torque = 0;
-                    downstream_control_data.position_cmd = target_position;
                     i_position_control.update_control_data(downstream_control_data);
                     printf("Go to %d\n", target_position);
                     break;
@@ -341,6 +349,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                             position_ctrl_flag = 1;
                             torque_control_flag = 0;
                             target_position = count;
+                            downstream_control_data.position_cmd = upstream_control_data.position;
                             i_position_control.enable_position_ctrl();
                             printf("position ctrl enabled\n");
                             break;
@@ -348,6 +357,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                             position_ctrl_flag = 1;
                             torque_control_flag = 0;
                             target_position = 0;
+                            downstream_control_data.velocity_cmd = 0;
                             i_position_control.enable_velocity_ctrl();
                             printf("velocity ctrl enabled\n");
                             break;

@@ -52,14 +52,14 @@
 #define CONTROL_LOOP_PERIOD     1000
 
 // PID FOR POSITION CONTROL (units * 10000)
-#define POSITION_Kp       35   /* 0x20f9:1 */
-#define POSITION_Ki       20   /* 0x20f9:2 */
-#define POSITION_Kd       0    /* 0x20f9:3 */
+#define POSITION_Kp       35   /* 0x20fb:1 */
+#define POSITION_Ki       20   /* 0x20fb:2 */
+#define POSITION_Kd       0    /* 0x20fb:3 */
 
 // PID FOR VELOCITY CONTROL (units * 10000)
-#define VELOCITY_Kp       30   /* 0x20fb:1 */
-#define VELOCITY_Ki       0    /* 0x20fb:2 */
-#define VELOCITY_Kd       40   /* 0x20fb:3 */
+#define VELOCITY_Kp       30   /* 0x20f9:1 */
+#define VELOCITY_Ki       0    /* 0x20f9:2 */
+#define VELOCITY_Kd       40   /* 0x20f9:3 */
 
 // PID FOR TORQUE CONTROL (units * 10000)
 #define TORQUE_Kp         1000    /* 0x20f6:1 */

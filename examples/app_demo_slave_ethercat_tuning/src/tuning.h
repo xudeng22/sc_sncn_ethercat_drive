@@ -21,14 +21,17 @@
 
 #include <xscope.h>
 #include <mc_internal_constants.h>
-#include <user_config.h>
+
+//FixMe Profiler initialization should be done in main. The user_config thus will be excluded from here!
+//#include <user_config_speedy_A1.h>
+//#include <user_config.h>
 
 interface PositionLimiterInterface {
     void set_limit(int limit);
 };
 
 
-void run_offset_tuning(int position_limit, interface MotorcontrolInterface client i_motorcontrol,
+void run_offset_tuning(ProfilerConfig profiler_config, int position_limit, interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
                       client interface PositionFeedbackInterface ?i_position_feedback,
                       client interface PositionLimiterInterface ?i_position_limiter,

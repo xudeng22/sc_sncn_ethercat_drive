@@ -57,15 +57,14 @@ void cm_sync_config_motor_control(
 
     motorcontrol_config = i_commutation.get_config();
 
-    motorcontrol_config.bldc_winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); /* FIXME check if the object contains values that respect BLDCWindingType */
+    //motorcontrol_config.bldc_winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); /* FIXME check if the object contains values that respect BLDCWindingType */
 
     motorcontrol_config.pole_pair          = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-    motorcontrol_config.max_torque         = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
+    motorcontrol_config.max_torque         = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
     //motorcontrol_config.max_current        = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);
     //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
     //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
     motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0);
-    //motorcontrol_config.torque_constant    = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
     motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
     motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
     motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
@@ -87,11 +86,11 @@ void cm_sync_config_profiler(
     profiler.velocity         =  i_coe.get_object_value(CIA402_PROFILE_VELOCITY, 0);
     profiler.acceleration     =  i_coe.get_object_value(CIA402_PROFILE_ACCELERATION, 0);
     profiler.deceleration     =  i_coe.get_object_value(CIA402_PROFILE_DECELERATION, 0);
-    profiler.max_deceleration =  i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0);
-    profiler.min_position     =  i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
-    profiler.max_position     =  i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
+    //profiler.max_deceleration =  i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0); /* */
+    profiler.min_position     =  i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);
+    profiler.max_position     =  i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);
     profiler.polarity         =  i_coe.get_object_value(CIA402_POLARITY, 0);
-    profiler.max_acceleration =  i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0);
+    //profiler.max_acceleration =  i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0); /* */
 }
 
 void cm_sync_config_pos_velocity_control(
@@ -108,12 +107,12 @@ void cm_sync_config_pos_velocity_control(
     //position_config.int32_cmd_limit_position     = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);/* 15000; */
     //position_config.int32_cmd_limit_position_min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);/* 15000; */
 
-    position_config.int21_max_speed           = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
+    position_config.int21_max_speed           = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4); /* 15000; */
+    // FIXME use this in the future ESI: position_config.int21_max_speed           = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
+    position_config.int21_max_torque          = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
     position_config.int10_P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
     position_config.int10_I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
     position_config.int10_D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
-
-    position_config.int21_max_torque   = i_coe.get_object_value(CIA402_MAX_TORQUE, 0); /* 1000; */
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us

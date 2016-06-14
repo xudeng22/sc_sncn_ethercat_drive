@@ -420,6 +420,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_actual_position(actual_position, InOut);
         InOut.user1_out = (1000 * 5 * send_to_master.sensor_torque) / 4096;  /* ticks to (edit:) milli-volt */
 
+        //xscope_int(USER_TORQUE, InOut.user1_out);
 
         /* Read/Write packets to ethercat Master application */
         communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);

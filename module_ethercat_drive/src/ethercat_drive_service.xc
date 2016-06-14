@@ -223,6 +223,10 @@ static void debug_print_state(DriveState_t state)
 
 #define QUICK_STOP_WAIT_COUNTER    2000
 
+#define UPDATE_POSITION_GAIN    0x0000000f
+#define UPDATE_VELOCITY_GAIN    0x000000f0
+#define UPDATE_TORQUE_GAIN      0x00000f00
+
 /* NOTE:
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
@@ -245,7 +249,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
-
+    int update_position_velocity = 0;
     int follow_error = 0;
     //int target_position_progress = 0; /* is current target_position necessary to remember??? */
 
@@ -345,6 +349,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
         send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
+        update_position_velocity = InOut.user2_in; /* Update trigger which PID setting should be updated now */
 
         /*
         printint(state);
@@ -538,6 +543,34 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
             break;
         }
+
+#if 1 /* Draft to get PID updates on the fly */
+        t :> time; /* FIXME check the timing here! */
+
+        if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
+            /* Update PID vlaues so they can be set on the fly */
+            position_velocity_config.int10_P_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+            position_velocity_config.int10_I_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+            position_velocity_config.int10_D_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+
+            i_position_control.set_position_pid_coefficients(position_velocity_config.int10_P_position, position_velocity_config.int10_I_position, position_velocity_config.int10_D_position);
+        }
+
+        if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
+            position_velocity_config.int10_P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+            position_velocity_config.int10_I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+            position_velocity_config.int10_D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+
+            i_position_control.set_velocity_pid_coefficients(position_velocity_config.int10_P_velocity, position_velocity_config.int10_I_velocity, position_velocity_config.int10_D_velocity);
+        }
+
+
+        /*
+        motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
+        motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
+        motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+         */
+#endif
 
         /* wait 1 ms to respect timing */
         t when timerafter(time + MSEC_STD) :> time;

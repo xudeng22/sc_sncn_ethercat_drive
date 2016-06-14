@@ -23,7 +23,7 @@
 #define POLARITY           1      /* 0x607E */
 
 //equivalent to torque constant (Nm at 1000 A)
-#define MAXIMUM_TORQUE          57   /* 0x20F6:6 (Motor Specific Torque Constant */
+#define MAXIMUM_TORQUE          57   /* 0x2410:6 (Motor Specific Torque Constant */
 
 // (uOhm)
 #define PHASE_RESISTANCE        552000   /* 0x2410:2 */
@@ -40,8 +40,8 @@
 // RESOLUTION OF YOUR ENCODER (increments)
 #define SENSOR_RESOLUTION      262144 //0x40000  //!4000 /* 0x308f */
 
-// POLARITY OF YOUR ENCODER [1, -1]
-#define SENSOR_POLARITY         1      /* 0x2004 */
+// POLARITY OF YOUR ENCODER [1, 0]
+#define SENSOR_POLARITY         0      /* 0x2004 */
 
 
 ///////////////////////////////////////////////
@@ -75,7 +75,7 @@
 #define COMMUTATION_LOOP_PERIOD     66
 
 // COMMUTATION CW SPIN OFFSET (if applicable) [0:4095]
-#define COMMUTATION_OFFSET_CLK      2071    /* 0x2001 */
+#define COMMUTATION_OFFSET_CLK      3060    /* 0x2001 */
 
 // COMMUTATION CCW SPIN OFFSET (if applicable) [0:4095]
 #define COMMUTATION_OFFSET_CCLK     0
@@ -113,7 +113,7 @@
 #define MAX_DECELERATION         3000   /* 0x6085 (future use) */
 
 // torque controller input limit (units * 1024)
-#define TORQUE_CONTROL_LIMIT    1200000 //!1000000       /* 0x6072 */
+#define TORQUE_CONTROL_LIMIT    1200000 //!1000000       /* 0x6072 MAX_TORQUE */
 
 
 //////////////////////////////////////////////

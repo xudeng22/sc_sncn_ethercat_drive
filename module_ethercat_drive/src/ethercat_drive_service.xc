@@ -139,7 +139,7 @@ static int quick_stop_init(int opmode,
 
 static void inline update_configuration(
         client interface i_coe_communication           i_coe,
-        client interface MotorcontrolInterface         i_commutation,
+        client interface MotorcontrolInterface         i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface i_pos_feedback,
         PosVelocityControlConfig  &position_config,
@@ -160,7 +160,7 @@ static void inline update_configuration(
 
     cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
     cm_sync_config_profiler(i_coe, profiler_config);
-    cm_sync_config_motor_control(i_coe, i_commutation, motorcontrol_config);
+    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
 
     /* Update values with current configuration */
@@ -169,8 +169,8 @@ static void inline update_configuration(
     polarity = profiler_config.polarity;
 
     nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-    limit_switch_type = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);
-    homing_method     = i_coe.get_object_value(CIA402_HOMING_METHOD, 0);
+    limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
+    homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
     sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
 
     sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);

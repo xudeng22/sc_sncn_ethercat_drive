@@ -268,7 +268,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     int ack = 0;
     int shutdown_ack = 0;
-    int sensor_select = -1;
+    int sensor_select = 1;
 
     int communication_active = 0;
     unsigned int c_time;

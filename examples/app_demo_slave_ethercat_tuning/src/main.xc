@@ -73,7 +73,7 @@ int main(void)
             profiler_config.polarity = POLARITY;
             profiler_config.max_position = MAX_POSITION_LIMIT;
             profiler_config.min_position = MIN_POSITION_LIMIT;
-            profiler_config.max_velocity = MAX_VELOCITY;
+            profiler_config.max_velocity = MAX_SPEED;
             profiler_config.max_acceleration = MAX_ACCELERATION;
             profiler_config.max_deceleration = MAX_DECELERATION;
             run_offset_tuning(profiler_config, i_motorcontrol[1], i_position_control[0], i_position_feedback[0], i_position_limiter, pdo_out, pdo_in, i_coe);
@@ -89,7 +89,7 @@ int main(void)
 
             pos_velocity_ctrl_config.int21_min_position = MIN_POSITION_LIMIT;
             pos_velocity_ctrl_config.int21_max_position = MAX_POSITION_LIMIT;
-            pos_velocity_ctrl_config.int21_max_speed = MAX_VELOCITY;
+            pos_velocity_ctrl_config.int21_max_speed = MAX_SPEED;
             pos_velocity_ctrl_config.int21_max_torque = TORQUE_CONTROL_LIMIT;
 
 

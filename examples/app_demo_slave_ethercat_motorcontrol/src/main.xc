@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <IFM_DC1K-rev-c3.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -86,7 +86,7 @@ int main(void)
             profiler_config.max_position = MAX_POSITION_LIMIT;   /* Set by Object Dictionary value! */
             profiler_config.min_position = MIN_POSITION_LIMIT;   /* Set by Object Dictionary value! */
 
-            profiler_config.max_velocity = MAX_VELOCITY;
+            profiler_config.max_velocity = MAX_SPEED;
             profiler_config.max_acceleration = MAX_ACCELERATION;
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
@@ -115,7 +115,7 @@ int main(void)
 
                      pos_velocity_ctrl_config.int21_min_position = MIN_POSITION_LIMIT;       /* Set by Object Dictionary value! */
                      pos_velocity_ctrl_config.int21_max_position =  MAX_POSITION_LIMIT;      /* Set by Object Dictionary value! */
-                     pos_velocity_ctrl_config.int21_max_speed = MAX_VELOCITY;                /* Set by OD: CIA402_MOTOR_SPECIFIC subindex 4 */
+                     pos_velocity_ctrl_config.int21_max_speed = MAX_SPEED;                /* Set by OD: CIA402_MOTOR_SPECIFIC subindex 4 */
                      pos_velocity_ctrl_config.int21_max_torque = TORQUE_CONTROL_LIMIT;       /* Set by Object Dictionary value CIA402_MAX_TORQUE */
 
                      pos_velocity_ctrl_config.int10_P_position = POSITION_Kp;    /* Set by OD: CIA402_POSITION_GAIN subindex 1 */

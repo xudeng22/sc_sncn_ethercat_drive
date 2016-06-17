@@ -14,9 +14,12 @@ int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
     printf("Sending offset_detection command ...\n");
     i_motorcontrol.set_offset_detection_enabled();
 
-    delay_milliseconds(30000);
+    int offset = -1;
+    while (offset == -1) {
+        delay_milliseconds(50);//wait until offset is detected
+        offset = i_motorcontrol.set_calib(0);
+    }
 
-    int offset=i_motorcontrol.set_calib(0);
     printf("Detected offset is: %i\n", offset);
 //    printf(">>  CHECK PROPER OFFSET POLARITY ...\n");
     int proper_sensor_polarity=i_motorcontrol.get_sensor_polarity_state();

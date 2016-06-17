@@ -27,7 +27,11 @@ ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PositionFeedbackPorts position_feedback_ports = SOMANET_IFM_POSITION_FEEDBACK_PORTS;
 
-#define POSITION_LIMIT 5000000 //+/- 4095
+#if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
+#define POSITION_LIMIT 5000000
+#else
+#define POSITION_LIMIT 0
+#endif
 
 int main(void)
 {

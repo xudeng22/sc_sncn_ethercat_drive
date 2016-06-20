@@ -93,7 +93,7 @@
 ////////////////////////////////////////////
 
 //maximum tolerable value of phase current (A)
-#define I_MAX           60      /* 0x6073 */
+#define I_MAX           90      /* 0x6073 */
 
 //maximum tolerable value of dc-bus voltage (V)
 #define V_DC_MAX        60

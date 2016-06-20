@@ -44,6 +44,14 @@
 #define SENSOR_POLARITY         1      /* 0x2004 */
 
 
+//////////////////////////////////////////////
+//////  BRAKE CONFIGURATION
+////////////////////////////////////////////
+
+//FORESIGHT PROJECT
+#define DUTY_START_BRAKE    10000   // duty cycles for brake release (should be a number between 1500 and 13000)
+#define DUTY_MAINTAIN_BRAKE 1500    // duty cycles for keeping the brake released (should be a number between 1500 and 13000)
+
 ///////////////////////////////////////////////
 //////       CONTROL CONFIGURATION
 /////////////////////////////////////////////

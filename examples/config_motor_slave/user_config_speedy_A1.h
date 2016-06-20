@@ -43,6 +43,14 @@
 // POLARITY OF YOUR ENCODER [1, 0]
 #define SENSOR_POLARITY         0      /* 0x2004 */
 
+//////////////////////////////////////////////
+//////  BRAKE CONFIGURATION
+////////////////////////////////////////////
+
+//MABI PROJECT
+#define DUTY_START_BRAKE    12000   // duty cycles for brake release (should be a number between 1500 and 13000)
+#define DUTY_MAINTAIN_BRAKE 2000    // duty cycles for keeping the brake released (should be a number between 1500 and 13000)
+
 
 ///////////////////////////////////////////////
 //////       CONTROL CONFIGURATION

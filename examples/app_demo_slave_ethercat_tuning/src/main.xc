@@ -139,7 +139,7 @@ int main(void)
 
                     //                    pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
                     delay_milliseconds(1000);
-                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm);
+                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm, DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE);
                 }
 
                 /* ADC Service */

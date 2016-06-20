@@ -33,6 +33,18 @@ int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
     return offset;
 }
 
+void brake_shake(interface MotorcontrolInterface client i_motorcontrol, int torque) {
+    const int period = 50;
+    i_motorcontrol.set_brake_status(1);
+    for (int i=0 ; i<1 ; i++) {
+        i_motorcontrol.set_torque(torque);
+        delay_milliseconds(period);
+        i_motorcontrol.set_torque(-torque);
+        delay_milliseconds(period);
+    }
+    i_motorcontrol.set_torque(0);
+}
+
 
 void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInterface client i_motorcontrol,
                       interface PositionVelocityCtrlInterface client i_position_control,
@@ -495,14 +507,22 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                 break;
             //set brake
             case 'b':
-                if (brake_flag == 0 || value == 1) {
+                switch(mode_2) {
+                case 's':
                     brake_flag = 1;
-                    printf("Brake released\n");
-                } else {
-                    brake_flag = 0;
-                    printf("Brake blocking\n");
+                    brake_shake(i_motorcontrol, value);
+                    break;
+                default:
+                    if (brake_flag == 0 || value == 1) {
+                        brake_flag = 1;
+                        printf("Brake released\n");
+                    } else {
+                        brake_flag = 0;
+                        printf("Brake blocking\n");
+                    }
+                    i_motorcontrol.set_brake_status(brake_flag);
+                    break;
                 }
-                i_motorcontrol.set_brake_status(brake_flag);
                 break;
 
             //set zero position

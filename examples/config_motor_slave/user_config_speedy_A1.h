@@ -9,6 +9,10 @@
 // DC bus nominal voltage (V)
 #define VDC             48
 
+//ratio between current received in control core, and real phase current
+//depends on ADC and current sensor ratios
+#define CURRENT_RATIO           5
+
 /////////////////////////////////////////////
 //////      MOTOR CONFIGURATION
 ////////////////////////////////////////////
@@ -24,6 +28,9 @@
 
 //equivalent to torque constant (Nm at 1000 A)
 #define MAXIMUM_TORQUE          57   /* 0x2410:6 (Motor Specific Torque Constant */
+
+// TORQUE CONSTANT
+#define PERCENT_TORQUE_CONSTANT     15
 
 // (uOhm)
 #define PHASE_RESISTANCE        552000   /* 0x2410:2 */
@@ -42,6 +49,7 @@
 
 // POLARITY OF YOUR ENCODER [1, 0]
 #define SENSOR_POLARITY         0      /* 0x2004 */
+
 
 //////////////////////////////////////////////
 //////  BRAKE CONFIGURATION
@@ -70,9 +78,9 @@
 #define VELOCITY_Kd       40   /* 0x20f9:3 */
 
 // PID FOR TORQUE CONTROL (units * 10000)
-#define TORQUE_Kp         1000    /* 0x20f6:1 */
-//#define TORQUE_Ki         0     /* 0x20f6:2 */
-//#define TORQUE_Kd         0     /* 0x20f6:3 */
+#define TORQUE_Kp         10    /* 0x20f6:1 */
+#define TORQUE_Ki         3     /* 0x20f6:2 */
+#define TORQUE_Kd         0     /* 0x20f6:3 */
 
 
 //////////////////////////////////////////////
@@ -100,6 +108,22 @@
 
 //minimum tolerable value of dc-bus voltave (V)
 #define V_DC_MIN        20
+
+//////////////////////////////////////////////
+//////  RECUPERATION MODE PARAMETERS
+////////////////////////////////////////////
+/*recuperation mode
+ * WARNING: explosion danger. This mode should not be activated before evaluating battery behaviour.*/
+#define RECUPERATION        0
+
+#define BATTERY_E_MAX       80         // maximum energy status of battery
+#define BATTERY_E_MIN       10         // minimum energy status of battery
+
+#define REGEN_P_MAX         50        // maximum regenerative power (in Watts)
+#define REGEN_P_MIN         0           // minimum regenerative power (in Watts)
+
+#define REGEN_SPEED_MAX     650
+#define REGEN_SPEED_MIN     50          // minimum value of the speed which is considered in regenerative calculations
 
 //maximum tolerable value of board temperature (Degrees Celsius)
 //#define TEMP_BOARD_MAX  100
@@ -146,5 +170,3 @@
 #define VELOCITY_REF_FC         28
 #define VELOCITY_FC             77
 #define VELOCITY_D_FC           75
-
-

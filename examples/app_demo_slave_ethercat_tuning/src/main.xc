@@ -15,10 +15,13 @@
 #include <torque_control.h>
 #include <position_feedback_service.h>
 #include <adc_service.h>
+#include <tuning.h>
+
+// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
+// Some of these parameter will be eventually overwritten by the app running on the EtherCAT master
 //#include <user_config.h>
 //#include <user_config_speedy_A1.h>
-#include <user_config_foresight.h>
-#include <tuning.h>
+#include <user_config_foresight_1.h>
 
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
@@ -196,14 +199,26 @@ int main(void)
                     motorcontrol_config.v_dc =  VDC;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
                     motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
-                    motorcontrol_config.polarity_type=POLARITY;
+                    motorcontrol_config.polarity_type= POLARITY;
 
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
+                    motorcontrol_config.current_I_gain =  TORQUE_Ki;
+                    motorcontrol_config.current_D_gain =  TORQUE_Kd;
 
                     motorcontrol_config.pole_pair =  POLE_PAIRS;
                     motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
+                    motorcontrol_config.torque_constant =  PERCENT_TORQUE_CONSTANT;
+                    motorcontrol_config.current_ratio =  CURRENT_RATIO;
+
+                    motorcontrol_config.recuperation = RECUPERATION;
+                    motorcontrol_config.battery_e_max = BATTERY_E_MAX;
+                    motorcontrol_config.battery_e_min = BATTERY_E_MIN;
+                    motorcontrol_config.regen_p_max = REGEN_P_MAX;
+                    motorcontrol_config.regen_p_min = REGEN_P_MIN;
+                    motorcontrol_config.regen_speed_max = REGEN_SPEED_MAX;
+                    motorcontrol_config.regen_speed_min = REGEN_SPEED_MIN;
 
                     motorcontrol_config.protection_limit_over_current =  I_MAX;
                     motorcontrol_config.protection_limit_over_voltage =  V_DC_MAX;

@@ -27,7 +27,9 @@
 
 // Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
-#include <user_config_speedy_A1.h>
+//#include <user_config.h>
+//#include <user_config_speedy_A1.h>
+#include <user_config_foresight_1.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -213,21 +215,34 @@ int main(void)
                     delay_milliseconds(2000);
 
                     MotorcontrolConfig motorcontrol_config;
-                    motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
-                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK; /* Set by object COMMUTATION_OFFSET_CLKWISE */
-                    motorcontrol_config.current_P_gain =  TORQUE_Kp; /* Set by OD: CIA402_CURRENT_GAIN si: 1 */
-                    motorcontrol_config.pole_pair =  POLE_PAIRS; /* Set by OD CIA402_MOTOR_SPECIFIC si: 3 */
-                    motorcontrol_config.max_torque =  MAXIMUM_TORQUE; /* Set by OD CIA402_MOTOR_SPECIFIC si 6 */
-                    motorcontrol_config.phase_resistance =  PHASE_RESISTANCE; /* Set by OD: CIA402_MOTOR_SPECIFIC si: 2 */
-                    motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE; /* Set by OD: CIA402_MOTOR_SPECIFIC si 5 */
-                    motorcontrol_config.v_dc =  VDC;
-                    motorcontrol_config.polarity_type = POLARITY;
 
-                    /* FIXME figure out some sane settings or something */
-                    motorcontrol_config.protection_limit_over_current =  I_MAX; /* CIA402_MAX_CURRENT */
+                    motorcontrol_config.v_dc =  VDC;
+                    motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
+                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.polarity_type= POLARITY;
+
+                    motorcontrol_config.current_P_gain =  TORQUE_Kp;
+                    motorcontrol_config.current_I_gain =  TORQUE_Ki;
+                    motorcontrol_config.current_D_gain =  TORQUE_Kd;
+
+                    motorcontrol_config.pole_pair =  POLE_PAIRS;
+                    motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
+                    motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
+                    motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
+                    motorcontrol_config.torque_constant =  PERCENT_TORQUE_CONSTANT;
+                    motorcontrol_config.current_ratio =  CURRENT_RATIO;
+
+                    motorcontrol_config.recuperation = RECUPERATION;
+                    motorcontrol_config.battery_e_max = BATTERY_E_MAX;
+                    motorcontrol_config.battery_e_min = BATTERY_E_MIN;
+                    motorcontrol_config.regen_p_max = REGEN_P_MAX;
+                    motorcontrol_config.regen_p_min = REGEN_P_MIN;
+                    motorcontrol_config.regen_speed_max = REGEN_SPEED_MAX;
+                    motorcontrol_config.regen_speed_min = REGEN_SPEED_MIN;
+
+                    motorcontrol_config.protection_limit_over_current =  I_MAX;
                     motorcontrol_config.protection_limit_over_voltage =  V_DC_MAX;
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
-
 
                     Motor_Control_Service( fet_driver_ports, motorcontrol_config, i_adc[0],
                             i_shared_memory[0],

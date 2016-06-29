@@ -237,7 +237,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                     }
                     break;
                 case 'v': //velocity
-                    switch(mode_2) {
+                    switch(mode_3) {
                     case 'p':
                         pos_velocity_ctrl_config.int10_P_velocity = value;
                         break;
@@ -281,6 +281,10 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                     i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                     printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
                                                                           , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                    break;
+                case 'v':
+                    pos_velocity_ctrl_config.int21_max_speed = value;
+                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                     break;
                 default:
                     printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity

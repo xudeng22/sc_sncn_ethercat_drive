@@ -231,6 +231,7 @@ int main(void)
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
                     motorcontrol_config.torque_constant =  PERCENT_TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
+                    motorcontrol_config.rated_current =  RATED_CURRENT;
 
                     motorcontrol_config.recuperation = RECUPERATION;
                     motorcontrol_config.battery_e_max = BATTERY_E_MAX;

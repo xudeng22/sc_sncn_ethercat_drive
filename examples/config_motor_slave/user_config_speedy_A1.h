@@ -38,6 +38,9 @@
 // (uH)
 #define PHASE_INDUCTANCE        720      /* 0x2410:5 */
 
+// RATED CURRENT
+#define RATED_CURRENT 4         // Amp
+
 // SENSOR USED FOR COMMUTATION (if applicable) [BISS_SENSOR - 4, CONTELEC_SENSOR]
 #define MOTOR_COMMUTATION_SENSOR   BISS_SENSOR    /* 0x606A */
 

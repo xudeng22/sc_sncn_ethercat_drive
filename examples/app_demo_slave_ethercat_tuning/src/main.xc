@@ -21,7 +21,8 @@
 // Some of these parameter will be eventually overwritten by the app running on the EtherCAT master
 //#include <user_config.h>
 //#include <user_config_speedy_A1.h>
-#include <user_config_foresight_1.h>
+//#include <user_config_foresight_1.h>
+#include <user_config_foresight.h>
 
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
@@ -211,6 +212,7 @@ int main(void)
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
                     motorcontrol_config.torque_constant =  PERCENT_TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
+                    motorcontrol_config.rated_current =  RATED_CURRENT;
 
                     motorcontrol_config.recuperation = RECUPERATION;
                     motorcontrol_config.battery_e_max = BATTERY_E_MAX;

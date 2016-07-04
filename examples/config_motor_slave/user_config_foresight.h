@@ -38,6 +38,9 @@
 // (uH)
 #define PHASE_INDUCTANCE        1330      /* 0x2410:5 */
 
+// RATED CURRENT
+#define RATED_CURRENT 4         // Amp
+
 // SENSOR USED FOR COMMUTATION (if applicable) [BISS_SENSOR - 4, CONTELEC_SENSOR]
 #define MOTOR_COMMUTATION_SENSOR   CONTELEC_SENSOR    /* 0x606A */
 
@@ -67,14 +70,14 @@
 #define CONTROL_LOOP_PERIOD     1000
 
 // PID FOR POSITION CONTROL (units * 10000)
-#define POSITION_Kp       250   /* 0x20fb:1 */
-#define POSITION_Ki       90   /* 0x20fb:2 */
+#define POSITION_Kp       200   /* 0x20fb:1 */
+#define POSITION_Ki       200   /* 0x20fb:2 */
 #define POSITION_Kd       0    /* 0x20fb:3 */
 
 // PID FOR VELOCITY CONTROL (units * 10000)
-#define VELOCITY_Kp       25   /* 0x20f9:1 */
+#define VELOCITY_Kp       5   /* 0x20f9:1 */
 #define VELOCITY_Ki       0    /* 0x20f9:2 */
-#define VELOCITY_Kd       10   /* 0x20f9:3 */
+#define VELOCITY_Kd       5   /* 0x20f9:3 */
 //
 
 // PID FOR TORQUE CONTROL (units * 10000)

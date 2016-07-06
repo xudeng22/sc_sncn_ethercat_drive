@@ -11,7 +11,7 @@
 
 //ratio between current received in control core, and real phase current
 //depends on ADC and current sensor ratios
-#define CURRENT_RATIO           5
+#define CURRENT_RATIO           20
 
 /////////////////////////////////////////////
 //////      MOTOR CONFIGURATION
@@ -39,7 +39,7 @@
 #define PHASE_INDUCTANCE        1330      /* 0x2410:5 */
 
 // RATED CURRENT
-#define RATED_CURRENT 4         // Amp
+#define RATED_CURRENT 13         // Amp
 
 // SENSOR USED FOR COMMUTATION (if applicable) [BISS_SENSOR - 4, CONTELEC_SENSOR]
 #define MOTOR_COMMUTATION_SENSOR   CONTELEC_SENSOR    /* 0x606A */
@@ -117,12 +117,12 @@
 ////////////////////////////////////////////
 /*recuperation mode
  * WARNING: explosion danger. This mode should not be activated before evaluating battery behaviour.*/
-#define RECUPERATION        0
+#define RECUPERATION        1
 
 #define BATTERY_E_MAX       80         // maximum energy status of battery
 #define BATTERY_E_MIN       10         // minimum energy status of battery
 
-#define REGEN_P_MAX         50        // maximum regenerative power (in Watts)
+#define REGEN_P_MAX         5000        // maximum regenerative power (in Watts)
 #define REGEN_P_MIN         0           // minimum regenerative power (in Watts)
 
 #define REGEN_SPEED_MAX     650

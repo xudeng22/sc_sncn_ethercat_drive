@@ -532,7 +532,8 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //set zero position
             case 'z':
                 if (!isnull(i_position_feedback)) {
-                    i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
+//                    i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
+                    i_position_feedback.send_command(CONTELEC_CONF_MTPRESET, value, 16);
                     i_position_feedback.send_command(CONTELEC_CTRL_SAVE, 0, 0);
                     i_position_feedback.send_command(CONTELEC_CTRL_RESET, 0, 0);
                 }

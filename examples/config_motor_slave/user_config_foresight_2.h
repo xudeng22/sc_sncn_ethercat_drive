@@ -154,12 +154,12 @@
 ////////////////////////////////////////////
 
 // Position controller limiters
-#define POSITION_P_ERROR_lIMIT  40000
+#define POSITION_P_ERROR_lIMIT  50000
 #define POSITION_I_ERROR_lIMIT  5
 #define POSITION_INTEGRAL_LIMIT 25000
 
 // Velocity controller limiters
-#define VELOCITY_P_ERROR_lIMIT  150000
+#define VELOCITY_P_ERROR_lIMIT  800000
 #define VELOCITY_I_ERROR_lIMIT  0
 #define VELOCITY_INTEGRAL_LIMIT 0
 

@@ -122,7 +122,7 @@
 #define BATTERY_E_MAX       80         // maximum energy status of battery
 #define BATTERY_E_MIN       10         // minimum energy status of battery
 
-#define REGEN_P_MAX         5000        // maximum regenerative power (in Watts)
+#define REGEN_P_MAX         50000        // maximum regenerative power (in Watts)
 #define REGEN_P_MIN         0           // minimum regenerative power (in Watts)
 
 #define REGEN_SPEED_MAX     650

@@ -184,7 +184,7 @@ int main(void)
                     position_feedback_config.contelec_config.velocity_loop = CONTELEC_VELOCITY_LOOP;
                     position_feedback_config.contelec_config.enable_push_service = PushAll;
 
-                    position_feedback_service(position_feedback_ports, position_feedback_config, i_shared_memory[1], i_position_feedback, null, null, null, null);
+                    position_feedback_service(position_feedback_ports, position_feedback_config, i_shared_memory[0], i_position_feedback, null, null, null, null);
                 }
 
 
@@ -227,7 +227,7 @@ int main(void)
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
 
                     Motor_Control_Service( fet_driver_ports, motorcontrol_config, i_adc[0],
-                            i_shared_memory[0],
+                            i_shared_memory[1],
                             i_watchdog[0], i_motorcontrol, i_update_pwm);
                 }
             }

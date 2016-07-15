@@ -194,6 +194,15 @@ int main(int argc, char *argv[])
             slv_handles[slave_number].position_setpoint = 0;
             slv_handles[slave_number].operation_mode = 0;
             quit = 1;
+        } else if (d == KEY_BACKSPACE || d == KEY_DC || d == 127) {
+            move(r,0);
+            clrtoeol();
+            value = 0;
+            mode = '@';
+            mode_2 = '@';
+            mode_3 = '@';
+            sign = 1;
+            c = 0;
         } else if (d != ERR) {
             draw(d); // draw the character
             //parse input

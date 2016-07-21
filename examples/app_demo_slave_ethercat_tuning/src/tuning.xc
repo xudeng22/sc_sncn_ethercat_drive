@@ -255,73 +255,72 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                 }
                 i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                 break;
-            //velocity pid limits
+            //limits
             case 'L':
                 switch(mode_2) {
-                case 'p':
-                    pos_velocity_ctrl_config.int21_P_error_limit_velocity = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                case 'p': //position pid limits
+                    switch(mode_3) {
+                    case 'p':
+                        pos_velocity_ctrl_config.int21_P_error_limit_position = value;
+                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
+                        break;
+                    case 'i':
+                        pos_velocity_ctrl_config.int21_I_error_limit_position = value;
+                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
+                        break;
+                    case 'l':
+                        pos_velocity_ctrl_config.int22_integral_limit_position = value;
+                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
+                        break;
+                    default:
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
+                        break;
+                    }
                     break;
-                case 'i':
-                    pos_velocity_ctrl_config.int21_I_error_limit_velocity = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                case 'v': //velocity pid limits
+                    switch(mode_3) {
+                    case 'p':
+                        pos_velocity_ctrl_config.int21_P_error_limit_velocity = value;
+                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                        break;
+                    case 'i':
+                        pos_velocity_ctrl_config.int21_I_error_limit_velocity = value;
+                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                        break;
+                    case 'l':
+                        pos_velocity_ctrl_config.int22_integral_limit_velocity = value;
+                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                        break;
+                    default:
+                        printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
+                                                                              , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
+                        break;
+                    }
                     break;
-                case 'l':
-                    pos_velocity_ctrl_config.int22_integral_limit_velocity = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
-                    break;
-                case 'c':
+                //max torque
+                case 't':
                     pos_velocity_ctrl_config.int21_max_torque = value;
                     i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                     printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
                                                                           , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
                     break;
-                case 'v':
+                //max speed
+                case 's':
                     pos_velocity_ctrl_config.int21_max_speed = value;
                     i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    break;
-                default:
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_velocity, pos_velocity_ctrl_config.int21_I_error_limit_velocity
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_velocity, pos_velocity_ctrl_config.int21_max_torque);
-                    break;
-                }
-                break;
-            //position pid limits
-            case 'i':
-                switch(mode_2) {
-                case 'p':
-                    pos_velocity_ctrl_config.int21_P_error_limit_position = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
-                    break;
-                case 'i':
-                    pos_velocity_ctrl_config.int21_I_error_limit_position = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
-                    break;
-                case 'l':
-                    pos_velocity_ctrl_config.int22_integral_limit_position = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
-                    break;
-                case 'c':
-                    pos_velocity_ctrl_config.int21_max_speed = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
-                    break;
-                default:
-                    printf("P_e_lim:%d I_e_lim:%d int_lim:%d cmd_lim:%d\n", pos_velocity_ctrl_config.int21_P_error_limit_position, pos_velocity_ctrl_config.int21_I_error_limit_position
-                                                                          , pos_velocity_ctrl_config.int22_integral_limit_position, pos_velocity_ctrl_config.int21_max_speed);
                     break;
                 }
                 break;

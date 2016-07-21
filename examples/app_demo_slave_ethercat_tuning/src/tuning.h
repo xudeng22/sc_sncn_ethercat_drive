@@ -10,7 +10,6 @@
 
 #include <platform.h>
 #include <motorcontrol_service.h>
-#include <pwm_service.h>
 #include <refclk.h>
 #include <adc_service.h>
 #include <position_ctrl_service.h>

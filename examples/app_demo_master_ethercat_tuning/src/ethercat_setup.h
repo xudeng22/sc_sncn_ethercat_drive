@@ -10,7 +10,9 @@
 /**
  * SOMANET Slave Configuration
  */
+#ifndef TOTAL_NUM_OF_SLAVES
 #define TOTAL_NUM_OF_SLAVES 1
+#endif
 
 #define SLAVE_ALIAS                    0
 #define SLAVE_POSITION                 0

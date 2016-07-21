@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <CORE_BOARD_REQUIRED>
-#include <IMF_BOARD_REQUIRED>
+#include <COM_ECAT-rev-a.bsp>
+#include <CORE_C22-rev-a.bsp>
 
 /**
  * @file main.xc

@@ -67,5 +67,4 @@ else
 endif
 
 clean:
-	rm -f bin/$(notdir $(shell pwd))
-	rmdir bin
+	rm -rf bin/$(notdir $(shell pwd))

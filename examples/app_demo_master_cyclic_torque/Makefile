@@ -9,9 +9,14 @@ ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 
 ETHERCAT_DRIVE_PATH := ../../.
 MOTORCONTROL_PATH := ../../.
+MOTORCONTROL_LIB_PATH := ../../.
 
 ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
 	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
+endif
+
+ifneq (,$(wildcard ../../../sc_sncn_motorcontrol_new/.))
+	MOTORCONTROL_LIB_PATH := ../../../sc_sncn_motorcontrol_new
 endif
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
@@ -28,7 +33,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_biss/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_ams_rotary_sensor/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_LIB_PATH)/module_advanced_foc/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib

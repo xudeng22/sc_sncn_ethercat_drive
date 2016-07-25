@@ -29,6 +29,9 @@
 //equivalent to torque constant (Nm at 1000 A)
 #define MAXIMUM_TORQUE          170   /* 0x2410:6 (Motor Specific Torque Constant */
 
+// rated motor torque [milli-Nm]
+#define RATED_TORQUE            1250
+
 // TORQUE CONSTANT
 #define PERCENT_TORQUE_CONSTANT     15
 
@@ -37,6 +40,9 @@
 
 // (uH)
 #define PHASE_INDUCTANCE        1330      /* 0x2410:5 */
+
+// (maximum) generated torque while finding offset value as a percentage of rated torque
+#define PERCENT_OFFSET_TORQUE 50
 
 // RATED CURRENT
 #define RATED_CURRENT 4         // Amp
@@ -80,8 +86,8 @@
 #define VELOCITY_Kd       5   /* 0x20f9:3 */
 
 // PID FOR TORQUE CONTROL (units * 10000)
-#define TORQUE_Kp         10    /* 0x20f6:1 */
-#define TORQUE_Ki         3     /* 0x20f6:2 */
+#define TORQUE_Kp         210    /* 0x20f6:1 */
+#define TORQUE_Ki         90     /* 0x20f6:2 */
 #define TORQUE_Kd         0     /* 0x20f6:3 */
 
 

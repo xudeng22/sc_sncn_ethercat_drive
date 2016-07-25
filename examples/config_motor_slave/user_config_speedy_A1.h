@@ -29,6 +29,9 @@
 //equivalent to torque constant (Nm at 1000 A)
 #define MAXIMUM_TORQUE          57   /* 0x2410:6 (Motor Specific Torque Constant */
 
+// rated motor torque [milli-Nm]
+#define RATED_TORQUE            270
+
 // TORQUE CONSTANT
 #define PERCENT_TORQUE_CONSTANT     15
 
@@ -40,6 +43,9 @@
 
 // RATED CURRENT
 #define RATED_CURRENT 5         // Amp
+
+// (maximum) generated torque while finding offset value as a percentage of rated torque
+#define PERCENT_OFFSET_TORQUE 50
 
 // SENSOR USED FOR COMMUTATION (if applicable) [BISS_SENSOR - 4, CONTELEC_SENSOR]
 #define MOTOR_COMMUTATION_SENSOR   BISS_SENSOR    /* 0x606A */
@@ -81,8 +87,8 @@
 #define VELOCITY_Kd       40   /* 0x20f9:3 */
 
 // PID FOR TORQUE CONTROL (units * 10000)
-#define TORQUE_Kp         10    /* 0x20f6:1 */
-#define TORQUE_Ki         3     /* 0x20f6:2 */
+#define TORQUE_Kp         210    /* 0x20f6:1 */
+#define TORQUE_Ki         90     /* 0x20f6:2 */
 #define TORQUE_Kd         0     /* 0x20f6:3 */
 
 

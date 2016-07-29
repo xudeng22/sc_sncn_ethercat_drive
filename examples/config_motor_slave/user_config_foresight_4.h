@@ -27,7 +27,7 @@
 #define POLARITY           1      /* 0x607E */
 
 //equivalent to torque constant (Nm at 1000 A)
-#define MAXIMUM_TORQUE          170   /* 0x2410:6 (Motor Specific Torque Constant */
+#define MAXIMUM_TORQUE          2500   /* 0x2410:6 (Motor Specific Torque Constant */
 
 // rated motor torque [milli-Nm]
 #define RATED_TORQUE            1250
@@ -45,7 +45,7 @@
 #define PERCENT_OFFSET_TORQUE 50
 
 // RATED CURRENT
-#define RATED_CURRENT 4         // Amp
+#define RATED_CURRENT 4000         // mA
 
 // SENSOR USED FOR COMMUTATION (if applicable) [BISS_SENSOR - 4, CONTELEC_SENSOR]
 #define MOTOR_COMMUTATION_SENSOR   CONTELEC_SENSOR    /* 0x606A */
@@ -67,6 +67,8 @@
 //FORESIGHT PROJECT
 #define DUTY_START_BRAKE    10000   // duty cycles for brake release (should be a number between 1500 and 13000)
 #define DUTY_MAINTAIN_BRAKE 1500    // duty cycles for keeping the brake released (should be a number between 1500 and 13000)
+
+#define PERIOD_START_BRAKE  1000    // period in which high voltage is applied for realising the brake [milli-seconds]
 
 ///////////////////////////////////////////////
 //////       CONTROL CONFIGURATION

@@ -27,7 +27,7 @@
 #define POLARITY           1      /* 0x607E */
 
 //equivalent to torque constant (Nm at 1000 A)
-#define MAXIMUM_TORQUE          57   /* 0x2410:6 (Motor Specific Torque Constant */
+#define MAXIMUM_TORQUE          2500   /* 0x2410:6 (Motor Specific Torque Constant */
 
 // rated motor torque [milli-Nm]
 #define RATED_TORQUE            270
@@ -42,7 +42,7 @@
 #define PHASE_INDUCTANCE        720      /* 0x2410:5 */
 
 // RATED CURRENT
-#define RATED_CURRENT 5         // Amp
+#define RATED_CURRENT 5000         // mA
 
 // (maximum) generated torque while finding offset value as a percentage of rated torque
 #define PERCENT_OFFSET_TORQUE 50
@@ -68,6 +68,7 @@
 #define DUTY_START_BRAKE    12000   // duty cycles for brake release (should be a number between 1500 and 13000)
 #define DUTY_MAINTAIN_BRAKE 2000    // duty cycles for keeping the brake released (should be a number between 1500 and 13000)
 
+#define PERIOD_START_BRAKE  1000    // period in which high voltage is applied for realising the brake [milli-seconds]
 
 ///////////////////////////////////////////////
 //////       CONTROL CONFIGURATION

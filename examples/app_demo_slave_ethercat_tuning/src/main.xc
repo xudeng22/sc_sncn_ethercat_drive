@@ -142,7 +142,7 @@ int main(void)
 
                     delay_milliseconds(5);
                     //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
-                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm, DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE);
+                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm, DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE, PERIOD_START_BRAKE);
                 }
 
                 /* ADC Service */
@@ -157,7 +157,6 @@ int main(void)
                     watchdog_service(wd_ports, i_watchdog);
                 }
 
-
                 /* Motor Control Service */
                 {
                     delay_milliseconds(20);
@@ -165,9 +164,9 @@ int main(void)
                     MotorcontrolConfig motorcontrol_config;
 
                     motorcontrol_config.v_dc =  VDC;
-                    motorcontrol_config.commutation_loop_period = COMMUTATION_LOOP_PERIOD;
-                    motorcontrol_config.commutation_angle_offset = COMMUTATION_OFFSET_CLK;
-                    motorcontrol_config.polarity_type = POLARITY;
+                    motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
+                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.polarity_type=POLARITY;
 
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
                     motorcontrol_config.current_I_gain =  TORQUE_Ki;
@@ -182,7 +181,6 @@ int main(void)
                     motorcontrol_config.rated_current =  RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  PERCENT_OFFSET_TORQUE;
-
 
                     motorcontrol_config.recuperation = RECUPERATION;
                     motorcontrol_config.battery_e_max = BATTERY_E_MAX;
@@ -200,14 +198,15 @@ int main(void)
                             i_watchdog[0], i_motorcontrol, i_update_pwm);
                 }
 
+                /* Shared memory Service */
                 {
-                    /* Shared memory Service */
                     memory_manager(i_shared_memory, 2);
                 }
 
-
                 /* Position feedback service */
                 {
+                    delay_milliseconds(10);
+
                     PositionFeedbackConfig position_feedback_config;
                     position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
 
@@ -235,6 +234,9 @@ int main(void)
                     position_feedback_config.contelec_config.timeout = CONTELEC_TIMEOUT;
                     position_feedback_config.contelec_config.velocity_loop = CONTELEC_VELOCITY_LOOP;
                     position_feedback_config.contelec_config.enable_push_service = PushAll;
+
+                    position_feedback_config.hall_config.pole_pairs = POLE_PAIRS;
+                    position_feedback_config.hall_config.enable_push_service = PushAll;
 
                     position_feedback_service(position_feedback_ports, position_feedback_config, i_shared_memory[0], i_position_feedback, null, null, null, null);
                 }

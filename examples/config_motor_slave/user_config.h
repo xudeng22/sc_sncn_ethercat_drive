@@ -27,7 +27,7 @@
 #define POLARITY           1      /* 0x607E */
 
 //equivalent to torque constant (Nm at 1000 A)
-#define MAXIMUM_TORQUE          63   /* 0x2410:6 (Motor Specific Torque Constant */
+#define MAXIMUM_TORQUE          2500   /* 0x2410:6 (Motor Specific Torque Constant */
 
 // rated motor torque [milli-Nm]
 #define RATED_TORQUE            50
@@ -64,6 +64,8 @@
 //FORESIGHT PROJECT
 #define DUTY_START_BRAKE    10000   // duty cycles for brake release (should be a number between 1500 and 13000)
 #define DUTY_MAINTAIN_BRAKE 1500    // duty cycles for keeping the brake released (should be a number between 1500 and 13000)
+
+#define PERIOD_START_BRAKE  1000    // period in which high voltage is applied for realising the brake [milli-seconds]
 
 ///////////////////////////////////////////////
 //////       CONTROL CONFIGURATION

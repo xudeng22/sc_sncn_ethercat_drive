@@ -165,7 +165,7 @@ int main(void)
 
                     delay_milliseconds(5);
                     //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
-                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm, DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE);
+                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm, DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE, PERIOD_START_BRAKE);
                 }
 
                 /* ADC Service */
@@ -180,7 +180,6 @@ int main(void)
                     watchdog_service(wd_ports, i_watchdog);
                 }
 
-
                 /* Motor Control Service */
                 {
                     delay_milliseconds(20);
@@ -188,9 +187,9 @@ int main(void)
                     MotorcontrolConfig motorcontrol_config;
 
                     motorcontrol_config.v_dc =  VDC;
-                    motorcontrol_config.commutation_loop_period = COMMUTATION_LOOP_PERIOD;
-                    motorcontrol_config.commutation_angle_offset = COMMUTATION_OFFSET_CLK;
-                    motorcontrol_config.polarity_type = POLARITY;
+                    motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
+                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.polarity_type=POLARITY;
 
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
                     motorcontrol_config.current_I_gain =  TORQUE_Ki;
@@ -206,7 +205,6 @@ int main(void)
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  PERCENT_OFFSET_TORQUE;
 
-
                     motorcontrol_config.recuperation = RECUPERATION;
                     motorcontrol_config.battery_e_max = BATTERY_E_MAX;
                     motorcontrol_config.battery_e_min = BATTERY_E_MIN;
@@ -220,27 +218,29 @@ int main(void)
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
 
                     Motor_Control_Service(motorcontrol_config, i_adc[0], i_shared_memory[1],
-                                          i_watchdog[0], i_motorcontrol, i_update_pwm);
+                            i_watchdog[0], i_motorcontrol, i_update_pwm);
                 }
 
+                /* Shared memory Service */
                 {
-                    /* Shared memory Service */
                     memory_manager(i_shared_memory, 2);
                 }
 
                 /* Position feedback service */
                 {
+                    delay_milliseconds(10);
+
                     PositionFeedbackConfig position_feedback_config;
-                    position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR; /* Set by OD: CIA402_SENSOR_SELECTION_CODE */
+                    position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
 
                     position_feedback_config.biss_config.multiturn_length = BISS_MULTITURN_LENGTH;
                     position_feedback_config.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
                     position_feedback_config.biss_config.singleturn_length = BISS_SINGLETURN_LENGTH;
-                    position_feedback_config.biss_config.singleturn_resolution = BISS_SINGLETURN_RESOLUTION; /* Set by OD CIA402_POSITION_ENC_RESOLUTION */
+                    position_feedback_config.biss_config.singleturn_resolution = BISS_SINGLETURN_RESOLUTION;
                     position_feedback_config.biss_config.status_length = BISS_STATUS_LENGTH;
                     position_feedback_config.biss_config.crc_poly = BISS_CRC_POLY;
-                    position_feedback_config.biss_config.pole_pairs = POLE_PAIRS; /* Set by OD CIA402_MOTOR_SPECIFIC si: 3 */
-                    position_feedback_config.biss_config.polarity = BISS_POLARITY; /* Set by OD: SENSOR_POLARITY */
+                    position_feedback_config.biss_config.pole_pairs = POLE_PAIRS;
+                    position_feedback_config.biss_config.polarity = BISS_POLARITY;
                     position_feedback_config.biss_config.clock_dividend = BISS_CLOCK_DIVIDEND;
                     position_feedback_config.biss_config.clock_divisor = BISS_CLOCK_DIVISOR;
                     position_feedback_config.biss_config.timeout = BISS_TIMEOUT;
@@ -250,13 +250,16 @@ int main(void)
                     position_feedback_config.biss_config.enable_push_service = PushAll;
 
                     position_feedback_config.contelec_config.filter = CONTELEC_FILTER;
-                    position_feedback_config.contelec_config.polarity = CONTELEC_POLARITY; /* Set by OD: SENSOR_POLARITY */
-                    position_feedback_config.contelec_config.resolution_bits = CONTELEC_RESOLUTION; /* Set by OD CIA402_POSITION_ENC_RESOLUTION */
+                    position_feedback_config.contelec_config.polarity = CONTELEC_POLARITY;
+                    position_feedback_config.contelec_config.resolution_bits = CONTELEC_RESOLUTION;
                     position_feedback_config.contelec_config.offset = CONTELEC_OFFSET;
-                    position_feedback_config.contelec_config.pole_pairs = POLE_PAIRS; /* Set by OD CIA402_MOTOR_SPECIFIC si: 3 */
+                    position_feedback_config.contelec_config.pole_pairs = POLE_PAIRS;
                     position_feedback_config.contelec_config.timeout = CONTELEC_TIMEOUT;
                     position_feedback_config.contelec_config.velocity_loop = CONTELEC_VELOCITY_LOOP;
                     position_feedback_config.contelec_config.enable_push_service = PushAll;
+
+                    position_feedback_config.hall_config.pole_pairs = POLE_PAIRS;
+                    position_feedback_config.hall_config.enable_push_service = PushAll;
 
                     position_feedback_service(position_feedback_ports, position_feedback_config, i_shared_memory[0], i_position_feedback, null, null, null, null);
                 }

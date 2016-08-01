@@ -88,8 +88,8 @@
 #define VELOCITY_Kd       40   /* 0x20f9:3 */
 
 // PID FOR TORQUE CONTROL (units * 10000)
-#define TORQUE_Kp         210    /* 0x20f6:1 */
-#define TORQUE_Ki         90     /* 0x20f6:2 */
+#define TORQUE_Kp         40    /* 0x20f6:1 */
+#define TORQUE_Ki         160     /* 0x20f6:2 */
 #define TORQUE_Kd         0     /* 0x20f6:3 */
 
 

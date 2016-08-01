@@ -29,7 +29,9 @@ WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
-PositionFeedbackPorts position_feedback_ports = SOMANET_IFM_POSITION_FEEDBACK_PORTS;
+HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
+SPIPorts spi_ports = SOMANET_IFM_AMS_PORTS;
+QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
 
 #if(MOTOR_COMMUTATION_SENSOR == BISS_SENSOR)
 #define POSITION_LIMIT 5000000
@@ -205,8 +207,6 @@ int main(void)
 
                 /* Position feedback service */
                 {
-                    delay_milliseconds(10);
-
                     PositionFeedbackConfig position_feedback_config;
                     position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
 
@@ -238,7 +238,9 @@ int main(void)
                     position_feedback_config.hall_config.pole_pairs = POLE_PAIRS;
                     position_feedback_config.hall_config.enable_push_service = PushAll;
 
-                    position_feedback_service(position_feedback_ports, position_feedback_config, i_shared_memory[0], i_position_feedback, null, null, null, null);
+                    position_feedback_service(hall_ports, qei_ports, spi_ports,
+                                              position_feedback_config, i_shared_memory[0], i_position_feedback,
+                                              null, null, null);
                 }
             }
         }

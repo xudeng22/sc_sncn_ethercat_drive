@@ -9,7 +9,6 @@
 #include <print.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <coecmd.h>
 #include <canod.h>
 
 #include <ethercat_service.h>

@@ -8,7 +8,6 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <canod.h>
 #include <ethercat_service.h>
 #include <pdo_handler.h>
 

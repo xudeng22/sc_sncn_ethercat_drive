@@ -10,6 +10,7 @@
 
 #include <ethercat_service.h>
 #include <pdo_handler.h>
+#include <fw_update_service.h>
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
@@ -265,6 +266,10 @@ int main(void)
 
 	interface i_coe_communication i_coecomm;
 
+	/* channels for flash communication */
+	chan c_flash_data;
+	chan c_nodes[2];
+
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
@@ -272,6 +277,12 @@ int main(void)
 		{
 			ethercat_service(i_coecomm, eoe_out, eoe_in, eoe_sig,
 			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
+		}
+
+		/* Firmware Update Service */
+		on tile[COM_TILE]:
+		{
+		    fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
 		}
 
 		/* Test application handling pdos from EtherCat */

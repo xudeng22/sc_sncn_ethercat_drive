@@ -13,7 +13,7 @@
 
 #include <hall_service.h>
 #include <qei_service.h>
-#include <motorcontrol_service.h>
+#include <advanced_motor_control.h>
 #include <control_loops_common.h>
 #include <profile_control.h>
 #include <ethercat_service.h>

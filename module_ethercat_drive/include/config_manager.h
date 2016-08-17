@@ -7,7 +7,7 @@
 #pragma once
 
 #include <ethercat_service.h>
-#include <motorcontrol_service.h>
+#include <advanced_motor_control.h>
 #include <hall_service.h>
 #include <qei_service.h>
 #include <gpio_service.h>

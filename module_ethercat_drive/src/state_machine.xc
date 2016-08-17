@@ -86,10 +86,13 @@ bool ctrl_communication_timeout(int control) {
 
 bool __check_bdc_init(chanend c_signal)
 {
+#if 0 /* FIXME currently unused, check necessity */
     bool init_state;
     c_signal <: CHECK_BUSY;
     c_signal :> init_state;
     return init_state;
+#endif
+    return 0;
 }
 
 bool __check_adc_init()

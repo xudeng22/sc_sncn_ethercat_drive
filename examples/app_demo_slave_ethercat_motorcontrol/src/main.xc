@@ -29,8 +29,9 @@
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 //#include <user_config.h>
 //#include <user_config_speedy_A1.h>
-#include <user_config_foresight_1.h>
+//#include <user_config_foresight_1.h>
 //#include <user_config_foresight.h>
+#include <user_config_schunk.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;

@@ -106,6 +106,14 @@
 // COMMUTATION CCW SPIN OFFSET (if applicable) [0:4095]
 #define COMMUTATION_OFFSET_CCLK     0
 
+// MOTOR ANGLE IN EACH HALL STATE (should be configured in case HALL sensor is used)
+#define HALL_STATE_1_ANGLE     0
+#define HALL_STATE_2_ANGLE     0
+#define HALL_STATE_3_ANGLE     0
+#define HALL_STATE_4_ANGLE     0
+#define HALL_STATE_5_ANGLE     0
+#define HALL_STATE_6_ANGLE     0
+
 //////////////////////////////////////////////
 //////  PROTECTION CONFIGURATION
 ////////////////////////////////////////////

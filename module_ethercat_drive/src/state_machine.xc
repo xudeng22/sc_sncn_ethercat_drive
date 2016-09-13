@@ -7,6 +7,7 @@
 #include <statemachine.h>
 #include <state_modes.h>
 #include <position_ctrl_service.h>
+#include <mc_internal_constants.h>
 
 int read_controlword_switch_on(int control_word) {
     return (control_word & SWITCH_ON_CONTROL);

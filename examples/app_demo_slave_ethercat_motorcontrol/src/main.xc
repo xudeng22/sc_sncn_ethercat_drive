@@ -18,8 +18,11 @@
 //BLDC Motor drive libs
 #include <position_feedback_service.h>
 #include <pwm_server.h>
+#include <adc_service.h>
 #include <watchdog_service.h>
-#include <torque_control.h>
+#include <motor_control_interfaces.h>
+#include <advanced_motor_control.h>
+//#include <advanced_motorcontrol_licence.h>
 
 //Position control + profile libs
 #include <position_ctrl_service.h>

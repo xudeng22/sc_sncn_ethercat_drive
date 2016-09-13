@@ -33,7 +33,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_LIB_PATH)/module_advanced_foc/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_advanced_torquecontrol_lib/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib

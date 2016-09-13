@@ -9,7 +9,7 @@
 #pragma once
 
 #include <platform.h>
-#include <motorcontrol_service.h>
+#include <motor_control_interfaces.h>
 #include <refclk.h>
 #include <adc_service.h>
 #include <position_ctrl_service.h>

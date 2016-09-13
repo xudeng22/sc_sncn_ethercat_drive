@@ -2,8 +2,8 @@
 FLAGS += -std=c99
 
 LIBS += -lsncn_ctrlproto
-LIBS += -lethercat -lm
-LIBS_D += -lncurses
+LIBS += -lethercat
+LIBS_D += -lncurses -lm
 
 SOURCE_DIRS = src
 
@@ -33,7 +33,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_ams_rotary_sensor/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
-INCLUDE_DIRS += -I $(MOTORCONTROL_LIB_PATH)/module_advanced_foc/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_advanced_torquecontrol_lib/include
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../config_motor_master
 
@@ -57,7 +57,7 @@ else
 		@if test -d $(ETHERCAT_MASTER_INSTALLDIR); \
 		then \
 		mkdir bin -p;\
-		gcc -o bin/$(notdir $(shell pwd)) src/main.c -Wl,-Bstatic $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -Wl,-Bdynamic $(LIBS_D) $(FLAGS) ; \
+		gcc -o bin/$(notdir $(shell pwd)) src/main.c $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS)  $(LIBS_D) $(FLAGS) ; \
 		else echo \
 		"\n\
 		-----------------------------------------------------------------------------------------------------------------\n\

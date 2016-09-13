@@ -50,7 +50,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_biss/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_ams_rotary_sensor/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_LIB_PATH)/module_advanced_foc/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_advanced_torquecontrol_lib/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 
 #

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <motorcontrol_service.h>
+#include <motor_control_interfaces.h>
 #include <ethercat_service.h>
 
 #include <position_ctrl_service.h>

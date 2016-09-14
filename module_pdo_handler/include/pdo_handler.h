@@ -19,7 +19,7 @@
  */
 typedef struct
 {
-    uint8_t operation_mode;    //      Modes of Operation
+    int8_t operation_mode;     //      Modes of Operation
     uint16_t control_word;     //      Control Word
 
     int16_t target_torque;
@@ -33,7 +33,7 @@ typedef struct
     int32_t user4_in;
 
 
-    uint8_t operation_mode_display; //      Modes of Operation Display
+    int8_t operation_mode_display; //      Modes of Operation Display
     uint16_t status_word;                   //  Status Word
 
     int16_t torque_actual;

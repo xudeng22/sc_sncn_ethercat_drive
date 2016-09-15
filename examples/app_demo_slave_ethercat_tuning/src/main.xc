@@ -14,7 +14,7 @@
 #include <pwm_server.h>
 #include <motor_control_interfaces.h>
 #include <advanced_motor_control.h>
-//#include <advanced_motorcontrol_licence.h>
+#include <advanced_motorcontrol_licence.h>
 #include <position_feedback_service.h>
 #include <adc_service.h>
 #include <tuning.h>
@@ -169,7 +169,7 @@ int main(void)
 
                     MotorcontrolConfig motorcontrol_config;
 
-//                    motorcontrol_config.licence =  ADVANCED_MOTOR_CONTROL_LICENCE;
+                    motorcontrol_config.licence =  ADVANCED_MOTOR_CONTROL_LICENCE;
                     motorcontrol_config.v_dc =  VDC;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
                     motorcontrol_config.polarity_type= POLARITY;

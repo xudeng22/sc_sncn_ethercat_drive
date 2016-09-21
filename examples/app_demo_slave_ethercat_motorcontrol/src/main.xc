@@ -32,7 +32,6 @@
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 //#include <user_config.h>
 //#include <user_config_speedy_A1.h>
-//#include <user_config_foresight_1.h>
 #include <user_config_foresight.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
@@ -117,38 +116,53 @@ int main(void)
             {
                 /* Position Control Loop */
                 {
-                     PosVelocityControlConfig pos_velocity_ctrl_config;
+                    PosVelocityControlConfig pos_velocity_ctrl_config;
+                    /* Control Loop */
+                    pos_velocity_ctrl_config.control_loop_period =                  CONTROL_LOOP_PERIOD; //us
 
-                     pos_velocity_ctrl_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
+                    pos_velocity_ctrl_config.min_pos =                              MIN_POSITION_LIMIT;
+                    pos_velocity_ctrl_config.max_pos =                              MAX_POSITION_LIMIT;
+                    pos_velocity_ctrl_config.max_speed =                            MAX_SPEED;
+                    pos_velocity_ctrl_config.max_torque =                           TORQUE_CONTROL_LIMIT;
 
-                     pos_velocity_ctrl_config.int21_min_position = MIN_POSITION_LIMIT;       /* Set by Object Dictionary value! */
-                     pos_velocity_ctrl_config.int21_max_position =  MAX_POSITION_LIMIT;      /* Set by Object Dictionary value! */
-                     pos_velocity_ctrl_config.int21_max_speed = MAX_SPEED;                /* Set by OD: CIA402_MOTOR_SPECIFIC subindex 4 */
-                     pos_velocity_ctrl_config.int21_max_torque = TORQUE_CONTROL_LIMIT;       /* Set by Object Dictionary value CIA402_MAX_TORQUE */
+                    pos_velocity_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
+                    pos_velocity_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
+                    pos_velocity_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
 
-                     pos_velocity_ctrl_config.int10_P_position = POSITION_Kp;    /* Set by OD: CIA402_POSITION_GAIN subindex 1 */
-                     pos_velocity_ctrl_config.int10_I_position = POSITION_Ki;    /* Set by OD: CIA402_POSITION_GAIN subindex 2 */
-                     pos_velocity_ctrl_config.int10_D_position = POSITION_Kd;    /* Set by OD: CIA402_POSITION_GAIN subindex 3 */
-                     pos_velocity_ctrl_config.int21_P_error_limit_position = POSITION_P_ERROR_lIMIT;
-                     pos_velocity_ctrl_config.int21_I_error_limit_position = POSITION_I_ERROR_lIMIT;
-                     pos_velocity_ctrl_config.int22_integral_limit_position = POSITION_INTEGRAL_LIMIT;
-                     //pos_velocity_ctrl_config.int32_cmd_limit_position = 15000;
+                    pos_velocity_ctrl_config.control_mode =                         NL_POSITION_CONTROLLER;
 
-                     pos_velocity_ctrl_config.int10_P_velocity = VELOCITY_Kp; /* Set by OD: CIA_VELOCITY_GAIN si: 1 */
-                     pos_velocity_ctrl_config.int10_I_velocity = VELOCITY_Ki; /* Set by OD: CIA_VELOCITY_GAIN si: 2 */
-                     pos_velocity_ctrl_config.int10_D_velocity = VELOCITY_Kd; /* Set by OD: CIA_VELOCITY_GAIN si: 3 */
-                     pos_velocity_ctrl_config.int21_P_error_limit_velocity = VELOCITY_P_ERROR_lIMIT;
-                     pos_velocity_ctrl_config.int21_I_error_limit_velocity = VELOCITY_I_ERROR_lIMIT;
-                     pos_velocity_ctrl_config.int22_integral_limit_velocity = VELOCITY_INTEGRAL_LIMIT;
-                     //pos_velocity_ctrl_config.int32_cmd_limit_velocity = 200000;
+                    pos_velocity_ctrl_config.P_pos =                                POSITION_Kp;
+                    pos_velocity_ctrl_config.I_pos =                                POSITION_Ki;
+                    pos_velocity_ctrl_config.D_pos =                                POSITION_Kd;
+                    pos_velocity_ctrl_config.integral_limit_pos =                   POSITION_INTEGRAL_LIMIT;
 
-                     pos_velocity_ctrl_config.position_ref_fc = POSITION_REF_FC;
-                     pos_velocity_ctrl_config.position_fc = POSITION_FC;
-                     pos_velocity_ctrl_config.velocity_ref_fc = VELOCITY_REF_FC;
-                     pos_velocity_ctrl_config.velocity_fc = VELOCITY_FC;
-                     pos_velocity_ctrl_config.velocity_d_fc = VELOCITY_D_FC;
+                    pos_velocity_ctrl_config.P_velocity =                           VELOCITY_Kp;
+                    pos_velocity_ctrl_config.I_velocity =                           VELOCITY_Ki;
+                    pos_velocity_ctrl_config.D_velocity =                           VELOCITY_Kd;
+                    pos_velocity_ctrl_config.integral_limit_velocity =              VELOCITY_INTEGRAL_LIMIT;
 
-                     position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[1], i_position_control);
+                    pos_velocity_ctrl_config.P_pos_Integral_optimum =               Kp_POS_INTEGRAL_OPTIMUM;
+                    pos_velocity_ctrl_config.I_pos_Integral_optimum =               Ki_POS_INTEGRAL_OPTIMUM;
+                    pos_velocity_ctrl_config.D_pos_Integral_optimum =               Kd_POS_INTEGRAL_OPTIMUM;
+                    pos_velocity_ctrl_config.integral_limit_pos_Integral_optimum =  INTEGRAL_LIMIT_POS_INTEGRAL_OPTIMUM;
+
+                    pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
+                    pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
+
+                    pos_velocity_ctrl_config.P_nl_position_controller =         Kp_NL_POS_CONTROL;
+                    pos_velocity_ctrl_config.I_nl_position_controller =         Ki_NL_POS_CONTROL;
+                    pos_velocity_ctrl_config.D_nl_position_controller =         Kd_NL_POS_CONTROL;
+
+                    pos_velocity_ctrl_config.gain_p =                               GAIN_P;
+                    pos_velocity_ctrl_config.gain_i =                               GAIN_I;
+                    pos_velocity_ctrl_config.gain_d =                               GAIN_D;
+
+                    pos_velocity_ctrl_config.k_fb =                                 K_FB;
+                    pos_velocity_ctrl_config.k_m =                                  K_M;
+
+                    pos_velocity_ctrl_config.j =                                    MOMENT_OF_INERTIA;
+
+                    position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[3], i_position_control);
                 }
             }
         }

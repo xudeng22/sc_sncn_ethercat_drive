@@ -113,20 +113,20 @@ void cm_sync_config_pos_velocity_control(
 {
     i_position_control.get_position_velocity_control_config();
 
-    position_config.int21_min_position = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
-    position_config.int21_max_position = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
-    position_config.int10_P_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-    position_config.int10_I_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-    position_config.int10_D_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+    position_config.min_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
+    position_config.max_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
+    position_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+    position_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+    position_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
     //position_config.int32_cmd_limit_position     = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);/* 15000; */
     //position_config.int32_cmd_limit_position_min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);/* 15000; */
 
-    position_config.int21_max_speed           = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4); /* 15000; */
-    // FIXME use this in the future ESI: position_config.int21_max_speed           = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
-    position_config.int21_max_torque          = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
-    position_config.int10_P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-    position_config.int10_I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-    position_config.int10_D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+    position_config.max_speed           = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4); /* 15000; */
+    // FIXME use this in the future ESI: position_config.max_speed           = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
+    position_config.max_torque          = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
+    position_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+    position_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+    position_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us

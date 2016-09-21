@@ -475,7 +475,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             /* high power shall be switched on  */
             state = get_next_state(state, checklist, controlword, 0);
             if (state == S_OPERATION_ENABLE) {
-                i_position_control.enable_position_ctrl();
+                i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
             }
             break;
 
@@ -550,19 +550,19 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            position_velocity_config.int10_P_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-            position_velocity_config.int10_I_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-            position_velocity_config.int10_D_position          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
 
-            i_position_control.set_position_pid_coefficients(position_velocity_config.int10_P_position, position_velocity_config.int10_I_position, position_velocity_config.int10_D_position);
+            i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            position_velocity_config.int10_P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-            position_velocity_config.int10_I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-            position_velocity_config.int10_D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+            position_velocity_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+            position_velocity_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+            position_velocity_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
-            i_position_control.set_velocity_pid_coefficients(position_velocity_config.int10_P_velocity, position_velocity_config.int10_I_velocity, position_velocity_config.int10_D_velocity);
+            i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
 
@@ -633,7 +633,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
 //            i_position_control.enable_torque_ctrl();
            //i_position_control.enable_velocity_ctrl();
            //printstr("enable\n");
-            i_position_control.enable_position_ctrl();
+            i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
             enabled = 1;
         }
         else {

@@ -9,10 +9,6 @@
 // DC bus nominal voltage (V)
 #define VDC             48
 
-//ratio between current received in control core, and real phase current
-//depends on ADC and current sensor ratios
-#define CURRENT_RATIO           20
-
 /////////////////////////////////////////////
 //////      MOTOR CONFIGURATION
 ////////////////////////////////////////////
@@ -78,19 +74,53 @@
 #define CONTROL_LOOP_PERIOD     1000
 
 // PID FOR POSITION CONTROL (units * 10000)
-#define POSITION_Kp       35   /* 0x20fb:1 */
-#define POSITION_Ki       20   /* 0x20fb:2 */
+#define POSITION_Kp       30000   /* 0x20fb:1 */
+#define POSITION_Ki       10   /* 0x20fb:2 */
 #define POSITION_Kd       0    /* 0x20fb:3 */
+#define POSITION_INTEGRAL_LIMIT 400000
 
 // PID FOR VELOCITY CONTROL (units * 10000)
-#define VELOCITY_Kp       30   /* 0x20f9:1 */
+#define VELOCITY_Kp       100   /* 0x20f9:1 */
 #define VELOCITY_Ki       0    /* 0x20f9:2 */
-#define VELOCITY_Kd       40   /* 0x20f9:3 */
+#define VELOCITY_Kd       60   /* 0x20f9:3 */
+#define VELOCITY_INTEGRAL_LIMIT 0
 
 // PID FOR TORQUE CONTROL (units * 10000)
 #define TORQUE_Kp         40    /* 0x20f6:1 */
-#define TORQUE_Ki         160     /* 0x20f6:2 */
+#define TORQUE_Ki         40     /* 0x20f6:2 */
 #define TORQUE_Kd         0     /* 0x20f6:3 */
+
+///////////////////////////////////////////////
+//////       PROFILER CONFIGURATION
+/////////////////////////////////////////////
+#define ENABLE_PROFILER                         0
+#define MAX_ACCELERATION_PROFILER               1800000
+#define MAX_SPEED_PROFILER                      1800000
+
+///////////////////////////////////////////////
+//////  ALTERNATE CONTROL CONFIGURATION
+/////////////////////////////////////////////
+//PID parameters of the Integral Optimum position controller
+#define Kp_POS_INTEGRAL_OPTIMUM                 1000
+#define Ki_POS_INTEGRAL_OPTIMUM                 1000
+#define Kd_POS_INTEGRAL_OPTIMUM                 1000
+//PID parameters of the Integral Optimum position controller
+#define Kp_NL_POS_CONTROL                   989500
+#define Ki_NL_POS_CONTROL                   100100
+#define Kd_NL_POS_CONTROL                   4142100
+#define INTEGRAL_LIMIT_POS_INTEGRAL_OPTIMUM     1500000
+#define K_FB                   10429000
+#define K_M                    1
+#define MOMENT_OF_INERTIA      100 //[micro-kgm2]
+#define GAIN_P      1000
+#define GAIN_I      1000
+#define GAIN_D      1000
+
+//////////////////////////////////////////////
+//////  FILTERING CONFIGURATION
+////////////////////////////////////////////
+#define POSITION_FC             100
+#define VELOCITY_FC             90
 
 
 //////////////////////////////////////////////
@@ -101,7 +131,7 @@
 #define COMMUTATION_LOOP_PERIOD     66
 
 // COMMUTATION CW SPIN OFFSET (if applicable) [0:4095]
-#define COMMUTATION_OFFSET_CLK      3060    /* 0x2001 */
+#define COMMUTATION_OFFSET_CLK      0    /* 0x2001 */
 
 // COMMUTATION CCW SPIN OFFSET (if applicable) [0:4095]
 #define COMMUTATION_OFFSET_CCLK     0
@@ -119,7 +149,7 @@
 ////////////////////////////////////////////
 
 //maximum tolerable value of phase current (A)
-#define I_MAX           60      /* 0x6073 */
+#define I_MAX           90      /* 0x6073 */
 
 //maximum tolerable value of dc-bus voltage (V)
 #define V_DC_MAX        60
@@ -153,7 +183,7 @@
 #define MAX_POSITION_LIMIT      0x7fffffff    /* 0x607B:2 */
 
 // (1/min)
-#define MAX_SPEED               1300 //!200  /* now 0x2410:4 future: 0x607F */
+#define MAX_SPEED               2500 //!200  /* now 0x2410:4 future: 0x607F */
 
 // rpm/s
 #define QUICK_STOP_DECELERATION  3000       /* 0x6085 (future use) */
@@ -163,28 +193,4 @@
 #define MAX_DECELERATION         3000   /* 0x6085 (future use) */
 
 // torque controller input limit (units * 1024)
-#define TORQUE_CONTROL_LIMIT    1200000 //!1000000       /* 0x6072 MAX_TORQUE */
-
-
-//////////////////////////////////////////////
-//////  FILTERING CONFIGURATION
-////////////////////////////////////////////
-
-// Position controller limiters
-#define POSITION_P_ERROR_lIMIT  40000
-#define POSITION_I_ERROR_lIMIT  5
-#define POSITION_INTEGRAL_LIMIT 10000
-
-// Velocity controller limiters
-#define VELOCITY_P_ERROR_lIMIT  200000
-#define VELOCITY_I_ERROR_lIMIT  0
-#define VELOCITY_INTEGRAL_LIMIT 0
-
-// Position Feedback Frequency Cut-off
-#define POSITION_REF_FC         25
-#define POSITION_FC             82
-
-// Velocity Feedback Frequency Cut-off
-#define VELOCITY_REF_FC         28
-#define VELOCITY_FC             77
-#define VELOCITY_D_FC           75
+#define TORQUE_CONTROL_LIMIT    5000 //!1000000       /* 0x6072 MAX_TORQUE */

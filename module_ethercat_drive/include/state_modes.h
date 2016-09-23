@@ -116,6 +116,8 @@
 #define OPMODE_CST     10  /* [C] Cyclic synchronous torque mode */
 #define OPMODE_CSTCA   11  /* [O] Cyclic synchronous torque mode with commutation angle */
 
+#define OPMODE_SNCN_TUNING  -128 /* [M] mode for motor tuning stuff */
+
 /* Bitmanipulations */
 #define CLEAR_BIT(a, b)     (a & ~b)
 #define SET_BIT(a, b)       (a | b)

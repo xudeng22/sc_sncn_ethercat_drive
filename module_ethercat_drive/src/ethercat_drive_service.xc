@@ -16,6 +16,7 @@
 #include <position_feedback_service.h>
 #include <profile_control.h>
 #include <xscope.h>
+#include <tuning.h>
 
 /* FIXME move to some stdlib */
 #define ABSOLUTE_VALUE(x)   (x < 0 ? -x : x)
@@ -175,7 +176,7 @@ static void inline update_configuration(
 
     sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);
 
-    opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
+    //opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
 }
 
 static void debug_print_state(DriveState_t state)
@@ -226,6 +227,7 @@ static void debug_print_state(DriveState_t state)
 #define UPDATE_POSITION_GAIN    0x0000000f
 #define UPDATE_VELOCITY_GAIN    0x000000f0
 #define UPDATE_TORQUE_GAIN      0x00000f00
+
 
 /* NOTE:
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
@@ -278,6 +280,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     unsigned int c_time;
     int comm_inactive_flag = 0;
     int inactive_timeout_flag = 0;
+
+    /* tuning specific variables */
+    int tuning_control = 0;
+    //int tuningpdo_status = 0;
+    uint32_t tuning_result = 0;
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
@@ -352,12 +359,14 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          *  local state variables
          */
-        statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
         controlword     = pdo_get_controlword(InOut);
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
         send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
         update_position_velocity = InOut.user2_in; /* Update trigger which PID setting should be updated now */
+
+        /* tuning pdos */
+        tuning_control = InOut.user4_in;
 
         /*
         printint(state);
@@ -403,22 +412,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         direction = (actual_velocity < 0) ? DIRECTION_CCLK : DIRECTION_CLK;
 
         /*
-         * Additionally used bits in statusword for...
-         *
-         * ...CSP:
-         * Bit 10: Reserved -> 0
-         * Bit 12: "Target Position Ignored"
-         *         -> 0 Target position ignored
-         *         -> 1 Target position shall be used as input to position control loop
-         * Bit 13: "Following Error"
-         *         -> 0 no error
-         *         -> 1 if target_position_value || position_offset is outside of following_error_window
-         *              around position_demand_value for longer than following_error_time_out
-         */
-        statusword = SET_BIT(statusword, SW_CSP_TARGET_POSITION_IGNORED);
-        statusword = CLEAR_BIT(statusword, SW_CSP_FOLLOWING_ERROR);
-
-        /*
          *  update values to send
          */
         pdo_set_statusword(statusword, InOut);
@@ -427,6 +420,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_actual_torque(actual_torque, InOut );
         pdo_set_actual_position(actual_position, InOut);
         InOut.user1_out = (1000 * 5 * send_to_master.sensor_torque) / 4096;  /* ticks to (edit:) milli-volt */
+        InOut.user4_out = tuning_result;
 
         //xscope_int(USER_TORQUE, InOut.user1_out);
 
@@ -457,53 +451,80 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         //debug_print_state(state);
 
-        switch (state) {
-        case S_NOT_READY_TO_SWITCH_ON:
-            /* internal stuff, automatic transition (1) to next state */
-            state = get_next_state(state, checklist, 0, 0);
-            break;
-
-        case S_SWITCH_ON_DISABLED:
-            if (opmode_request != OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
-                opmode = opmode;
-            } else {
+        if (opmode == OPMODE_NONE) {
+            /* for safety considerations, if no opmode choosen, the brake should blocking. */
+            i_motorcontrol.set_brake_status(0);
+            if (opmode_request != OPMODE_NONE)
                 opmode = opmode_request;
-            }
 
-            /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
-            state = get_next_state(state, checklist, controlword, 0);
-            break;
+        } else if (opmode == OPMODE_CSP || opmode == OPMODE_CST || opmode == OPMODE_CSV) {
+            /* FIXME Put this into a separate CSP, CST, CSV function! */
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
 
-        case S_READY_TO_SWITCH_ON:
-            /* nothing special, transition form local (when?) or control device */
-            state = get_next_state(state, checklist, controlword, 0);
-            break;
+            /*
+             * Additionally used bits in statusword for...
+             *
+             * ...CSP:
+             * Bit 10: Reserved -> 0
+             * Bit 12: "Target Position Ignored"
+             *         -> 0 Target position ignored
+             *         -> 1 Target position shall be used as input to position control loop
+             * Bit 13: "Following Error"
+             *         -> 0 no error
+             *         -> 1 if target_position_value || position_offset is outside of following_error_window
+             *              around position_demand_value for longer than following_error_time_out
+             */
+            statusword = SET_BIT(statusword, SW_CSP_TARGET_POSITION_IGNORED);
+            statusword = CLEAR_BIT(statusword, SW_CSP_FOLLOWING_ERROR);
 
-        case S_SWITCH_ON:
-            /* high power shall be switched on  */
-            state = get_next_state(state, checklist, controlword, 0);
-            if (state == S_OPERATION_ENABLE) {
-                i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
-            }
-            break;
+            // FIXME make this function: continous_synchronous_operation(controlword, statusword, state, opmode, checklist, i_position_control);
+            switch (state) {
+            case S_NOT_READY_TO_SWITCH_ON:
+                /* internal stuff, automatic transition (1) to next state */
+                state = get_next_state(state, checklist, 0, 0);
+                break;
 
-        case S_OPERATION_ENABLE:
-            /* drive function shall be enabled and internal set-points are cleared */
+            case S_SWITCH_ON_DISABLED:
+                if (opmode_request == OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
+                    opmode = opmode;
+                } else {
+                    opmode = opmode_request;
+                }
 
-            /* check if state change occured */
-            state = get_next_state(state, checklist, controlword, 0);
-            if (state == S_SWITCH_ON || state == S_READY_TO_SWITCH_ON || state == S_SWITCH_ON_DISABLED) {
-                i_position_control.disable();
-            }
+                /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
+                state = get_next_state(state, checklist, controlword, 0);
+                break;
 
-            /* if quick stop is requested start immediately */
-            if (state == S_QUICK_STOP_ACTIVE) {
-                 quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
-            }
-            break;
+            case S_READY_TO_SWITCH_ON:
+                /* nothing special, transition form local (when?) or control device */
+                state = get_next_state(state, checklist, controlword, 0);
+                break;
 
-        case S_QUICK_STOP_ACTIVE:
-            /* quick stop function shall be started and running */
+            case S_SWITCH_ON:
+                /* high power shall be switched on  */
+                state = get_next_state(state, checklist, controlword, 0);
+                if (state == S_OPERATION_ENABLE) {
+                    i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                }
+                break;
+
+            case S_OPERATION_ENABLE:
+                /* drive function shall be enabled and internal set-points are cleared */
+
+                /* check if state change occured */
+                state = get_next_state(state, checklist, controlword, 0);
+                if (state == S_SWITCH_ON || state == S_READY_TO_SWITCH_ON || state == S_SWITCH_ON_DISABLED) {
+                    i_position_control.disable();
+                }
+
+                /* if quick stop is requested start immediately */
+                if (state == S_QUICK_STOP_ACTIVE) {
+                    quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
+                }
+                break;
+
+            case S_QUICK_STOP_ACTIVE:
+                /* quick stop function shall be started and running */
             { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
 
             if (quick_stop_steps_left == 0 ) {
@@ -519,38 +540,56 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             break;
 
-        case S_FAULT_REACTION_ACTIVE:
-            /* a fault is detected, perform fault recovery actions like a quick_stop */
-            if (quick_stop_steps == 0) {
-                quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+            case S_FAULT_REACTION_ACTIVE:
+                /* a fault is detected, perform fault recovery actions like a quick_stop */
+                if (quick_stop_steps == 0) {
+                    quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+                }
+
+                { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+
+                if (quick_stop_steps_left == 0) {
+                    state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
+                    quick_stop_steps = 0;
+                    qs_target_position = actual_position;
+                    i_position_control.disable();
+                }
+                break;
+
+            case S_FAULT:
+                /* wait until fault reset from the control device appears */
+                state = get_next_state(state, checklist, controlword, 0);
+
+                if (state == S_SWITCH_ON_DISABLED) {
+                    CLEAR_BIT(statusword, SW_FAULT_OVER_CURRENT);
+                    CLEAR_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
+                    CLEAR_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
+                    CLEAR_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
+                }
+                break;
+
+            default: /* should never happen! */
+                //printstrln("Should never happen happend.");
+                state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
+                break;
             }
 
-            { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+        } else if (opmode == OPMODE_SNCN_TUNING) {
+            /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
+            if (opmode_request != opmode)
+                opmode = opmode_request; /* stop tuning and switch to new opmode */
 
-            if (quick_stop_steps_left == 0) {
-                state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
-                quick_stop_steps = 0;
-                qs_target_position = actual_position;
-                i_position_control.disable();
-            }
-            break;
-
-        case S_FAULT:
-            /* wait until fault reset from the control device appears */
-            state = get_next_state(state, checklist, controlword, 0);
-
-            if (state == S_SWITCH_ON_DISABLED) {
-                CLEAR_BIT(statusword, SW_FAULT_OVER_CURRENT);
-                CLEAR_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-                CLEAR_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
-                CLEAR_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
-            }
-            break;
-
-        default: /* should never happen! */
-            //printstrln("Should never happen happend.");
-            state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
-            break;
+            tuning_handler(controlword, tuning_control, target_position,
+                    statusword, tuning_result,
+                    profiler_config, motorcontrol_config,
+                    send_to_master, send_to_control,
+                    i_motorcontrol, i_position_control, i_position_feedback, null);
+        } else {
+            /* if a unknown or unsupported opmode is requested we simply return
+             * no opmode and don't allow any operation.
+             * For safety reasons, if no opmode is selected the brake is closed! */
+            i_motorcontrol.set_brake_status(0);
+            opmode = OPMODE_NONE;
         }
 
 #if 1 /* Draft to get PID updates on the fly */

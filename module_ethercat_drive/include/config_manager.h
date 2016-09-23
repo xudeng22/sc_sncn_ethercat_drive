@@ -37,3 +37,26 @@ void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface PositionVelocityCtrlInterface i_position_control,
         PosVelocityControlConfig &position_config);
+
+/*
+ * Set default configuration of the modules in the object dictionary. If nothing
+ * is overwritten, this settings will be used later.
+ */
+
+void cm_default_config_position_feedback(
+        client interface i_coe_communication i_coe,
+        client interface PositionFeedbackInterface i_pos_feedback,
+        PositionFeedbackConfig &config);
+
+void cm_default_config_motor_control(
+        client interface i_coe_communication i_coe,
+        client interface MotorcontrolInterface ?i_commutation,
+        MotorcontrolConfig &commutation_params);
+
+void cm_default_config_profiler(
+        client interface i_coe_communication i_coe,
+        ProfilerConfig &profiler);
+
+void cm_default_config_pos_velocity_control(
+        client interface i_coe_communication i_coe,
+        client interface PositionVelocityCtrlInterface i_position_control);

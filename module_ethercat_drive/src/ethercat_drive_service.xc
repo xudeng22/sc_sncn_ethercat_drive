@@ -301,9 +301,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
 
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
-
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
+
+    /*
+     * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
+     */
+
+    cm_default_config_position_feedback(i_coe, i_position_feedback, position_feedback_config);
+    cm_default_config_profiler(i_coe, profiler_config);
+    cm_default_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
+    cm_default_config_pos_velocity_control(i_coe, i_position_control);
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.

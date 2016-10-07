@@ -258,31 +258,33 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //limits
             case 'L':
                 switch(mode_2) {
-                case 'p': //position pid limits
+                case 'p': //position limits
                     switch(mode_3) {
-                    case 'i':
+                    case 'i': //integral limit
                         pos_velocity_ctrl_config.integral_limit_pos = value;
-                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        break;
+                    default: //position limit
+                        if (value >= 0) {
+                            pos_velocity_ctrl_config.max_pos = value;
+                        } else {
+                            pos_velocity_ctrl_config.min_pos = value;
+                        }
                         break;
                     }
                     break;
-                case 'v': //velocity pid limits
+                case 'v': //velocity limits
                     switch(mode_3) {
-                    case 'i':
+                    case 'i'://integral limit
                         pos_velocity_ctrl_config.integral_limit_velocity = value;
-                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        break;
+                    default://velocity limit
+                        pos_velocity_ctrl_config.max_speed = value;
                         break;
                     }
                     break;
                 //max torque
                 case 't':
                     pos_velocity_ctrl_config.max_torque = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    break;
-                //max speed
-                case 's':
-                    pos_velocity_ctrl_config.max_speed = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                     break;
                 default:
                     printf("Limits:\nSpeed: %d, Torque: %d, Position integral: %d, Velocity integral: %d\n",
@@ -290,6 +292,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                             pos_velocity_ctrl_config.integral_limit_pos, pos_velocity_ctrl_config.integral_limit_velocity);
                     break;
                 }
+                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                 break;
             //step command
             case 'c':
@@ -345,21 +348,43 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
 
             //enable
             case 'e':
-                if (value == 1) {
+                if (value > 0) {
                     switch(mode_2) {
                         case 'p':
                             position_ctrl_flag = 1;
                             torque_control_flag = 0;
                             downstream_control_data.position_cmd = upstream_control_data.position;
-                            i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
-                            printf("position ctrl enabled\n");
+
+                            //select profiler
+                            if (mode_3 == 'p') {
+                                pos_velocity_ctrl_config.enable_profiler = 1;
+                            } else {
+                                pos_velocity_ctrl_config.enable_profiler = 0;
+                            }
+                            i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+
+                            //select control mode
+                            switch(value) {
+                            case 1:
+                                i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
+                                printf("simpe PID pos ctrl enabled\n");
+                                break;
+                            case 2:
+                                i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                                printf("vel.-cascaded pos ctrl enabled\n");
+                                break;
+                            case 3:
+                                i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+                                printf("Nonlinear pos ctrl enabled\n");
+                                break;
+                            }
                             break;
                         case 'v':
                             position_ctrl_flag = 1;
                             torque_control_flag = 0;
                             downstream_control_data.velocity_cmd = 0;
                             downstream_control_data.position_cmd = downstream_control_data.velocity_cmd; //for display
-                            i_position_control.enable_velocity_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                            i_position_control.enable_velocity_ctrl(VELOCITY_PID_CONTROLLER);
                             printf("velocity ctrl enabled\n");
                             break;
                         case 't':

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define USER_CONFIG_H
+
 // DC bus nominal voltage (V)
 #define VDC             48
 

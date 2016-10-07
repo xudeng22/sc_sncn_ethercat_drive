@@ -9,6 +9,12 @@
  * @author Synapticon GmbH (www.synapticon.com)
  */
 
+// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
+// These parameter will be eventually overwritten by the app running on the EtherCAT master
+//#include <user_config.h>
+//#include <user_config_speedy_A1.h>
+#include <user_config_foresight.h>
+
 #include <ethercat_drive_service.h>
 
 #include <ethercat_service.h>
@@ -27,12 +33,6 @@
 //Position control + profile libs
 #include <position_ctrl_service.h>
 #include <profile_control.h>
-
-// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
-// These parameter will be eventually overwritten by the app running on the EtherCAT master
-//#include <user_config.h>
-//#include <user_config_speedy_A1.h>
-#include <user_config_foresight.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;

@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <refclk.h>
+
+#ifndef USER_CONFIG_H
+
 // DC bus nominal voltage (V)
 #define VDC             48
 
@@ -191,3 +195,8 @@
 
 // torque controller input limit (units * 1024)
 #define TORQUE_CONTROL_LIMIT    5000 //!1000000       /* 0x6072 MAX_TORQUE */
+
+#endif
+
+//Number of ticks in a microsecond/frequency for IFM Tile
+#define IFM_TILE_USEC   USEC_FAST

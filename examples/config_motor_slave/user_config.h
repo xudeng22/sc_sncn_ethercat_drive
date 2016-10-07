@@ -56,6 +56,9 @@
 // POLARITY OF YOUR ENCODER [1, 0]
 #define SENSOR_POLARITY         0      /* 0x2004 */
 
+// motor id (in case more than 1 motor is controlled)
+#define MOTOR_ID 0
+
 
 //////////////////////////////////////////////
 //////  BRAKE CONFIGURATION

@@ -64,6 +64,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
     int target_torque = 0;
     int position_limit = 0;
     int status_mux = 0;
+    int repeat_flag = 0;
     //timing
     timer t;
     unsigned ts;
@@ -160,6 +161,15 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             /* Read/Write packets to ethercat Master application */
             ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
 
+
+            const int tolerance = 1000;
+            if (repeat_flag) {
+                if (upstream_control_data.position < (downstream_control_data.position_cmd+tolerance) &&
+                    upstream_control_data.position > (downstream_control_data.position_cmd-tolerance)) {
+                    downstream_control_data.position_cmd = -downstream_control_data.position_cmd;
+                }
+            }
+
             //receive mode and value
             char mode = 0;
             char mode_2 = 0;
@@ -208,6 +218,17 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                     break;
                 }
                 break;
+
+            //repeat
+            case 'R':
+                if (value) {
+                    downstream_control_data.position_cmd = value;
+                    repeat_flag = 1;
+                } else {
+                    repeat_flag = 0;
+                }
+                break;
+
 
             //set velocity
             case 'v':
@@ -523,8 +544,14 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //set zero position
             case 'z':
                 if (!isnull(i_position_feedback)) {
-//                    i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
-                    i_position_feedback.send_command(CONTELEC_CONF_MTPRESET, value, 16);
+                    switch(mode_2) {
+                    case 'z':
+                        i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
+                        break;
+                    default:
+                        i_position_feedback.send_command(CONTELEC_CONF_MTPRESET, value, 16);
+                        break;
+                    }
                     i_position_feedback.send_command(CONTELEC_CTRL_SAVE, 0, 0);
                     i_position_feedback.send_command(CONTELEC_CTRL_RESET, 0, 0);
                 }
@@ -534,8 +561,9 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             case '@':
                 if (position_ctrl_flag) {
                     position_ctrl_flag = 0;
+                    repeat_flag = 0;
                     i_position_control.disable();
-                    delay_milliseconds(500);
+                    delay_milliseconds(1000);
                     brake_flag = 1;
                     torque_control_flag = 1;
                     i_motorcontrol.set_torque(0);

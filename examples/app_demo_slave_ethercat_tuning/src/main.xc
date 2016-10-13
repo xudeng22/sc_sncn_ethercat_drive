@@ -82,7 +82,7 @@ int main(void)
         on tile[APP_TILE]:
         {
             ProfilerConfig profiler_config;
-            profiler_config.polarity = POLARITY;
+            profiler_config.polarity = MOTOR_POLARITY;
             profiler_config.max_position = MAX_POSITION_LIMIT;
             profiler_config.min_position = MIN_POSITION_LIMIT;
             profiler_config.max_velocity = MAX_SPEED;

@@ -89,7 +89,7 @@ int main(void)
         {
             ProfilerConfig profiler_config;
 
-            profiler_config.polarity = POLARITY;                 /* Set by Object Dictionary value! */
+            profiler_config.polarity = MOTOR_POLARITY;                 /* Set by Object Dictionary value! */
             profiler_config.max_position = MAX_POSITION_LIMIT;   /* Set by Object Dictionary value! */
             profiler_config.min_position = MIN_POSITION_LIMIT;   /* Set by Object Dictionary value! */
 

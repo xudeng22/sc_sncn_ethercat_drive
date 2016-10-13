@@ -24,7 +24,7 @@
 #define POLE_PAIRS  2               /* 0x2410:3 */
 
 // POLARITY OF THE MOVEMENT OF YOUR MOTOR [1,-1]
-#define POLARITY           1      /* 0x607E */
+#define MOTOR_POLARITY           1      /* 0x607E */
 
 //equivalent to torque constant (Nm at 1000 A)
 #define MAXIMUM_TORQUE          2500   /* 0x2410:6 (Motor Specific Torque Constant */

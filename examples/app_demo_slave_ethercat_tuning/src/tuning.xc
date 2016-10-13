@@ -454,16 +454,30 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //sensor polarity
             case 's':
                 if (!isnull(i_position_feedback)) {
-                    if (sensor_polarity == 0) {
-                        position_feedback_config.biss_config.polarity = 1;
-                        position_feedback_config.contelec_config.polarity = 1;
-                        sensor_polarity = 1;
-                    } else {
-                        position_feedback_config.biss_config.polarity = 0;
-                        position_feedback_config.contelec_config.polarity = 0;
-                        sensor_polarity = 0;
+                    switch(mode_2) {
+                    case 's':
+                        //FIXME: don't use pole pairs to store sensor status
+                        motorcontrol_config.pole_pair = 0;
+                        for (int i=0; i<100; i++) {
+                            int status;
+                            { void , void, status } = i_position_feedback.get_real_position();
+                            motorcontrol_config.pole_pair += status;
+                            delay_milliseconds(1);
+                        }
+                        break;
+                    default:
+                        if (sensor_polarity == 0) {
+                            position_feedback_config.biss_config.polarity = 1;
+                            position_feedback_config.contelec_config.polarity = 1;
+                            sensor_polarity = 1;
+                        } else {
+                            position_feedback_config.biss_config.polarity = 0;
+                            position_feedback_config.contelec_config.polarity = 0;
+                            sensor_polarity = 0;
+                        }
+                        i_position_feedback.set_config(position_feedback_config);
+                        break;
                     }
-                    i_position_feedback.set_config(position_feedback_config);
                 }
                 break;
 

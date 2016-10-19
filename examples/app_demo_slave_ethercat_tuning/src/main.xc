@@ -9,6 +9,12 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
+// Some of these parameter will be eventually overwritten by the app running on the EtherCAT master
+//#include <user_config.h>
+//#include <user_config_speedy_A1.h>
+#include <user_config.h>
+
 #include <ethercat_service.h>
 #include <fw_update_service.h>
 #include <pwm_server.h>
@@ -18,12 +24,6 @@
 #include <position_feedback_service.h>
 #include <adc_service.h>
 #include <tuning.h>
-
-// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
-// Some of these parameter will be eventually overwritten by the app running on the EtherCAT master
-//#include <user_config.h>
-//#include <user_config_speedy_A1.h>
-#include <user_config_foresight.h>
 
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
@@ -82,7 +82,7 @@ int main(void)
         on tile[APP_TILE]:
         {
             ProfilerConfig profiler_config;
-            profiler_config.polarity = POLARITY;
+            profiler_config.polarity = MOTOR_POLARITY;
             profiler_config.max_position = MAX_POSITION_LIMIT;
             profiler_config.min_position = MIN_POSITION_LIMIT;
             profiler_config.max_velocity = MAX_SPEED;
@@ -163,19 +163,21 @@ int main(void)
 
                     delay_milliseconds(5);
                     //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
-                    pwm_service_task(_MOTOR_ID, pwm_ports, i_update_pwm, DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE, PERIOD_START_BRAKE);
+                    pwm_service_task(MOTOR_ID, pwm_ports, i_update_pwm,
+                            DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE, PERIOD_START_BRAKE,
+                            IFM_TILE_USEC);
                 }
 
                 /* ADC Service */
                 {
                     delay_milliseconds(10);
-                    adc_service(adc_ports, null/*c_trigger*/, i_adc /*ADCInterface*/, i_watchdog[1]);
+                    adc_service(adc_ports, null/*c_trigger*/, i_adc /*ADCInterface*/, i_watchdog[1], IFM_TILE_USEC);
                 }
 
                 /* Watchdog Service */
                 {
                     delay_milliseconds(5);
-                    watchdog_service(wd_ports, i_watchdog);
+                    watchdog_service(wd_ports, i_watchdog, IFM_TILE_USEC);
                 }
 
                 /* Motor Control Service */
@@ -187,7 +189,7 @@ int main(void)
                     motorcontrol_config.licence =  ADVANCED_MOTOR_CONTROL_LICENCE;
                     motorcontrol_config.v_dc =  VDC;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
-                    motorcontrol_config.polarity_type= POLARITY;
+                    motorcontrol_config.polarity_type=MOTOR_POLARITY;
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
                     motorcontrol_config.current_I_gain =  TORQUE_Ki;
                     motorcontrol_config.current_D_gain =  TORQUE_Kd;
@@ -220,7 +222,7 @@ int main(void)
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
 
                     Motor_Control_Service(motorcontrol_config, i_adc[0], i_shared_memory[1],
-                            i_watchdog[0], i_motorcontrol, i_update_pwm);
+                            i_watchdog[0], i_motorcontrol, i_update_pwm, IFM_TILE_USEC);
                 }
 
                 /* Shared memory Service */

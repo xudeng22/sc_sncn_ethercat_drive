@@ -64,6 +64,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
     int target_torque = 0;
     int position_limit = 0;
     int status_mux = 0;
+    int repeat_flag = 0;
     //timing
     timer t;
     unsigned ts;
@@ -160,6 +161,15 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             /* Read/Write packets to ethercat Master application */
             ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
 
+
+            const int tolerance = 1000;
+            if (repeat_flag) {
+                if (upstream_control_data.position < (downstream_control_data.position_cmd+tolerance) &&
+                    upstream_control_data.position > (downstream_control_data.position_cmd-tolerance)) {
+                    downstream_control_data.position_cmd = -downstream_control_data.position_cmd;
+                }
+            }
+
             //receive mode and value
             char mode = 0;
             char mode_2 = 0;
@@ -208,6 +218,17 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                     break;
                 }
                 break;
+
+            //repeat
+            case 'R':
+                if (value) {
+                    downstream_control_data.position_cmd = value;
+                    repeat_flag = 1;
+                } else {
+                    repeat_flag = 0;
+                }
+                break;
+
 
             //set velocity
             case 'v':
@@ -258,31 +279,33 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //limits
             case 'L':
                 switch(mode_2) {
-                case 'p': //position pid limits
+                case 'p': //position limits
                     switch(mode_3) {
-                    case 'i':
+                    case 'i': //integral limit
                         pos_velocity_ctrl_config.integral_limit_pos = value;
-                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        break;
+                    default: //position limit
+                        if (value >= 0) {
+                            pos_velocity_ctrl_config.max_pos = value;
+                        } else {
+                            pos_velocity_ctrl_config.min_pos = value;
+                        }
                         break;
                     }
                     break;
-                case 'v': //velocity pid limits
+                case 'v': //velocity limits
                     switch(mode_3) {
-                    case 'i':
+                    case 'i'://integral limit
                         pos_velocity_ctrl_config.integral_limit_velocity = value;
-                        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                        break;
+                    default://velocity limit
+                        pos_velocity_ctrl_config.max_speed = value;
                         break;
                     }
                     break;
                 //max torque
                 case 't':
                     pos_velocity_ctrl_config.max_torque = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
-                    break;
-                //max speed
-                case 's':
-                    pos_velocity_ctrl_config.max_speed = value;
-                    i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                     break;
                 default:
                     printf("Limits:\nSpeed: %d, Torque: %d, Position integral: %d, Velocity integral: %d\n",
@@ -290,6 +313,7 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
                             pos_velocity_ctrl_config.integral_limit_pos, pos_velocity_ctrl_config.integral_limit_velocity);
                     break;
                 }
+                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
                 break;
             //step command
             case 'c':
@@ -345,21 +369,43 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
 
             //enable
             case 'e':
-                if (value == 1) {
+                if (value > 0) {
                     switch(mode_2) {
                         case 'p':
                             position_ctrl_flag = 1;
                             torque_control_flag = 0;
                             downstream_control_data.position_cmd = upstream_control_data.position;
-                            i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
-                            printf("position ctrl enabled\n");
+
+                            //select profiler
+                            if (mode_3 == 'p') {
+                                pos_velocity_ctrl_config.enable_profiler = 1;
+                            } else {
+                                pos_velocity_ctrl_config.enable_profiler = 0;
+                            }
+                            i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+
+                            //select control mode
+                            switch(value) {
+                            case 1:
+                                i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
+                                printf("simpe PID pos ctrl enabled\n");
+                                break;
+                            case 2:
+                                i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                                printf("vel.-cascaded pos ctrl enabled\n");
+                                break;
+                            case 3:
+                                i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+                                printf("Nonlinear pos ctrl enabled\n");
+                                break;
+                            }
                             break;
                         case 'v':
                             position_ctrl_flag = 1;
                             torque_control_flag = 0;
                             downstream_control_data.velocity_cmd = 0;
                             downstream_control_data.position_cmd = downstream_control_data.velocity_cmd; //for display
-                            i_position_control.enable_velocity_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                            i_position_control.enable_velocity_ctrl(VELOCITY_PID_CONTROLLER);
                             printf("velocity ctrl enabled\n");
                             break;
                         case 't':
@@ -408,16 +454,30 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //sensor polarity
             case 's':
                 if (!isnull(i_position_feedback)) {
-                    if (sensor_polarity == 0) {
-                        position_feedback_config.biss_config.polarity = 1;
-                        position_feedback_config.contelec_config.polarity = 1;
-                        sensor_polarity = 1;
-                    } else {
-                        position_feedback_config.biss_config.polarity = 0;
-                        position_feedback_config.contelec_config.polarity = 0;
-                        sensor_polarity = 0;
+                    switch(mode_2) {
+                    case 's':
+                        //FIXME: don't use pole pairs to store sensor status
+                        motorcontrol_config.pole_pair = 0;
+                        for (int i=0; i<100; i++) {
+                            int status;
+                            { void , void, status } = i_position_feedback.get_real_position();
+                            motorcontrol_config.pole_pair += status;
+                            delay_milliseconds(1);
+                        }
+                        break;
+                    default:
+                        if (sensor_polarity == 0) {
+                            position_feedback_config.biss_config.polarity = 1;
+                            position_feedback_config.contelec_config.polarity = 1;
+                            sensor_polarity = 1;
+                        } else {
+                            position_feedback_config.biss_config.polarity = 0;
+                            position_feedback_config.contelec_config.polarity = 0;
+                            sensor_polarity = 0;
+                        }
+                        i_position_feedback.set_config(position_feedback_config);
+                        break;
                     }
-                    i_position_feedback.set_config(position_feedback_config);
                 }
                 break;
 
@@ -498,8 +558,14 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             //set zero position
             case 'z':
                 if (!isnull(i_position_feedback)) {
-//                    i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
-                    i_position_feedback.send_command(CONTELEC_CONF_MTPRESET, value, 16);
+                    switch(mode_2) {
+                    case 'z':
+                        i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
+                        break;
+                    default:
+                        i_position_feedback.send_command(CONTELEC_CONF_MTPRESET, value, 16);
+                        break;
+                    }
                     i_position_feedback.send_command(CONTELEC_CTRL_SAVE, 0, 0);
                     i_position_feedback.send_command(CONTELEC_CTRL_RESET, 0, 0);
                 }
@@ -509,8 +575,9 @@ void run_offset_tuning(ProfilerConfig profiler_config, interface MotorcontrolInt
             case '@':
                 if (position_ctrl_flag) {
                     position_ctrl_flag = 0;
+                    repeat_flag = 0;
                     i_position_control.disable();
-                    delay_milliseconds(500);
+                    delay_milliseconds(1000);
                     brake_flag = 1;
                     torque_control_flag = 1;
                     i_motorcontrol.set_torque(0);

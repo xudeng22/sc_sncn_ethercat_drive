@@ -34,7 +34,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
     printstr("Gear ratio: ");printintln(sdo_value);
     sdo_value = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);//QEI resolution
     printstr("QEI resolution: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(SENSOR_POLARITY, 0);//QEI_POLARITY_NORMAL = 0, QEI_POLARITY_INVERTED = 1
+    sdo_value = i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0);//QEI_POLARITY_NORMAL = 0, QEI_POLARITY_INVERTED = 1
     printstr("QEI POLARITY: ");printintln(sdo_value);
 	sdo_value = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);//MAX_TORQUE
 	printstr("MAX TORQUE: ");printintln(sdo_value);
@@ -319,7 +319,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe)
 	//max = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
 	ticks_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
 	qei_type = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-	sensor_polarity = i_coe.get_object_value(SENSOR_POLARITY, 0);
+	sensor_polarity = i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0);
 
 	if(qei_type == QEI_WITH_INDEX)
 		return {ticks_resolution, QEI_WITH_INDEX, sensor_polarity};

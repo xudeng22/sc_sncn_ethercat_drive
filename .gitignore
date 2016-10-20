@@ -19,6 +19,7 @@
 
 ## ignore xTIMEcomposer(ecipse) files
 .metadata/
+xscope.xmt
 
 ## generic files to ignore
 *~

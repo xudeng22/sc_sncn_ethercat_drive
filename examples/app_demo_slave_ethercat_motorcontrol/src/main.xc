@@ -98,12 +98,12 @@ int main(void)
 #if 0
             ethercat_drive_service_debug( profiler_config,
                                     pdo_out, pdo_in, i_coe,
-                                    i_motorcontrol[0],
+                                    i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #else
             ethercat_drive_service( profiler_config,
                                     pdo_out, pdo_in, i_coe,
-                                    i_motorcontrol[0],
+                                    i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #endif
         }
@@ -160,7 +160,7 @@ int main(void)
 
                     pos_velocity_ctrl_config.j =                                    MOMENT_OF_INERTIA;
 
-                    position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[1], i_position_control);
+                    position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control);
                 }
             }
         }
@@ -244,19 +244,6 @@ int main(void)
 
                 /* Position feedback service */
                 {
-                    /*
-
-                    PositionFeedbackConfig position_feedback_config;
-                    position_feedback_config.sensor_type = HALL_SENSOR;
-                    position_feedback_config.hall_config.pole_pairs = POLE_PAIRS;
-                    position_feedback_config.hall_config.polarity = HALL_POLARITY;
-                    position_feedback_config.hall_config.enable_push_service = PushAll;
-
-                    position_feedback_service(hall_ports, null, null,
-                                              position_feedback_config, i_shared_memory[0], i_position_feedback,
-                                              null, null, null);
-                     */
-
                     PositionFeedbackConfig position_feedback_config;
                     position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
 
@@ -294,7 +281,6 @@ int main(void)
                     position_feedback_config.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
                     position_feedback_config.qei_config.enable_push_service = PushPosition;
 
-
                     position_feedback_config.ams_config.factory_settings = 1;
                     position_feedback_config.ams_config.polarity = AMS_POLARITY;
                     position_feedback_config.ams_config.hysteresis = 1;
@@ -312,7 +298,7 @@ int main(void)
                     position_feedback_config.ams_config.velocity_loop = AMS_VELOCITY_LOOP;
                     position_feedback_config.ams_config.enable_push_service = PushAll;
 
-                    position_feedback_service(null, null, spi_ports,
+                    position_feedback_service(hall_ports, qei_ports, spi_ports,
                                               position_feedback_config, i_shared_memory[0], i_position_feedback,
                                               null, null, null);
                 }

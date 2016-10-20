@@ -504,7 +504,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                    i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
                 }
                 break;
 
@@ -680,7 +680,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
 //            i_position_control.enable_torque_ctrl();
            //i_position_control.enable_velocity_ctrl();
            //printstr("enable\n");
-            i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+            i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
             enabled = 1;
         }
         else {

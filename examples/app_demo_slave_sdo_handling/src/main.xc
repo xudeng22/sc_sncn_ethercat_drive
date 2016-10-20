@@ -170,7 +170,7 @@ static const uint16_t g_listobjects[] = {
    COMMUTATION_OFFSET_CLKWISE,
    COMMUTATION_OFFSET_CCLKWISE,
    MOTOR_WINDING_TYPE,
-   SENSOR_POLARITY
+   SNCN_SENSOR_POLARITY
 };
 
 static const uint16_t g_listarrayobjects[] = {

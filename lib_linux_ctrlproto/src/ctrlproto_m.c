@@ -462,7 +462,7 @@ void motor_config_request(ec_slave_config_t *slave_config, sdo_entries_t *reques
 
 	request[30] = _config_sdo_request(slave_config, request[30], CIA402_HOMING_METHOD, 0, 1);
 	request[31] = _config_sdo_request(slave_config, request[31], LIMIT_SWITCH_TYPE, 0, 1);
-	request[32] = _config_sdo_request(slave_config, request[32], SENSOR_POLARITY, 0, 2);
+	request[32] = _config_sdo_request(slave_config, request[32], SNCN_SENSOR_POLARITY, 0, 2);
 
 }
 

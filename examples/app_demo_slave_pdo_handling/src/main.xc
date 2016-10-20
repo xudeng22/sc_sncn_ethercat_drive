@@ -204,7 +204,7 @@ static const uint16_t g_listobjects[] = {
    COMMUTATION_OFFSET_CLKWISE,
    COMMUTATION_OFFSET_CCLKWISE,
    MOTOR_WINDING_TYPE,
-   SENSOR_POLARITY
+   SNCN_SENSOR_POLARITY
 };
 
 /* Array objects also need the subindex for complete addressing */

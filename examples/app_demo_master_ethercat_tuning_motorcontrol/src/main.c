@@ -118,6 +118,10 @@ int main(int argc, char *argv[])
     slv_handles[slave_number].motorctrl_out = 0;  //reset control word
 
     //init prompt
+    move(DISPLAY_LINE-3, 0);
+    printw("Commands: b - Release/Block Brake; a - find offset");
+    move(DISPLAY_LINE-2, 0);
+    printw("Commands: t - activate torque mode; r - reverse direction");
     move(DISPLAY_LINE, 0);
     clrtoeol();
     printw("> ");
@@ -216,12 +220,8 @@ int main(int argc, char *argv[])
             if (position_limit > 0) {
                 printw("          | Position limit %d", position_limit);
             }
+            move(DISPLAY_LINE, c);
         }
-
-        move(DISPLAY_LINE-3, 0);
-        printw("Commands: b - Release/Block Brake; a - find offset");
-        move(DISPLAY_LINE-2, 0);
-        printw("Commands: t - activate torque mode; r - reverse direction");
 
         //read user input
         d = getch(); // curses call to input from keyboard
@@ -230,14 +230,15 @@ int main(int argc, char *argv[])
             slv_handles[slave_number].operation_mode = 0;
             quit = 1;
         } else if (d == KEY_BACKSPACE || d == KEY_DC || d == 127) {
-            move(r,0);
+            move(DISPLAY_LINE, 0);
             clrtoeol();
+            printw("> ");
+            c = 2;
             value = 0;
             mode = '@';
             mode_2 = '@';
             mode_3 = '@';
             sign = 1;
-            c = 0;
         } else if (d != ERR) {
             draw(d); // draw the character
             //parse input
@@ -258,10 +259,6 @@ int main(int argc, char *argv[])
 
             //set command
             if (d == '\n') {
-                move(DISPLAY_LINE, 0);
-                clrtoeol();
-                printw("> ");
-                c = 2;
                 move(nrows-1, 0);
                 clrtoeol();
                 value *= sign;
@@ -275,6 +272,10 @@ int main(int argc, char *argv[])
                 mode_2 = '@';
                 mode_3 = '@';
                 sign = 1;
+                move(DISPLAY_LINE, 0);
+                clrtoeol();
+                printw("> ");
+                c = 2;
             }
         }
     }

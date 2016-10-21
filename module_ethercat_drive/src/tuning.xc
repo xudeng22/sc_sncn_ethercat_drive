@@ -7,6 +7,7 @@
 #include <tuning.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <state_modes.h>
 
 
 static int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
@@ -80,6 +81,12 @@ int tuning_handler(
     static uint8_t status_mux     = 0;
     static uint8_t status_display = 0;
 
+    if (controlword == CMD_SHUTDOWN) {
+        brake_flag = 0;
+        torque_control_flag = 0;
+        position_ctrl_flag = 0;
+    }
+
     /* FIXME shouldn't be read every time */
     PosVelocityControlConfig pos_velocity_ctrl_config;
     if (!isnull(i_position_control)) {
@@ -134,12 +141,11 @@ int tuning_handler(
     //char opstat = (control_extension >> 16) & 0xff;
     int  value  = sext(target_position, 32);
 
-    if ((controlword & 0xff) == 6) { //no mode
-         status_display &= 0x7f; //unset the ACK bit
-         mode = 0;
+    if (controlword == 0) { //no mode
+         status_display = 0; //reset status display
      } else { //new mode received
-         if ((status_display  & 0x80) == 0) {//if the ACK bit is not set
-             status_display |= 0x80; //set the ACK bit
+         if (status_display != (controlword & 0xff)) {//if the ACK bit is not set
+             status_display = (controlword & 0xff); //set controlword display
              value = sext(target_position, 32);
              mode   = controlword         & 0xff;
              mode_2 = (controlword >>  8) & 0xff;
@@ -150,7 +156,7 @@ int tuning_handler(
     statusword = ((status_display & 0xff) << 8) | (status_mux & 0xff);
 
     /* print command */
-    if (mode != 0) {
+    if (mode >=32 && mode <= 126) { //mode is a printable ascii char
         if (mode_2 != 0) {
             if (mode_3 != 0) {
                 printf("%c %c %c %d\n", mode, mode_2, mode_3, value);

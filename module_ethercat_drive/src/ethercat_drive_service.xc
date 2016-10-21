@@ -576,8 +576,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         } else if (opmode == OPMODE_SNCN_TUNING) {
             /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
-            if (opmode_request != opmode)
+            if (opmode_request != opmode) {
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
+                i_position_control.disable();
+                state = S_FAULT;
+                controlword = CMD_SHUTDOWN;
+            }
 
             tuning_handler(controlword, tuning_control, target_position,
                     statusword, tuning_result,

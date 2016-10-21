@@ -34,7 +34,7 @@ ncols; // number of columns in window
 //printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
 
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 9
+#define DISPLAY_LINE 10
 
 void draw(char dc)
 {
@@ -91,31 +91,54 @@ int main(int argc, char *argv[])
     int position_limit = 0;
 
     int status_mux = 0;
-    unsigned char mode_display = 0;
+    unsigned char statusword = 0;
+    unsigned short controlword = 0;
 
     /* Write Process data */
-    slv_handles[slave_number].motorctrl_out = 0;
+    slv_handles[slave_number].motorctrl_out = 0; //controlword
     slv_handles[slave_number].torque_setpoint = 0;
     slv_handles[slave_number].speed_setpoint = 0;
     slv_handles[slave_number].position_setpoint = 0;
     slv_handles[slave_number].operation_mode = OPMODE_TUNING;
     slv_handles[slave_number].operation_mode_disp = 0;
+    /* Update the process data (EtherCAT packets) sent/received from the node */
+    pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+
+    //set the operation mode to tuning
+    while (slv_handles[slave_number].operation_mode_disp != (OPMODE_TUNING & 0xff)) {
+        /* Update the process data (EtherCAT packets) sent/received from the node */
+        pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+        statusword = (unsigned char)((slv_handles[slave_number].motorctrl_status_in) & 0xff);
+        if ((statusword & 0x08) == 0x08) {
+            slv_handles[slave_number].motorctrl_out = 0x0080;  /* Fault reset */
+        }
+    }
+    slv_handles[slave_number].motorctrl_out = 0;  //reset control word
+
+    //init prompt
+    move(DISPLAY_LINE, 0);
+    clrtoeol();
+    printw("> ");
+    c=2;
+
+    //main loop
     while (1) {
         /* Update the process data (EtherCAT packets) sent/received from the node */
         pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
         status_mux = (slv_handles[slave_number].motorctrl_status_in) & 0xff;
-        mode_display = (unsigned char)((slv_handles[slave_number].motorctrl_status_in >> 8) & 0xff);
+        statusword = (unsigned char)((slv_handles[slave_number].motorctrl_status_in >> 8) & 0xff);
 
-        if (quit > 100)
+
+        if (statusword == (controlword & 0xff)) { //control word received by slave
+            slv_handles[slave_number].motorctrl_out = 0; //reset control word
+            controlword = 0;
+        }
+
+        if (slv_handles[slave_number].operation_mode_disp == 0) { //quit
             break;
-
-        if (mode_display & 0x80) { /* ??? */
-            slv_handles[slave_number].motorctrl_out = 6;
-        } else {
-            if (slv_handles[slave_number].operation_mode_disp == 0 && quit) //quit enabled and received
-                quit++;
         }
 
         //receive and print data
@@ -156,6 +179,7 @@ int main(int argc, char *argv[])
             move(line, 0);
             clrtoeol();
             printw("Torque computed %4d    | Torque sensor %d", slv_handles[slave_number].torque_in, slv_handles[slave_number].user1_in);
+//            printw("controlword %4d    | statusword %d", slv_handles[slave_number].motorctrl_out & 0xff, statusword);
             line++;
             move(line, 0);
             clrtoeol();
@@ -194,8 +218,10 @@ int main(int argc, char *argv[])
             }
         }
 
+        move(DISPLAY_LINE-3, 0);
+        printw("Commands: b - Release/Block Brake; a - find offset");
         move(DISPLAY_LINE-2, 0);
-        printw("Commands: b - Release/Block Brake; a - find offset; t - activate torque mode; r - reverse direction");
+        printw("Commands: t - activate torque mode; r - reverse direction");
 
         //read user input
         d = getch(); // curses call to input from keyboard
@@ -234,20 +260,21 @@ int main(int argc, char *argv[])
             if (d == '\n') {
                 move(DISPLAY_LINE, 0);
                 clrtoeol();
-                move(DISPLAY_LINE-1, 0);
+                printw("> ");
+                c = 2;
+                move(nrows-1, 0);
                 clrtoeol();
                 value *= sign;
                 printw("value %d, mode %c (%X), mode_2 %c, mode_3 %c", value, mode, mode, mode_2, mode_3);
-                //slv_handles[slave_number].operation_mode = mode;
                 slv_handles[slave_number].position_setpoint = value;
-                slv_handles[slave_number].motorctrl_out     = ((mode_2 & 0xff) << 8) | (mode & 0xff);
+                controlword = ((mode_2 & 0xff) << 8) | (mode & 0xff);
+                slv_handles[slave_number].motorctrl_out = controlword;
                 slv_handles[slave_number].user4_out         = mode_3 & 0xff;
                 value = 0;
                 mode = '@';
                 mode_2 = '@';
                 mode_3 = '@';
                 sign = 1;
-                c = 0;
             }
         }
     }

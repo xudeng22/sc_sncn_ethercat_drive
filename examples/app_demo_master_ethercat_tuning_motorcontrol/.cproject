@@ -45,11 +45,11 @@
 								<option id="com.xmos.xc.compiler.option.include.paths.11643164" name="com.xmos.xc.compiler.option.include.paths" superClass="com.xmos.xc.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/config/motor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/etc_network_interfaces_example}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/config/motor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/etc_network_interfaces_example}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/xc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 								</option>
@@ -546,11 +546,11 @@
 								<option id="com.xmos.c.compiler.option.include.paths.71882708" name="com.xmos.c.compiler.option.include.paths" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/config/motor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/etc_network_interfaces_example}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/config/motor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/etc_network_interfaces_example}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.22335438" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
@@ -865,11 +865,11 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/config/motor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/config}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/etc_network_interfaces_example}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/config/motor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/config}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/etc_network_interfaces_example}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/app_demo_master_ethercat_tuning_motorcontrol}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/v1&quot;"/>
 								</option>
@@ -888,7 +888,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="app_demo_master_ethercat_tuning.null.1239749732" name="app_demo_master_ethercat_tuning"/>
+		<project id="app_demo_master_ethercat_tuning_motorcontrol.null.1239749732" name="app_demo_master_ethercat_tuning_motorcontrol"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>

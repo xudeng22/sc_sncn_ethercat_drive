@@ -37,7 +37,7 @@ void cm_sync_config_position_feedback(
     int old_sensor_type = config.sensor_type;
     config.sensor_type = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
     int tick_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
-    int bit_resolution = tick2bits(tick_resolution);
+//    int bit_resolution = tick2bits(tick_resolution);
 
     //config.biss_config.singleturn_resolution = bit_resolution;
     //config.contelec_config.resolution_bits   = bit_resolution;
@@ -168,11 +168,6 @@ void cm_default_config_position_feedback(
 
     if (config.contelec_config.pole_pairs != 0)
         i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, config.contelec_config.pole_pairs);
-
-//    i_pos_feedback.set_config(config);
-//    if (old_sensor_type != config.sensor_type) { //restart the service if the sensor type is changed
-//        i_pos_feedback.exit();
-//    }
 }
 
 void cm_default_config_motor_control(

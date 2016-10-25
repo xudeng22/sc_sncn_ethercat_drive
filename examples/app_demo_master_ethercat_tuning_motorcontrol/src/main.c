@@ -15,6 +15,13 @@
 #include <stdint.h>
 #include <ctype.h>
 
+typedef enum {
+    TUNING_MOTORCTRL_OFF= 0,
+    TUNING_MOTORCTRL_TORQUE= 1,
+    TUNING_MOTORCTRL_POSITION= 2,
+    TUNING_MOTORCTRL_VELOCITY= 3
+} TuningMotorCtrlStatus;
+
 int r,c, // current row and column (upper-left is (0,0))
 nrows, // number of rows in window
 ncols; // number of columns in window
@@ -85,9 +92,10 @@ int main(int argc, char *argv[])
     int quit = 0;
     int offset = 0;
     int motor_polarity = 0, sensor_polarity = 0, torque_control_flag = 0, position_ctrl_flag = 0, brake_flag = 0;
+    TuningMotorCtrlStatus motorctrl_status = TUNING_MOTORCTRL_OFF;
     int pole_pairs = 0;
     int target_position = 0;
-    int target_torque = 0;
+    int target = 0;
     int position_limit = 0;
 
     int status_mux = 0;
@@ -152,10 +160,10 @@ int main(int argc, char *argv[])
             switch(status_mux) {
             case 0://flags
                 brake_flag = slv_handles[slave_number].user4_in & 1;
-                position_ctrl_flag = (slv_handles[slave_number].user4_in >> 1) & 1;
-                torque_control_flag = (slv_handles[slave_number].user4_in >> 2) & 1;
-                sensor_polarity = (slv_handles[slave_number].user4_in >> 3) & 1;
-                motor_polarity = (slv_handles[slave_number].user4_in >> 4) & 1;
+                motorctrl_status = (slv_handles[slave_number].user4_in >> 1) & 0b11;
+                torque_control_flag = (slv_handles[slave_number].user4_in >> 3) & 1;
+                sensor_polarity = (slv_handles[slave_number].user4_in >> 4) & 1;
+                motor_polarity = (slv_handles[slave_number].user4_in >> 5) & 1;
                 break;
             case 1://offset
                 offset = slv_handles[slave_number].user4_in;
@@ -164,7 +172,7 @@ int main(int argc, char *argv[])
                 pole_pairs = slv_handles[slave_number].user4_in;
                 break;
             case 3://target torque
-                target_torque = slv_handles[slave_number].user4_in;
+                target = slv_handles[slave_number].user4_in;
                 break;
             case 4://position limit
                 position_limit = slv_handles[slave_number].user4_in;
@@ -203,13 +211,28 @@ int main(int argc, char *argv[])
             move(line,0);
             clrtoeol();
             if (torque_control_flag == 0)
-                printw("Torque control off      | ");
+                printw("Motor control off       | ");
             else
-                printw("Torque control %8d | ", target_torque);
-            if (position_ctrl_flag == 0)
-                printw("Position control off");
-            else
-                printw("Position control %9d", target_position);
+//                printw("Torque control %8d | ", target_torque);
+                printw("Motor control on        | ");
+            //motorcontrol mode
+            switch(motorctrl_status) {
+            case TUNING_MOTORCTRL_OFF:
+                break;
+            case TUNING_MOTORCTRL_TORQUE:
+                printw("Torque control %5d", target);
+                break;
+            case TUNING_MOTORCTRL_POSITION:
+                printw("Position control %9d", target);
+                break;
+            case TUNING_MOTORCTRL_VELOCITY:
+                printw("Velocity control %5d", target);
+                break;
+            }
+//            if (position_ctrl_flag == 0)
+//                printw("Position control off");
+//            else
+//                printw("Position control %9d", target_position);
             line++;
             move(line,0);
             clrtoeol();
@@ -263,7 +286,7 @@ int main(int argc, char *argv[])
                 clrtoeol();
                 value *= sign;
                 printw("value %d, mode %c (%X), mode_2 %c, mode_3 %c", value, mode, mode, mode_2, mode_3);
-                slv_handles[slave_number].position_setpoint = value;
+                slv_handles[slave_number].user3_out = value;
                 controlword = ((mode_2 & 0xff) << 8) | (mode & 0xff);
                 slv_handles[slave_number].motorctrl_out = controlword;
                 slv_handles[slave_number].user4_out         = mode_3 & 0xff;

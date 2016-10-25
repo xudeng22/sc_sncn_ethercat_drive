@@ -26,22 +26,47 @@
 //#include <user_config_speedy_A1.h>
 //#include <user_config.h>
 
-interface PositionLimiterInterface {
-    void set_limit(int limit);
-    int get_limit();
-};
+typedef enum {
+    TUNING_MOTORCTRL_OFF= 0,
+    TUNING_MOTORCTRL_TORQUE= 1,
+    TUNING_MOTORCTRL_POSITION= 2,
+    TUNING_MOTORCTRL_VELOCITY= 3
+} TuningMotorCtrlStatus;
 
-void position_limiter(int position_limit, interface PositionLimiterInterface server i_position_limiter, client interface MotorcontrolInterface i_motorcontrol);
 
-int tuning_handler(
-        /* input */  uint16_t controlword, uint32_t control_extension, uint32_t target_position,
-        /* output */ uint16_t &status_mux, uint32_t &tuning_result,
-        ProfilerConfig          &profiler_config,
-        MotorcontrolConfig      &motorcontrol_config,
-        UpstreamControlData     send_to_master,
-        DownstreamControlData   send_to_control,
-        interface MotorcontrolInterface client i_motorcontrol,
-        interface PositionVelocityCtrlInterface client i_position_control,
-        client interface PositionFeedbackInterface ?i_position_feedback,
-        client interface PositionLimiterInterface ?i_position_limiter
+typedef struct {
+    int mode_1;
+    int mode_2;
+    int mode_3;
+    int value;
+    int torque_ctrl_flag;
+    int brake_flag;
+    TuningMotorCtrlStatus motorctrl_status;
+} TuningStatus;
+
+
+int tuning_handler_ethercat(
+        /* input */  uint16_t    controlword, uint32_t control_extension,
+        /* output */ uint16_t    &statusword, uint32_t &tuning_result,
+        TuningStatus             &tuning_status,
+        MotorcontrolConfig       &motorcontrol_config,
+        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        PositionFeedbackConfig   &pos_feedback_config,
+        UpstreamControlData      &upstream_control_data,
+        DownstreamControlData    &downstream_control_data,
+        client interface MotorcontrolInterface i_motorcontrol,
+        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface PositionFeedbackInterface ?i_position_feedback
+    );
+
+void tuning_command(
+        TuningStatus             &tuning_status,
+        MotorcontrolConfig       &motorcontrol_config,
+        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        PositionFeedbackConfig   &pos_feedback_config,
+        UpstreamControlData      &upstream_control_data,
+        DownstreamControlData    &downstream_control_data,
+        client interface MotorcontrolInterface i_motorcontrol,
+        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface PositionFeedbackInterface ?i_position_feedback
     );

@@ -43,8 +43,8 @@ void cm_sync_config_position_feedback(
     //config.contelec_config.resolution_bits   = bit_resolution;
 
 
-    config.biss_config.polarity       = i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0);
-    config.contelec_config.polarity   = i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0);
+    config.biss_config.polarity       = sext(i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0), 8);
+    config.contelec_config.polarity   = sext(i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0), 8);
     config.biss_config.pole_pairs     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
     config.contelec_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
 

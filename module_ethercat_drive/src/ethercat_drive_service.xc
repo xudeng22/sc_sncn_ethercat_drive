@@ -285,6 +285,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int tuning_control = 0;
     //int tuningpdo_status = 0;
     uint32_t tuning_result = 0;
+    TuningStatus tuning_status = {0};
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
@@ -367,6 +368,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         /* tuning pdos */
         tuning_control = InOut.user4_in;
+        tuning_status.value = InOut.user3_in;
 
         /*
         printint(state);
@@ -374,7 +376,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        send_to_control.position_cmd = target_position;
+        if (opmode != OPMODE_SNCN_TUNING)
+            send_to_control.position_cmd = target_position;
         if (quick_stop_steps != 0) {
             send_to_control.position_cmd = qs_target_position;
         }
@@ -504,7 +507,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
+//                    i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
+//                    i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+                    i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
                 }
                 break;
 
@@ -580,14 +585,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
                 i_position_control.disable();
                 state = S_FAULT;
-                controlword = CMD_SHUTDOWN;
+                //reset tuning status
+                tuning_status.brake_flag = 0;
+                tuning_status.torque_ctrl_flag = 0;
+                tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
 
-            tuning_handler(controlword, tuning_control, target_position,
+            tuning_handler_ethercat(controlword, tuning_control,
                     statusword, tuning_result,
-                    profiler_config, motorcontrol_config,
+                    tuning_status,
+                    motorcontrol_config, position_velocity_config, position_feedback_config,
                     send_to_master, send_to_control,
-                    i_motorcontrol, i_position_control, i_position_feedback, null);
+                    i_motorcontrol, i_position_control, i_position_feedback);
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.

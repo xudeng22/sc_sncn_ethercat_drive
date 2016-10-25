@@ -22,6 +22,13 @@ typedef enum {
     TUNING_MOTORCTRL_VELOCITY= 3
 } TuningMotorCtrlStatus;
 
+typedef struct {
+    int max_position;
+    int min_position;
+    int max_speed;
+    int max_torque;
+} InputValues;
+
 int r,c, // current row and column (upper-left is (0,0))
 nrows, // number of rows in window
 ncols; // number of columns in window
@@ -41,7 +48,7 @@ ncols; // number of columns in window
 //printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
 
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 10
+#define DISPLAY_LINE 15
 
 void draw(char dc)
 {
@@ -93,6 +100,7 @@ int main(int argc, char *argv[])
     int offset = 0;
     int motor_polarity = 0, sensor_polarity = 0, torque_control_flag = 0, position_ctrl_flag = 0, brake_flag = 0;
     TuningMotorCtrlStatus motorctrl_status = TUNING_MOTORCTRL_OFF;
+    InputValues input = {0};
     int pole_pairs = 0;
     int target_position = 0;
     int target = 0;
@@ -126,12 +134,17 @@ int main(int argc, char *argv[])
     slv_handles[slave_number].motorctrl_out = 0;  //reset control word
 
     //init prompt
+    move(DISPLAY_LINE-6, 0);
+    printw("Commands:");
+    move(DISPLAY_LINE-5, 0);
+    printw("b - Release/Block Brake ; a - find offset");
+    move(DISPLAY_LINE-4, 0);
+    printw("num value - torque command ; r - reverse torque command");
     move(DISPLAY_LINE-3, 0);
-    printw("Commands: b - Release/Block Brake; a - find offset");
+    printw("ep3 - enable position control ; p + num value - position command");
     move(DISPLAY_LINE-2, 0);
-    printw("Commands: t - activate torque mode; r - reverse direction");
+    printw("L s/t/p + value - set speed/torque/position limit");
     move(DISPLAY_LINE, 0);
-    clrtoeol();
     printw("> ");
     c=2;
 
@@ -171,32 +184,42 @@ int main(int argc, char *argv[])
             case 2://pole pairs
                 pole_pairs = slv_handles[slave_number].user4_in;
                 break;
-            case 3://target torque
+            case 3://target
                 target = slv_handles[slave_number].user4_in;
                 break;
-            case 4://position limit
-                position_limit = slv_handles[slave_number].user4_in;
+            case 4://min position limit
+                input.min_position = slv_handles[slave_number].user4_in;
                 break;
-            default://target position
-                target_position = slv_handles[slave_number].user4_in;
+            case 5://max position limit
+                input.max_position = slv_handles[slave_number].user4_in;
+                break;
+            case 6://max speed
+                input.max_speed = slv_handles[slave_number].user4_in;
+                break;
+            default://max torque
+                input.max_torque = slv_handles[slave_number].user4_in;
                 break;
             }
 
             //print
             int line = 0;
+            //row 0
             move(line, 0);
             clrtoeol();
             printw("Position %14d | Velocity %4d",  slv_handles[slave_number].position_in, slv_handles[slave_number].speed_in);
             line++;
+            //row 1
             move(line, 0);
             clrtoeol();
             printw("Torque computed %4d    | Torque sensor %d", slv_handles[slave_number].torque_in, slv_handles[slave_number].user1_in);
 //            printw("controlword %4d    | statusword %d", slv_handles[slave_number].motorctrl_out & 0xff, statusword);
             line++;
+            //row 2
             move(line, 0);
             clrtoeol();
             printw("Offset %4d             | Pole pairs %2d", offset, pole_pairs);
             line++;
+            //row 3
             move(line,0);
             clrtoeol();
             if (motor_polarity == 0)
@@ -208,13 +231,33 @@ int main(int argc, char *argv[])
             else
                 printw("Sensor polarity inverted");
             line++;
+            //row 4
             move(line,0);
             clrtoeol();
             if (torque_control_flag == 0)
                 printw("Motor control off       | ");
             else
-//                printw("Torque control %8d | ", target_torque);
                 printw("Motor control on        | ");
+            if (brake_flag == 0)
+                printw("Brake blocking");
+            else
+                printw("Brake released");
+            line++;
+            //row 5
+            move(line,0);
+            clrtoeol();
+            printw("Speed  limit %5d      | ", input.max_speed);
+            printw("Position min %d", input.min_position);
+            line++;
+            //row 6
+            move(line,0);
+            clrtoeol();
+            printw("Torque limit %5d      | ", input.max_torque);
+            printw("Position max %d", input.max_position);
+            line++;
+            //row 6
+            move(line,0);
+            clrtoeol();
             //motorcontrol mode
             switch(motorctrl_status) {
             case TUNING_MOTORCTRL_OFF:
@@ -228,20 +271,6 @@ int main(int argc, char *argv[])
             case TUNING_MOTORCTRL_VELOCITY:
                 printw("Velocity control %5d", target);
                 break;
-            }
-//            if (position_ctrl_flag == 0)
-//                printw("Position control off");
-//            else
-//                printw("Position control %9d", target_position);
-            line++;
-            move(line,0);
-            clrtoeol();
-            if (brake_flag == 0)
-                printw("Brake blocking");
-            else
-                printw("Brake released");
-            if (position_limit > 0) {
-                printw("          | Position limit %d", position_limit);
             }
             move(DISPLAY_LINE, c);
         }

@@ -74,7 +74,7 @@ int tuning_handler_ethercat(
     static uint8_t status_display = 0;
 
     //mux send offsets and other data in the user4 pdo using the lower bits of statusword
-    status_mux = ((status_mux + 1) >= 5) ? 0 : status_mux + 1;
+    status_mux = ((status_mux + 1) >= 8) ? 0 : status_mux + 1;
     switch(status_mux) {
     case 0: //send flags
         //convert polarity flag to 0/1
@@ -107,8 +107,17 @@ int tuning_handler_ethercat(
             break;
         }
         break;
-    default: //position limit
+    case 4: //position limit min
+        tuning_result = pos_velocity_ctrl_config.min_pos;
+        break;
+    case 5: //position limit max
         tuning_result = pos_velocity_ctrl_config.max_pos;
+        break;
+    case 6: //max speed
+        tuning_result = pos_velocity_ctrl_config.max_speed;
+        break;
+    default: //max torque
+        tuning_result = pos_velocity_ctrl_config.max_torque;
         break;
     }
 
@@ -165,6 +174,15 @@ void tuning_command(
     )
 {
 
+    //repeat
+    const int tolerance = 1000;
+    if (tuning_status.repeat_flag == 1) {
+        if (upstream_control_data.position < (downstream_control_data.position_cmd+tolerance) &&
+            upstream_control_data.position > (downstream_control_data.position_cmd-tolerance)) {
+            downstream_control_data.position_cmd = -downstream_control_data.position_cmd;
+        }
+    }
+
     /* execute command */
     switch(tuning_status.mode_1) {
     //go to position directly
@@ -174,6 +192,16 @@ void tuning_command(
 #ifdef TUNING_PRINT
         printf("Go to %d\n", downstream_control_data.position_cmd);
 #endif
+        break;
+
+    //repeat
+    case 'R':
+        if (tuning_status.value) {
+            downstream_control_data.position_cmd = upstream_control_data.position+tuning_status.value;
+            tuning_status.repeat_flag = 1;
+        } else {
+            tuning_status.repeat_flag = 0;
+        }
         break;
 
     //set velocity
@@ -236,9 +264,13 @@ void tuning_command(
             //max torque
             case 't':
                 pos_velocity_ctrl_config.max_torque = tuning_status.value;
+                if (pos_velocity_ctrl_config.max_torque < motorcontrol_config.max_torque) {
+                    motorcontrol_config.max_torque = pos_velocity_ctrl_config.max_torque;
+                }
                 break;
             //max speed
             case 's':
+            case 'v':
                 pos_velocity_ctrl_config.max_speed = tuning_status.value;
                 break;
             //max position
@@ -366,6 +398,7 @@ void tuning_command(
         } else {
             tuning_status.torque_ctrl_flag = 0;
             tuning_status.brake_flag = 0;
+            tuning_status.repeat_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             i_position_control.disable();
             printf("position ctrl disabled\n");
@@ -401,14 +434,28 @@ void tuning_command(
     //sensor polarity
     case 's':
         if (!isnull(i_position_feedback)) {
-            if (pos_feedback_config.biss_config.polarity == NORMAL_POLARITY) {
-                pos_feedback_config.biss_config.polarity = INVERTED_POLARITY;
-                pos_feedback_config.contelec_config.polarity = INVERTED_POLARITY;
-            } else {
-                pos_feedback_config.biss_config.polarity = NORMAL_POLARITY;
-                pos_feedback_config.contelec_config.polarity = NORMAL_POLARITY;
+            switch(tuning_status.mode_2) {
+            case 's':
+                //FIXME: don't use pole pairs to store sensor status
+                motorcontrol_config.pole_pair = 0;
+                for (int i=0; i<100; i++) {
+                    int status;
+                    { void , void, status } = i_position_feedback.get_real_position();
+                    motorcontrol_config.pole_pair += status;
+                    delay_milliseconds(1);
+                }
+                break;
+            default:
+                if (pos_feedback_config.biss_config.polarity == NORMAL_POLARITY) {
+                    pos_feedback_config.biss_config.polarity = INVERTED_POLARITY;
+                    pos_feedback_config.contelec_config.polarity = INVERTED_POLARITY;
+                } else {
+                    pos_feedback_config.biss_config.polarity = NORMAL_POLARITY;
+                    pos_feedback_config.contelec_config.polarity = NORMAL_POLARITY;
+                }
+                i_position_feedback.set_config(pos_feedback_config);
+                break;
             }
-            i_position_feedback.set_config(pos_feedback_config);
         }
         break;
 
@@ -514,6 +561,7 @@ void tuning_command(
         if (tuning_status.motorctrl_status != TUNING_MOTORCTRL_TORQUE) {
             tuning_status.brake_flag = 1;
             tuning_status.torque_ctrl_flag = 1;
+            tuning_status.repeat_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_TORQUE;
             i_position_control.enable_torque_ctrl();
             printf("switch to torque control mode\n");

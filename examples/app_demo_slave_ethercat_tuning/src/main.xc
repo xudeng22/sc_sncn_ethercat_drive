@@ -103,6 +103,8 @@ int main(void)
                 pos_velocity_ctrl_config.max_pos =                              MAX_POSITION_LIMIT;
                 pos_velocity_ctrl_config.max_speed =                            MAX_SPEED;
                 pos_velocity_ctrl_config.max_torque =                           TORQUE_CONTROL_LIMIT;
+                pos_velocity_ctrl_config.polarity =                             POLARITY;
+                pos_velocity_ctrl_config.j =                                    MOMENT_OF_INERTIA;
 
                 pos_velocity_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
                 pos_velocity_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;

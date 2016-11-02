@@ -82,8 +82,6 @@ void cm_sync_config_motor_control(
     motorcontrol_config.phase_inductance   = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 5);
 //    motorcontrol_config.v_dc; /* FIXME currently not setable - should it be? */
 
-    motorcontrol_config.polarity_type      = i_coe.get_object_value(CIA402_POLARITY, 0);
-
     motorcontrol_config.protection_limit_over_current = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);//motorcontrol_config.max_current;
     i_motorcontrol.set_config(motorcontrol_config);
 
@@ -115,6 +113,7 @@ void cm_sync_config_pos_velocity_control(
 
     position_config.min_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
     position_config.max_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
+    position_config.polarity       = i_coe.get_object_value(CIA402_POLARITY, 0);
     position_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
     position_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
     position_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
@@ -196,7 +195,6 @@ void cm_default_config_motor_control(
     /* These are motor specific maybe we introduce a new object */
     i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 2, motorcontrol_config.phase_resistance);
     i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 5, motorcontrol_config.phase_inductance);
-    i_coe.set_object_value(CIA402_POLARITY, 0, motorcontrol_config.polarity_type);
     i_coe.set_object_value(CIA402_MAX_CURRENT, 0, motorcontrol_config.protection_limit_over_current);//motorcontrol_config.max_current;
 
 //    i_motorcontrol.set_config(motorcontrol_config);
@@ -229,6 +227,7 @@ void cm_default_config_pos_velocity_control(
 
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  1, position_config.min_pos);  /* -8000; */
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  2, position_config.max_pos);  /* 8000; */
+    i_coe.set_object_value(CIA402_POLARITY, 0, position_config.polarity);
     i_coe.set_object_value(CIA402_POSITION_GAIN, 1, position_config.P_pos); /* POSITION_Kp; */
     i_coe.set_object_value(CIA402_POSITION_GAIN, 2, position_config.I_pos); /* POSITION_Ki; */
     i_coe.set_object_value(CIA402_POSITION_GAIN, 3, position_config.D_pos); /* POSITION_Kd; */

@@ -79,7 +79,7 @@ int tuning_handler_ethercat(
     case 0: //send flags
         //convert polarity flag to 0/1
         int motor_polarity = 0;
-        if (motorcontrol_config.polarity_type == INVERTED_POLARITY) {
+        if (pos_velocity_ctrl_config.polarity == INVERTED_POLARITY) {
             motor_polarity = 1;
         }
         int sensor_polarity = 0;
@@ -229,8 +229,12 @@ void tuning_command(
             case 'l':
                 pos_velocity_ctrl_config.integral_limit_pos = tuning_status.value;
                 break;
+            case 'j':
+                pos_velocity_ctrl_config.j = tuning_status.value;
+                break;
             default:
-                printf("Pp:%d Pi:%d Pd:%d\n", pos_velocity_ctrl_config.P_pos, pos_velocity_ctrl_config.I_pos, pos_velocity_ctrl_config.D_pos);
+                printf("Pp:%d Pi:%d Pd:%d Pi lim:%d j:%d\n", pos_velocity_ctrl_config.P_pos, pos_velocity_ctrl_config.I_pos, pos_velocity_ctrl_config.D_pos,
+                        pos_velocity_ctrl_config.integral_limit_pos, pos_velocity_ctrl_config.j);
                 break;
             }
             break;
@@ -418,17 +422,15 @@ void tuning_command(
         }
         break;
 
-    //direction (motor polarity)
+    //direction
     case 'd':
-        if (motorcontrol_config.polarity_type == NORMAL_POLARITY){
-            motorcontrol_config.polarity_type = INVERTED_POLARITY;
+        pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+        if (pos_velocity_ctrl_config.polarity == INVERTED_POLARITY) {
+            pos_velocity_ctrl_config.polarity = NORMAL_POLARITY;
         } else {
-            motorcontrol_config.polarity_type = NORMAL_POLARITY;
+            pos_velocity_ctrl_config.polarity = INVERTED_POLARITY;
         }
-        i_motorcontrol.set_config(motorcontrol_config);
-        tuning_status.torque_ctrl_flag = 0;
-        tuning_status.brake_flag = 0;
-        tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
+        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
         break;
 
     //sensor polarity

@@ -143,6 +143,8 @@ int main(void)
 
                     pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
                     pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
+                    pos_velocity_ctrl_config.resolution  =                          POSITION_SENSOR_RESOLUTION;
+                    pos_velocity_ctrl_config.pid_gain =                             PID_GAIN;
 
                     position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control);
                 }

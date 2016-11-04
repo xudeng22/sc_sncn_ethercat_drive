@@ -185,13 +185,55 @@ void tuning_command(
 
     /* execute command */
     switch(tuning_status.mode_1) {
-    //go to position directly
+    //position commands
     case 'p':
+        downstream_control_data.offset_torque = 0;
         downstream_control_data.position_cmd = tuning_status.value;
-        upstream_control_data = i_position_control.update_control_data(downstream_control_data);
-#ifdef TUNING_PRINT
-        printf("Go to %d\n", downstream_control_data.position_cmd);
-#endif
+        pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+        switch(tuning_status.mode_2)
+        {
+        //direct command with profile
+        case 'p':
+                //bug: the first time after one p# command p0 doesn't use the profile; only the way back to zero
+                pos_velocity_ctrl_config.enable_profiler = 1;
+                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                printf("Go to %d with profile\n", tuning_status.value);
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
+                break;
+        //step command (forward and backward)
+        case 's':
+                switch(tuning_status.mode_3)
+                {
+                //with profile
+                case 'p':
+                        pos_velocity_ctrl_config.enable_profiler = 1;
+                        printf("position cmd: %d to %d with profile\n", tuning_status.value, -tuning_status.value);
+                        break;
+                //without profile
+                default:
+                        pos_velocity_ctrl_config.enable_profiler = 0;
+                        printf("position cmd: %d to %d\n", tuning_status.value, -tuning_status.value);
+                        break;
+                }
+                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                downstream_control_data.offset_torque = 0;
+                downstream_control_data.position_cmd = tuning_status.value;
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
+                delay_milliseconds(1500);
+                downstream_control_data.position_cmd = -tuning_status.value;
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
+                delay_milliseconds(1500);
+                downstream_control_data.position_cmd = 0;
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
+                break;
+        //direct command
+        default:
+                pos_velocity_ctrl_config.enable_profiler = 0;
+                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                printf("Go to %d\n", tuning_status.value);
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
+                break;
+        }
         break;
 
     //repeat
@@ -268,7 +310,7 @@ void tuning_command(
             //max torque
             case 't':
                 pos_velocity_ctrl_config.max_torque = tuning_status.value;
-                if (pos_velocity_ctrl_config.max_torque < motorcontrol_config.max_torque) {
+                if (motorcontrol_config.max_torque < pos_velocity_ctrl_config.max_torque) {
                     motorcontrol_config.max_torque = pos_velocity_ctrl_config.max_torque;
                 }
                 break;

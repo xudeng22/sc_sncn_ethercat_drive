@@ -27,6 +27,10 @@ typedef struct {
     int min_position;
     int max_speed;
     int max_torque;
+    int P_pos;
+    int I_pos;
+    int D_pos;
+    int integral_limit_pos;
 } InputValues;
 
 typedef struct {
@@ -53,7 +57,7 @@ ncols; // number of columns in window
 //printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
 
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 17
+#define DISPLAY_LINE 19
 
 void draw(char dc)
 {
@@ -208,8 +212,20 @@ int main(int argc, char *argv[])
             case 6://max speed
                 input.max_speed = slv_handles[slave_number].user4_in;
                 break;
-            default://max torque
+            case 7://max torque
                 input.max_torque = slv_handles[slave_number].user4_in;
+                break;
+            case 8://max speed
+                input.P_pos = slv_handles[slave_number].user4_in;
+                break;
+            case 9://max speed
+                input.I_pos = slv_handles[slave_number].user4_in;
+                break;
+            case 10://max speed
+                input.D_pos = slv_handles[slave_number].user4_in;
+                break;
+            default://max torque
+                input.integral_limit_pos = slv_handles[slave_number].user4_in;
                 break;
             }
 
@@ -289,6 +305,18 @@ int main(int argc, char *argv[])
             clrtoeol();
             printw("Torque limit %5d      | ", input.max_torque);
             printw("Position max %d", input.max_position);
+            line++;
+            //row 8
+            move(line,0);
+            clrtoeol();
+            printw("Positon P %8d      | ", input.P_pos);
+            printw("Position I %d", input.I_pos);
+            line++;
+            //row 9
+            move(line,0);
+            clrtoeol();
+            printw("Positon D %8d      | ", input.D_pos);
+            printw("Position I lim %d", input.integral_limit_pos);
             line++;
             move(DISPLAY_LINE, c);
         }

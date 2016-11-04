@@ -55,7 +55,6 @@ int tuning_handler_ethercat(
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
-        client interface MotorcontrolInterface i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback
     );
@@ -67,7 +66,6 @@ void tuning_command(
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
-        client interface MotorcontrolInterface i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback
     );

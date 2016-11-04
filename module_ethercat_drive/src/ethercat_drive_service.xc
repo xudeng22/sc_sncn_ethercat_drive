@@ -596,7 +596,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     tuning_status,
                     motorcontrol_config, position_velocity_config, position_feedback_config,
                     send_to_master, send_to_control,
-                    i_motorcontrol, i_position_control, i_position_feedback);
+                    i_position_control, i_position_feedback);
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.

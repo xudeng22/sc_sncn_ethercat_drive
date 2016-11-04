@@ -64,7 +64,6 @@ int tuning_handler_ethercat(
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
-        client interface MotorcontrolInterface i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback
     )
@@ -154,7 +153,7 @@ int tuning_handler_ethercat(
     tuning_command(tuning_status,
             motorcontrol_config, pos_velocity_ctrl_config, pos_feedback_config,
             upstream_control_data, downstream_control_data,
-            i_motorcontrol, i_position_control, i_position_feedback);
+            i_position_control, i_position_feedback);
 
     return 0;
 }
@@ -168,7 +167,6 @@ void tuning_command(
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
-        client interface MotorcontrolInterface i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback
     )
@@ -338,60 +336,6 @@ void tuning_command(
         i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
         break;
 
-#if 0
-    //step command
-    case 'c':
-        switch(tuning_status.mode_2) {
-        case 'p':
-            printf("position cmd: %d to %d (range:-32767 to 32767)\n", tuning_status.value, -tuning_status.value);
-            downstream_control_data.position_cmd = tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(1000);
-            downstream_control_data.position_cmd = -tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(1000);
-            downstream_control_data.position_cmd = 0;
-            i_position_control.update_control_data(downstream_control_data);
-            break;
-        case 'v':
-            printf("velocity cmd: %d to %d (range:-32767 to 32767)\n", tuning_status.value, -tuning_status.value);
-            downstream_control_data.velocity_cmd = tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(500);
-            downstream_control_data.velocity_cmd = -tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(500);
-            downstream_control_data.velocity_cmd = 0;//tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            break;
-        case 't':
-            printf("torque cmd: %d to %d (range:-32767 to 32767)\n", tuning_status.value, -tuning_status.value);
-            downstream_control_data.torque_cmd = tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(400);
-            downstream_control_data.torque_cmd = -tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(400);
-            downstream_control_data.torque_cmd = 0;
-            i_position_control.update_control_data(downstream_control_data);
-            break;
-        case 'o':
-            printf("offset-torque cmd: %d to %d\n", tuning_status.value, -tuning_status.value);
-            downstream_control_data.position_cmd = 0;
-            downstream_control_data.velocity_cmd = 0;
-            downstream_control_data.offset_torque = tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(200);
-            downstream_control_data.offset_torque = -tuning_status.value;
-            i_position_control.update_control_data(downstream_control_data);
-            delay_milliseconds(200);
-            downstream_control_data.offset_torque = 0;
-            i_position_control.update_control_data(downstream_control_data);
-            break;
-        } /* end mode_2 */
-        break;
-#endif
-
     //enable position control
     case 'e':
         if (tuning_status.value > 0) {
@@ -460,7 +404,7 @@ void tuning_command(
             tuning_status.brake_flag = 0;
             tuning_status.torque_ctrl_flag = 0;
             i_position_feedback.set_config(pos_feedback_config);
-            i_motorcontrol.set_config(motorcontrol_config);
+            i_position_control.set_motorcontrol_config(motorcontrol_config);
         }
         break;
 
@@ -510,51 +454,36 @@ void tuning_command(
             i_position_control.disable();
             delay_milliseconds(500);
         }
-        tuning_status.brake_flag = 1;
-        tuning_status.torque_ctrl_flag = 1;
-        i_motorcontrol.set_brake_status(tuning_status.brake_flag);
-        motorcontrol_config.commutation_angle_offset = auto_offset(i_motorcontrol);
+        tuning_status.brake_flag = 0;
+        tuning_status.torque_ctrl_flag = 0;
+        motorcontrol_config = i_position_control.set_offset_detection_enabled();
+//        i_motorcontrol.set_brake_status(tuning_status.brake_flag);
+//        motorcontrol_config.commutation_angle_offset = auto_offset(i_motorcontrol);
         break;
 
     //set offset
     case 'o':
         motorcontrol_config.commutation_angle_offset = tuning_status.value;
-        i_motorcontrol.set_config(motorcontrol_config);
+        i_position_control.set_motorcontrol_config(motorcontrol_config);
         tuning_status.brake_flag = 0;
         tuning_status.torque_ctrl_flag = 0;
         printf("set offset to %d\n", tuning_status.value);
         break;
 
-    //enable and disable torque controller
-    case 't':
-        switch(tuning_status.mode_2) {
-        case 's': //torque safe mode
-            tuning_status.torque_ctrl_flag = 0;
-            i_motorcontrol.set_safe_torque_off_enabled();
-            break;
-        case 'o': //set torque offset
-            downstream_control_data.offset_torque = tuning_status.value;
-            break;
-        default:
-            if (tuning_status.torque_ctrl_flag == 0 || tuning_status.value == 1) {
-                tuning_status.torque_ctrl_flag = 1;
-                i_motorcontrol.set_torque_control_enabled();
-                printf("Torque control activated\n");
-            } else {
-                tuning_status.torque_ctrl_flag = 0;
-                i_motorcontrol.set_torque_control_disabled();
-                printf("Torque control deactivated\n");
-            }
-            break;
-        } /* end mode_2 */
-        break;
-
     //set brake
     case 'b':
         switch(tuning_status.mode_2) {
-        case 's':
-            tuning_status.brake_flag = 1;
-            brake_shake(i_motorcontrol, tuning_status.value);
+        case 's': //toggle special brake release
+            pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+            if (pos_velocity_ctrl_config.special_brake_release == 1)
+            {
+                pos_velocity_ctrl_config.special_brake_release = 0;
+            }
+            else
+            {
+                pos_velocity_ctrl_config.special_brake_release = 1;
+            }
+            i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
             break;
         default:
             if (tuning_status.brake_flag == 0 || tuning_status.value == 1) {
@@ -564,7 +493,7 @@ void tuning_command(
                 tuning_status.brake_flag = 0;
                 printf("Brake blocking\n");
             }
-            i_motorcontrol.set_brake_status(tuning_status.brake_flag);
+            i_position_control.set_brake_status(tuning_status.brake_flag);
             break;
         } /* end mode_2 */
         break;
@@ -613,7 +542,7 @@ void tuning_command(
         //release the brake
         if (tuning_status.brake_flag == 0) {
             tuning_status.brake_flag = 1;
-            i_motorcontrol.set_brake_status(tuning_status.brake_flag);
+            i_position_control.set_brake_status(tuning_status.brake_flag);
         }
         downstream_control_data.torque_cmd = tuning_status.value;
         upstream_control_data = i_position_control.update_control_data(downstream_control_data);

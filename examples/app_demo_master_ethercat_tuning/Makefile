@@ -16,7 +16,7 @@ CFLAGS += -Wall --std=c99 -g -O2 $(INCLUDE) -D_XOPEN_SOURCE
 LDFLAGS = -g -Wall -Wextra $(LIB_PATH) $(LIBRARY)
 LIBS_D += -g -Wall -Wextra -lncurses
 
-TARGET = bin/app_demo_master_ethercat_tuning_new
+TARGET = bin/app_demo_master_ethercat_tuning
 
 SRCDIR=src
 ODIR=.obj

@@ -346,14 +346,16 @@ int main(int argc, char **argv)
             pdo_handler(master, pdo_input, pdo_output, num_slaves-1);
 #endif
 
-            uint16_t statusword = (unsigned char)((pdo_input[num_slaves-1].statusword >> 8) & 0xff);
+            uint16_t statusword = ((pdo_input[num_slaves-1].statusword >> 8) & 0xff);
             if (statusword == (pdo_output[num_slaves-1].controlword & 0xff)) { //control word received by slave
                 pdo_output[num_slaves-1].controlword = 0; //reset control word
             }
 
             if (init_tuning == 0) { //switch the slave to OPMODE_TUNING
-                if (pdo_input[num_slaves-1].opmodedisplay != (OPMODE_TUNING & 0xff)) { //quit
+                if (pdo_input[num_slaves-1].opmodedisplay != (OPMODE_TUNING & 0xff)) {
                     if ((statusword & 0x08) == 0x08) {
+                        pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
+                    } else { //FIXME: fix check status word
                         pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
                     }
                 } else {

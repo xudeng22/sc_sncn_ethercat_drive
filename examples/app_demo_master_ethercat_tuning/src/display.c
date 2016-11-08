@@ -48,6 +48,7 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     //row 3
     wmoveclr(wnd, &row);
     wprintw(wnd, "Offset %4d             | Pole pairs %2d", input.offset, input.pole_pairs);
+//    wprintw(wnd, "statusword %4d             | opmodedisplay %2d", (pdo_input.statusword >> 8) & 0xff, pdo_input.opmodedisplay);
     //row 4
     wmoveclr(wnd, &row);
     if (input.motor_polarity == 0)

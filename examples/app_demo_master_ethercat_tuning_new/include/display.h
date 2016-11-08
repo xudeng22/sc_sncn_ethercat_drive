@@ -9,13 +9,21 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+typedef struct {
+    int row;
+    int col;
+} Cursor;
+
 #include <curses.h> // required
 #include "ecat_master.h"
+#include "tuning.h"
 
+void wmoveclr(WINDOW *wnd, int *row);
 
-void init_window(WINDOW *wnd);
+int draw(WINDOW *wnd, char c, int row, int column);
 
-void display(WINDOW *wnd, int *target_position, struct _pdo_cia402_input *pdo_input, size_t count);
+int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues input, int row);
 
+int display_tuning_help(WINDOW *wnd, int row);
 
 #endif /* DISPLAY_H */

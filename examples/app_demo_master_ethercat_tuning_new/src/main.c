@@ -34,27 +34,26 @@
 
 #include <errno.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <string.h>
 #include <ctype.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <getopt.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <curses.h> // required
-#include <sys/mman.h>
 
 /****************************************************************************/
 
-#include "ecrt.h"
+#include "ecrt.h" //IgH lib
 
 #include "ecat_master.h"
 #include "ecat_debug.h"
@@ -62,6 +61,7 @@
 #include "ecat_sdo_config.h"
 #include "cyclic_task.h"
 #include "display.h"
+#include "tuning.h"
 
 /****************************************************************************/
 
@@ -71,14 +71,11 @@
 // Application parameters
 #define FREQUENCY 1000
 #define PRIORITY 1
+#define OPMODE_TUNING    (-128)
+#define DISPLAY_LINE 19
 
+//#define ENABLE_SDO
 #define NUM_CONFIG_SDOS   26
-#define MAX_FILENAME 500
-#define DEFAULT_NUM_SLAVES 1
-
-#ifndef NUM_SLAVES
-#define NUM_SLAVES   DEFAULT_NUM_SLAVES
-#endif
 
 /****************************************************************************/
 
@@ -192,7 +189,7 @@ static void cmdline(int argc, char **argv, int *num_slaves)
 {
     int  opt;
 
-    const char *options = "hvl:s:f:n:";
+    const char *options = "hvl:s:f:s:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -201,10 +198,10 @@ static void cmdline(int argc, char **argv, int *num_slaves)
             exit(0);
             break;
 
-        case 'n':
-            *num_slaves = atoi(optarg);
+        case 's':
+            *num_slaves = atoi(optarg)+1;
             if (*num_slaves == 0) {
-                fprintf(stderr, "Use a number of slaves greater than 0\n");
+                fprintf(stderr, "Use a slave number at least 0\n");
                 exit(1);
             }
             break;
@@ -226,62 +223,12 @@ static void cmdline(int argc, char **argv, int *num_slaves)
     }
 }
 
-#define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 19
 
 /* ----------- OD setup -------------- */
 
-//#include "sdo_config.inc"
-#include "sdo_config_DT3.inc"
+#include "sdo_config.inc"
 
 /* ----------- /OD setup -------------- */
-
-
-typedef enum {
-    TUNING_MOTORCTRL_OFF= 0,
-    TUNING_MOTORCTRL_TORQUE= 1,
-    TUNING_MOTORCTRL_POSITION= 2,
-    TUNING_MOTORCTRL_VELOCITY= 3
-} TuningMotorCtrlStatus;
-
-typedef struct {
-    int max_position;
-    int min_position;
-    int max_speed;
-    int max_torque;
-    int P_pos;
-    int I_pos;
-    int D_pos;
-    int integral_limit_pos;
-} InputValues;
-
-typedef struct {
-    int last_command;
-    int last_value;
-} OutputValues;
-
-int r,c, // current row and column (upper-left is (0,0))
-nrows, // number of rows in window
-ncols; // number of columns in window
-
-
-
-void draw(char dc)
-{
-    move(r,c); // curses call to move cursor to row r, column c
-    if (dc == '\n')
-        dc = '.';
-    delch(); insch(dc); // curses calls to replace character under cursor by dc
-    refresh(); // curses call to update screen
-    c++; // go to next row
-    // check for need to shift right or wrap around
-    if (c == ncols) {
-        c = 0;
-        r++;
-        if (r == nrows) r = DISPLAY_LINE;
-    }
-}
-
 
 
 int main(int argc, char **argv)
@@ -312,7 +259,7 @@ int main(int argc, char **argv)
     /*
      * Activate master and start operation
      */
-
+#ifdef ENABLE_SDO
     /* SDO configuration of the slave */
     /* FIXME set per slave SDO configuration */
     for (int i = 0; i < num_slaves; i++) {
@@ -322,6 +269,7 @@ int main(int argc, char **argv)
             return -1;
         }
     }
+#endif
 
 
 #if 0
@@ -355,85 +303,38 @@ int main(int argc, char **argv)
     struct _pdo_cia402_input  *pdo_input  = malloc(num_slaves*sizeof(struct _pdo_cia402_input));
     struct _pdo_cia402_output *pdo_output = malloc(num_slaves*sizeof(struct _pdo_cia402_output));
 
+    //init tuning structure
+    InputValues input = {0};
+    OutputValues output = {0};
+    output.mode_1 = '@';
+    output.mode_2 = '@';
+    output.mode_3 = '@';
+    output.sign = 1;
 
-    char d;
-    WINDOW *wnd;
+    /* Init pdos */
+    pdo_output[num_slaves-1].controlword = 0;
+    pdo_output[num_slaves-1].opmode = OPMODE_TUNING;
+    pdo_output[num_slaves-1].target_position = 0;
+    pdo_output[num_slaves-1].target_torque = 0;
+    pdo_output[num_slaves-1].target_velocity = 0;
+    pdo_input[num_slaves-1].opmodedisplay = 0;
 
     //init ncurses
+    WINDOW *wnd;
     wnd = initscr(); // curses call to initialize window
-    //cbreak(); // curses call to set no waiting for Enter key
     noecho(); // curses call to set no echoing
-    getmaxyx(wnd,nrows,ncols); // curses call to find size of window
     clear(); // curses call to clear screen, send cursor to position (0,0)
     refresh(); // curses call to implement all changes since last refresh
     nodelay(stdscr, TRUE); //no delay
-    //    start_color();           /* Start color          */
-    //    init_pair(1, COLOR_RED, -1);
-
-    r = DISPLAY_LINE; c = 0;
-    int value = 0;
-    char mode = '@';
-    char mode_2 = '@';
-    char mode_3 = '@';
-    int sign = 1;
-    int offset = 0;
-    int motor_polarity = 0, sensor_polarity = 0, torque_control_flag = 0, brake_flag = 0;
-    TuningMotorCtrlStatus motorctrl_status = TUNING_MOTORCTRL_OFF;
-    InputValues input = {0};
-    OutputValues output = {0};
-    int pole_pairs = 0;
-    int target = 0;
-
-    int status_mux = 0;
-    unsigned char statusword = 0;
-    unsigned short controlword = 0;
-
-#ifndef DISABLE_ETHERCAT
-    /* Init pdos */
-    pdo_output[num_slaves].controlword = 0;
-    pdo_output[num_slaves].opmode = OPMODE_TUNING;
-    pdo_output[num_slaves].target_position = 0;
-    pdo_output[num_slaves].target_torque = 0;
-    pdo_output[num_slaves].target_velocity = 0;
-    pdo_input[num_slaves].opmodedisplay = 0;
-    /* Update the process data (EtherCAT packets) sent/received from the node */
-    pdo_handler(master, pdo_input, pdo_output);
-
-    //set the operation mode to tuning
-    while (pdo_input[num_slaves].opmodedisplay != (OPMODE_TUNING & 0xff)) {
-        /* Update the process data (EtherCAT packets) sent/received from the node */
-        pdo_handler(master, pdo_input, pdo_output);
-
-        statusword = (unsigned char)((pdo_input[num_slaves].statusword) & 0xff);
-        if ((statusword & 0x08) == 0x08) {
-            pdo_output[num_slaves].controlword = 0x0080;  /* Fault reset */
-        }
-    }
-    pdo_output[num_slaves].controlword = 0;  //reset control word
-#endif
 
     //init prompt
-    move(DISPLAY_LINE-8, 0);
-    printw("Commands:");
-    move(DISPLAY_LINE-7, 0);
-    printw("b: Release/Block Brake       | a: find offset (also release the brake)");
-    move(DISPLAY_LINE-6, 0);
-    printw("number: set torque command   | r: reverse torque command");
-    move(DISPLAY_LINE-5, 0);
-    printw("ep3: enable position control | p + number: set position command");
-    move(DISPLAY_LINE-4, 0);
-    printw("P + number: set pole pairs");
-    move(DISPLAY_LINE-3, 0);
-    printw("L s/t/p + number: set speed/torque/position limit");
-    move(DISPLAY_LINE-2, 0);
-    printw("** Double press Enter for emergency stop **");
-    move(DISPLAY_LINE, 0);
+    Cursor cursor = { DISPLAY_LINE, 2 };
+    display_tuning_help(wnd, DISPLAY_LINE-8);
+    move(cursor.row, 0);
     printw("> ");
-    c=2;
-
     
-
     int run_flag = 1;
+    int init_tuning = 0;
     while (run_flag) {
         pause();
 
@@ -442,227 +343,44 @@ int main(int argc, char **argv)
             user_alarms++;
 
 #ifndef DISABLE_ETHERCAT
-            pdo_handler(master, pdo_input, pdo_output);
+            pdo_handler(master, pdo_input, pdo_output, num_slaves-1);
 #endif
 
-            status_mux = (pdo_input[num_slaves].statusword) & 0xff;
-            statusword = (unsigned char)((pdo_input[num_slaves].statusword >> 8) & 0xff);
-
-
-            if (statusword == (controlword & 0xff)) { //control word received by slave
-                pdo_output[num_slaves].controlword = 0; //reset control word
-                controlword = 0;
+            uint16_t statusword = (unsigned char)((pdo_input[num_slaves-1].statusword >> 8) & 0xff);
+            if (statusword == (pdo_output[num_slaves-1].controlword & 0xff)) { //control word received by slave
+                pdo_output[num_slaves-1].controlword = 0; //reset control word
             }
 
-            if (pdo_input[num_slaves].opmodedisplay == 0) { //quit
+            if (init_tuning == 0) { //switch the slave to OPMODE_TUNING
+                if (pdo_input[num_slaves-1].opmodedisplay != (OPMODE_TUNING & 0xff)) { //quit
+                    if ((statusword & 0x08) == 0x08) {
+                        pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
+                    }
+                } else {
+                    init_tuning = 1;
+                }
+            } else if (pdo_input[num_slaves-1].opmodedisplay == 0) { //quit
                 run_flag = 0;
+                break;
             }
 
-            //receive and print data
             //demux received data
-
-            switch(status_mux) {
-            case 0://flags
-                brake_flag = pdo_input[num_slaves].user_in_4 & 1;
-                motorctrl_status = (pdo_input[num_slaves].user_in_4 >> 1) & 0b11;
-                torque_control_flag = (pdo_input[num_slaves].user_in_4 >> 3) & 1;
-                sensor_polarity = (pdo_input[num_slaves].user_in_4 >> 4) & 1;
-                motor_polarity = (pdo_input[num_slaves].user_in_4 >> 5) & 1;
-                break;
-            case 1://offset
-                offset = pdo_input[num_slaves].user_in_4;
-                break;
-            case 2://pole pairs
-                pole_pairs = pdo_input[num_slaves].user_in_4;
-                break;
-            case 3://target
-                target = pdo_input[num_slaves].user_in_4;
-                break;
-            case 4://min position limit
-                input.min_position = pdo_input[num_slaves].user_in_4;
-                break;
-            case 5://max position limit
-                input.max_position = pdo_input[num_slaves].user_in_4;
-                break;
-            case 6://max speed
-                input.max_speed = pdo_input[num_slaves].user_in_4;
-                break;
-            case 7://max torque
-                input.max_torque = pdo_input[num_slaves].user_in_4;
-                break;
-            case 8://max speed
-                input.P_pos = pdo_input[num_slaves].user_in_4;
-                break;
-            case 9://max speed
-                input.I_pos = pdo_input[num_slaves].user_in_4;
-                break;
-            case 10://max speed
-                input.D_pos = pdo_input[num_slaves].user_in_4;
-                break;
-            default://max torque
-                input.integral_limit_pos = pdo_input[num_slaves].user_in_4;
-                break;
-            }
+            tuning_input(pdo_input[num_slaves-1], &input);
 
             //print
-            int line = 0;
-            //row 0
-            move(line,0);
-            clrtoeol();
-            //motorcontrol mode
-            //            attron(COLOR_PAIR(1));
-            printw("** Operation mode: ");
-            switch(motorctrl_status) {
-            case TUNING_MOTORCTRL_OFF:
-                printw("off");
-                break;
-            case TUNING_MOTORCTRL_TORQUE:
-                printw("Torque control %5d", target);
-                break;
-            case TUNING_MOTORCTRL_POSITION:
-                printw("Position control %9d", target);
-                break;
-            case TUNING_MOTORCTRL_VELOCITY:
-                printw("Velocity control %5d", target);
-                break;
-            }
-            printw(" **");
-            //            attroff(COLOR_PAIR(1));
-            line++;
-            //row 1
-            move(line, 0);
-            clrtoeol();
-            printw("Position %14d | Velocity %4d",  pdo_input[num_slaves].actual_position, pdo_input[num_slaves].actual_velocity);
-            line++;
-            //row 2
-            move(line, 0);
-            clrtoeol();
-            printw("Torque computed %4d    | Torque sensor %d", pdo_input[num_slaves].actual_torque, pdo_input[num_slaves].user_in_1);
-            //            printw("controlword %4d    | statusword %d", pdo_output[num_slaves].controlword & 0xff, statusword);
-            line++;
-            //row 3
-            move(line, 0);
-            clrtoeol();
-            printw("Offset %4d             | Pole pairs %2d", offset, pole_pairs);
-            line++;
-            //row 4
-            move(line,0);
-            clrtoeol();
-            if (motor_polarity == 0)
-                printw("Motor polarity normal   | ");
-            else
-                printw("Motor polarity inverted | ");
-            if (sensor_polarity == 0)
-                printw("Sensor polarity normal");
-            else
-                printw("Sensor polarity inverted");
-            line++;
-            //row 5
-            move(line,0);
-            clrtoeol();
-            if (torque_control_flag == 0)
-                printw("Motor control off       | ");
-            else
-                printw("Motor control on        | ");
-            if (brake_flag == 0)
-                printw("Brake blocking");
-            else
-                printw("Brake released");
-            line++;
-            //row 6
-            move(line,0);
-            clrtoeol();
-            printw("Speed  limit %5d      | ", input.max_speed);
-            printw("Position min %d", input.min_position);
-            line++;
-            //row 7
-            move(line,0);
-            clrtoeol();
-            printw("Torque limit %5d      | ", input.max_torque);
-            printw("Position max %d", input.max_position);
-            line++;
-            //row 8
-            move(line,0);
-            clrtoeol();
-            printw("Positon P %8d      | ", input.P_pos);
-            printw("Position I %d", input.I_pos);
-            line++;
-            //row 9
-            move(line,0);
-            clrtoeol();
-            printw("Positon D %8d      | ", input.D_pos);
-            printw("Position I lim %d", input.integral_limit_pos);
-            line++;
-            move(DISPLAY_LINE, c);
+            display_tuning(wnd, pdo_input[num_slaves-1], input, 0);
 
             //read user input
-            d = getch(); // curses call to input from keyboard
-            if (d == 'q') {
-                pdo_output[num_slaves].target_position = 0;
-                pdo_output[num_slaves].opmode = 0;
-            } else if (d == KEY_BACKSPACE || d == KEY_DC || d == 127) {
-                move(DISPLAY_LINE, 0);
-                clrtoeol();
-                printw("> ");
-                c = 2;
-                value = 0;
-                mode = '@';
-                mode_2 = '@';
-                mode_3 = '@';
-                sign = 1;
-            } else if (d != ERR) {
-                draw(d); // draw the character
-                //parse input
-                if(isdigit(d)>0) {
-                    value *= 10;
-                    value += d - '0';
-                } else if (d == '-') {
-                    sign = -1;
-                } else if (d != ' ' && d != '\n') {
-                    if (mode == '@') {
-                        mode = d;
-                    } else if (mode_2 == '@') {
-                        mode_2 = d;
-                    } else {
-                        mode_3 = d;
-                    }
-                }
+            tuning_command(wnd, &pdo_output[num_slaves-1], &output, &cursor);
 
-                //set command
-                if (d == '\n') {
-                    move(nrows-1, 0);
-                    clrtoeol();
-                    value *= sign;
-                    printw("value %d, mode %c (%X), mode_2 %c, mode_3 %c", value, mode, mode, mode_2, mode_3);
-                    pdo_output[num_slaves].user_out_3 = value;
-                    controlword = ((mode_2 & 0xff) << 8) | (mode & 0xff);
-                    pdo_output[num_slaves].controlword = controlword;
-                    pdo_output[num_slaves].user_out_4         = mode_3 & 0xff;
-                    //check for emergency stop
-                    if (output.last_command == '@' && output.last_value == 0 && value == 0 && mode == '@') {
-                        pdo_output[num_slaves].controlword = 'e';
-                        pdo_output[num_slaves].user_out_3 = 0;
-                    }
-                    output.last_command = mode;
-                    output.last_value = value;
-                    value = 0;
-                    mode = '@';
-                    mode_2 = '@';
-                    mode_3 = '@';
-                    sign = 1;
-                    move(DISPLAY_LINE, 0);
-                    clrtoeol();
-                    printw("> ");
-                    c = 2;
-                }
-            }
-
+            wrefresh(wnd); //refresh ncurses window
         }
     }
+
+    //free
     endwin(); // curses call to restore the original window and leave
     free(pdo_input);
     free(pdo_output);
-
 
     return 0;
 }

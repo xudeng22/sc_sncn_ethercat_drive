@@ -243,7 +243,7 @@ uint32_t pd_get_statusword(struct _master_config *master, int slaveid)
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
 
-    return EC_READ_U16(master->processdata + input->statusword);
+    return (EC_READ_U16(master->processdata + input->statusword) & 0xffff);
 }
 
 uint32_t pd_get_opmodedisplay(struct _master_config *master, int slaveid)
@@ -251,7 +251,7 @@ uint32_t pd_get_opmodedisplay(struct _master_config *master, int slaveid)
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
 
-    return EC_READ_U16(master->processdata + input->opmodedisplay);
+    return (EC_READ_U16(master->processdata + input->opmodedisplay) & 0xff);
 }
 
 uint32_t pd_get_position(struct _master_config *master, int slaveid)
@@ -275,7 +275,7 @@ uint32_t pd_get_torque(struct _master_config *master, int slaveid)
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
 
-    return EC_READ_U16(master->processdata + input->actual_torque);
+    return (EC_READ_U16(master->processdata + input->actual_torque) & 0xffff);
 }
 
 uint32_t pd_get_user1_in(struct _master_config *master, int slaveid)
@@ -322,7 +322,7 @@ int pd_set_opmode(struct _master_config *master, int slaveid, uint32_t opmode)
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
 
-    EC_WRITE_U16(master->processdata + output->opmode, opmode & 0xffff);
+    EC_WRITE_U16(master->processdata + output->opmode, opmode & 0xff);
 
     return 0;
 }
@@ -342,7 +342,7 @@ int pd_set_torque(struct _master_config *master, int slaveid, uint32_t torque)
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
 
-    EC_WRITE_U32(master->processdata + output->target_torque, torque & 0xffffffff);
+    EC_WRITE_U32(master->processdata + output->target_torque, torque & 0xffff);
 
     return 0;
 }

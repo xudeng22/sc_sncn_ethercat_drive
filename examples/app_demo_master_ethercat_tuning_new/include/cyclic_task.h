@@ -12,8 +12,6 @@
 #include "ecat_pdo_conf.h"
 #include "ecat_master.h"
 
-int cyclic_task(struct _master_config *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int *target_position, WINDOW *wnd);
-
-int pdo_handler(struct _master_config *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output);
+int pdo_handler(struct _master_config *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid);
 
 #endif /* CYCLICTASK_H */

@@ -20,7 +20,7 @@ TARGET = bin/app_demo_master_ethercat_tuning_new
 
 SRCDIR=src
 ODIR=.obj
-_OBJ = main.o ecat_sdo_config.o cyclic_task.o display.o ecat_master.o ecat_debug.o
+_OBJ = main.o ecat_sdo_config.o cyclic_task.o display.o ecat_master.o ecat_debug.o tuning.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 all: $(TARGET)

@@ -322,12 +322,12 @@ int main(int argc, char **argv)
 
     //init profiler
     PositionProfileConfig profile_config;
-    profile_config.max_acceleration = 1000;
-    profile_config.max_speed = 1000;
-    profile_config.profile_speed = 1000;
-    profile_config.profile_acceleration = 1000;
-    profile_config.max_position = 1000000;
-    profile_config.min_position = -1000000;
+    profile_config.max_acceleration = 100;
+    profile_config.max_speed = 500;
+    profile_config.profile_speed = 50;
+    profile_config.profile_acceleration = 50;
+    profile_config.max_position = 3000000;
+    profile_config.min_position = -3000000;
     profile_config.mode = POSITION_DIRECT;
     init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position);
 

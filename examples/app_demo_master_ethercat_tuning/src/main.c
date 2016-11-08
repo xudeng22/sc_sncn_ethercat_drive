@@ -74,8 +74,6 @@
 #define PRIORITY 1
 #define OPMODE_TUNING    (-128)
 #define DISPLAY_LINE 19
-
-//#define ENABLE_SDO
 #define NUM_CONFIG_SDOS   26
 
 /****************************************************************************/
@@ -178,19 +176,20 @@ static void printversion(const char *prog)
 
 static void printhelp(const char *prog)
 {
-    printf("Usage: %s [-h] [-v] [-l <level>] [-n <number of slaves>]\n", _basename(prog));
+    printf("Usage: %s [-h] [-v] [-o] [-l <level>] [-s <slave number (starts at 0)>]\n", _basename(prog));
     printf("\n");
     printf("  -h             print this help and exit\n");
+    printf("  -o             enable sdo upload\n");
     printf("  -v             print version and exit\n");
     //printf("  -l <level>     set log level (0..3)\n");
-    printf("  -n <number of slaves>  number of connected ethercat slaves\n");
+    printf("  -s <slave number>  first slave is 0\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves)
+static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable)
 {
     int  opt;
 
-    const char *options = "hvl:s:f:s:";
+    const char *options = "hvl:s:f:s:o";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -215,6 +214,10 @@ static void cmdline(int argc, char **argv, int *num_slaves)
             }
             break;
 
+        case 'o':
+            *sdo_enable = 1;
+            break;
+
         case 'h':
         default:
             printhelp(argv[0]);
@@ -234,8 +237,9 @@ static void cmdline(int argc, char **argv, int *num_slaves)
 
 int main(int argc, char **argv)
 {
+    int sdo_enable = 0;
     int num_slaves = 1;
-    cmdline(argc, argv, &num_slaves);
+    cmdline(argc, argv, &num_slaves, &sdo_enable);
 
     struct sigaction sa;
     struct itimerval tv;
@@ -260,17 +264,17 @@ int main(int argc, char **argv)
     /*
      * Activate master and start operation
      */
-#ifdef ENABLE_SDO
-    /* SDO configuration of the slave */
-    /* FIXME set per slave SDO configuration */
-    for (int i = 0; i < num_slaves; i++) {
-        int ret = write_sdo_config(master->master, i, slave_config[i], NUM_CONFIG_SDOS);
-        if (ret != 0) {
-            fprintf(stderr, "Error configuring SDOs\n");
-            return -1;
+    if (sdo_enable) {
+        /* SDO configuration of the slave */
+        /* FIXME set per slave SDO configuration */
+        for (int i = 0; i < num_slaves; i++) {
+            int ret = write_sdo_config(master->master, i, slave_config[i], NUM_CONFIG_SDOS);
+            if (ret != 0) {
+                fprintf(stderr, "Error configuring SDOs\n");
+                return -1;
+            }
         }
     }
-#endif
 
 
 #if 0

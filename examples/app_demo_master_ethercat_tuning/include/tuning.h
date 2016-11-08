@@ -12,7 +12,8 @@ typedef enum {
     TUNING_MOTORCTRL_OFF= 0,
     TUNING_MOTORCTRL_TORQUE= 1,
     TUNING_MOTORCTRL_POSITION= 2,
-    TUNING_MOTORCTRL_VELOCITY= 3
+    TUNING_MOTORCTRL_VELOCITY= 3,
+    TUNING_MOTORCTRL_POSITION_PROFILER= 4
 } TuningMotorCtrlStatus;
 
 typedef struct {
@@ -44,11 +45,35 @@ typedef struct {
     int last_value;
 } OutputValues;
 
+
+#include "profile.h"
+
+typedef enum {
+    POSITION_DIRECT=0,
+    POSITION_PROFILER=1,
+    POSITION_STEP=2
+} PositionCtrlMode;
+
+typedef struct {
+    motion_profile_t motion_profile;
+    int max_acceleration;
+    int max_speed;
+    int profile_speed;
+    int profile_acceleration;
+    int max_position;
+    int min_position;
+    int step;
+    int steps;
+    PositionCtrlMode mode;
+} PositionProfileConfig;
+
 #include "ecat_master.h"
 #include "display.h"
 
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input);
 
-void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, OutputValues *output, Cursor *cursor);
+void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output, PositionProfileConfig *profile_config, Cursor *cursor);
+
+void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output);
 
 #endif /* TUNING_H_ */

@@ -16,10 +16,10 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     switch(status_mux) {
     case 0://flags
         (*input).brake_flag = pdo_input.user_in_4 & 1;
-        (*input).motorctrl_status = (pdo_input.user_in_4 >> 1) & 0b11;
-        (*input).torque_control_flag = (pdo_input.user_in_4 >> 3) & 1;
-        (*input).sensor_polarity = (pdo_input.user_in_4 >> 4) & 1;
-        (*input).motor_polarity = (pdo_input.user_in_4 >> 5) & 1;
+        (*input).torque_control_flag = (pdo_input.user_in_4 >> 1) & 1;
+        (*input).sensor_polarity = (pdo_input.user_in_4 >> 2) & 1;
+        (*input).motor_polarity = (pdo_input.user_in_4 >> 3) & 1;
+        (*input).motorctrl_status = (pdo_input.user_in_4 >> 4);
         break;
     case 1://offset
         (*input).offset = pdo_input.user_in_4;
@@ -58,8 +58,7 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     return ;
 }
 
-#if 1
-void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, OutputValues *output, Cursor *cursor)
+void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output, PositionProfileConfig *profile_config, Cursor *cursor)
 {
     //read user input
     wmove(wnd, (*cursor).row, (*cursor).col);
@@ -98,9 +97,26 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, OutputVa
         //set command
         if (c == '\n') {
             (*output).value *= (*output).sign;
-            (*pdo_output).controlword = (((*output).mode_2 & 0xff) << 8) | ((*output).mode_1 & 0xff); //put mode_1 and mode_2 in controlword
-            (*pdo_output).user_out_4 = (*output).mode_3 & 0xff; //put mode_3 in user_out_4
-            (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+            if ((*output).mode_1 == 'p') {
+                if ((*output).mode_2 == 'p') { //position profile
+                    profile_config->mode = POSITION_PROFILER;
+                    profile_config->step = 0;
+                    profile_config->steps = init_position_profile(&(profile_config->motion_profile), (*output).value, pdo_input.actual_position,\
+                            profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration);
+                } else if ((*output).mode_2 == 's') {//position step
+                    profile_config->mode = POSITION_STEP;
+                    profile_config->step = 0;
+                    profile_config->steps = 4500;
+                    (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+                } else { //position direct
+                    pdo_output->controlword = 'p';
+                    (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+                }
+            } else {
+                (*pdo_output).controlword = (((*output).mode_2 & 0xff) << 8) | ((*output).mode_1 & 0xff); //put mode_1 and mode_2 in controlword
+                (*pdo_output).user_out_4 = (*output).mode_3 & 0xff; //put mode_3 in user_out_4
+                (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+            }
 
             //if last command was 0 send emergency stop
             if ((*output).last_command == '@' && (*output).last_value == 0 && (*output).value == 0 && (*output).mode_1 == '@') {
@@ -133,4 +149,28 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, OutputVa
         }
     }
 }
-#endif
+
+void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output)
+{
+    if (config->mode == POSITION_PROFILER) {
+        if (config->step <= config->steps) {
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
+            pdo_output->controlword = 'p';
+            (*config).step++;
+        } else {
+            config->mode = POSITION_DIRECT;
+            pdo_output->controlword = 0;
+        }
+    } else if (config->mode == POSITION_STEP) {
+        pdo_output->controlword = 'p';
+        if (config->step == config->steps/3) {
+            pdo_output->user_out_3 = -pdo_output->user_out_3;
+        } else if (config->step == (config->steps/3)*2) {
+            pdo_output->user_out_3 = 0;
+        } else if (config->step == config->steps) {
+            config->mode = POSITION_DIRECT;
+            pdo_output->controlword = 0;
+        }
+        (*config).step++;
+    }
+}

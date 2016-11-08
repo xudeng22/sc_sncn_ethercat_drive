@@ -34,6 +34,9 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     case TUNING_MOTORCTRL_VELOCITY:
         wprintw(wnd, "Velocity control %5d", input.target);
         break;
+    case TUNING_MOTORCTRL_POSITION_PROFILER:
+        wprintw(wnd, "Position control with integrated profiler %5d", input.target);
+        break;
     }
     wprintw(wnd, " **");
     //row 1

@@ -9,31 +9,7 @@
 #include <ctype.h>
 #include <state_modes.h>
 
-
-static int auto_offset(interface MotorcontrolInterface client i_motorcontrol)
-{
-    printf("Sending offset_detection command ...\n");
-    i_motorcontrol.set_offset_detection_enabled();
-
-    int offset = -1;
-    while (offset == -1) {
-        delay_milliseconds(50);//wait until offset is detected
-        offset = i_motorcontrol.set_calib(0);
-    }
-
-    printf("Detected offset is: %i\n", offset);
-//    printf(">>  CHECK PROPER OFFSET POLARITY ...\n");
-    int proper_sensor_polarity=i_motorcontrol.get_sensor_polarity_state();
-    if(proper_sensor_polarity == 1) {
-        printf(">>  PROPER POSITION SENSOR POLARITY ...\n");
-        i_motorcontrol.set_torque_control_enabled();
-    } else {
-        offset = -1;
-        printf(">>  WRONG POSITION SENSOR POLARITY ...\n");
-    }
-    return offset;
-}
-
+#if 0
 static void brake_shake(interface MotorcontrolInterface client i_motorcontrol, int torque) {
     const int period = 50;
     i_motorcontrol.set_brake_status(1);
@@ -45,6 +21,7 @@ static void brake_shake(interface MotorcontrolInterface client i_motorcontrol, i
     }
     i_motorcontrol.set_torque(0);
 }
+#endif
 
 /*
  * Function to call while in tuning opmode
@@ -85,7 +62,7 @@ int tuning_handler_ethercat(
         if (pos_feedback_config.biss_config.polarity == INVERTED_POLARITY || pos_feedback_config.contelec_config.polarity == INVERTED_POLARITY) {
             sensor_polarity = 1;
         }
-        tuning_result = (motor_polarity<<5)+(sensor_polarity<<4)+(tuning_status.torque_ctrl_flag<<3)+(tuning_status.motorctrl_status<<1)+tuning_status.brake_flag;
+        tuning_result = (tuning_status.motorctrl_status<<4)+(sensor_polarity<<3)+(tuning_status.torque_ctrl_flag<<2)+(motor_polarity<<1)+tuning_status.brake_flag;
         break;
     case 1: //send offset
         tuning_result = motorcontrol_config.commutation_angle_offset;
@@ -102,6 +79,7 @@ int tuning_handler_ethercat(
             tuning_result = downstream_control_data.velocity_cmd;
             break;
         case TUNING_MOTORCTRL_POSITION:
+        case TUNING_MOTORCTRL_POSITION_PROFILER:
             tuning_result = downstream_control_data.position_cmd;
             break;
         }
@@ -132,40 +110,45 @@ int tuning_handler_ethercat(
         break;
     }
 
-    tuning_status.mode_1 = 0; //default command do nothing
+    if ((controlword & 0xff) == 'p') { //cyclic position mode
+        downstream_control_data.position_cmd = tuning_status.value;
 
-    //check for new command
-    if (controlword == 0) { //no mode
-        status_display = 0; //reset status display
-    } else if (status_display != (controlword & 0xff)) {//it's a new command
-        status_display = (controlword & 0xff); //set controlword display to the master
-        tuning_status.value    = sext(tuning_status.value, 32);
-        tuning_status.mode_1   = controlword         & 0xff;
-        tuning_status.mode_2   = (controlword >>  8) & 0xff;
-        tuning_status.mode_3   = control_extension   & 0xff;
+    } else {//command mode
+        tuning_status.mode_1 = 0; //default command do nothing
+
+        //check for new command
+        if (controlword == 0) { //no mode
+            status_display = 0; //reset status display
+        } else if (status_display != (controlword & 0xff)) {//it's a new command
+            status_display = (controlword & 0xff); //set controlword display to the master
+            tuning_status.value    = tuning_status.value;
+            tuning_status.mode_1   = controlword         & 0xff;
+            tuning_status.mode_2   = (controlword >>  8) & 0xff;
+            tuning_status.mode_3   = control_extension   & 0xff;
+        }
+
+        /* print command */
+        if (tuning_status.mode_1 >=32 && tuning_status.mode_1 <= 126) { //mode is a printable ascii char
+            if (tuning_status.mode_2 != 0) {
+                if (tuning_status.mode_3 != 0) {
+                    printf("%c %c %c %d\n", tuning_status.mode_1, tuning_status.mode_2, tuning_status.mode_3, tuning_status.value);
+                } else {
+                    printf("%c %c %d\n", tuning_status.mode_1, tuning_status.mode_2, tuning_status.value);
+                }
+            } else {
+                printf("%c %d\n", tuning_status.mode_1, tuning_status.value);
+            }
+        }
+
+        //execute command
+        tuning_command(tuning_status,
+                motorcontrol_config, pos_velocity_ctrl_config, pos_feedback_config,
+                upstream_control_data, downstream_control_data,
+                i_position_control, i_position_feedback);
     }
 
     //put status display and status mux in statusword
     statusword = ((status_display & 0xff) << 8) | (status_mux & 0xff);
-
-    /* print command */
-    if (tuning_status.mode_1 >=32 && tuning_status.mode_1 <= 126) { //mode is a printable ascii char
-        if (tuning_status.mode_2 != 0) {
-            if (tuning_status.mode_3 != 0) {
-                printf("%c %c %c %d\n", tuning_status.mode_1, tuning_status.mode_2, tuning_status.mode_3, tuning_status.value);
-            } else {
-                printf("%c %c %d\n", tuning_status.mode_1, tuning_status.mode_2, tuning_status.value);
-            }
-        } else {
-            printf("%c %d\n", tuning_status.mode_1, tuning_status.value);
-        }
-    }
-
-    //execute command
-    tuning_command(tuning_status,
-            motorcontrol_config, pos_velocity_ctrl_config, pos_feedback_config,
-            upstream_control_data, downstream_control_data,
-            i_position_control, i_position_feedback);
 
     return 0;
 }
@@ -356,13 +339,16 @@ void tuning_command(
             switch(tuning_status.mode_2) {
             case 'p':
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_POSITION;
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
                 downstream_control_data.position_cmd = upstream_control_data.position;
+                upstream_control_data = i_position_control.update_control_data(downstream_control_data);
                 printf("start position %d\n", downstream_control_data.position_cmd);
 
                 //select profiler
                 pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
                 if (tuning_status.mode_3 == 'p') {
                     pos_velocity_ctrl_config.enable_profiler = 1;
+                    tuning_status.motorctrl_status = TUNING_MOTORCTRL_POSITION_PROFILER;
                 } else {
                     pos_velocity_ctrl_config.enable_profiler = 0;
                 }
@@ -469,8 +455,6 @@ void tuning_command(
         tuning_status.brake_flag = 0;
         tuning_status.torque_ctrl_flag = 0;
         motorcontrol_config = i_position_control.set_offset_detection_enabled();
-//        i_motorcontrol.set_brake_status(tuning_status.brake_flag);
-//        motorcontrol_config.commutation_angle_offset = auto_offset(i_motorcontrol);
         break;
 
     //set offset

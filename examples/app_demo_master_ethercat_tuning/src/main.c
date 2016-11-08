@@ -176,20 +176,21 @@ static void printversion(const char *prog)
 
 static void printhelp(const char *prog)
 {
-    printf("Usage: %s [-h] [-v] [-o] [-l <level>] [-s <slave number (starts at 0)>]\n", _basename(prog));
+    printf("Usage: %s [-h] [-v] [-o] [-l <level>] [-n <slave number (starts at 0)>] [-s <profile velocity>]\n", _basename(prog));
     printf("\n");
     printf("  -h             print this help and exit\n");
     printf("  -o             enable sdo upload\n");
     printf("  -v             print version and exit\n");
     //printf("  -l <level>     set log level (0..3)\n");
-    printf("  -s <slave number>  first slave is 0\n");
+    printf("  -n <slave number>  first slave is 0\n");
+    printf("  -s <profile velocity>\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable)
+static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int *profile_speed)
 {
     int  opt;
 
-    const char *options = "hvl:s:f:s:o";
+    const char *options = "hvlo:s:n:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -198,12 +199,16 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable)
             exit(0);
             break;
 
-        case 's':
+        case 'n':
             *num_slaves = atoi(optarg)+1;
             if (*num_slaves == 0) {
                 fprintf(stderr, "Use a slave number at least 0\n");
                 exit(1);
             }
+            break;
+
+        case 's':
+            *profile_speed = atoi(optarg);
             break;
 
         case 'l':
@@ -239,7 +244,8 @@ int main(int argc, char **argv)
 {
     int sdo_enable = 0;
     int num_slaves = 1;
-    cmdline(argc, argv, &num_slaves, &sdo_enable);
+    int profile_speed = 50;
+    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed);
 
     struct sigaction sa;
     struct itimerval tv;
@@ -326,12 +332,12 @@ int main(int argc, char **argv)
 
     //init profiler
     PositionProfileConfig profile_config;
-    profile_config.max_acceleration = 100;
-    profile_config.max_speed = 500;
-    profile_config.profile_speed = 50;
+    profile_config.max_acceleration = 1000;
+    profile_config.max_speed = 3000;
+    profile_config.profile_speed = profile_speed;
     profile_config.profile_acceleration = 50;
-    profile_config.max_position = 3000000;
-    profile_config.min_position = -3000000;
+    profile_config.max_position = 0x7fffffff;
+    profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
     init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position);
 

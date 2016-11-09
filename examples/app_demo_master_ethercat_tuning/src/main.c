@@ -190,7 +190,7 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int
 {
     int  opt;
 
-    const char *options = "hvlo:s:n:";
+    const char *options = "hvlos:n:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {

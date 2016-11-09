@@ -21,9 +21,9 @@ typedef struct {
     int target;
     int offset;
     int pole_pairs;
-    int motor_polarity;
+    int motion_polarity;
     int sensor_polarity;
-    int torque_control_flag;
+    int brake_release_strategy;
     int brake_flag;
     int max_position;
     int min_position;

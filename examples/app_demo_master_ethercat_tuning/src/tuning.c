@@ -16,9 +16,9 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     switch(status_mux) {
     case 0://flags
         (*input).brake_flag = pdo_input.user_in_4 & 1;
-        (*input).torque_control_flag = (pdo_input.user_in_4 >> 1) & 1;
+        (*input).motion_polarity = (pdo_input.user_in_4 >> 1) & 1;
         (*input).sensor_polarity = (pdo_input.user_in_4 >> 2) & 1;
-        (*input).motor_polarity = (pdo_input.user_in_4 >> 3) & 1;
+        (*input).brake_release_strategy = (pdo_input.user_in_4 >> 3) & 1;
         (*input).motorctrl_status = (pdo_input.user_in_4 >> 4);
         break;
     case 1://offset

@@ -54,15 +54,19 @@ int tuning_handler_ethercat(
     switch(status_mux) {
     case 0: //send flags
         //convert polarity flag to 0/1
-        int motor_polarity = 0;
+        int motion_polarity = 0;
         if (pos_velocity_ctrl_config.polarity == INVERTED_POLARITY) {
-            motor_polarity = 1;
+            motion_polarity = 1;
         }
         int sensor_polarity = 0;
         if (pos_feedback_config.biss_config.polarity == INVERTED_POLARITY || pos_feedback_config.contelec_config.polarity == INVERTED_POLARITY) {
             sensor_polarity = 1;
         }
-        tuning_result = (tuning_status.motorctrl_status<<4)+(sensor_polarity<<3)+(tuning_status.torque_ctrl_flag<<2)+(motor_polarity<<1)+tuning_status.brake_flag;
+        int  brake_release_strategy = 0;
+        if (pos_velocity_ctrl_config.special_brake_release == 1) {
+            brake_release_strategy = 1;
+        }
+        tuning_result = (tuning_status.motorctrl_status<<4)+(brake_release_strategy<<3)+(sensor_polarity<<2)+(motion_polarity<<1)+tuning_status.brake_flag;
         break;
     case 1: //send offset
         tuning_result = motorcontrol_config.commutation_angle_offset;
@@ -335,7 +339,6 @@ void tuning_command(
     case 'e':
         if (tuning_status.value > 0) {
             tuning_status.brake_flag = 1;
-            tuning_status.torque_ctrl_flag = 1;
             switch(tuning_status.mode_2) {
             case 'p':
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_POSITION;
@@ -384,7 +387,6 @@ void tuning_command(
                 break;
             }
         } else {
-            tuning_status.torque_ctrl_flag = 0;
             tuning_status.brake_flag = 0;
             tuning_status.repeat_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
@@ -400,7 +402,6 @@ void tuning_command(
             pos_feedback_config.biss_config.pole_pairs = tuning_status.value;
             pos_feedback_config.contelec_config.pole_pairs = tuning_status.value;
             tuning_status.brake_flag = 0;
-            tuning_status.torque_ctrl_flag = 0;
             i_position_feedback.set_config(pos_feedback_config);
             i_position_control.set_motorcontrol_config(motorcontrol_config);
         }
@@ -453,7 +454,6 @@ void tuning_command(
             delay_milliseconds(500);
         }
         tuning_status.brake_flag = 0;
-        tuning_status.torque_ctrl_flag = 0;
         motorcontrol_config = i_position_control.set_offset_detection_enabled();
         break;
 
@@ -462,7 +462,6 @@ void tuning_command(
         motorcontrol_config.commutation_angle_offset = tuning_status.value;
         i_position_control.set_motorcontrol_config(motorcontrol_config);
         tuning_status.brake_flag = 0;
-        tuning_status.torque_ctrl_flag = 0;
         printf("set offset to %d\n", tuning_status.value);
         break;
 
@@ -529,7 +528,6 @@ void tuning_command(
         //switch to torque control mode
         if (tuning_status.motorctrl_status != TUNING_MOTORCTRL_TORQUE) {
             tuning_status.brake_flag = 1;
-            tuning_status.torque_ctrl_flag = 1;
             tuning_status.repeat_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_TORQUE;
             i_position_control.enable_torque_ctrl();

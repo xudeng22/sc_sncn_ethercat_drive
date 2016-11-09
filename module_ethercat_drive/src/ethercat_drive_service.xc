@@ -587,7 +587,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 state = S_FAULT;
                 //reset tuning status
                 tuning_status.brake_flag = 0;
-                tuning_status.torque_ctrl_flag = 0;
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
 

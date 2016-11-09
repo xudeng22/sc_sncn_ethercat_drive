@@ -54,24 +54,22 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
 //    wprintw(wnd, "statusword %4d             | opmodedisplay %2d", (pdo_input.statusword >> 8) & 0xff, pdo_input.opmodedisplay);
     //row 4
     wmoveclr(wnd, &row);
-    if (input.motor_polarity == 0)
-        wprintw(wnd, "Motor polarity normal   | ");
+    if (input.motion_polarity == 0)
+        wprintw(wnd, "Motion polarity normal  | ");
     else
-        wprintw(wnd, "Motor polarity inverted | ");
+        wprintw(wnd, "Motion polarity inverted| ");
     if (input.sensor_polarity == 0)
         wprintw(wnd, "Sensor polarity normal");
     else
         wprintw(wnd, "Sensor polarity inverted");
     //row 5
     wmoveclr(wnd, &row);
-    if (input.torque_control_flag == 0)
-        wprintw(wnd, "Motor control off       | ");
-    else
-        wprintw(wnd, "Motor control on        | ");
     if (input.brake_flag == 0)
-        wprintw(wnd, "Brake blocking");
+        wprintw(wnd, "Brake blocking          ");
     else
-        wprintw(wnd, "Brake released");
+        wprintw(wnd, "Brake released          ");
+    if (input.brake_release_strategy == 1)
+        wprintw(wnd, "| Brake shaking enabled");
     //row 6
     wmoveclr(wnd, &row);
     wprintw(wnd, "Speed  limit %5d      | ", input.max_speed);

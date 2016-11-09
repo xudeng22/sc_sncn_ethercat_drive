@@ -40,7 +40,6 @@ typedef struct {
     int mode_2;
     int mode_3;
     int value;
-    int torque_ctrl_flag;
     int brake_flag;
     int repeat_flag;
     TuningMotorCtrlStatus motorctrl_status;

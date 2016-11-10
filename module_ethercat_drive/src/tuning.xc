@@ -449,11 +449,7 @@ void tuning_command(
 
     //auto offset tuning
     case 'a':
-        if (tuning_status.motorctrl_status != TUNING_MOTORCTRL_OFF) {
-            tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            i_position_control.disable();
-            delay_milliseconds(3000);
-        }
+        tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
         tuning_status.brake_flag = 0;
         motorcontrol_config = i_position_control.set_offset_detection_enabled();
         break;

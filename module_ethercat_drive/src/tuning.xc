@@ -402,6 +402,7 @@ void tuning_command(
             pos_feedback_config.biss_config.pole_pairs = tuning_status.value;
             pos_feedback_config.contelec_config.pole_pairs = tuning_status.value;
             tuning_status.brake_flag = 0;
+            tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             i_position_feedback.set_config(pos_feedback_config);
             i_position_control.set_motorcontrol_config(motorcontrol_config);
         }
@@ -451,7 +452,7 @@ void tuning_command(
         if (tuning_status.motorctrl_status != TUNING_MOTORCTRL_OFF) {
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             i_position_control.disable();
-            delay_milliseconds(500);
+            delay_milliseconds(3000);
         }
         tuning_status.brake_flag = 0;
         motorcontrol_config = i_position_control.set_offset_detection_enabled();
@@ -459,9 +460,10 @@ void tuning_command(
 
     //set offset
     case 'o':
+        tuning_status.brake_flag = 0;
+        tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
         motorcontrol_config.commutation_angle_offset = tuning_status.value;
         i_position_control.set_motorcontrol_config(motorcontrol_config);
-        tuning_status.brake_flag = 0;
         printf("set offset to %d\n", tuning_status.value);
         break;
 

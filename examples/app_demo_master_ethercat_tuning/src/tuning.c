@@ -8,6 +8,7 @@
 #include "tuning.h"
 #include "display.h"
 #include <ctype.h>
+#include <string.h>
 
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 {
@@ -58,7 +59,8 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     return ;
 }
 
-void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output, PositionProfileConfig *profile_config, Cursor *cursor)
+void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output,\
+        PositionProfileConfig *profile_config, RecordConfig *record_config, Cursor *cursor)
 {
     //read user input
     wmove(wnd, (*cursor).row, (*cursor).col);
@@ -66,6 +68,12 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
     if (c == 'q') { //quit
         (*pdo_output).target_position = 0;
         (*pdo_output).opmode = 0;
+    } else if (c == '.') { //record
+        if (record_config->state == RECORD_OFF) {
+            record_config->state = RECORD_ON;
+        } else {
+            record_config->state = RECORD_OFF;
+        }
     } else if (c == KEY_BACKSPACE || c == KEY_DC || c == 127) {//discard
         wmove(wnd, (*cursor).row, 0);
         wclrtoeol(wnd);
@@ -172,5 +180,30 @@ void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *p
             pdo_output->controlword = 0;
         }
         (*config).step++;
+    }
+}
+
+void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, char *filename)
+{
+    if (config->state == RECORD_ON && config->count < config->max_values) {
+        if (config->data == NULL) {
+            config->data = malloc(sizeof(RecordData)*config->max_values); //malloc for 2 minutes of data
+        }
+        config->data[config->count].position = (int32_t)pdo_input.actual_position;
+        config->data[config->count].velocity = (int32_t)pdo_input.actual_velocity;
+        config->data[config->count].torque = (int16_t)pdo_input.actual_torque;
+        config->count++;
+    } else {
+        if (config->data != NULL) { //save to file
+            FILE *fd = fopen(filename, "w");
+            fprintf(fd, "count,position,velocity,torque\n");
+            for (int i=0 ; i<config->count ; i++) {
+                fprintf(fd, "%d,%d,%d,%d\n", i, config->data[i].position, config->data[i].velocity, config->data[i].torque);
+            }
+            fclose(fd);
+            free(config->data);
+            config->data = NULL;
+            config->count = 0;
+        }
     }
 }

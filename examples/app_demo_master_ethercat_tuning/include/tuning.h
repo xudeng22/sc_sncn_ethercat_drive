@@ -8,6 +8,8 @@
 #ifndef TUNING_H_
 #define TUNING_H_
 
+#include <stdint.h>
+
 typedef enum {
     TUNING_MOTORCTRL_OFF= 0,
     TUNING_MOTORCTRL_TORQUE= 1,
@@ -67,13 +69,34 @@ typedef struct {
     PositionCtrlMode mode;
 } PositionProfileConfig;
 
+typedef struct {
+    int32_t position;
+    int32_t velocity;
+    int16_t torque;
+} RecordData;
+
+typedef enum {
+    RECORD_ON,
+    RECORD_OFF
+} RecordState;
+
+typedef struct {
+    uint32_t count;
+    uint32_t max_values;
+    RecordData *data;
+    RecordState state;
+} RecordConfig;
+
 #include "ecat_master.h"
 #include "display.h"
 
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input);
 
-void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output, PositionProfileConfig *profile_config, Cursor *cursor);
+void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output,\
+        PositionProfileConfig *profile_config, RecordConfig *record_config, Cursor *cursor);
 
 void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output);
+
+void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, char *filename);
 
 #endif /* TUNING_H_ */

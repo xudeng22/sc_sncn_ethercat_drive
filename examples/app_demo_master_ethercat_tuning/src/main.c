@@ -66,15 +66,23 @@
 
 /****************************************************************************/
 
-#define VERSION    "v0.1-dev"
-#define MAXDBGLVL  3
+/* ----------- OD setup -------------- */
+
+#include "sdo_config.inc"
+
+/* ----------- /OD setup -------------- */
 
 // Application parameters
 #define FREQUENCY 1000
 #define PRIORITY 1
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 19
+#define DISPLAY_LINE 20
 #define NUM_CONFIG_SDOS   26
+#define MAX_RECORD_MSEC 120000
+#define MAX_RECORD_FILENAME 20
+
+#define VERSION    "v0.1-dev"
+#define MAXDBGLVL  3
 
 /****************************************************************************/
 
@@ -176,7 +184,7 @@ static void printversion(const char *prog)
 
 static void printhelp(const char *prog)
 {
-    printf("Usage: %s [-h] [-v] [-o] [-l <level>] [-n <slave number (starts at 0)>] [-s <profile velocity>]\n", _basename(prog));
+    printf("Usage: %s [-h] [-v] [-o] [-l <level>] [-n <slave number (starts at 0)>] [-s <profile velocity>] [-f <record filename>]\n", _basename(prog));
     printf("\n");
     printf("  -h             print this help and exit\n");
     printf("  -o             enable sdo upload\n");
@@ -184,13 +192,14 @@ static void printhelp(const char *prog)
     //printf("  -l <level>     set log level (0..3)\n");
     printf("  -n <slave number>  first slave is 0\n");
     printf("  -s <profile velocity>\n");
+    printf("  -f <record filename>\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int *profile_speed)
+static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int *profile_speed, char **record_filename)
 {
     int  opt;
 
-    const char *options = "hvlos:n:";
+    const char *options = "hvlos:n:f:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -223,6 +232,10 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int
             *sdo_enable = 1;
             break;
 
+        case 'f':
+            strncpy(*record_filename, optarg, MAX_RECORD_FILENAME);
+            break;
+
         case 'h':
         default:
             printhelp(argv[0]);
@@ -232,20 +245,17 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int
     }
 }
 
-
-/* ----------- OD setup -------------- */
-
-#include "sdo_config.inc"
-
-/* ----------- /OD setup -------------- */
-
-
 int main(int argc, char **argv)
 {
+    //default parameters
     int sdo_enable = 0;
     int num_slaves = 1;
     int profile_speed = 50;
-    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed);
+    char *record_filename = malloc(MAX_RECORD_FILENAME);
+    strncpy(record_filename, "record.csv", MAX_RECORD_FILENAME);
+
+    //get parameters from cmdline
+    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed, &record_filename);
 
     struct sigaction sa;
     struct itimerval tv;
@@ -341,6 +351,13 @@ int main(int argc, char **argv)
     profile_config.mode = POSITION_DIRECT;
     init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position);
 
+    //init recorder
+    RecordConfig record_config = {0};
+    record_config.count = 0;
+    record_config.data = NULL;
+    record_config.state = RECORD_OFF;
+    record_config.max_values = MAX_RECORD_MSEC;
+
     //init ncurses
     WINDOW *wnd;
     wnd = initscr(); // curses call to initialize window
@@ -392,13 +409,16 @@ int main(int argc, char **argv)
             tuning_input(pdo_input[num_slaves-1], &input);
 
             //print
-            display_tuning(wnd, pdo_input[num_slaves-1], input, 0);
+            display_tuning(wnd, pdo_input[num_slaves-1], input, record_config, 0);
 
             //position profile
             tuning_position(&profile_config, &pdo_output[num_slaves-1]);
 
             //read user input
-            tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &cursor);
+            tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &record_config, &cursor);
+
+            //recorder
+            tuning_record(&record_config, pdo_input[num_slaves-1], record_filename);
 
             wrefresh(wnd); //refresh ncurses window
         }

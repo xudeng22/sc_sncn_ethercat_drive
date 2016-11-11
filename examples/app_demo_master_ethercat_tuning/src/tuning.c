@@ -19,8 +19,7 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
         (*input).brake_flag = pdo_input.user_in_4 & 1;
         (*input).motion_polarity = (pdo_input.user_in_4 >> 1) & 1;
         (*input).sensor_polarity = (pdo_input.user_in_4 >> 2) & 1;
-        (*input).brake_release_strategy = (pdo_input.user_in_4 >> 3) & 1;
-        (*input).motorctrl_status = (pdo_input.user_in_4 >> 4);
+        (*input).motorctrl_status = (pdo_input.user_in_4 >> 3);
         break;
     case 1://offset
         (*input).offset = pdo_input.user_in_4;
@@ -52,8 +51,11 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case 10://max speed
         (*input).D_pos = pdo_input.user_in_4;
         break;
-    default://max torque
+    case 11://max torque
         (*input).integral_limit_pos = pdo_input.user_in_4;
+        break;
+    default://brake_release_strategy
+        (*input).brake_release_strategy = pdo_input.user_in_4;
         break;
     }
     return ;

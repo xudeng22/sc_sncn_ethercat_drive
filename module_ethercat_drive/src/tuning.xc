@@ -50,7 +50,7 @@ int tuning_handler_ethercat(
     static uint8_t status_display = 0;
 
     //mux send offsets and other data in the user4 pdo using the lower bits of statusword
-    status_mux = ((status_mux + 1) >= 12) ? 0 : status_mux + 1;
+    status_mux = ((status_mux + 1) >= 13) ? 0 : status_mux + 1;
     switch(status_mux) {
     case 0: //send flags
         //convert polarity flag to 0/1
@@ -66,7 +66,7 @@ int tuning_handler_ethercat(
         if (pos_velocity_ctrl_config.special_brake_release == 1) {
             brake_release_strategy = 1;
         }
-        tuning_result = (tuning_status.motorctrl_status<<4)+(brake_release_strategy<<3)+(sensor_polarity<<2)+(motion_polarity<<1)+tuning_status.brake_flag;
+        tuning_result = (tuning_status.motorctrl_status<<3)+(sensor_polarity<<2)+(motion_polarity<<1)+tuning_status.brake_flag;
         break;
     case 1: //send offset
         tuning_result = motorcontrol_config.commutation_angle_offset;
@@ -109,8 +109,11 @@ int tuning_handler_ethercat(
     case 10: //D_pos
         tuning_result = pos_velocity_ctrl_config.D_pos;
         break;
-    default: //integral_limit_pos
+    case 11: //integral_limit_pos
         tuning_result = pos_velocity_ctrl_config.integral_limit_pos;
+        break;
+    default: //special_brake_release
+        tuning_result = pos_velocity_ctrl_config.special_brake_release;
         break;
     }
 
@@ -468,14 +471,7 @@ void tuning_command(
         switch(tuning_status.mode_2) {
         case 's': //toggle special brake release
             pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
-            if (pos_velocity_ctrl_config.special_brake_release == 1)
-            {
-                pos_velocity_ctrl_config.special_brake_release = 0;
-            }
-            else
-            {
-                pos_velocity_ctrl_config.special_brake_release = 1;
-            }
+            pos_velocity_ctrl_config.special_brake_release = tuning_status.value;
             i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
             break;
         default:

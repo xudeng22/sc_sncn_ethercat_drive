@@ -65,8 +65,8 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
         wprintw(wnd, "Brake blocking          ");
     else
         wprintw(wnd, "Brake released          ");
-    if (input.brake_release_strategy == 1)
-        wprintw(wnd, "| Brake shaking enabled");
+    if (input.brake_release_strategy != 0)
+        wprintw(wnd, "| Brake shaking %d\%", input.brake_release_strategy);
     //row 6
     wmoveclr(wnd, &row);
     wprintw(wnd, "Speed  limit %5d      | ", input.max_speed);

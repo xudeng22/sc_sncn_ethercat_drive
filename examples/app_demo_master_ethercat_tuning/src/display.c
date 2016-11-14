@@ -108,6 +108,6 @@ int display_tuning_help(WINDOW *wnd, int row)
     wmoveclr(wnd, &row);
     printw("L s/t/p + number: set speed/torque/position limit");
     wmoveclr(wnd, &row);
-    printw("** Double press Enter for emergency stop **");
+    printw("** single press Enter for emergency stop **");
     return row;
 }

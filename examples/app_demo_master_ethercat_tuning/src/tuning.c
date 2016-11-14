@@ -129,7 +129,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             }
 
             //if last command was 0 send emergency stop
-            if ((*output).last_command == '@' && (*output).last_value == 0 && (*output).value == 0 && (*output).mode_1 == '@') {
+            if ((*output).value == 0 && (*output).mode_1 == '@') {
                 (*pdo_output).controlword = 'e';
                 (*pdo_output).user_out_3 = 0;
             }

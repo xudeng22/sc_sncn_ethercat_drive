@@ -411,14 +411,14 @@ int main(int argc, char **argv)
             //print
             display_tuning(wnd, pdo_input[num_slaves-1], input, record_config, 0);
 
+            //recorder
+            tuning_record(&record_config, pdo_input[num_slaves-1], pdo_output[num_slaves-1], record_filename);
+
             //position profile
             tuning_position(&profile_config, &pdo_output[num_slaves-1]);
 
             //read user input
             tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &record_config, &cursor);
-
-            //recorder
-            tuning_record(&record_config, pdo_input[num_slaves-1], record_filename);
 
             wrefresh(wnd); //refresh ncurses window
         }

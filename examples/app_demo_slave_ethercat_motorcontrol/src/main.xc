@@ -14,6 +14,7 @@
 #include <user_config.h>
 
 #include <ethercat_drive_service.h>
+#include <reboot.h>
 
 #include <ethercat_service.h>
 #include <fw_update_service.h>
@@ -57,10 +58,10 @@ int main(void)
     chan eoe_in;          // Ethernet from module_ethercat to consumer
     chan eoe_out;         // Ethernet from consumer to module_ethercat
     chan eoe_sig;
-    chan foe_in;          // File from module_ethercat to consumer
-    chan foe_out;         // File from consumer to module_ethercat
+    interface i_foe_communication i_foe;
     chan pdo_in;
     chan pdo_out;
+    interface EtherCATRebootInterface i_ecat_reboot;
     chan c_nodes[1], c_flash_data; // Firmware channels
 
     par
@@ -72,14 +73,11 @@ int main(void)
         /* EtherCAT Communication Handler Loop */
         on tile[COM_TILE] :
         {
-            ethercat_service(i_coe, eoe_out, eoe_in, eoe_sig,
-                                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
-        }
-
-        /* Firmware Update Loop over EtherCAT */
-        on tile[COM_TILE] :
-        {
-            fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
+            par {
+                ethercat_service(i_ecat_reboot, i_coe, eoe_out, eoe_in, eoe_sig,
+                                    i_foe, pdo_out, pdo_in, ethercat_ports);
+                reboot_service_ethercat(i_ecat_reboot);
+            }
         }
 
         /* EtherCAT Motor Drive Loop */

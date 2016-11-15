@@ -207,6 +207,7 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
             free(config->data);
             config->data = NULL;
             config->count = 0;
+            config->state = RECORD_OFF;
         }
     }
 }

@@ -557,20 +557,20 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             case S_QUICK_STOP_ACTIVE:
                 /* quick stop function shall be started and running */
-            { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+                { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
 
-            if (quick_stop_steps_left == 0 ) {
-                quick_stop_count += 1;
-                qs_target_position = actual_position;
-                i_position_control.disable();
-                if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
-                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                    quick_stop_steps = 0;
-                    quick_stop_count = 0;
+                if (quick_stop_steps_left == 0 ) {
+                    quick_stop_count += 1;
+                    qs_target_position = actual_position;
+                    i_position_control.disable();
+                    if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
+                        state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                        quick_stop_steps = 0;
+                        quick_stop_count = 0;
+                    }
                 }
-            }
 
-            break;
+                break;
 
             case S_FAULT_REACTION_ACTIVE:
                 /* a fault is detected, perform fault recovery actions like a quick_stop */

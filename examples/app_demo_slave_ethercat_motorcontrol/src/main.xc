@@ -55,9 +55,6 @@ int main(void)
 
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
-    chan eoe_in;          // Ethernet from module_ethercat to consumer
-    chan eoe_out;         // Ethernet from consumer to module_ethercat
-    chan eoe_sig;
     interface i_foe_communication i_foe;
     chan pdo_in;
     chan pdo_out;
@@ -74,7 +71,7 @@ int main(void)
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, eoe_out, eoe_in, eoe_sig,
+                ethercat_service(i_ecat_reboot, i_coe, null,
                                     i_foe, pdo_out, pdo_in, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
             }

@@ -268,6 +268,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
     int target_position = 0;
+    int target_velocity = 0;
+    int target_torque   = 0;
     int qs_target_position = 0;
     int actual_torque = 0;
     int actual_velocity = 0;
@@ -384,6 +386,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         controlword     = pdo_get_controlword(InOut);
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
+        target_velocity = pdo_get_target_velocity(InOut);
+        target_torque   = pdo_get_target_torque(InOut);
         send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
         update_position_velocity = InOut.user2_in; /* Update trigger which PID setting should be updated now */
 
@@ -397,8 +401,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        if (opmode != OPMODE_SNCN_TUNING)
+        if (opmode != OPMODE_SNCN_TUNING) {
             send_to_control.position_cmd = target_position;
+            send_to_control.velocity_cmd = target_velocity;
+            send_to_control.torque_cmd   = target_velocity;
+        }
+
         if (quick_stop_steps != 0) {
             send_to_control.position_cmd = qs_target_position;
         }

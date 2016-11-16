@@ -179,6 +179,27 @@ static void inline update_configuration(
     //opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
 }
 
+static void motioncontrol_enable(int opmode,
+                                 client interface PositionVelocityCtrlInterface i_position_control)
+{
+    switch (opmode) {
+    case OPMODE_CSP:
+        i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+        break;
+
+    case OPMODE_CSV:
+        i_position_control.enable_velocity_ctrl(0);
+        break;
+
+    case OPMODE_CST:
+        i_position_control.enable_torque_ctrl();
+        break;
+
+    default:
+        break;
+    }
+}
+
 static void debug_print_state(DriveState_t state)
 {
     static DriveState_t oldstate = 0;
@@ -507,9 +528,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-//                    i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
-//                    i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
-                    i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+                    motioncontrol_enable(opmode, i_position_control);
                 }
                 break;
 

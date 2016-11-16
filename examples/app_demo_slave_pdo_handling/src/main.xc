@@ -10,7 +10,7 @@
 
 #include <ethercat_service.h>
 #include <pdo_handler.h>
-#include <fw_update_service.h>
+#include <reboot.h>
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
@@ -256,39 +256,29 @@ static void read_od_config(client interface i_coe_communication i_coe)
 
 int main(void)
 {
-	chan eoe_in;   		// Ethernet from module_ethercat to consumer
-	chan eoe_out;  		// Ethernet from consumer to module_ethercat
-	chan eoe_sig;
-	chan foe_in;   		// File from module_ethercat to consumer
-	chan foe_out;  		// File from consumer to module_ethercat
-	chan pdo_in;
-	chan pdo_out;
-
-	interface i_coe_communication i_coecomm;
-
-	/* channels for flash communication */
-	chan c_flash_data;
-	chan c_nodes[2];
+	/* EtherCat Communication channels */
+    interface i_coe_communication i_coe;
+    interface i_foe_communication i_foe;
+    chan pdo_in;
+    chan pdo_out;
+    interface EtherCATRebootInterface i_ecat_reboot;
 
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
 		on tile[COM_TILE] :
 		{
-			ethercat_service(i_coecomm, eoe_out, eoe_in, eoe_sig,
-			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
-		}
-
-		/* Firmware Update Service */
-		on tile[COM_TILE]:
-		{
-		    fw_update_service(p_spi_flash, foe_out, foe_in, c_flash_data, c_nodes, null);
-		}
+		    par {
+                    ethercat_service(i_ecat_reboot, i_coe, null,
+                                     i_foe, pdo_out, pdo_in, ethercat_ports);
+                    reboot_service_ethercat(i_ecat_reboot);
+                }
+        }
 
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_handler(i_coecomm, pdo_out, pdo_in);
+			pdo_handler(i_coe, pdo_out, pdo_in);
 		}
 	}
 

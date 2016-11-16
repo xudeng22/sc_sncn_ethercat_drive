@@ -59,7 +59,6 @@ int main(void)
     chan pdo_in;
     chan pdo_out;
     interface EtherCATRebootInterface i_ecat_reboot;
-    chan c_nodes[1], c_flash_data; // Firmware channels
 
     par
     {

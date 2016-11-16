@@ -10,6 +10,7 @@
 
 #include <canod.h>
 #include <ethercat_service.h>
+#include <reboot.h>
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 #include <cia402_wrapper.h>
 #endif
@@ -246,24 +247,24 @@ static void sdo_handler(client interface i_coe_communication i_coe)
 
 int main(void)
 {
-	chan eoe_in;   		// Ethernet from module_ethercat to consumer
-	chan eoe_out;  		// Ethernet from consumer to module_ethercat
-	chan eoe_sig;
-	chan foe_in;   		// File from module_ethercat to consumer
-	chan foe_out;  		// File from consumer to module_ethercat
-	chan pdo_in;
-	chan pdo_out;
-
-	interface i_coe_communication i_coecomm;
+    /* EtherCat Communication channels */
+    interface i_coe_communication i_coe;
+    interface i_foe_communication i_foe;
+    chan pdo_in;
+    chan pdo_out;
+    interface EtherCATRebootInterface i_ecat_reboot;
 
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
 		on tile[COM_TILE] :
 		{
-			ethercat_service(i_coecomm, eoe_out, eoe_in, eoe_sig,
-			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
-		}
+		    par {
+                    ethercat_service(i_ecat_reboot, i_coe, null,
+                                     i_foe, pdo_out, pdo_in, ethercat_ports);
+                    reboot_service_ethercat(i_ecat_reboot);
+                }
+        }
 
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
@@ -271,7 +272,7 @@ int main(void)
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 			pdo_handler(pdo_out, pdo_in);
 #endif
-			sdo_handler(i_coecomm);
+			sdo_handler(i_coe);
 		}
 	}
 

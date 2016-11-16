@@ -228,6 +228,7 @@ int main(void)
                 {
                     PositionFeedbackConfig position_feedback_config;
                     position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
+                    position_feedback_config.polarity = SENSOR_POLARITY;
 
                     position_feedback_config.biss_config.multiturn_length = BISS_MULTITURN_LENGTH;
                     position_feedback_config.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
@@ -236,7 +237,6 @@ int main(void)
                     position_feedback_config.biss_config.status_length = BISS_STATUS_LENGTH;
                     position_feedback_config.biss_config.crc_poly = BISS_CRC_POLY;
                     position_feedback_config.biss_config.pole_pairs = POLE_PAIRS;
-                    position_feedback_config.biss_config.polarity = SENSOR_POLARITY;
                     position_feedback_config.biss_config.clock_dividend = BISS_CLOCK_DIVIDEND;
                     position_feedback_config.biss_config.clock_divisor = BISS_CLOCK_DIVISOR;
                     position_feedback_config.biss_config.timeout = BISS_TIMEOUT;
@@ -246,7 +246,6 @@ int main(void)
                     position_feedback_config.biss_config.enable_push_service = PushAll;
 
                     position_feedback_config.contelec_config.filter = CONTELEC_FILTER;
-                    position_feedback_config.contelec_config.polarity = SENSOR_POLARITY;
                     position_feedback_config.contelec_config.resolution_bits = CONTELEC_RESOLUTION;
                     position_feedback_config.contelec_config.offset = CONTELEC_OFFSET;
                     position_feedback_config.contelec_config.pole_pairs = POLE_PAIRS;
@@ -264,7 +263,6 @@ int main(void)
                     position_feedback_config.qei_config.enable_push_service = PushPosition;
 
                     position_feedback_config.ams_config.factory_settings = 1;
-                    position_feedback_config.ams_config.polarity = SENSOR_POLARITY;
                     position_feedback_config.ams_config.hysteresis = 1;
                     position_feedback_config.ams_config.noise_setting = AMS_NOISE_NORMAL;
                     position_feedback_config.ams_config.uvw_abi = 0;

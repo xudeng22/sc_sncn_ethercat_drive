@@ -59,7 +59,7 @@ int tuning_handler_ethercat(
             motion_polarity = 1;
         }
         int sensor_polarity = 0;
-        if (pos_feedback_config.biss_config.polarity == INVERTED_POLARITY || pos_feedback_config.contelec_config.polarity == INVERTED_POLARITY) {
+        if (pos_feedback_config.polarity == INVERTED_POLARITY) {
             sensor_polarity = 1;
         }
         int  brake_release_strategy = 0;
@@ -437,12 +437,10 @@ void tuning_command(
                 }
                 break;
             default:
-                if (pos_feedback_config.biss_config.polarity == NORMAL_POLARITY) {
-                    pos_feedback_config.biss_config.polarity = INVERTED_POLARITY;
-                    pos_feedback_config.contelec_config.polarity = INVERTED_POLARITY;
+                if (pos_feedback_config.polarity == NORMAL_POLARITY) {
+                    pos_feedback_config.polarity = INVERTED_POLARITY;
                 } else {
-                    pos_feedback_config.biss_config.polarity = NORMAL_POLARITY;
-                    pos_feedback_config.contelec_config.polarity = NORMAL_POLARITY;
+                    pos_feedback_config.polarity = NORMAL_POLARITY;
                 }
                 i_position_feedback.set_config(pos_feedback_config);
                 break;

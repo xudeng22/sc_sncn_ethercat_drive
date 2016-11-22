@@ -139,7 +139,6 @@ int main(void)
                     pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
                     pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
                     pos_velocity_ctrl_config.resolution  =                          POSITION_SENSOR_RESOLUTION;
-                    pos_velocity_ctrl_config.pid_gain =                             PID_GAIN;
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
 
 

@@ -197,15 +197,6 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  */
 int speed_sdo_update(client interface i_coe_communication i_coe);
 
-/**
- * @brief Update Hall sensor parameters from EtherCAT
- *
- * obsoleted by cm_sync_config_hall()
- *
- * @param hall_config struct defines the pole-pairs and gear ratio
- * @param coe_out
- */
-void update_hall_config_ecat(HallConfig &hall_config, client interface i_coe_communication i_coe);
 
 /**
  * @brief Update QEI sensor parameters from EtherCAT

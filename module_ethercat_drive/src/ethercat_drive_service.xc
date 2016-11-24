@@ -37,25 +37,6 @@ enum eDirection {
     ,DIRECTION_CCLK   = -1
 };
 
-static int get_sensor_resolution(int sensor_select, PositionFeedbackConfig position_feedback_config)
-{
-    int sensor_resolution = 0;
-
-    if (sensor_select == HALL_SENSOR) {
-        sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
-    } else if (sensor_select == QEI_SENSOR) {
-        sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
-    } else if (sensor_select == BISS_SENSOR) {
-        sensor_resolution = 1<<position_feedback_config.biss_config.singleturn_resolution; /* bits -> ticks */
-    } else if (sensor_select == AMS_SENSOR) {
-        sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
-    } else if (sensor_select == CONTELEC_SENSOR) {
-        sensor_resolution = 1<<position_feedback_config.contelec_config.resolution_bits; /* bits -> ticks */
-    }
-
-    return sensor_resolution;
-}
-
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 static void sdo_wait_first_config(client interface i_coe_communication i_coe)
@@ -174,7 +155,7 @@ static void inline update_configuration(
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
     sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
 
-    sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);
+    sensor_resolution = position_feedback_config.resolution;
 
     //opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
 }

@@ -402,8 +402,7 @@ void tuning_command(
     case 'P':
         if (!isnull(i_position_feedback)) {
             motorcontrol_config.pole_pair = tuning_status.value;
-            pos_feedback_config.biss_config.pole_pairs = tuning_status.value;
-            pos_feedback_config.contelec_config.pole_pairs = tuning_status.value;
+            pos_feedback_config.pole_pairs = tuning_status.value;
             tuning_status.brake_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             i_position_feedback.set_config(pos_feedback_config);

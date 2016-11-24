@@ -36,16 +36,9 @@ void cm_sync_config_position_feedback(
 
     int old_sensor_type = config.sensor_type;
     config.sensor_type = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-    int tick_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
-//    int bit_resolution = tick2bits(tick_resolution);
-
-    //config.biss_config.singleturn_resolution = bit_resolution;
-    //config.contelec_config.resolution_bits   = bit_resolution;
-
-
     config.polarity       = sext(i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0), 8);
-    config.biss_config.pole_pairs     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
-    config.contelec_config.pole_pairs = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+    config.pole_pairs     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+    config.resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
 
     i_pos_feedback.set_config(config);
     if (old_sensor_type != config.sensor_type) { //restart the service if the sensor type is changed
@@ -157,14 +150,11 @@ void cm_default_config_position_feedback(
 //    int tick_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
 
     i_coe.set_object_value(CIA402_SENSOR_SELECTION_CODE, 0, config.sensor_type);
-
+    i_coe.set_object_value(CIA402_POSITION_ENC_RESOLUTION, 0, config.resolution);
     i_coe.set_object_value(SNCN_SENSOR_POLARITY, 0, config.polarity);
 
-    if (config.biss_config.pole_pairs != 0)
-        i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, config.biss_config.pole_pairs);
-
-    if (config.contelec_config.pole_pairs != 0)
-        i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, config.contelec_config.pole_pairs);
+    if (config.pole_pairs != 0)
+        i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, config.pole_pairs);
 }
 
 void cm_default_config_motor_control(
@@ -212,7 +202,7 @@ void cm_default_config_profiler(
     //profiler.max_deceleration =  i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0); /* */
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT, 1, profiler.min_position);
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT, 2, profiler.max_position);
-    i_coe.set_object_value(CIA402_POLARITY, 0,            profiler.polarity);
+    //i_coe.set_object_value(CIA402_POLARITY, 0,            profiler.polarity);
     //profiler.max_acceleration =  i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0); /* */
 }
 

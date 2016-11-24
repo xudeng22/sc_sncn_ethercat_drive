@@ -379,7 +379,7 @@ void tuning_command(
             case 'v':
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_VELOCITY;
                 downstream_control_data.velocity_cmd = 0;
-                i_position_control.enable_velocity_ctrl(VELOCITY_PID_CONTROLLER);
+                i_position_control.enable_velocity_ctrl();
                 printf("velocity ctrl enabled\n");
                 break;
             case 't':

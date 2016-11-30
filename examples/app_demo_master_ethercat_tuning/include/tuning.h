@@ -35,6 +35,10 @@ typedef struct {
     int I_pos;
     int D_pos;
     int integral_limit_pos;
+    int P_velocity;
+    int I_velocity;
+    int D_velocity;
+    int integral_limit_velocity;
 } InputValues;
 
 typedef struct {

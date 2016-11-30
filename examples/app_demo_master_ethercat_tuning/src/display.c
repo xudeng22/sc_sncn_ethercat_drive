@@ -77,18 +77,24 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     wprintw(wnd, "Position max %d", input.max_position);
     //row 8
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Positon P %8d      | ", input.P_pos);
-    wprintw(wnd, "Position I %d", input.I_pos);
+    wprintw(wnd, "Position P %9d    | ", input.P_pos);
+    wprintw(wnd, "Velocity P %9d", input.P_velocity);
     //row 9
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Positon D %8d      | ", input.D_pos);
-    wprintw(wnd, "Position I lim %d", input.integral_limit_pos);
+    wprintw(wnd, "Position I %9d    | ", input.I_pos);
+    wprintw(wnd, "Velocity I %9d", input.I_velocity);
     //row 10
+    wmoveclr(wnd, &row);
+    wprintw(wnd, "Position D %9d    | ", input.D_pos);
+    wprintw(wnd, "Velocity D %9d", input.D_velocity);
+    //row 11
+    wmoveclr(wnd, &row);
+    wprintw(wnd, "Position I lim %5d    | ", input.integral_limit_pos);
+    wprintw(wnd, "Velocity I lim %5d", input.integral_limit_velocity);
+    //row 12
     wmoveclr(wnd, &row);
     if (record_config.state == RECORD_ON)
         wprintw(wnd, "* Record ON *");
-//    else
-//        wprintw(wnd, "Record OFF");
     return row;
 }
 

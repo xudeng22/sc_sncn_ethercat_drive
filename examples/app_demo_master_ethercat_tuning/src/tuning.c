@@ -42,17 +42,29 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case 7://max torque
         (*input).max_torque = pdo_input.user_in_4;
         break;
-    case 8://max speed
+    case 8:
         (*input).P_pos = pdo_input.user_in_4;
         break;
-    case 9://max speed
+    case 9:
         (*input).I_pos = pdo_input.user_in_4;
         break;
-    case 10://max speed
+    case 10:
         (*input).D_pos = pdo_input.user_in_4;
         break;
-    case 11://max torque
+    case 11:
         (*input).integral_limit_pos = pdo_input.user_in_4;
+        break;
+    case 12:
+        (*input).P_velocity = pdo_input.user_in_4;
+        break;
+    case 13:
+        (*input).I_velocity = pdo_input.user_in_4;
+        break;
+    case 14:
+        (*input).D_velocity = pdo_input.user_in_4;
+        break;
+    case 15:
+        (*input).integral_limit_velocity = pdo_input.user_in_4;
         break;
     default://brake_release_strategy
         (*input).brake_release_strategy = pdo_input.user_in_4;

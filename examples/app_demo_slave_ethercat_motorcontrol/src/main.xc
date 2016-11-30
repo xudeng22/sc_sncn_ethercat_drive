@@ -140,6 +140,7 @@ int main(void)
                     pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
                     pos_velocity_ctrl_config.resolution  =                          POSITION_SENSOR_RESOLUTION;
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
+                    pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
 
 
                     position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control);

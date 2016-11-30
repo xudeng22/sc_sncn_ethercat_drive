@@ -310,9 +310,10 @@ void tuning_command(
             //max torque
             case 't':
                 pos_velocity_ctrl_config.max_torque = tuning_status.value;
-                if (motorcontrol_config.max_torque < pos_velocity_ctrl_config.max_torque) {
-                    motorcontrol_config.max_torque = pos_velocity_ctrl_config.max_torque;
-                }
+                motorcontrol_config.max_torque = tuning_status.value;
+                i_position_control.set_motorcontrol_config(motorcontrol_config);
+                tuning_status.brake_flag = 0;
+                tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
                 break;
             //max speed
             case 's':

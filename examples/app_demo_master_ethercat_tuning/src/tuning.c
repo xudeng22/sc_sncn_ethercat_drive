@@ -68,7 +68,8 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
     wmove(wnd, (*cursor).row, (*cursor).col);
     char c = wgetch(wnd); // curses call to input from keyboard
     if (c == 'q') { //quit
-        (*pdo_output).target_position = 0;
+        (*pdo_output).controlword = 'e';
+        (*pdo_output).user_out_3 = 0;
         (*pdo_output).opmode = 0;
     } else if (c == '.') { //record
         if (record_config->state == RECORD_OFF) {

@@ -68,9 +68,7 @@
 
 /* ----------- OD setup -------------- */
 
-//#include "sdo_config.inc"
-//#include "sdo_config_foresight_2.inc"
-#include "sdo_config_mabi_CX2040-17.inc"
+#include "sdo_config.inc"
 
 /* ----------- /OD setup -------------- */
 

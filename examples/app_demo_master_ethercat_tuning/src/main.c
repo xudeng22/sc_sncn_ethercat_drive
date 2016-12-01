@@ -68,7 +68,9 @@
 
 /* ----------- OD setup -------------- */
 
-#include "sdo_config.inc"
+//#include "sdo_config.inc"
+//#include "sdo_config_foresight_2.inc"
+#include "sdo_config_mabi_CX2040-17.inc"
 
 /* ----------- /OD setup -------------- */
 
@@ -348,7 +350,13 @@ int main(int argc, char **argv)
     profile_config.max_position = 0x7fffffff;
     profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
-    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position);
+    for (int i=0 ; i<sizeof(slave_config[0])/sizeof(slave_config[0][0]) ; i++) {
+        if (slave_config[0][i].index == 0x308f) {
+            profile_config.ticks_per_turn = slave_config[0][i].value;
+            break;
+        }
+    }
+    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
 
     //init recorder
     RecordConfig record_config = {0};

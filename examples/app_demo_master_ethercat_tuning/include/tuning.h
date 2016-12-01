@@ -69,6 +69,7 @@ typedef struct {
     int profile_acceleration;
     int max_position;
     int min_position;
+    int ticks_per_turn;
     int step;
     int steps;
     PositionCtrlMode mode;

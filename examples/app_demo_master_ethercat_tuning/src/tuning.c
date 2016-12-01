@@ -128,7 +128,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     profile_config->mode = POSITION_PROFILER;
                     profile_config->step = 0;
                     profile_config->steps = init_position_profile(&(profile_config->motion_profile), (*output).value, pdo_input.actual_position,\
-                            profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration);
+                            profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
                 } else if ((*output).mode_2 == 's') {//position step
                     profile_config->mode = POSITION_STEP;
                     profile_config->step = 0;

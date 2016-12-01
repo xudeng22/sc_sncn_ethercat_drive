@@ -84,9 +84,10 @@ typedef struct motion_profile_t {
  * @param max_velocity for the position profile
  * @param max_position
  * @param min_position
+ * @param ticks_per_turn number of ticks in one turn
  *
  */
-void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position);
+void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn);
 
 /**
  * @brief Initialize Position Profile
@@ -97,10 +98,11 @@ void init_position_profile_limits(motion_profile_t *motion_profile, int max_acce
  * @param velocity for the position profile
  * @param acceleration for the position profile
  * @param deceleration for the position profile
+ * @param ticks_per_turn number of ticks in one turn
  *
  * @return no. of steps for position profile : range [1 - steps]
  */
-int init_position_profile(motion_profile_t *motion_profile, int target_position, int actual_position, int velocity, int acceleration, int deceleration);
+int init_position_profile(motion_profile_t *motion_profile, int target_position, int actual_position, int velocity, int acceleration, int deceleration, int ticks_per_turn);
 
 /**
  * @brief Generate Position Profile

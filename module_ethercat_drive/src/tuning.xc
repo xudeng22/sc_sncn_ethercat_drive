@@ -387,6 +387,10 @@ void tuning_command(
                     i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
                     printf("Nonlinear pos ctrl enabled\n");
                     break;
+                default:
+                    i_position_control.enable_position_ctrl(pos_velocity_ctrl_config.control_mode);
+                    printf("%d pos ctrl enabled\n", pos_velocity_ctrl_config.control_mode);
+                    break;
                 }
                 break;
             case 'v':

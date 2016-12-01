@@ -488,9 +488,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-//                    i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
-//                    i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
-                    i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+                    i_position_control.enable_position_ctrl(position_velocity_config.control_mode);
                 }
                 break;
 

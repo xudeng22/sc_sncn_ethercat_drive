@@ -119,6 +119,26 @@ void cm_sync_config_pos_velocity_control(
     position_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
     position_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
+    //FIXME use a proper object to set the control mode
+    switch(i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0))
+    //set integral limits depending on the mode
+    {
+    case POS_PID_CONTROLLER:
+        position_config.control_mode = POS_PID_CONTROLLER;
+        position_config.integral_limit_pos = position_config.max_torque; //set pos integral limit = max torque
+        break;
+    case POS_PID_VELOCITY_CASCADED_CONTROLLER:
+        position_config.control_mode = POS_PID_VELOCITY_CASCADED_CONTROLLER;
+        position_config.integral_limit_pos = position_config.max_speed; //set pos integral limit = max speed
+        break;
+    default:
+        position_config.control_mode = NL_POSITION_CONTROLLER;
+        position_config.integral_limit_pos = 1000; //set pos integral limit = max torque
+        break;
+    }
+    position_config.integral_limit_velocity = position_config.max_torque; //set vel integral limit = max torque
+
+
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us
     //position_config.int21_P_error_limit_position = 10000;
@@ -228,6 +248,9 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(CIA402_VELOCITY_GAIN, 1, position_config.P_velocity); /* 18; */
     i_coe.set_object_value(CIA402_VELOCITY_GAIN, 2, position_config.I_velocity); /* 22; */
     i_coe.set_object_value(CIA402_VELOCITY_GAIN, 2, position_config.D_velocity); /* 25; */
+
+    //FIXME use a proper object to set the control mode
+    i_coe.set_object_value(COMMUTATION_OFFSET_CCLKWISE, 0, position_config.control_mode);
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us

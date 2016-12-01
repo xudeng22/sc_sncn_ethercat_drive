@@ -77,7 +77,6 @@
 #define PRIORITY 1
 #define OPMODE_TUNING    (-128)
 #define DISPLAY_LINE 22
-#define NUM_CONFIG_SDOS   26
 #define MAX_RECORD_MSEC 120000
 #define MAX_RECORD_FILENAME 20
 
@@ -284,7 +283,7 @@ int main(int argc, char **argv)
         /* SDO configuration of the slave */
         /* FIXME set per slave SDO configuration */
         for (int i = 0; i < num_slaves; i++) {
-            int ret = write_sdo_config(master->master, i, slave_config[i], NUM_CONFIG_SDOS);
+            int ret = write_sdo_config(master->master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));
             if (ret != 0) {
                 fprintf(stderr, "Error configuring SDOs\n");
                 return -1;

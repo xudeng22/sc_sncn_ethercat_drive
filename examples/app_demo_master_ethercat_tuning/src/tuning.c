@@ -66,6 +66,9 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case 15:
         (*input).integral_limit_velocity = pdo_input.user_in_4;
         break;
+    case 16: //fault code
+        (*input).error_status = pdo_input.user_in_4;
+        break;
     default://brake_release_strategy
         (*input).brake_release_strategy = pdo_input.user_in_4;
         break;

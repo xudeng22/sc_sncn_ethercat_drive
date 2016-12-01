@@ -50,7 +50,7 @@ int tuning_handler_ethercat(
     static uint8_t status_display = 0;
 
     //mux send offsets and other data in the user4 pdo using the lower bits of statusword
-    status_mux = ((status_mux + 1) >= 17) ? 0 : status_mux + 1;
+    status_mux = ((status_mux + 1) >= 18) ? 0 : status_mux + 1;
     switch(status_mux) {
     case 0: //send flags
         //convert polarity flag to 0/1
@@ -123,6 +123,9 @@ int tuning_handler_ethercat(
         break;
     case 15: //
         tuning_result = pos_velocity_ctrl_config.integral_limit_velocity;
+        break;
+    case 16: //fault code
+        tuning_result = upstream_control_data.error_status;
         break;
     default: //special_brake_release
         tuning_result = pos_velocity_ctrl_config.special_brake_release;

@@ -4,15 +4,14 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <ethercat_service.h>
 #include <pdo_handler.h>
-#include <foefs.h>
+#include <stdint.h>
+//#include <foefs.h>
 
-#define MAX_PDO_SIZE    15
 
-ctrl_proto_values_t init_ctrl_proto(void)
+pdo_values_t pdo_init(void)
 {
-	ctrl_proto_values_t InOut;
+	pdo_values_t InOut;
 
 	InOut.control_word    = 0x00;    		// shutdown
 	InOut.operation_mode  = 0x00;  			// undefined
@@ -41,27 +40,19 @@ ctrl_proto_values_t init_ctrl_proto(void)
 	return InOut;
 }
 
-int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
+int pdo_protocol_handler_function(client interface i_pdo_communication i_pdo, pdo_values_t &InOut)
 {
 
 	int buffer[64];
 	unsigned int count = 0;
-	int i = 0;
 
+	i_pdo.pdo_in(count, buffer);
 
-	pdo_in <: DATA_REQUEST;
-	pdo_in :> count;
-//	printstr("count  "); printintln(count);
 	if (count == 0)
 	    return 0;
 
-	for (i = 0; i < count; i++) {
-		pdo_in :> buffer[i];
-		//printhexln(buffer[i]);
-	}
-
 	//Test for matching number of words
-	if(count > 0)
+	if (count > 0)
 	{
 		InOut.control_word    = (buffer[0]) & 0xffff;
 		InOut.operation_mode  = buffer[1] & 0xff;
@@ -79,9 +70,8 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 //		printhexln(InOut.target_velocity);
 	}
 
-	if(count > 0)
+	if (count > 0)
 	{
-		pdo_out <: MAX_PDO_SIZE;
 		buffer[0]  = InOut.status_word ;
 		buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.position_actual&0xff)<<8) ;
 		buffer[2]  = (InOut.position_actual>> 8)& 0xffff;
@@ -97,60 +87,58 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 		buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
 		buffer[13] = ((InOut.user4_out>>8)&0xffff);
 		buffer[14] = ((InOut.user4_out>>24)&0xff);
-		for (i = 0; i < MAX_PDO_SIZE; i++)
-		{
-			pdo_out <: (unsigned) buffer[i];
-		}
+
+		i_pdo.pdo_out(count, buffer);
 	}
 	return count;
 }
 
-int pdo_get_target_torque(ctrl_proto_values_t InOut)
+int pdo_get_target_torque(pdo_values_t InOut)
 {
     return InOut.target_torque;
 }
 
-int pdo_get_target_velocity(ctrl_proto_values_t InOut)
+int pdo_get_target_velocity(pdo_values_t InOut)
 {
     return InOut.target_velocity;
 }
 
-int pdo_get_target_position(ctrl_proto_values_t InOut)
+int pdo_get_target_position(pdo_values_t InOut)
 {
     return InOut.target_position;
 }
 
-int pdo_get_controlword(ctrl_proto_values_t InOut)
+int pdo_get_controlword(pdo_values_t InOut)
 {
     return InOut.control_word;
 }
 
-int pdo_get_opmode(ctrl_proto_values_t InOut)
+int pdo_get_opmode(pdo_values_t InOut)
 {
     return InOut.operation_mode;
 }
 
-void pdo_set_actual_torque(int actual_torque, ctrl_proto_values_t &InOut)
+void pdo_set_actual_torque(int actual_torque, pdo_values_t &InOut)
 {
     InOut.torque_actual = actual_torque;
 }
 
-void pdo_set_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut)
+void pdo_set_actual_velocity(int actual_velocity, pdo_values_t &InOut)
 {
     InOut.velocity_actual = actual_velocity;
 }
 
-void pdo_set_actual_position(int actual_position, ctrl_proto_values_t &InOut)
+void pdo_set_actual_position(int actual_position, pdo_values_t &InOut)
 {
     InOut.position_actual = actual_position;
 }
 
-void pdo_set_statusword(int statusword, ctrl_proto_values_t &InOut)
+void pdo_set_statusword(int statusword, pdo_values_t &InOut)
 {
     InOut.status_word = statusword & 0xffff;
 }
 
-void pdo_set_opmode_display(int opmode, ctrl_proto_values_t &InOut)
+void pdo_set_opmode_display(int opmode, pdo_values_t &InOut)
 {
     InOut.operation_mode_display = opmode & 0xff;
 }

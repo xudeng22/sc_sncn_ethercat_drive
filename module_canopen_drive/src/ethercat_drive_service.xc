@@ -249,7 +249,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
 
-    ctrl_proto_values_t InOut = init_ctrl_proto();
+    pdo_values_t InOut = pdo_init();
 
     int setup_loop_flag = 0;
 

@@ -420,7 +420,7 @@ int main(int argc, char **argv)
             tuning_record(&record_config, pdo_input[num_slaves-1], pdo_output[num_slaves-1], record_filename);
 
             //position profile
-            tuning_position(&profile_config, &pdo_output[num_slaves-1]);
+            tuning_position(&profile_config, &pdo_output[num_slaves-1], pdo_input[num_slaves-1]);
 
             //read user input
             tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &record_config, &cursor);

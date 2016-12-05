@@ -130,12 +130,21 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     profile_config->steps = init_position_profile(&(profile_config->motion_profile), (*output).value, pdo_input.actual_position,\
                             profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
                 } else if ((*output).mode_2 == 's') {//position step
-                    profile_config->mode = POSITION_STEP;
-                    profile_config->step = 0;
-                    profile_config->steps = 4500;
-                    (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+                    if ((*output).mode_3 == 'p') {//position step profiler
+                        profile_config->mode = POSITION_STEP_PROFILER;
+                        profile_config->step = 0;
+                        profile_config->target_position = (*output).value;
+                        profile_config->steps = init_position_profile(&(profile_config->motion_profile), profile_config->target_position, pdo_input.actual_position,\
+                                profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
+                    } else {
+                        profile_config->mode = POSITION_STEP;
+                        profile_config->step = 0;
+                        profile_config->steps = 4500;
+                        (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+                    }
                 } else { //position direct
                     pdo_output->controlword = 'p';
+                    profile_config->mode = POSITION_DIRECT;
                     (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
                 }
             } else {
@@ -176,7 +185,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
     }
 }
 
-void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output)
+void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input)
 {
     if (config->mode == POSITION_PROFILER) {
         if (config->step <= config->steps) {
@@ -196,6 +205,28 @@ void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *p
         } else if (config->step == config->steps) {
             config->mode = POSITION_DIRECT;
             pdo_output->controlword = 0;
+        }
+        (*config).step++;
+    }
+    else if (config->mode == POSITION_STEP_PROFILER) {
+        pdo_output->controlword = 'p';
+        if (config->step < config->steps) {
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
+        } else if (config->target_position == 0) { //small target pos = we are reached the end
+            config->mode = POSITION_DIRECT;
+            pdo_output->controlword = 0;
+        } else if (config->target_position > 0) { //positive target = end of first step
+            config->step = 0;
+            config->target_position = -config->target_position;
+            config->steps = init_position_profile(&(config->motion_profile), config->target_position, pdo_input.actual_position,\
+                    config->profile_speed, config->profile_acceleration, config->profile_acceleration, config->ticks_per_turn);
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
+        } else if (config->target_position < 0) { //negative target = end of second step
+            config->step = 0;
+            config->target_position = 0;
+            config->steps = init_position_profile(&(config->motion_profile), config->target_position, pdo_input.actual_position,\
+                    config->profile_speed, config->profile_acceleration, config->profile_acceleration, config->ticks_per_turn);
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
         }
         (*config).step++;
     }

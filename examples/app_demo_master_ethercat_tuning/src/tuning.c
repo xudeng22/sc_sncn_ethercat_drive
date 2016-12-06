@@ -187,11 +187,19 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
 
 void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input)
 {
+    int max_follow_error = config->ticks_per_turn;
+
     if (config->mode == POSITION_PROFILER) {
         if (config->step <= config->steps) {
             pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
             pdo_output->controlword = 'p';
             (*config).step++;
+            //check follow error
+            if (((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) > max_follow_error || ((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) < -max_follow_error)
+            {
+                config->mode = POSITION_DIRECT;
+                pdo_output->controlword = 0;
+            }
         } else {
             config->mode = POSITION_DIRECT;
             pdo_output->controlword = 0;
@@ -229,6 +237,12 @@ void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *p
             pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
         }
         (*config).step++;
+        //check follow error
+        if (((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) > max_follow_error || ((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) < -max_follow_error)
+        {
+            config->mode = POSITION_DIRECT;
+            pdo_output->controlword = 0;
+        }
     }
 }
 

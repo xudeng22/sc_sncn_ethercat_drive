@@ -39,7 +39,7 @@ WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
 HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
-SPIPorts spi_ports = SOMANET_IFM_AMS_PORTS;
+SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
 QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
 
 int main(void)

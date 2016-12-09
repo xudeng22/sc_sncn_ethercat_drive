@@ -509,14 +509,14 @@ void tuning_command(
         if (!isnull(i_position_feedback)) {
             switch(tuning_status.mode_2) {
             case 'z':
-                i_position_feedback.send_command(CONTELEC_CONF_NULL, 0, 0);
+                i_position_feedback.send_command(REM_16MT_CONF_NULL, 0, 0);
                 break;
             default:
-                i_position_feedback.send_command(CONTELEC_CONF_MTPRESET, tuning_status.value, 16);
+                i_position_feedback.send_command(REM_16MT_CONF_MTPRESET, tuning_status.value, 16);
                 break;
             }
-            i_position_feedback.send_command(CONTELEC_CTRL_SAVE, 0, 0);
-            i_position_feedback.send_command(CONTELEC_CTRL_RESET, 0, 0);
+            i_position_feedback.send_command(REM_16MT_CTRL_SAVE, 0, 0);
+            i_position_feedback.send_command(REM_16MT_CTRL_RESET, 0, 0);
         }
         break;
 

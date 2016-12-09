@@ -163,12 +163,6 @@ void cm_default_config_position_feedback(
 {
     config = i_pos_feedback.get_config();
 
-//    int tick_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
-//    int bit_resolution = tick2bits(tick_resolution);
-    //config.biss_config.singleturn_resolution = bit_resolution;
-    //config.contelec_config.resolution_bits   = bit_resolution;
-//    int tick_resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
-
     i_coe.set_object_value(CIA402_SENSOR_SELECTION_CODE, 0, config.sensor_type);
     i_coe.set_object_value(CIA402_POSITION_ENC_RESOLUTION, 0, config.resolution);
     i_coe.set_object_value(SNCN_SENSOR_POLARITY, 0, config.polarity);

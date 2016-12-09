@@ -246,9 +246,9 @@ int main(void)
                     position_feedback_config.biss_config.max_ticks = BISS_MAX_TICKS;
                     position_feedback_config.biss_config.velocity_loop = BISS_VELOCITY_LOOP;
 
-                    position_feedback_config.contelec_config.filter = CONTELEC_FILTER;
-                    position_feedback_config.contelec_config.timeout = CONTELEC_TIMEOUT;
-                    position_feedback_config.contelec_config.velocity_loop = CONTELEC_VELOCITY_LOOP;
+                    position_feedback_config.rem_16mt_config.filter = REM_16MT_FILTER;
+                    position_feedback_config.rem_16mt_config.timeout = REM_16MT_TIMEOUT;
+                    position_feedback_config.rem_16mt_config.velocity_loop = REM_16MT_VELOCITY_LOOP;
 
                     position_feedback_config.qei_config.index_type = QEI_SENSOR_INDEX_TYPE;
                     position_feedback_config.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;

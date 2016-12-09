@@ -247,7 +247,7 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(CIA402_MAX_TORQUE, 0,    position_config.max_torque);
     i_coe.set_object_value(CIA402_VELOCITY_GAIN, 1, position_config.P_velocity); /* 18; */
     i_coe.set_object_value(CIA402_VELOCITY_GAIN, 2, position_config.I_velocity); /* 22; */
-    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 2, position_config.D_velocity); /* 25; */
+    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 3, position_config.D_velocity); /* 25; */
 
     //FIXME use a proper object to set the control mode
     i_coe.set_object_value(COMMUTATION_OFFSET_CCLKWISE, 0, position_config.control_mode);

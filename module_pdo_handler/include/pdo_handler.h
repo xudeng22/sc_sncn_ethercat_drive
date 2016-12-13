@@ -16,6 +16,8 @@
 #define PDO_BYTES_SIZE 30
 #define PDO_WORDS_SIZE 15
 
+#define PDO_BUFFER_SIZE    64
+
 /**
  * @brief
  *  Struct for Tx, Rx PDOs
@@ -50,7 +52,7 @@ typedef struct
     int32_t user4_out;
 } pdo_values_t;
 
-
+typedef uint16_t pdo_size_t;
 
 /**
  * @brief
@@ -67,7 +69,11 @@ typedef struct
  *
  * @return      1 if communication is active else 0
  */
-int pdo_protocol_handler_function(client interface i_pdo_communication i_pdo, pdo_values_t &InOut);
+//void pdo_protocol_handler(buffer[], pdo_values_t &InOut);
+
+void pdo_decode(buffer[], pdo_values_t &InOut);
+
+void pdo_encode(buffer[], pdo_values_t InOut);
 
 /**
  *  @brief

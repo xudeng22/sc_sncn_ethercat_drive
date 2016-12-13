@@ -40,20 +40,10 @@ pdo_values_t pdo_init(void)
 	return InOut;
 }
 
-int pdo_protocol_handler_function(client interface i_pdo_communication i_pdo, pdo_values_t &InOut)
+void pdo_decode(buffer[], pdo_values_t &InOut)
 {
 
-	int buffer[64];
-	unsigned int count = 0;
-
-	i_pdo.pdo_in(count, buffer);
-
-	if (count == 0)
-	    return 0;
-
 	//Test for matching number of words
-	if (count > 0)
-	{
 		InOut.control_word    = (buffer[0]) & 0xffff;
 		InOut.operation_mode  = buffer[1] & 0xff;
 		InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
@@ -63,15 +53,17 @@ int pdo_protocol_handler_function(client interface i_pdo_communication i_pdo, pd
 		InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
 		InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
 		InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
-//		printhexln(InOut.control_word);
-//		printhexln(InOut.operation_mode);
-//		printhexln(InOut.target_torque);
-//		printhexln(InOut.target_position);
-//		printhexln(InOut.target_velocity);
-	}
 
-	if (count > 0)
-	{
+		//      printhexln(InOut.control_word);
+		//      printhexln(InOut.operation_mode);
+		//      printhexln(InOut.target_torque);
+		//      printhexln(InOut.target_position);
+		//      printhexln(InOut.target_velocity);
+
+}
+
+void pdo_encode(buffer[], pdo_values_t InOut)
+{
 		buffer[0]  = InOut.status_word ;
 		buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.position_actual&0xff)<<8) ;
 		buffer[2]  = (InOut.position_actual>> 8)& 0xffff;
@@ -87,10 +79,6 @@ int pdo_protocol_handler_function(client interface i_pdo_communication i_pdo, pd
 		buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
 		buffer[13] = ((InOut.user4_out>>8)&0xffff);
 		buffer[14] = ((InOut.user4_out>>24)&0xff);
-
-		i_pdo.pdo_out(count, buffer);
-	}
-	return count;
 }
 
 int pdo_get_target_torque(pdo_values_t InOut)

@@ -8,9 +8,10 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <canod.h>
+//#include <canod.h>
+#include <canopen_service.h>
 #include <ethercat_service.h>
-#include <reboot.h>
+//#include <reboot.h>
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 #include <cia402_wrapper.h>
 #endif
@@ -195,7 +196,7 @@ static const uint16_t g_listarrayobjects[] = {
    CIA402_POSITION_GAIN, 3,
 };
 
-static void read_od_config(client interface i_coe_communication i_coe)
+static void read_od_config(client interface ODCommunicationInterface i_od)
 {
     /* Read the values of hand picked objects */
     uint32_t value    = 0;
@@ -203,14 +204,14 @@ static void read_od_config(client interface i_coe_communication i_coe)
     size_t object_list_size = sizeof(g_listobjects) / sizeof(g_listobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i++) {
-        value = i_coe.get_object_value(g_listobjects[i], 0);
+        value = i_od.get_object_value(g_listobjects[i], 0);
         printstr("Object 0x"); printhex(g_listobjects[i]); printstr(" = "); printintln(value);
     }
 
     object_list_size = sizeof(g_listarrayobjects) / sizeof(g_listarrayobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i+=2) {
-        value = i_coe.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
+        value = i_od.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
         printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
         printstr(" = "); printintln(value);
     }
@@ -218,7 +219,7 @@ static void read_od_config(client interface i_coe_communication i_coe)
     return;
 }
 
-static void sdo_handler(client interface i_coe_communication i_coe)
+static void sdo_handler(client interface ODCommunicationInterface i_od)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
@@ -227,17 +228,18 @@ static void sdo_handler(client interface i_coe_communication i_coe)
     int read_config = 0;
 
     while (1) {
-        select {
-            case i_coe.configuration_ready():
-                printstrln("Master requests OP mode - cyclic operation is about to start.");
-                read_config = 1;
-                break;
-        }
+//        select {
+//            case i_od.configuration_ready():
+//                printstrln("Master requests OP mode - cyclic operation is about to start.");
+//                read_config = 1;
+//                break;
+//        }
+        read_config = i_od.configuration_ready();
 
         if (read_config) {
-            read_od_config(i_coe);
+            read_od_config(i_od);
             printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
-            i_coe.configuration_done(); /* clear notification */
+            i_od.configuration_done(); /* clear notification */
         }
 
         t when timerafter(time+delay) :> time;
@@ -248,22 +250,27 @@ static void sdo_handler(client interface i_coe_communication i_coe)
 int main(void)
 {
     /* EtherCat Communication channels */
-    interface i_coe_communication i_coe;
     interface i_foe_communication i_foe;
-    chan pdo_in;
-    chan pdo_out;
-    interface EtherCATRebootInterface i_ecat_reboot;
+    //interface EtherCATRebootInterface i_ecat_reboot;
+    interface PDOCommunicationInterface i_pdo[3];
+    interface ODCommunicationInterface i_od[3];
 
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
 		on tile[COM_TILE] :
 		{
-		    par {
-                    ethercat_service(i_ecat_reboot, i_coe, null,
-                                     i_foe, pdo_out, pdo_in, ethercat_ports);
-                    reboot_service_ethercat(i_ecat_reboot);
-                }
+		    par
+		    {
+                ethercat_service(null,
+                                   i_od[0],
+                                   i_pdo[0],
+                                   null,
+                                   i_foe,
+                                   ethercat_ports);
+
+                canopen_service(i_pdo, i_od);
+            }
         }
 
 		/* Test application handling pdos from EtherCat */
@@ -272,7 +279,7 @@ int main(void)
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 			pdo_handler(pdo_out, pdo_in);
 #endif
-			sdo_handler(i_coe);
+			sdo_handler(i_od[2]);
 		}
 	}
 

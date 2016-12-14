@@ -10,16 +10,17 @@
 #define OD_INTERFACE_H_
 
 #include <stdint.h>
+#include "canod_constants.h"
 
 /**
  * @brief Communication interface for OD communication
  */
-interface i_od_communication {
+interface ODCommunicationInterface {
     uint32_t get_object_value(uint16_t index, uint8_t subindex);
     void     set_object_value(uint16_t index, uint8_t subindex, uint32_t value);
 
-    [[clears_notification]] void configuration_done(void);
-    [[notification]] slave void configuration_ready(void);
+    void configuration_done(void);
+    int configuration_ready(void);
 };
 
 #endif /* OD_INTERFACE_H_ */

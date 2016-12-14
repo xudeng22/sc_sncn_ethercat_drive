@@ -126,7 +126,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ COMMUTATION_OFFSET_CLKWISE,	  0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,	 16, 0x003f, 0,   "Commutation Offset Clockwise"},
 	{ COMMUTATION_OFFSET_CCLKWISE,	  0, 0,	DEFTYPE_INTEGER16, CANOD_TYPE_VAR,	 16, 0x003f, 0,   "Commutation Offset Counter Clockwise"},
 	{ MOTOR_WINDING_TYPE,	          0, 0,	DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 	  8, 0x003f, 0,   "Motor Winding Type"},
-	{ SENSOR_POLARITY,	         	  0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 	 16, 0x003f, 1,   "Position Sensor Polarity"},
+	{ SNCN_SENSOR_POLARITY,	         	  0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 	 16, 0x003f, 1,   "Position Sensor Polarity"},
 	{ LIMIT_SWITCH_TYPE,			  0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 	  8, 0x003f, 0,   "Limit Switch Type"},
 //  { CIA402_POSITIVE_TORQUE_LIMIT,   0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Positive Torque Limit" },
 //  { CIA402_NEGATIVE_TORQUE_LIMIT,   0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Negative Torque Limit" },

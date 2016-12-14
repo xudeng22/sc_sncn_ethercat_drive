@@ -1,13 +1,13 @@
 
 /**
- * @file can_od.h
+ * @file canod.h
  * @brief Functions to handle CAN object dictionary
  */
 
 #include "canod_constants.h"
 
-#ifndef CAN_OD_H
-#define CAN_OD_H
+#ifndef CANOD_H
+#define CANOD_H
 
 #if 0
 struct _sdoinfo_service {

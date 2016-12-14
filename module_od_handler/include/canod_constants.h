@@ -1,11 +1,11 @@
 
 /**
- * @file canod.h
+ * @file canod_constants.h
  * @brief Common defines for object dictionary access
  */
 
-#ifndef CANOD_H
-#define CANOD_H
+#ifndef CANOD_CONSTANTS_H
+#define CANOD_CONSTANTS_H
 
 /* SDO Information operation code */
 #define CANOD_OP_
@@ -104,7 +104,7 @@
 #define COMMUTATION_OFFSET_CLKWISE		0x2001
 #define COMMUTATION_OFFSET_CCLKWISE		0x2002
 #define MOTOR_WINDING_TYPE				0x2003
-#define SENSOR_POLARITY					0x2004
+#define SNCN_SENSOR_POLARITY			0x2004
 #define CIA402_MOTOR_SPECIFIC           0x2410 /* Sub 01 = nominal current
 	                                          Sub 02 = ???
 						  Sub 03 = pole pair number
@@ -120,9 +120,9 @@
 #define CIA402_TOUCHPROBE_FUNC   0x60B8 /* RPDO */
 #define CIA402_TOUCHPROBE_STAT   0x60B9 /* TPDO */
 #define CIA402_TOUCHPROBE_VALUE  0x60BA /* TPDO - depends on touchprobe conf! */
-#define CIA402_TOUCHPROBE_VALUE  0x60BB /* TPDO - depends on touchprobe conf! */
-#define CIA402_TOUCHPROBE_VALUE  0x60BC /* TPDO - depends on touchprobe conf! */
-#define CIA402_TOUCHPROBE_VALUE  0x60BD /* TPDO - depends on touchprobe conf! */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BB /* TPDO - depends on touchprobe conf! */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BC /* TPDO - depends on touchprobe conf! */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BD /* TPDO - depends on touchprobe conf! */
 
 #define CIA402_SUPPORTED_DRIVE_MODES  0x6502 /* recommended */
 
@@ -154,4 +154,4 @@
 #define USER_PDO_OUT_4          0x4041
 #endif /* USER_DEFINED_PDOS */
 
-#endif /* CANOD_H */
+#endif /* CANOD_CONSTANTS_H */

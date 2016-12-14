@@ -11,8 +11,6 @@
 #include <stdint.h>
 #include <canod.h>
 
-#include <pdo_interface.h>
-
 #define PDO_BYTES_SIZE 30
 #define PDO_WORDS_SIZE 15
 
@@ -71,9 +69,9 @@ typedef uint16_t pdo_size_t;
  */
 //void pdo_protocol_handler(buffer[], pdo_values_t &InOut);
 
-void pdo_decode(buffer[], pdo_values_t &InOut);
+void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
 
-void pdo_encode(buffer[], pdo_values_t InOut);
+void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
 
 /**
  *  @brief

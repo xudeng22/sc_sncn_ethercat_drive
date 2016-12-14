@@ -40,7 +40,7 @@ pdo_values_t pdo_init(void)
 	return InOut;
 }
 
-void pdo_decode(buffer[], pdo_values_t &InOut)
+void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut)
 {
 
 	//Test for matching number of words
@@ -62,7 +62,7 @@ void pdo_decode(buffer[], pdo_values_t &InOut)
 
 }
 
-void pdo_encode(buffer[], pdo_values_t InOut)
+void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut)
 {
 		buffer[0]  = InOut.status_word ;
 		buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.position_actual&0xff)<<8) ;

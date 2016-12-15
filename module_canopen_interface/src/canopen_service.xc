@@ -6,6 +6,7 @@
 #include "pdo_interface.h"
 #include "od_interface.h"
 #include "pdo_handler.h"
+#include "canod_constants.h"
 #include "canopen_service.h"
 
 void canopen_service(server interface ODCommunicationInterface i_od[3], server interface PDOCommunicationInterface i_pdo[3])
@@ -16,25 +17,52 @@ void canopen_service(server interface ODCommunicationInterface i_od[3], server i
 
     int configuration_done = 0;
 
+    printstr("SOMANET CANOpen Service started\n");
+
     while (1)
     {
         select
         {
-            case i_od[int i].get_object_value(uint16_t index, uint8_t subindex) -> { uint32_t value }:
+            case i_od[int i].get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value, uint8_t error_out }:
                     unsigned bitlength = 32;
                     unsigned val = 0;
-                    canod_get_entry(index, subindex, val, bitlength);
+                    error_out = canod_get_entry(index_, subindex, val, bitlength);
                     value = val;
                     break;
 
-            case i_od[int i].set_object_value(uint16_t index, uint8_t subindex, uint32_t value):
+            case i_od[int i].set_object_value(uint16_t index_, uint8_t subindex, uint32_t value) -> {uint8_t error_out }:
                     unsigned type = 0;
-                    canod_set_entry(index, subindex, value, type);
+                    error_out = canod_set_entry(index_, subindex, value, type);
                     break;
+
+            case i_od[int i].get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo) -> {struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
+                    struct _sdoinfo_entry_description desc;
+                    error_out = canod_get_entry_description(index_, subindex, valueinfo, desc);
+                    desc_out = desc;
+                    break;
+
+            case i_od[int i].get_all_list_length(uint32_t list_out[]):
+                    unsigned list[5];
+                    canod_get_all_list_length(list);
+                    memcpy(list_out, list, 5);
+                    break;
+
+            case i_od[int i].get_list(unsigned list_out[], unsigned size, unsigned listtype) -> {int size_out}:
+                    unsigned list[5];
+                    size_out = canod_get_list(list, size, listtype);
+//                    memcpy(list_out, list, 5);
+                    break;
+
+            case i_od[int i].get_object_description(struct _sdoinfo_entry_description &obj_out, unsigned index_) -> { int error }:
+                    struct _sdoinfo_entry_description obj;
+                    error = canod_get_object_description(obj, index_);
+                    obj_out = obj;
+                    break;
+
 
             case i_od[int i].configuration_done():
                     configuration_done = 1;
-                break;
+                    break;
 
             case i_od[int i].configuration_ready() -> { int value }:
                     value = configuration_done;

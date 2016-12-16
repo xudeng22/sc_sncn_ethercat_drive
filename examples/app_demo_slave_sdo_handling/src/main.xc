@@ -244,9 +244,9 @@ static void sdo_handler(client interface ODCommunicationInterface i_od)
         }
 
         t when timerafter(time+delay) :> time;
-
     }
 }
+
 
 int main(void)
 {
@@ -271,16 +271,20 @@ int main(void)
                                    ethercat_ports);
 
                 canopen_service(i_pdo, i_od);
+
             }
         }
 
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
+		    par
+		    {
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
-			pdo_handler(pdo_out, pdo_in);
+		        pdo_handler(pdo_out, pdo_in);
 #endif
-			sdo_handler(i_od[1]);
+			    sdo_handler(i_od[1]);
+		    }
 		}
 	}
 

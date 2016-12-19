@@ -23,8 +23,9 @@ interface ODCommunicationInterface {
     int get_list(unsigned list[], unsigned size, unsigned listtype);
     int get_object_description(struct _sdoinfo_entry_description &obj, unsigned index_);
 
+    void configuration_ready(void);
     void configuration_done(void);
-    int configuration_ready(void);
+    int configuration_get(void);
 
     //int get_list_length(unsigned list[], unsigned size, unsigned listtype);
 };

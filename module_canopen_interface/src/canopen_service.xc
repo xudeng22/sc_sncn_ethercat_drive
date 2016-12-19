@@ -60,12 +60,15 @@ void canopen_service(server interface ODCommunicationInterface i_od[3], server i
                     obj_out = obj;
                     break;
 
-            case i_od[int j].configuration_done(void):
+            case i_od[int j].configuration_ready(void):
                     configuration_done = 1;
                     break;
 
-            case i_od[int j].configuration_ready(void) -> { int value }:
+            case i_od[int j].configuration_get(void)  -> { int value }:
                     value = configuration_done;
+                    break;
+
+            case i_od[int j].configuration_done(void):
                     configuration_done = 0;
                     break;
 

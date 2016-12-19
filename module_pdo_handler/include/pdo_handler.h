@@ -39,9 +39,9 @@ typedef struct
     int8_t operation_mode_display; //      Modes of Operation Display
     uint16_t status_word;                   //  Status Word
 
-    int16_t torque_actual;
-    int32_t velocity_actual;
-    int32_t position_actual;
+    int16_t actual_torque;
+    int32_t actual_velocity;
+    int32_t actual_position;
 
     /* User defined PDOs */
     int32_t user1_out;
@@ -69,9 +69,9 @@ typedef uint16_t pdo_size_t;
  */
 //void pdo_protocol_handler(buffer[], pdo_values_t &InOut);
 
-void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
+extern inline void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
 
-void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
+extern inline void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
 
 /**
  *  @brief

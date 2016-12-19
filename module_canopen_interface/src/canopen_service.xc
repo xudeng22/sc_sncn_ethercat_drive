@@ -23,11 +23,12 @@ void canopen_service(server interface ODCommunicationInterface i_od[3], server i
     {
         select
         {
-            case i_od[int j].get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value, uint8_t error_out }:
-                    unsigned bitlength = 32;
-                    unsigned val = 0;
-                    error_out = canod_get_entry(index_, subindex, val, bitlength);
-                    value = val;
+            case i_od[int j].get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
+                    unsigned bitlength = 0;
+                    unsigned value = 0;
+                    error_out = canod_get_entry(index_, subindex, value, bitlength);
+                    bitlength_out = bitlength;
+                    value_out = value;
                     break;
 
             case i_od[int j].set_object_value(uint16_t index_, uint8_t subindex, uint32_t value) -> {uint8_t error_out }:
@@ -48,10 +49,9 @@ void canopen_service(server interface ODCommunicationInterface i_od[3], server i
                     break;
 
             case i_od[int j].get_list(unsigned list_out[], unsigned size, unsigned listtype) -> {int size_out}:
-                    unsigned list[5];
-                    size_out = canod_get_list(list, size, listtype);
-                    memcpy(list_out, list, 5);
-                    size_out = 0;
+                    unsigned list[100];
+                    size_out = canod_get_list(list, 100, listtype);
+                    memcpy(list_out, list, size);
                     break;
 
             case i_od[int j].get_object_description(struct _sdoinfo_entry_description &obj_out, unsigned index_) -> { int error }:

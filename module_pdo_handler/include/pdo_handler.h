@@ -17,6 +17,11 @@
 #define PDO_BUFFER_SIZE    64
 
 /**
+* @brief Control word to request PDO data.
+*/
+#define DATA_REQUEST     1
+
+/**
  * @brief
  *  Struct for Tx, Rx PDOs
  */
@@ -67,11 +72,11 @@ typedef uint16_t pdo_size_t;
  *
  * @return      1 if communication is active else 0
  */
-//void pdo_protocol_handler(buffer[], pdo_values_t &InOut);
+int pdo_protocol_handler(chanend pdo_out, chanend pdo_in, pdo_values_t &InOut);
 
-extern inline void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
-
-extern inline void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
+//extern inline void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
+//
+//extern inline void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
 
 /**
  *  @brief

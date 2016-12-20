@@ -3,17 +3,13 @@
 #include <string.h>
 
 #include "canod.h"
-#include "pdo_interface.h"
 #include "od_interface.h"
-#include "pdo_handler.h"
 #include "canod_constants.h"
 #include "canopen_service.h"
 
 void canopen_service(server interface ODCommunicationInterface i_od[3])
 {
     int configuration_done = 0;
-
-    printstr("SOMANET CANOpen Service started\n");
 
     while (1)
     {

@@ -9,7 +9,6 @@
 #ifndef CANOPEN_SERVICE_H_
 #define CANOPEN_SERVICE_H_
 
-#include "pdo_interface.h"
 #include "od_interface.h"
 
 void canopen_service(server interface ODCommunicationInterface i_od[3]);

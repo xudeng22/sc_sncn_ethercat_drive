@@ -37,8 +37,7 @@ static void pdo_handler(client interface PDOCommunicationInterface i_pdo)
 
 	while(1)
 	{
-		//ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
-	    InOut = i_pdo.pdo_io(InOut);
+	    pdo_protocol_handler(i_pdo,InOut);
 
 		i++;
 		if(i >= 999) {
@@ -233,7 +232,7 @@ static void sdo_handler(client interface ODCommunicationInterface i_od)
         read_config = i_od.configuration_get();
 
         if (read_config) {
-            //read_od_config(i_od);
+            read_od_config(i_od);
             printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
             i_od.configuration_done(); /* clear notification */
         }
@@ -248,8 +247,8 @@ int main(void)
     /* EtherCat Communication channels */
     interface i_foe_communication i_foe;
     //interface EtherCATRebootInterface i_ecat_reboot;
-    interface PDOCommunicationInterface i_pdo[3];
     interface ODCommunicationInterface i_od[3];
+    interface PDOCommunicationInterface i_pdo;
 
 	par
 	{
@@ -260,12 +259,12 @@ int main(void)
 		    {
                 ethercat_service(null,
                                    i_od[0],
-                                   i_pdo[0],
+                                   i_pdo,
                                    null,
                                    i_foe,
                                    ethercat_ports);
 
-                canopen_service(i_od, i_pdo);
+                canopen_service(i_od);
 
             }
         }
@@ -276,7 +275,7 @@ int main(void)
 		    par
 		    {
 #if 1 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
-		        pdo_handler(i_pdo[1]);
+		        pdo_handler(i_pdo);
 #endif
 			    sdo_handler(i_od[1]);
 		    }

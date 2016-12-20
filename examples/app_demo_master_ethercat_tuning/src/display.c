@@ -42,13 +42,13 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     wprintw(wnd, " **");
     //row 1
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position %14d | Velocity %4d",  pdo_input.actual_position, pdo_input.actual_velocity);
+    wprintw(wnd, "Position %14d | Velocity            %4d",  pdo_input.actual_position, pdo_input.actual_velocity);
     //row 2
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Torque computed %4d    | Torque sensor %d", (int16_t)pdo_input.actual_torque, pdo_input.user_in_1);
+    wprintw(wnd, "Torque computed    %4d | Torque sensor       %4d", (int16_t)pdo_input.actual_torque, pdo_input.user_in_1);
     //row 3
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Offset %4d             | Pole pairs %2d", input.offset, input.pole_pairs);
+    wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);
     //row 4
     wmoveclr(wnd, &row);
     if (input.motion_polarity == 0)
@@ -69,28 +69,28 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
         wprintw(wnd, "| Brake shaking %d\%", input.brake_release_strategy);
     //row 6
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Speed  limit %5d      | ", input.max_speed);
-    wprintw(wnd, "Position min %d", input.min_position);
+    wprintw(wnd, "Speed  limit      %5d | ", input.max_speed);
+    wprintw(wnd, "Position min %11d", input.min_position);
     //row 7
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Torque limit %5d      | ", input.max_torque);
-    wprintw(wnd, "Position max %d", input.max_position);
+    wprintw(wnd, "Torque limit      %5d | ", input.max_torque);
+    wprintw(wnd, "Position max %11d", input.max_position);
     //row 8
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position P %9d    | ", input.P_pos);
-    wprintw(wnd, "Velocity P %9d", input.P_velocity);
+    wprintw(wnd, "Position P    %9d | ", input.P_pos);
+    wprintw(wnd, "Velocity P     %9d", input.P_velocity);
     //row 9
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position I %9d    | ", input.I_pos);
-    wprintw(wnd, "Velocity I %9d", input.I_velocity);
+    wprintw(wnd, "Position I    %9d | ", input.I_pos);
+    wprintw(wnd, "Velocity I     %9d", input.I_velocity);
     //row 10
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position D %9d    | ", input.D_pos);
-    wprintw(wnd, "Velocity D %9d", input.D_velocity);
+    wprintw(wnd, "Position D    %9d | ", input.D_pos);
+    wprintw(wnd, "Velocity D     %9d", input.D_velocity);
     //row 11
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position I lim %5d    | ", input.integral_limit_pos);
-    wprintw(wnd, "Velocity I lim %5d", input.integral_limit_velocity);
+    wprintw(wnd, "Position I lim    %5d | ", input.integral_limit_pos);
+    wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 12
     wmoveclr(wnd, &row);
     if (input.error_status != 0)
@@ -106,13 +106,21 @@ int display_tuning_help(WINDOW *wnd, int row)
     wmoveclr(wnd, &row);
     printw("Commands:");
     wmoveclr(wnd, &row);
-    printw("b: Release/Block Brake       | a: find offset (also release the brake)");
+    printw("b:          Release/Block Brake");
     wmoveclr(wnd, &row);
-    printw("number: set torque command   | r: reverse torque command");
+    printw("a:          Find offset (also release the brake)");
     wmoveclr(wnd, &row);
-    printw("ep3: enable position control | p + number: set position command");
+    printw("number:     Set torque command");
     wmoveclr(wnd, &row);
-    printw("P + number: set pole pairs   | . start/stop recording");
+    printw("r:          Reverse torque command");
+    wmoveclr(wnd, &row);
+    printw("ep3:        Enable position control");
+    wmoveclr(wnd, &row);
+    printw("p + number: Set position command");
+    wmoveclr(wnd, &row);
+    printw("P + number: Set pole pairs");
+    wmoveclr(wnd, &row);
+    printw(".:          Start/stop recording");
     wmoveclr(wnd, &row);
     printw("L s/t/p + number: set speed/torque/position limit");
     wmoveclr(wnd, &row);

@@ -76,7 +76,8 @@
 #define FREQUENCY 1000
 #define PRIORITY 1
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 22
+#define DISPLAY_LINE 27
+#define HELP_ROW_COUNT 12
 #define MAX_RECORD_MSEC 120000
 #define MAX_RECORD_FILENAME 20
 
@@ -373,7 +374,7 @@ int main(int argc, char **argv)
 
     //init prompt
     Cursor cursor = { DISPLAY_LINE, 2 };
-    display_tuning_help(wnd, DISPLAY_LINE-8);
+    display_tuning_help(wnd, DISPLAY_LINE-HELP_ROW_COUNT);
     move(cursor.row, 0);
     printw("> ");
     

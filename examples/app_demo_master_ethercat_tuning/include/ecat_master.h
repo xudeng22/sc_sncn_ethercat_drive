@@ -5,6 +5,7 @@
 #ifndef _ECAT_CONFIG_H
 #define _ECAT_CONFIG_H
 
+#include <sncn_ethercat.h>
 #include <ecrt.h>
 #include <stdint.h>
 

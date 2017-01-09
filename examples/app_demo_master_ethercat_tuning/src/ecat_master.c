@@ -3,6 +3,8 @@
  */
 
 #include "ecat_master.h"
+#include <sncn_master.h>
+#include <sncn_slave.h>
 #include <ecrt.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -92,7 +94,7 @@ int master_update_slave_state(int *statusword, int *controlword)
  * PDO access functions
  */
 
-uint32_t pd_get_statusword(struct _master_config *master, int slaveid)
+uint32_t pd_get_statusword(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
@@ -100,7 +102,7 @@ uint32_t pd_get_statusword(struct _master_config *master, int slaveid)
     return (EC_READ_U16(master->processdata + input->statusword) & 0xffff);
 }
 
-uint32_t pd_get_opmodedisplay(struct _master_config *master, int slaveid)
+uint32_t pd_get_opmodedisplay(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
@@ -108,7 +110,7 @@ uint32_t pd_get_opmodedisplay(struct _master_config *master, int slaveid)
     return (EC_READ_U16(master->processdata + input->opmodedisplay) & 0xff);
 }
 
-uint32_t pd_get_position(struct _master_config *master, int slaveid)
+uint32_t pd_get_position(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
@@ -116,7 +118,7 @@ uint32_t pd_get_position(struct _master_config *master, int slaveid)
     return EC_READ_U32(master->processdata + input->actual_position);
 }
 
-uint32_t pd_get_velocity(struct _master_config *master, int slaveid)
+uint32_t pd_get_velocity(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
@@ -124,7 +126,7 @@ uint32_t pd_get_velocity(struct _master_config *master, int slaveid)
     return EC_READ_U32(master->processdata + input->actual_velocity);
 }
 
-uint32_t pd_get_torque(struct _master_config *master, int slaveid)
+uint32_t pd_get_torque(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
@@ -132,28 +134,28 @@ uint32_t pd_get_torque(struct _master_config *master, int slaveid)
     return (EC_READ_U16(master->processdata + input->actual_torque) & 0xffff);
 }
 
-uint32_t pd_get_user1_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user1_in(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
 
     return EC_READ_U32(master->processdata + input->user_in_1);
 }
-uint32_t pd_get_user2_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user2_in(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
 
     return EC_READ_U32(master->processdata + input->user_in_2);
 }
-uint32_t pd_get_user3_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user3_in(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
 
     return EC_READ_U32(master->processdata + input->user_in_3);
 }
-uint32_t pd_get_user4_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user4_in(SNCN_Master_t *master, int slaveid)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
@@ -161,7 +163,7 @@ uint32_t pd_get_user4_in(struct _master_config *master, int slaveid)
     return EC_READ_U32(master->processdata + input->user_in_4);
 }
 
-int pd_set_controlword(struct _master_config *master, int slaveid, uint32_t controlword)
+int pd_set_controlword(SNCN_Master_t *master, int slaveid, uint32_t controlword)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -171,7 +173,7 @@ int pd_set_controlword(struct _master_config *master, int slaveid, uint32_t cont
     return 0;
 }
 
-int pd_set_opmode(struct _master_config *master, int slaveid, uint32_t opmode)
+int pd_set_opmode(SNCN_Master_t *master, int slaveid, uint32_t opmode)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -181,7 +183,7 @@ int pd_set_opmode(struct _master_config *master, int slaveid, uint32_t opmode)
     return 0;
 }
 
-int pd_set_position(struct _master_config *master, int slaveid, uint32_t position)
+int pd_set_position(SNCN_Master_t *master, int slaveid, uint32_t position)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -191,7 +193,7 @@ int pd_set_position(struct _master_config *master, int slaveid, uint32_t positio
     return 0;
 }
 
-int pd_set_torque(struct _master_config *master, int slaveid, uint32_t torque)
+int pd_set_torque(SNCN_Master_t *master, int slaveid, uint32_t torque)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -201,7 +203,7 @@ int pd_set_torque(struct _master_config *master, int slaveid, uint32_t torque)
     return 0;
 }
 
-int pd_set_velocity(struct _master_config *master, int slaveid, uint32_t velocity)
+int pd_set_velocity(SNCN_Master_t *master, int slaveid, uint32_t velocity)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -211,7 +213,7 @@ int pd_set_velocity(struct _master_config *master, int slaveid, uint32_t velocit
     return 0;
 }
 
-int pd_set_user1_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user1_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -221,7 +223,7 @@ int pd_set_user1_out(struct _master_config *master, int slaveid, uint32_t user_o
     return 0;
 }
 
-int pd_set_user2_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user2_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -231,7 +233,7 @@ int pd_set_user2_out(struct _master_config *master, int slaveid, uint32_t user_o
     return 0;
 }
 
-int pd_set_user3_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user3_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -241,7 +243,7 @@ int pd_set_user3_out(struct _master_config *master, int slaveid, uint32_t user_o
     return 0;
 }
 
-int pd_set_user4_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user4_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
     struct _slave_config *slave = (master->slave + slaveid);
     struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
@@ -251,7 +253,7 @@ int pd_set_user4_out(struct _master_config *master, int slaveid, uint32_t user_o
     return 0;
 }
 
-void pd_get(struct _master_config *master, int slaveid, struct _pdo_cia402_input *pdo_input)
+void pd_get(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input)
 {
     (*pdo_input).statusword = pd_get_statusword(master, slaveid);
     (*pdo_input).opmodedisplay = pd_get_opmodedisplay(master, slaveid);
@@ -266,7 +268,7 @@ void pd_get(struct _master_config *master, int slaveid, struct _pdo_cia402_input
     return;
 }
 
-void pd_set(struct _master_config *master, int slaveid, struct _pdo_cia402_output pdo_output)
+void pd_set(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output)
 {
     pd_set_controlword(master, slaveid, pdo_output.controlword);
     pd_set_opmode(master, slaveid, pdo_output.opmode);

@@ -12,13 +12,6 @@
 extern "C" {
 #endif
 
-/* FIXME should use slave type from sncn_slave.h */
-enum eSlaveType {
-    SLAVE_TYPE_UNKNOWN = 0
-    ,SLAVE_TYPE_CIA402_DRIVE
-    ,SLAVE_TYPE_ECATIO
-};
-
 enum eCIAState {
      CIASTATE_NOT_READY = 0
     ,CIASTATE_SWITCH_ON_DISABLED

@@ -53,6 +53,9 @@
 
 /****************************************************************************/
 
+#include <sncn_ethercat.h>
+#include <sncn_slave.h>
+
 #include "ecrt.h" //IgH lib
 
 #include "ecat_master.h"
@@ -263,28 +266,36 @@ int main(int argc, char **argv)
 #ifndef DISABLE_ETHERCAT
 /********* ethercat init **************/
 
-    struct _master_config *master = master_config(num_slaves);
+    /* use master id 0 for the first ehtercat master interface (defined by the
+     * libetehrcat), if you want the logging done in a file you should open the
+     * necessary `FILE *` and provide the variable as second argument to
+     * `sncn_master_init()` */
+    SNCN_Master_t *master = sncn_master_init(0 /* master id */, NULL);
 
     if (master == NULL) {
         fprintf(stderr, "[ERROR %s] Cannot initialize master\n", __func__);
         return 1;
     }
 
-    /* Debug information */
-    get_master_information(master->master);
+    /* Debug information
+     * additionally the functions `sncn_print_topology()` and
+     * `sncn_print_domainregs()` and `sncn_print_allslaves_od()` are available
+     * for further inspection of the master and slave topology. */
+    get_master_information(master);
     for (int i = 0; i < num_slaves; i++) {
-        get_slave_information(master->master, i);
+        get_slave_information(master, i);
     }
     /* /Debug */
 
     /*
      * Activate master and start operation
      */
+    /* FIXME support new slave handling and sdo uppload functions */
     if (sdo_enable) {
         /* SDO configuration of the slave */
         /* FIXME set per slave SDO configuration */
         for (int i = 0; i < num_slaves; i++) {
-            int ret = write_sdo_config(master->master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));
+            int ret = write_sdo_config(master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));
             if (ret != 0) {
                 fprintf(stderr, "Error configuring SDOs\n");
                 return -1;
@@ -308,7 +319,10 @@ int main(int argc, char **argv)
     logmsg(4, "Pointer of the domain_pd: 0x%x\n", domain1_pd);
 #endif
 
-    master_start(master);
+    if (sncn_master_start(master) != 0) {
+        fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
+        return -1;
+    }
 /****************************************************/
 #endif
 
@@ -388,6 +402,7 @@ int main(int argc, char **argv)
             user_alarms++;
 
 #ifndef DISABLE_ETHERCAT
+            sncn_master_cyclic_function(master);
             pdo_handler(master, pdo_input, pdo_output, num_slaves-1);
 #endif
 
@@ -431,6 +446,8 @@ int main(int argc, char **argv)
     }
 
     //free
+    sncn_master_stop(master);
+    sncn_master_release(master);
     endwin(); // curses call to restore the original window and leave
     free(pdo_input);
     free(pdo_output);

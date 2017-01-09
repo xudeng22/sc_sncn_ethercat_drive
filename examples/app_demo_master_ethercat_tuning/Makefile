@@ -9,7 +9,7 @@ INCLUDE += -I.
 INCLUDE += -Isdo_config
 LIB_PATH = -L/opt/etherlab/lib
 
-LIBRARY = -lethercat -lm
+LIBRARY =  -lsncnecat -lethercat -lm
 
 CFLAGS += $(FLAGS)
 CFLAGS += -Wall --std=c99 -g -O2 $(INCLUDE) -D_XOPEN_SOURCE

@@ -6,7 +6,7 @@
 #define _ECAT_CONFIG_H
 
 #include <sncn_ethercat.h>
-#include <ecrt.h>
+#include <sncn_slave.h>
 #include <stdint.h>
 
 #ifdef __cplusplus

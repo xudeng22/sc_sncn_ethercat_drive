@@ -3,7 +3,7 @@
  */
 
 #include "ecat_master.h"
-#include <sncn_master.h>
+#include <sncn_ethercat.h>
 #include <sncn_slave.h>
 #include <ecrt.h>
 #include <stdint.h>
@@ -22,9 +22,8 @@ static int get_slave_config(int id, enum eSlaveType type, struct _slave_config *
         break;
 
     case SLAVE_TYPE_ECATIO:
-        slave->input  = malloc(sizeof(struct _pdo_digi_input));
-        slave->output = malloc(sizeof(struct _pdo_digi_output));
-        break;
+        fprintf(stderr, "[ERROR %s] EtherCAT I/O is not supported for motor tuning\n", __func__);
+        return -1;
 
     case SLAVE_TYPE_UNKNOWN:
     default:

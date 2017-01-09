@@ -55,8 +55,7 @@ static int get_slave_config(int id, enum eSlaveType type, struct _slave_config *
 #define CONTROL_FAULT_RESET          0x80   /* masq 0x80 */
 
 /* Chack the slaves statemachine and generate the correct controlword */
-int master_update_slave_state(struct _master_config *master, int slaveid,
-                                int *statusword, int *controlword)
+int master_update_slave_state(int *statusword, int *controlword)
 {
     static int my_super_flag = 0;
     enum eCIAState slavestate = CONTROL_FAULT_RESET;

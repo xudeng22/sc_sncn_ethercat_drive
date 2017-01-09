@@ -92,8 +92,7 @@ struct _pdo_digi_output {
     uint8_t  output7:1;
 };
 
-int master_update_slave_state(struct _master_config *master, int slaveid,
-                                int *statusword, int *controlword);
+int master_update_slave_state(int *statusword, int *controlword);
 
 /*
  * Access functions for SLAVE_TYPE_CIA402_DRIVE

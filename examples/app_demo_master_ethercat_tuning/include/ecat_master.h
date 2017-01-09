@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+/* FIXME should use slave type from sncn_slave.h */
 enum eSlaveType {
     SLAVE_TYPE_UNKNOWN = 0
     ,SLAVE_TYPE_CIA402_DRIVE
@@ -27,14 +28,6 @@ enum eCIAState {
     ,CIASTATE_QUICK_STOP
     ,CIASTATE_FAULT_REACTION_ACTIVE
     ,CIASTATE_FAULT
-};
-
-struct _master_config {
-    ec_master_t *master;
-    ec_domain_t *domain1;
-    size_t number_of_slaves;
-    struct _slave_config *slave;
-    uint8_t *processdata;
 };
 
 struct _slave_config {
@@ -98,14 +91,6 @@ struct _pdo_digi_output {
     uint8_t  output6:1;
     uint8_t  output7:1;
 };
-
-struct _master_config *master_config(int number_of_slaves);
-
-void master_free(struct _master_config *master);
-
-int master_start(struct _master_config *master);
-
-int master_stop(struct _master_config *master);
 
 int master_update_slave_state(struct _master_config *master, int slaveid,
                                 int *statusword, int *controlword);

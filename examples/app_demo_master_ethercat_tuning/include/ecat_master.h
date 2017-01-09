@@ -61,36 +61,6 @@ struct _pdo_cia402_output {
     unsigned int user_out_4;
 };
 
-/* FIXME how are the I/O PDOs set up in this mode? */
-struct _pdo_digi_input {
-    uint8_t  input_a_0:1;
-    uint8_t  input_a_1:1;
-    uint8_t  input_a_2:1;
-    uint8_t  input_a_3:1;
-    uint8_t  input_a_4:1;
-    uint8_t  input_a_5:1;
-    uint8_t  input_a_6:1;
-    uint8_t  input_a_7:1;
-    uint8_t  input_b_0:1;
-    uint8_t  input_b_1:1;
-    uint8_t  input_b_2:1;
-    uint8_t  input_b_3:1;
-    uint8_t  input_b_4:1;
-    uint8_t  input_b_5:1;
-    uint8_t  input_b_6:1;
-    uint8_t  input_b_7:1;
-};
-
-struct _pdo_digi_output {
-    uint8_t  output0:1;
-    uint8_t  output1:1;
-    uint8_t  output2:1;
-    uint8_t  output3:1;
-    uint8_t  output4:1;
-    uint8_t  output5:1;
-    uint8_t  output6:1;
-    uint8_t  output7:1;
-};
 
 int master_update_slave_state(int *statusword, int *controlword);
 
@@ -119,15 +89,6 @@ int pd_set_user2_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
 int pd_set_user3_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
 int pd_set_user4_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
 void pd_set(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output);
-
-/*
- * Access functions for SLAVE_TYPE_ECATIO
- * return error if slave is of the wrong type
- */
-
-uint8_t pd_get_digital_input(struct _master_config *master, int slaveid);
-int pd_set_digital_output(struct _master_config *master, int slaveid);
-
 
 #ifdef __cplusplus
 }

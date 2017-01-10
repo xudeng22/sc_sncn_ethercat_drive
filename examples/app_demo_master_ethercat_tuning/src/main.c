@@ -267,10 +267,11 @@ int main(int argc, char **argv)
 /********* ethercat init **************/
 
     /* use master id 0 for the first ehtercat master interface (defined by the
-     * libetehrcat), if you want the logging done in a file you should open the
-     * necessary `FILE *` and provide the variable as second argument to
-     * `sncn_master_init()` */
-    SNCN_Master_t *master = sncn_master_init(0 /* master id */, NULL);
+     * libetehrcat).
+     * The logging output must be redirected into a file, otherwise the output will
+     * interfere with the ncurses windowing. */
+    FILE *ecatlog = fopen("./ecat.log", "w");
+    SNCN_Master_t *master = sncn_master_init(0 /* master id */, ecatlog);
 
     if (master == NULL) {
         fprintf(stderr, "[ERROR %s] Cannot initialize master\n", __func__);

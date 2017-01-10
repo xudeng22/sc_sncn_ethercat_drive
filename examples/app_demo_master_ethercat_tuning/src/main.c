@@ -277,16 +277,6 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    /* Debug information
-     * additionally the functions `sncn_print_topology()` and
-     * `sncn_print_domainregs()` and `sncn_print_allslaves_od()` are available
-     * for further inspection of the master and slave topology. */
-    get_master_information(master);
-    for (int i = 0; i < num_slaves; i++) {
-        get_slave_information(master, i);
-    }
-    /* /Debug */
-
     /*
      * Activate master and start operation
      */

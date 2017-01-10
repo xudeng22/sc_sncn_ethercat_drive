@@ -9,31 +9,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/* FIMXE ??? */
-static int get_slave_config(int id, enum eSlaveType type, struct _slave_config *slave)
-{
-    slave->id = id;
-    slave->type = type;
-
-    switch (type) {
-    case SLAVE_TYPE_CIA402_DRIVE:
-        slave->input  = malloc(sizeof(struct _pdo_cia402_input));
-        slave->output = malloc(sizeof(struct _pdo_cia402_output));
-        break;
-
-    case SLAVE_TYPE_ECATIO:
-        fprintf(stderr, "[ERROR %s] EtherCAT I/O is not supported for motor tuning\n", __func__);
-        return -1;
-
-    case SLAVE_TYPE_UNKNOWN:
-    default:
-        fprintf(stderr, "[ERROR %s] Unknown slave type\n", __func__);
-        return -1;
-    }
-
-    return 0;
-}
-
 
 #define STATUS_WORD_MASQ_A           0x6f
 #define STATUS_WORD_MASQ_B           0x4f

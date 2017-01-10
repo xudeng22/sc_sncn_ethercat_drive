@@ -425,6 +425,7 @@ int main(int argc, char **argv)
     sncn_master_stop(master);
     sncn_master_release(master);
     endwin(); // curses call to restore the original window and leave
+    fclose(ecatlog);
     free(pdo_input);
     free(pdo_output);
 

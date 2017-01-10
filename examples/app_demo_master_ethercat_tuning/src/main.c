@@ -304,21 +304,6 @@ int main(int argc, char **argv)
     }
 
 
-#if 0
-    /* Start the Master and set readiness for cyclic opertation */
-    logmsg(1, "Activating master...\n");
-    if (ecrt_master_activate(master)) {
-        logmsg(0, "Error, master activation failed.\n");
-        return -1;
-    }
-
-    if (!(domain1_pd = ecrt_domain_data(domain1))) {
-        return -1;
-    }
-
-    logmsg(4, "Pointer of the domain_pd: 0x%x\n", domain1_pd);
-#endif
-
     if (sncn_master_start(master) != 0) {
         fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
         return -1;

@@ -8,23 +8,23 @@
 
 #include "ecat_sdo_config.h"
 
+#include <sncn_ethercat.h>
+#include <sncn_slave.h>
 #include <stdio.h>
 #include <ecrt.h>
 
-int write_sdo(ec_master_t *master, int slave_number, struct _ecat_sdo_config *conf)
+int write_sdo(SNCN_Master_t *master, int slave_number, struct _ecat_sdo_config *conf)
 {
-    uint32_t abortcode;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slave_number);
+    if (slave == NULL) {
+        fprintf(stderr, "Error could not get slave with id %d\n", slave_number);
+        return -1;
+    }
 
-    uint8_t *value = (uint8_t *)&(conf->value);
-    int ret = ecrt_master_sdo_download(master, slave_number, conf->index, conf->subindex, value, conf->bytesize, &abortcode);
-//    int ret = 0;
-//    printf("DEBUG: slave %d write 0x%04x:%d = %d (%d bytes)\n",
-//            slave_number, conf->index, conf->subindex, conf->value, conf->bytesize);
-
+    int ret = sncn_slave_set_sdo_value(slave, conf->index, conf->subindex, conf->value);
     if (ret < 0) {
-        /* TODO figure out what the abort codes are */
-        fprintf(stderr, "Error, could not download object 0x%04x:%d cause: %d\n",
-                conf->index, conf->subindex, abortcode);
+        fprintf(stderr, "Error, could not download object 0x%04x:%d\n",
+                conf->index, conf->subindex);
         return -1;
     }
 
@@ -32,9 +32,8 @@ int write_sdo(ec_master_t *master, int slave_number, struct _ecat_sdo_config *co
 }
 
 
-int write_sdo_config(ec_master_t *master, int slave, struct _ecat_sdo_config *config, size_t max_objects)
+int write_sdo_config(SNCN_Master_t *master, int slave, struct _ecat_sdo_config *config, size_t max_objects)
 { 
-    //struct _ecat_config *config_objects;
     int ret = -1;
 
     for (size_t i = 0; i < max_objects; i++) {

@@ -4,59 +4,141 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <ctrlproto_m.h>
+#define _XOPEN_SOURCE
+
+#include <sncn_ethercat.h>
+#include <sncn_slave.h>
 #include <ecrt.h>
 #include <stdio.h>
-#include <motor_define.h>
 #include <sys/time.h>
 #include <time.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <sys/resource.h>
+#include <string.h>
+
 #include "ethercat_setup.h"
+
+static int g_running = 1;
+static unsigned int sig_alarms  = 0;
+static unsigned int user_alarms = 0;
+
+/* set eventually higher priority */
+
+
+static void set_priority(void)
+{
+    if (getuid() != 0) {
+        fprintf(stderr, "Warning, be root to get higher priority\n");
+        return;
+    }
+
+    pid_t pid = getpid();
+    if (setpriority(PRIO_PROCESS, pid, -19))
+        fprintf(stderr, "Warning: Failed to set priority: %s\n",
+                strerror(errno));
+}
+
+/* Signal handling */
+
+void signal_handler(int signum) {
+    switch (signum) {
+        case SIGINT:
+        case SIGTERM:
+            g_running = 0;
+            break;
+        case SIGALRM:
+            sig_alarms++;
+            break;
+    }
+}
+
+static void setup_signal_handler(struct sigaction *sa)
+{
+    /* setup signal handler */
+    sa->sa_handler = signal_handler;
+    sigemptyset(&(sa->sa_mask));
+    sa->sa_flags = 0;
+    if (sigaction(SIGALRM, sa, 0)) {
+        fprintf(stderr, "Failed to install signal handler!\n");
+        exit(-1);
+    }
+
+    if (sigaction(SIGTERM, sa, 0)) {
+        fprintf(stderr, "Failed to install signal handler!\n");
+        exit(-1);
+    }
+
+    if (sigaction(SIGINT, sa, 0)) {
+        fprintf(stderr, "Failed to install signal handler!\n");
+        exit(-1);
+    }
+}
+
+static void setup_timer(struct itimerval *tv)
+{
+    /* setup timer */
+    tv->it_interval.tv_sec = 0;
+    tv->it_interval.tv_usec = 1000000 / 1000;
+    tv->it_value.tv_sec = 0;
+    tv->it_value.tv_usec = 1000;
+    if (setitimer(ITIMER_REAL, tv, NULL)) {
+        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
+        exit(-1);
+    }
+}
 
 int main()
 {
 	int slave_number = 0;
 	int blink = 0;
 
+    struct sigaction sa;
+    struct itimerval tv;
+
+    FILE *ecatlog = fopen("./ecat.log", "w");
+
 	/* Initialize EtherCAT Master */
-	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+    SNCN_Master_t *master = sncn_master_init(0, ecatlog);
 
-	master_activate_operation(&master_setup);
+    if (master == NULL) {
+        fprintf(stderr, "Error could not initialize master\n");
+        return -1;
+    }
 
+    unsigned int sendvalue = 0;
+
+    /* only talk to slave 0
+     * FIXME add usage of all slaves! */
+    SNCN_Slave_t *slave = sncn_slave_get(master, 0);
+    sncn_slave_set_out_value(slave, 0, sendvalue);
+
+    sncn_master_start(master);
 	printf("starting Master application\n");
-	while(1)
-	{
-		/* Update the process data (EtherCAT packets) sent/received from the node */
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag) /*Check if the master is active*/
-		{
-			/* Write Process data */
-			slv_handles[slave_number].motorctrl_out = 12;
-			slv_handles[slave_number].torque_setpoint = 200;
-			slv_handles[slave_number].speed_setpoint = 4000;
-			slv_handles[slave_number].position_setpoint = 10000;
-			slv_handles[slave_number].operation_mode = 125;
+    set_priority();
+    setup_signal_handler(&sa);
+    setup_timer(&tv);
 
-			slv_handles[slave_number].user1_out = ((blink == 0) ? 0xa5a5a5a5 : 0x5a5a5a5a);
-			slv_handles[slave_number].user2_out = ((blink == 0) ? 0xdeadbeef : 0xbeefdead);
-			slv_handles[slave_number].user3_out = ((blink == 0) ? 0xc0dec001 : 0xc001c0de);
-			slv_handles[slave_number].user4_out = ((blink == 0) ? 0x55aa55aa : 0xaa55aa55);
+	while(g_running) {
+        pause();
 
-			/* Read Process data */
-			printf("Status: %d\n", slv_handles[slave_number].motorctrl_status_in);
-			printf("Position: %d \n", slv_handles[slave_number].position_in);
-			printf("Speed: %d\n", slv_handles[slave_number].speed_in);
-			printf("Torque: %d\n", slv_handles[slave_number].torque_in);
-			printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
+        while (sig_alarms != user_alarms) {
+            user_alarms++;
 
-			printf("Userdata 1:      0x%x\n", slv_handles[slave_number].user1_in);
-			printf("Userdata 2:      0x%x\n", slv_handles[slave_number].user2_in);
-			printf("Userdata 3:      0x%x\n", slv_handles[slave_number].user3_in);
-			printf("Userdata 4:      0x%x\n", slv_handles[slave_number].user4_in);
+            sncn_master_cyclic_function(master);
 
-			blink = (blink + 1) % 2;
-		}
+            unsigned int received = (unsigned int)sncn_slave_get_in_value(slave, 0);
+            if (received == sendvalue) {
+                sendvalue++;
+                sncn_slave_set_out_value(slave, 0, sendvalue);
+            }
+        }
 	}
+
+    sncn_master_release(master);
+    fclose(ecatlog);
 
 	return 0;
 }

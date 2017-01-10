@@ -9,6 +9,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/*
+ * CiA402 State defines
+ */
 
 #define STATUS_WORD_MASQ_A           0x6f
 #define STATUS_WORD_MASQ_B           0x4f

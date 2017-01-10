@@ -55,6 +55,30 @@ static int get_slave_config(int id, enum eSlaveType type, struct _slave_config *
 #define CONTROL_ENABLE_OP            0x0f   /* masq 0x0f */
 #define CONTROL_FAULT_RESET          0x80   /* masq 0x80 */
 
+/*
+ * Indexes of PDO elements
+ */
+#define PDO_INDEX_STATUSWORD       0
+#define PDO_INDEX_OPMODEDISP       1
+#define PDO_INDEX_POSITION_VALUE   2
+#define PDO_INDEX_VELOCITY_VALUE   3
+#define PDO_INDEX_TORQUE_VALUE     4
+#define PDO_INDEX_USER_IN_1        5
+#define PDO_INDEX_USER_IN_2        6
+#define PDO_INDEX_USER_IN_3        7
+#define PDO_INDEX_USER_IN_4        8
+
+#define PDO_INDEX_CONTROLWORD       0
+#define PDO_INDEX_OPMODE            1
+#define PDO_INDEX_TORQUE_REQUEST    2
+#define PDO_INDEX_POSITION_REQUEST  3
+#define PDO_INDEX_VELOCITY_REQUEST  4
+#define PDO_INDEX_USER_OUT_1        5
+#define PDO_INDEX_USER_OUT_2        6
+#define PDO_INDEX_USER_OUT_3        7
+#define PDO_INDEX_USER_OUT_4        8
+
+
 /* Chack the slaves statemachine and generate the correct controlword */
 int master_update_slave_state(int *statusword, int *controlword)
 {
@@ -88,16 +112,6 @@ int master_update_slave_state(int *statusword, int *controlword)
 
     return slavestate;
 }
-
-#define PDO_INDEX_STATUSWORD       0
-#define PDO_INDEX_OPMODEDISP       1
-#define PDO_INDEX_POSITION_VALUE   2
-#define PDO_INDEX_VELOCITY_VALUE   3
-#define PDO_INDEX_TORQUE_VALUE     4
-#define PDO_INDEX_USER_IN_1        5
-#define PDO_INDEX_USER_IN_2        6
-#define PDO_INDEX_USER_IN_3        7
-#define PDO_INDEX_USER_IN_4        8
 
 /*
  * PDO access functions
@@ -153,16 +167,6 @@ uint32_t pd_get_user4_in(SNCN_Master_t *master, int slaveid)
     SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
     return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
 }
-
-#define PDO_INDEX_CONTROLWORD       0
-#define PDO_INDEX_OPMODE            1
-#define PDO_INDEX_TORQUE_REQUEST    2
-#define PDO_INDEX_POSITION_REQUEST  3
-#define PDO_INDEX_VELOCITY_REQUEST  4
-#define PDO_INDEX_USER_OUT_1        5
-#define PDO_INDEX_USER_OUT_2        6
-#define PDO_INDEX_USER_OUT_3        7
-#define PDO_INDEX_USER_OUT_4        8
 
 int pd_set_controlword(SNCN_Master_t *master, int slaveid, uint32_t controlword)
 {

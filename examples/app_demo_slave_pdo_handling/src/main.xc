@@ -49,7 +49,7 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
 }
 
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_out, chanend pdo_in)
+static void pdo_handler(client interface i_coe_communication i_coe, client interface i_pdo_communication i_pdo)
 {
 	timer t;
 
@@ -68,7 +68,7 @@ static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_
 	printstrln("Starting PDO protocol");
 	while(1)
 	{
-		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+		ctrlproto_protocol_handler_function(i_pdo, InOut);
 
 		i++;
 		if(i >= 999) {
@@ -259,8 +259,7 @@ int main(void)
 	/* EtherCat Communication channels */
     interface i_coe_communication i_coe;
     interface i_foe_communication i_foe;
-    chan pdo_in;
-    chan pdo_out;
+    interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
 	par
@@ -270,7 +269,7 @@ int main(void)
 		{
 		    par {
                     ethercat_service(i_ecat_reboot, i_coe, null,
-                                     i_foe, pdo_out, pdo_in, ethercat_ports);
+                                     i_foe, i_pdo, ethercat_ports);
                     reboot_service_ethercat(i_ecat_reboot);
                 }
         }
@@ -278,7 +277,7 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_handler(i_coe, pdo_out, pdo_in);
+			pdo_handler(i_coe, i_pdo);
 		}
 	}
 

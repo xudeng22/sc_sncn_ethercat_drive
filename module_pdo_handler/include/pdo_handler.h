@@ -64,7 +64,7 @@ typedef struct
  *
  * @return      1 if communication is active else 0
  */
-int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut);
+int ctrlproto_protocol_handler_function(client interface i_pdo_communication i_pdo, ctrl_proto_values_t &InOut);
 
 /**
  *  @brief

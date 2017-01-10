@@ -6,7 +6,6 @@
 
 #include <ethercat_service.h>
 #include <pdo_handler.h>
-#include <foefs.h>
 
 #define MAX_PDO_SIZE    15
 
@@ -41,24 +40,14 @@ ctrl_proto_values_t init_ctrl_proto(void)
 	return InOut;
 }
 
-int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
+int ctrlproto_protocol_handler_function(client interface i_pdo_communication i_pdo, ctrl_proto_values_t &InOut)
 {
 
-	int buffer[64];
+	unsigned int buffer[64];
 	unsigned int count = 0;
 	int i = 0;
 
-
-	pdo_in <: DATA_REQUEST;
-	pdo_in :> count;
-//	printstr("count  "); printintln(count);
-	if (count == 0)
-	    return 0;
-
-	for (i = 0; i < count; i++) {
-		pdo_in :> buffer[i];
-		//printhexln(buffer[i]);
-	}
+	count = i_pdo.get_pdos_value(buffer);
 
 	//Test for matching number of words
 	if(count > 0)
@@ -81,7 +70,6 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 
 	if(count > 0)
 	{
-		pdo_out <: MAX_PDO_SIZE;
 		buffer[0]  = InOut.status_word ;
 		buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.position_actual&0xff)<<8) ;
 		buffer[2]  = (InOut.position_actual>> 8)& 0xffff;
@@ -97,10 +85,8 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 		buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
 		buffer[13] = ((InOut.user4_out>>8)&0xffff);
 		buffer[14] = ((InOut.user4_out>>24)&0xff);
-		for (i = 0; i < MAX_PDO_SIZE; i++)
-		{
-			pdo_out <: (unsigned) buffer[i];
-		}
+
+		i_pdo.set_pdos_value(buffer, MAX_PDO_SIZE);
 	}
 	return count;
 }

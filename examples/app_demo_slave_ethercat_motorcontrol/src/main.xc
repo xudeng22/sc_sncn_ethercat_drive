@@ -17,7 +17,6 @@
 #include <reboot.h>
 
 #include <ethercat_service.h>
-#include <fw_update_service.h>
 #include <memory_manager.h>
 
 //BLDC Motor drive libs

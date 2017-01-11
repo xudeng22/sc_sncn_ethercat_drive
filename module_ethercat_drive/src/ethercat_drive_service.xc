@@ -215,7 +215,7 @@ static void debug_print_state(DriveState_t state)
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
+                            client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
@@ -249,7 +249,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
 
-    ctrl_proto_values_t InOut = init_ctrl_proto();
+    pdo_handler_values_t InOut = pdo_handler_init();
 
     int setup_loop_flag = 0;
 
@@ -409,7 +409,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         //xscope_int(USER_TORQUE, InOut.user1_out);
 
         /* Read/Write packets to ethercat Master application */
-        communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
+        communication_active = pdo_handler(i_pdo, InOut);
 
         if (communication_active == 0) {
             if (comm_inactive_flag == 0) {
@@ -623,7 +623,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
  * test if the motor will move.
  */
 void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
+                            client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,

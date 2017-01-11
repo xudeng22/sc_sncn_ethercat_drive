@@ -9,9 +9,9 @@
 
 #define MAX_PDO_SIZE    15
 
-ctrl_proto_values_t init_ctrl_proto(void)
+pdo_handler_values_t pdo_handler_init(void)
 {
-	ctrl_proto_values_t InOut;
+	pdo_handler_values_t InOut;
 
 	InOut.control_word    = 0x00;    		// shutdown
 	InOut.operation_mode  = 0x00;  			// undefined
@@ -40,7 +40,7 @@ ctrl_proto_values_t init_ctrl_proto(void)
 	return InOut;
 }
 
-int ctrlproto_protocol_handler_function(client interface i_pdo_communication i_pdo, ctrl_proto_values_t &InOut)
+int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &InOut)
 {
 
 	unsigned int buffer[64];
@@ -91,52 +91,52 @@ int ctrlproto_protocol_handler_function(client interface i_pdo_communication i_p
 	return count;
 }
 
-int pdo_get_target_torque(ctrl_proto_values_t InOut)
+int pdo_get_target_torque(pdo_handler_values_t InOut)
 {
     return InOut.target_torque;
 }
 
-int pdo_get_target_velocity(ctrl_proto_values_t InOut)
+int pdo_get_target_velocity(pdo_handler_values_t InOut)
 {
     return InOut.target_velocity;
 }
 
-int pdo_get_target_position(ctrl_proto_values_t InOut)
+int pdo_get_target_position(pdo_handler_values_t InOut)
 {
     return InOut.target_position;
 }
 
-int pdo_get_controlword(ctrl_proto_values_t InOut)
+int pdo_get_controlword(pdo_handler_values_t InOut)
 {
     return InOut.control_word;
 }
 
-int pdo_get_opmode(ctrl_proto_values_t InOut)
+int pdo_get_opmode(pdo_handler_values_t InOut)
 {
     return InOut.operation_mode;
 }
 
-void pdo_set_actual_torque(int actual_torque, ctrl_proto_values_t &InOut)
+void pdo_set_actual_torque(int actual_torque, pdo_handler_values_t &InOut)
 {
     InOut.torque_actual = actual_torque;
 }
 
-void pdo_set_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut)
+void pdo_set_actual_velocity(int actual_velocity, pdo_handler_values_t &InOut)
 {
     InOut.velocity_actual = actual_velocity;
 }
 
-void pdo_set_actual_position(int actual_position, ctrl_proto_values_t &InOut)
+void pdo_set_actual_position(int actual_position, pdo_handler_values_t &InOut)
 {
     InOut.position_actual = actual_position;
 }
 
-void pdo_set_statusword(int statusword, ctrl_proto_values_t &InOut)
+void pdo_set_statusword(int statusword, pdo_handler_values_t &InOut)
 {
     InOut.status_word = statusword & 0xffff;
 }
 
-void pdo_set_opmode_display(int opmode, ctrl_proto_values_t &InOut)
+void pdo_set_opmode_display(int opmode, pdo_handler_values_t &InOut)
 {
     InOut.operation_mode_display = opmode & 0xff;
 }

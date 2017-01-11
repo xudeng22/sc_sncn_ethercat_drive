@@ -49,7 +49,7 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
 }
 
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(client interface i_coe_communication i_coe, client interface i_pdo_communication i_pdo)
+static void pdo_service(client interface i_coe_communication i_coe, client interface i_pdo_communication i_pdo)
 {
 	timer t;
 
@@ -58,9 +58,9 @@ static void pdo_handler(client interface i_coe_communication i_coe, client inter
 
 	uint16_t status = 255;
 	int i = 0;
-	ctrl_proto_values_t InOut;
-	ctrl_proto_values_t InOutOld;
-	InOut = init_ctrl_proto();
+	pdo_handler_values_t InOut;
+	pdo_handler_values_t InOutOld;
+	InOut = pdo_handler_init();
 	t :> time;
 
 	sdo_configuration(i_coe);
@@ -68,7 +68,7 @@ static void pdo_handler(client interface i_coe_communication i_coe, client inter
 	printstrln("Starting PDO protocol");
 	while(1)
 	{
-		ctrlproto_protocol_handler_function(i_pdo, InOut);
+		pdo_handler(i_pdo, InOut);
 
 		i++;
 		if(i >= 999) {
@@ -277,7 +277,7 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_handler(i_coe, i_pdo);
+			pdo_service(i_coe, i_pdo);
 		}
 	}
 

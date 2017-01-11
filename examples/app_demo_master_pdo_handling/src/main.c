@@ -169,26 +169,26 @@ int main(int argc, char *argv[])
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
             if (received == status) {
-                sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
                 status = (status >= 65535) ? 0 : status + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
             }
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
             if (received == torque) {
-                sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, status);
                 torque = (torque >= 65535) ? 0 : torque + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
             }
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
             if (received == position) {
-                sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, status);
                 position = (position >= 65535) ? 0 : position + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
             }
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
             if (received == velocity) {
-                sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, status);
                 velocity = (velocity >= 65535) ? 0 : velocity + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
             }
         }
 	}

@@ -112,7 +112,6 @@ static void setup_timer(struct itimerval *tv)
 int main()
 {
 	int slave_number = 0;
-	int blink = 0;
 
     struct sigaction sa;
     struct itimerval tv;

@@ -109,29 +109,42 @@ static void setup_timer(struct itimerval *tv)
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-	int slave_number = 0;
+	int slaveid = 0;
 
     struct sigaction sa;
     struct itimerval tv;
+
+    /* FIXME use getopt(1) with -h, -v etc. */
+    if (argc > 1) {
+        slaveid =  atoi(argv[1]);
+    }
 
     FILE *ecatlog = fopen("./ecat.log", "w");
 
 	/* Initialize EtherCAT Master */
     SNCN_Master_t *master = sncn_master_init(0, ecatlog);
 
+    size_t slave_count = sncn_master_slave_count(master);
+
+    if (slave_count < ((unsigned int)slaveid + 1)) {
+        fprintf(stderr, "Error only %lu slaves present, but requested slave index is %d\n",
+                slave_count, slaveid);
+        return -1;
+    }
+
     if (master == NULL) {
         fprintf(stderr, "Error could not initialize master\n");
         return -1;
     }
 
-    unsigned int sendvalue = 0;
-
-    /* only talk to slave 0
-     * FIXME add usage of all slaves! */
-    SNCN_Slave_t *slave = sncn_slave_get(master, 0);
-    sncn_slave_set_out_value(slave, 0, sendvalue);
+    /* only talk to slave 0 */
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    if (slave == NULL) {
+        fprintf(stderr, "Error could not retrieve slave %d", slaveid);
+        return -1;
+    }
 
     sncn_master_start(master);
 	printf("starting Master application\n");

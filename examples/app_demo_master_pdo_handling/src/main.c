@@ -18,6 +18,9 @@
 #include <sys/resource.h>
 #include <string.h>
 
+#define MAX_UINT16                  0xffff
+#define MAX_UINT32                  0xffffffff
+
 /* Index of receiving (in) PDOs */
 #define PDO_INDEX_STATUSWORD        0
 #define PDO_INDEX_OPMODEDISP        1
@@ -169,25 +172,25 @@ int main(int argc, char *argv[])
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
             if (received == status) {
-                status = (status >= 65535) ? 0 : status + 1;
+                status = (status >= MAX_UINT16) ? 0 : status + 1;
                 sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
             }
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
             if (received == torque) {
-                torque = (torque >= 65535) ? 0 : torque + 1;
+                torque = (torque >= MAX_UINT16) ? 0 : torque + 1;
                 sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
             }
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
             if (received == position) {
-                position = (position >= 65535) ? 0 : position + 1;
+                position = (position >= MAX_UINT32) ? 0 : position + 1;
                 sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
             }
 
             received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
             if (received == velocity) {
-                velocity = (velocity >= 65535) ? 0 : velocity + 1;
+                velocity = (velocity >= MAX_UINT32) ? 0 : velocity + 1;
                 sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
             }
         }

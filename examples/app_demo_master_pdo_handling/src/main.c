@@ -18,6 +18,28 @@
 #include <sys/resource.h>
 #include <string.h>
 
+/* Index of receiving (in) PDOs */
+#define PDO_INDEX_STATUSWORD        0
+#define PDO_INDEX_OPMODEDISP        1
+#define PDO_INDEX_POSITION_VALUE    2
+#define PDO_INDEX_VELOCITY_VALUE    3
+#define PDO_INDEX_TORQUE_VALUE      4
+#define PDO_INDEX_USER_IN_1         5
+#define PDO_INDEX_USER_IN_2         6
+#define PDO_INDEX_USER_IN_3         7
+#define PDO_INDEX_USER_IN_4         8
+
+/* Index of sending (out) PDOs */
+#define PDO_INDEX_CONTROLWORD       0
+#define PDO_INDEX_OPMODE            1
+#define PDO_INDEX_TORQUE_REQUEST    2
+#define PDO_INDEX_POSITION_REQUEST  3
+#define PDO_INDEX_VELOCITY_REQUEST  4
+#define PDO_INDEX_USER_OUT_1        5
+#define PDO_INDEX_USER_OUT_2        6
+#define PDO_INDEX_USER_OUT_3        7
+#define PDO_INDEX_USER_OUT_4        8
+
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
 static unsigned int user_alarms = 0;
@@ -119,6 +141,12 @@ int main()
     setup_signal_handler(&sa);
     setup_timer(&tv);
 
+    uint32_t     position = 0;
+    uint32_t     velocity = 0;
+    uint16_t     torque   = 0;
+    uint16_t     status   = 0;
+    unsigned int received = 0;
+
 	while(g_running) {
         pause();
 
@@ -127,10 +155,28 @@ int main()
 
             sncn_master_cyclic_function(master);
 
-            unsigned int received = (unsigned int)sncn_slave_get_in_value(slave, 0);
-            if (received == sendvalue) {
-                sendvalue++;
-                sncn_slave_set_out_value(slave, 0, sendvalue);
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+            if (received == status) {
+                sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
+                status = (status >= 65535) ? 0 : status + 1;
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
+            if (received == torque) {
+                sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, status);
+                torque = (torque >= 65535) ? 0 : torque + 1;
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
+            if (received == position) {
+                sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, status);
+                position = (position >= 65535) ? 0 : position + 1;
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
+            if (received == velocity) {
+                sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, status);
+                velocity = (velocity >= 65535) ? 0 : velocity + 1;
             }
         }
 	}

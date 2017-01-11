@@ -59,8 +59,7 @@ int main(void)
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
     interface i_foe_communication i_foe;
-    chan pdo_in;
-    chan pdo_out;
+    interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
     par
@@ -74,7 +73,7 @@ int main(void)
         {
             par {
                 ethercat_service(i_ecat_reboot, i_coe, null,
-                                    i_foe, pdo_out, pdo_in, ethercat_ports);
+                                    i_foe, i_pdo, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
             }
         }
@@ -94,12 +93,12 @@ int main(void)
 
 #if 0
             ethercat_drive_service_debug( profiler_config,
-                                    pdo_out, pdo_in, i_coe,
+                                    i_pdo, i_coe,
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #else
             ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, i_coe,
+                                    i_pdo, i_coe,
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #endif

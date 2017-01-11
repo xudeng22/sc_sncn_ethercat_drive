@@ -18,8 +18,6 @@
 #include <sys/resource.h>
 #include <string.h>
 
-#include "ethercat_setup.h"
-
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
 static unsigned int user_alarms = 0;

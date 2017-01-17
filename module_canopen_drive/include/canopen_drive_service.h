@@ -7,7 +7,7 @@
 #pragma once
 
 #include <motor_control_interfaces.h>
-#include <od_interface.h>
+#include <co_interface.h>
 #include <pdo_handler.h>
 
 #include <position_ctrl_service.h>

@@ -8,8 +8,9 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <canopen_service.h>
 #include <ethercat_service.h>
-#include <pdo_handler.h>
+
 #include <reboot.h>
 
 #define MAX_TIME_TO_WAIT_SDO      100000
@@ -17,11 +18,11 @@
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
 /* function declaration of later used functions */
-static void read_od_config(client interface i_coe_communication i_coe);
+static void read_od_config(client interface ODCommunicationInterface i_od);
 
 /* Wait until the EtherCAT enters operation mode. At this point the master
  * should have finished all client configuration. */
-static void sdo_configuration(client interface i_coe_communication i_coe)
+static void sdo_configuration(client interface ODCommunicationInterface i_od)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
@@ -30,11 +31,9 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
     int sdo_configured = 0;
 
     while (sdo_configured == 0) {
-        select {
-            case i_coe.configuration_ready():
-                printstrln("Master requests OP mode - cyclic operation is about to start.");
-                sdo_configured = 1;
-                break;
+        if (i_od.configuration_get()) {
+            printstrln("Master requests OP mode - cyclic operation is about to start.");
+            sdo_configured = 1;
         }
 
         t when timerafter(time+delay) :> time;
@@ -45,11 +44,11 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
 
     /* clear the notification before proceeding the operation */
-    i_coe.configuration_done();
+    i_od.configuration_done();
 }
 
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_out, chanend pdo_in)
+static void pdo_handler(client interface ODCommunicationInterface i_od, client interface PDOCommunicationInterface i_pdo)
 {
 	timer t;
 
@@ -58,28 +57,28 @@ static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_
 
 	uint16_t status = 255;
 	int i = 0;
-	ctrl_proto_values_t InOut;
-	ctrl_proto_values_t InOutOld;
-	InOut = init_ctrl_proto();
+	pdo_values_t InOut;
+	pdo_values_t InOutOld;
+	InOut = pdo_init();
 	t :> time;
 
-	sdo_configuration(i_coe);
+	sdo_configuration(i_od);
 
 	printstrln("Starting PDO protocol");
 	while(1)
 	{
-		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+	    pdo_protocol_handler(i_pdo,InOut);
 
 		i++;
 		if(i >= 999) {
 			i = 100;
 		}
 
-		InOut.position_actual = InOut.target_position;
-		InOut.torque_actual = InOut.target_torque;
-		InOut.velocity_actual = InOut.target_velocity;
-		InOut.status_word = InOut.control_word;
-		InOut.operation_mode_display = InOut.operation_mode;
+        InOut.actual_position        = InOut.target_position;
+        InOut.actual_torque          = InOut.target_torque;
+        InOut.actual_velocity        = InOut.target_velocity;
+        InOut.status_word            = InOut.control_word;
+        InOut.operation_mode_display = InOut.operation_mode;
 
 #if 1 /* Mirror user defined fields */
 		InOut.user1_out = InOut.user1_in;
@@ -121,8 +120,8 @@ static void pdo_handler(client interface i_coe_communication i_coe, chanend pdo_
 	   InOutOld.control_word 	= InOut.control_word;
 	   InOutOld.target_position = InOut.target_position;
 	   InOutOld.target_velocity = InOut.target_velocity;
-	   InOutOld.target_torque = InOut.target_torque;
-	   InOutOld.operation_mode = InOut.operation_mode;
+	   InOutOld.target_torque   = InOut.target_torque;
+	   InOutOld.operation_mode  = InOut.operation_mode;
 
 #if 0 /* Print user PDOs */
 	   if (InOutOld.user1_in != InOut.user1_in)
@@ -230,22 +229,23 @@ static const uint16_t g_listarrayobjects[] = {
 };
 
 /* This function simply iterates throuch the objects given in /see g_listobjects and /see g_listarrayobjects. */
-static void read_od_config(client interface i_coe_communication i_coe)
+static void read_od_config(client interface ODCommunicationInterface i_od)
 {
     /* Read the values of hand picked objects */
     uint32_t value    = 0;
+    uint8_t error = 0;
 
     size_t object_list_size = sizeof(g_listobjects) / sizeof(g_listobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i++) {
-        value = i_coe.get_object_value(g_listobjects[i], 0);
+        {value, void, error} = i_od.get_object_value(g_listobjects[i], 0);
         printstr("Object 0x"); printhex(g_listobjects[i]); printstr(" = "); printintln(value);
     }
 
     object_list_size = sizeof(g_listarrayobjects) / sizeof(g_listarrayobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i+=2) {
-        value = i_coe.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
+        {value, void, error} = i_od.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
         printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
         printstr(" = "); printintln(value);
     }
@@ -257,10 +257,9 @@ static void read_od_config(client interface i_coe_communication i_coe)
 int main(void)
 {
 	/* EtherCat Communication channels */
-    interface i_coe_communication i_coe;
     interface i_foe_communication i_foe;
-    chan pdo_in;
-    chan pdo_out;
+    interface ODCommunicationInterface i_od[3];
+    interface PDOCommunicationInterface i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
 	par
@@ -269,8 +268,9 @@ int main(void)
 		on tile[COM_TILE] :
 		{
 		    par {
-                    ethercat_service(i_ecat_reboot, i_coe, null,
-                                     i_foe, pdo_out, pdo_in, ethercat_ports);
+                    ethercat_service(i_ecat_reboot, i_od, i_pdo,
+                                     null, i_foe, ethercat_ports);
+
                     reboot_service_ethercat(i_ecat_reboot);
                 }
         }
@@ -278,7 +278,7 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_handler(i_coe, pdo_out, pdo_in);
+			pdo_handler(i_od[1], i_pdo);
 		}
 	}
 

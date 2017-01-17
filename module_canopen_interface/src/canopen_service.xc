@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "canod.h"
-#include "od_interface.h"
+#include "co_interface.h"
 #include "canod_constants.h"
 #include "canopen_service.h"
 

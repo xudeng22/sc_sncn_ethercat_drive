@@ -9,6 +9,7 @@
 #include <print.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "co_interface.h"
 //#include <canod.h>
 
 #define PDO_BYTES_SIZE 30
@@ -55,13 +56,6 @@ typedef struct
     int32_t user4_out;
 } pdo_values_t;
 
-typedef uint16_t pdo_size_t;
-
-interface PDOCommunicationInterface {
-    void pdo_out(unsigned int size, pdo_size_t data_out[]);
-    unsigned int pdo_in(pdo_size_t data_in[]);
-};
-
 /**
  * @brief
  *  This function receives channel communication from the ctrlproto_pdo_handler_thread
@@ -78,10 +72,6 @@ interface PDOCommunicationInterface {
  * @return      1 if communication is active else 0
  */
 int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_values_t &InOut);
-
-//extern inline void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
-//
-//extern inline void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
 
 /**
  *  @brief

@@ -8,10 +8,10 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-//#include <canod.h>
 #include <canopen_service.h>
 #include <ethercat_service.h>
-//#include <reboot.h>
+
+#include <reboot.h>
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 #include <cia402_wrapper.h>
 #endif
@@ -124,7 +124,6 @@ static void pdo_handler(client interface PDOCommunicationInterface i_pdo)
 
 	   t when timerafter(time+delay) :> time;
 	}
-
 }
 #endif
 
@@ -246,7 +245,7 @@ int main(void)
 {
     /* EtherCat Communication channels */
     interface i_foe_communication i_foe;
-    //interface EtherCATRebootInterface i_ecat_reboot;
+    interface EtherCATRebootInterface i_ecat_reboot;
     interface ODCommunicationInterface i_od[3];
     interface PDOCommunicationInterface i_pdo;
 
@@ -257,15 +256,14 @@ int main(void)
 		{
 		    par
 		    {
-                ethercat_service(null,
-                                   i_od[0],
+                ethercat_service(i_ecat_reboot,
+                                   i_od,
                                    i_pdo,
                                    null,
                                    i_foe,
                                    ethercat_ports);
 
-                canopen_service(i_od);
-
+                reboot_service_ethercat(i_ecat_reboot);
             }
         }
 

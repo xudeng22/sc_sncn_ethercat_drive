@@ -5,6 +5,7 @@
  */
 
 #include "canod_constants.h"
+#include "co_interface.h"
 
 #ifndef CANOD_H
 #define CANOD_H
@@ -23,17 +24,17 @@ struct _sdoinfo_service {
  */
 
 /** entry description structure */
-struct _sdoinfo_entry_description {
-	unsigned index; ///< 16 bit int should be sufficient
-	unsigned subindex; ///< 16 bit int should be sufficient
-	unsigned objectDataType;
-	unsigned dataType;
-	unsigned char objectCode;
-	unsigned bitLength;
-	unsigned objectAccess;
-	unsigned value; ///< real data type is defined by .dataType
-	unsigned char name[50];
-};
+//struct _sdoinfo_entry_description {
+//	unsigned index; ///< 16 bit int should be sufficient
+//	unsigned subindex; ///< 16 bit int should be sufficient
+//	unsigned objectDataType;
+//	unsigned dataType;
+//	unsigned char objectCode;
+//	unsigned bitLength;
+//	unsigned objectAccess;
+//	unsigned value; ///< real data type is defined by .dataType
+//	unsigned char name[50];
+//};
 
 /* ad valueInfo (BYTE):
  * Bit 0 - 2: reserved

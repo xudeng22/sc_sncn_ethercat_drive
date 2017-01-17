@@ -39,24 +39,17 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static void sdo_wait_first_config(client interface i_coe_communication i_coe)
+static void sdo_wait_first_config(client interface ODCommunicationInterface i_od)
 {
-    timer t;
-    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
-    unsigned int time;
-
-    select {
-    case i_coe.configuration_ready():
+    while (!i_od.configuration_get());
         //printstrln("Master requests OP mode - cyclic operation is about to start.");
-        break;
-    }
 
     /* comment in the read_od_config() function to print the object values */
-    //read_od_config(i_coe);
+    //read_od_config(i_od);
     printstrln("start cyclic operation");
 
     /* clear the notification before proceeding the operation */
-    i_coe.configuration_done();
+    i_od.configuration_done();
 }
 
 {int, int} quick_stop_perform(int steps, int velocity)
@@ -120,7 +113,7 @@ static int quick_stop_init(int opmode,
 }
 
 static void inline update_configuration(
-        client interface i_coe_communication           i_coe,
+        client interface ODCommunicationInterface           i_od,
         client interface MotorcontrolInterface         i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface i_pos_feedback,
@@ -140,24 +133,24 @@ static void inline update_configuration(
     //position_feedback_config;
     //position_config;
 
-    cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
-    cm_sync_config_profiler(i_coe, profiler_config);
-    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
-    cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
+    cm_sync_config_position_feedback(i_od, i_pos_feedback, position_feedback_config);
+    cm_sync_config_profiler(i_od, profiler_config);
+    cm_sync_config_motor_control(i_od, i_motorcontrol, motorcontrol_config);
+    cm_sync_config_pos_velocity_control(i_od, i_position_control, position_config);
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
     profiler_config.ticks_per_turn = i_pos_feedback.get_ticks_per_turn();
     polarity = profiler_config.polarity;
 
-    nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-    limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
-    homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
-    sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
+    {nominal_speed, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+    limit_switch_type = 0; //i_od.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
+    homing_method     = 0; //i_od.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
+    {sensor_select, void, void} = i_od.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
 
     sensor_resolution = position_feedback_config.resolution;
 
-    //opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
+    //opmode = i_od.get_object_value(CIA402_OP_MODES, 0);
 }
 
 static void debug_print_state(DriveState_t state)
@@ -214,9 +207,9 @@ static void debug_print_state(DriveState_t state)
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
-void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
-                            client interface i_coe_communication i_coe,
+void canopen_drive_service(ProfilerConfig &profiler_config,
+                            client interface PDOCommunicationInterface i_pdo,
+                            client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback)
@@ -297,17 +290,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
 
-    cm_default_config_position_feedback(i_coe, i_position_feedback, position_feedback_config);
-    cm_default_config_profiler(i_coe, profiler_config);
-    cm_default_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
-    cm_default_config_pos_velocity_control(i_coe, i_position_control);
+    cm_default_config_position_feedback(i_od, i_position_feedback, position_feedback_config);
+    cm_default_config_profiler(i_od, profiler_config);
+    cm_default_config_motor_control(i_od, i_motorcontrol, motorcontrol_config);
+    cm_default_config_pos_velocity_control(i_od, i_position_control);
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
      *
      * This should be done before we configure anything.
      */
-    sdo_wait_first_config(i_coe);
+    sdo_wait_first_config(i_od);
 
     /* start operation */
     int read_configuration = 1;
@@ -317,25 +310,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 //#pragma xta endpoint "ecatloop"
         /* FIXME reduce code duplication with above init sequence */
         /* Check if we reenter the operation mode. If so, update the configuration please. */
-        select {
-            case i_coe.configuration_ready():
-                //printstrln("Master requests OP mode - cyclic operation is about to start.");
-                read_configuration = 1;
-                break;
-            default:
-                break;
-        }
+        read_configuration = i_od.configuration_get();
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
-            update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback,
+            update_configuration(i_od, i_motorcontrol, i_position_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
                     sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
                     opmode
                     );
 
             read_configuration = 0;
-            i_coe.configuration_done();
+            i_od.configuration_done();
         }
 
         /*
@@ -409,7 +395,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         //xscope_int(USER_TORQUE, InOut.user1_out);
 
         /* Read/Write packets to ethercat Master application */
-        communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
+        communication_active = pdo_protocol_handler(i_pdo, InOut);
 
         if (communication_active == 0) {
             if (comm_inactive_flag == 0) {
@@ -590,26 +576,26 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+            {position_velocity_config.P_pos, void, void} = i_od.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+            {position_velocity_config.I_pos, void, void} = i_od.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+            {position_velocity_config.D_pos, void, void} = i_od.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            position_velocity_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-            position_velocity_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-            position_velocity_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+            {position_velocity_config.P_velocity, void, void} = i_od.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+            {position_velocity_config.I_velocity, void, void} = i_od.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+            {position_velocity_config.D_velocity, void, void} = i_od.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
 
         /*
-        motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
-        motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
-        motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+        motorcontrol_config.current_P_gain     = i_od.get_object_value(CIA402_CURRENT_GAIN, 1);
+        motorcontrol_config.current_I_gain     = i_od.get_object_value(CIA402_CURRENT_GAIN, 2);
+        motorcontrol_config.current_D_gain     = i_od.get_object_value(CIA402_CURRENT_GAIN, 3);
          */
 #endif
 
@@ -625,8 +611,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
  * test if the motor will move.
  */
 void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
-                            client interface i_coe_communication i_coe,
+                            client interface PDOCommunicationInterface i_pdo,
+                            client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback)

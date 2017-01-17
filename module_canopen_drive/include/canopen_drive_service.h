@@ -7,7 +7,8 @@
 #pragma once
 
 #include <motor_control_interfaces.h>
-#include <ethercat_service.h>
+#include <od_interface.h>
+#include <pdo_handler.h>
 
 #include <position_ctrl_service.h>
 #include <position_feedback_service.h>
@@ -30,16 +31,16 @@
  * @param i_velocity_control Interface to Velocity Control Loop Service.
  * @param i_position_control Interface to Position Control Loop Service.
  */
-void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
-                            client interface i_coe_communication i_coe,
+void canopen_drive_service(ProfilerConfig &profiler_config,
+                            client interface PDOCommunicationInterface i_pdo,
+                            client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback);
 
-void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
-                            client interface i_coe_communication i_coe,
+void canopen_drive_service_debug(ProfilerConfig &profiler_config,
+                            client interface PDOCommunicationInterface i_pdo,
+                            client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback);

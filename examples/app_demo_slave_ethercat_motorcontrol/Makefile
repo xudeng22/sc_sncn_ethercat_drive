@@ -9,7 +9,7 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_ethercat_motorcontrol
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = config_motor module_adc module_advanced_torquecontrol_lib module_ams_rotary_sensor module_biss module_board-support module_contelec_encoder module_controllers_lib module_ctrl_loops module_ethercat module_ethercat_drive module_ethercat_fwupdate module_filters_lib module_foc module_gpio module_hall module_memory_manager module_misc module_pdo_handler module_position_feedback module_profile module_pwm module_qei module_spi_master module_watchdog module_reboot
+USED_MODULES = config_motor module_adc module_advanced_torquecontrol_lib module_biss module_board-support module_canopen_drive module_canopen_interface module_controllers_lib module_ctrl_loops module_ethercat module_filters_lib module_foc module_gpio module_hall module_memory_manager module_misc module_od_handler module_pdo_handler module_position_feedback module_profile module_pwm module_qei module_reboot module_rem_14 module_rem_16mt module_serial_encoder module_spi_master module_watchdog
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
@@ -17,7 +17,7 @@ USED_MODULES = config_motor module_adc module_advanced_torquecontrol_lib module_
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to
 # xcc for the final link (mapping) stage.
 XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lflash -report
-XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT  -lflash
+XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lflash
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
 VERBOSE = 1

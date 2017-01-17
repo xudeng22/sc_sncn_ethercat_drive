@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <IFM_DC100-rev-b.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -13,11 +13,11 @@
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 #include <user_config.h>
 
-#include <ethercat_drive_service.h>
+#include <canopen_drive_service.h>
+#include <canopen_service.h>
 #include <reboot.h>
 
 #include <ethercat_service.h>
-#include <fw_update_service.h>
 #include <memory_manager.h>
 
 //BLDC Motor drive libs
@@ -39,8 +39,13 @@ WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
 HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
-SPIPorts spi_ports = SOMANET_IFM_AMS_PORTS;
+SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
 QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
+
+port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
+port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
+port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
+port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
 
 int main(void)
 {
@@ -54,10 +59,9 @@ int main(void)
     interface PositionFeedbackInterface i_position_feedback[3];
 
     /* EtherCat Communication channels */
-    interface i_coe_communication i_coe;
+    interface ODCommunicationInterface i_od[3];
+    interface PDOCommunicationInterface i_pdo;
     interface i_foe_communication i_foe;
-    chan pdo_in;
-    chan pdo_out;
     interface EtherCATRebootInterface i_ecat_reboot;
 
     par
@@ -70,9 +74,12 @@ int main(void)
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
-                                    i_foe, pdo_out, pdo_in, ethercat_ports);
+                ethercat_service(i_ecat_reboot, i_od,
+                                 i_pdo, null,
+                                 i_foe, ethercat_ports);
+
                 reboot_service_ethercat(i_ecat_reboot);
+
             }
         }
 
@@ -90,13 +97,13 @@ int main(void)
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
 #if 0
-            ethercat_drive_service_debug( profiler_config,
-                                    pdo_out, pdo_in, i_coe,
+            canopen_drive_service_debug( profiler_config,
+                                    i_pdo, i_od[1],
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #else
-            ethercat_drive_service( profiler_config,
-                                    pdo_out, pdo_in, i_coe,
+            canopen_drive_service( profiler_config,
+                                    i_pdo, i_od[1],
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #endif
@@ -246,26 +253,26 @@ int main(void)
                     position_feedback_config.biss_config.max_ticks = BISS_MAX_TICKS;
                     position_feedback_config.biss_config.velocity_loop = BISS_VELOCITY_LOOP;
 
-                    position_feedback_config.contelec_config.filter = CONTELEC_FILTER;
-                    position_feedback_config.contelec_config.timeout = CONTELEC_TIMEOUT;
-                    position_feedback_config.contelec_config.velocity_loop = CONTELEC_VELOCITY_LOOP;
+                    position_feedback_config.rem_16mt_config.filter = REM_16MT_FILTER;
+                    position_feedback_config.rem_16mt_config.timeout = REM_16MT_TIMEOUT;
+                    position_feedback_config.rem_16mt_config.velocity_loop = REM_16MT_VELOCITY_LOOP;
 
                     position_feedback_config.qei_config.index_type = QEI_SENSOR_INDEX_TYPE;
                     position_feedback_config.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
 
-                    position_feedback_config.ams_config.factory_settings = 1;
-                    position_feedback_config.ams_config.hysteresis = 1;
-                    position_feedback_config.ams_config.noise_setting = AMS_NOISE_NORMAL;
-                    position_feedback_config.ams_config.uvw_abi = 0;
-                    position_feedback_config.ams_config.dyn_angle_comp = 0;
-                    position_feedback_config.ams_config.data_select = 0;
-                    position_feedback_config.ams_config.pwm_on = AMS_PWM_OFF;
-                    position_feedback_config.ams_config.abi_resolution = 0;
-                    position_feedback_config.ams_config.max_ticks = 0x7fffffff;
-                    position_feedback_config.ams_config.cache_time = AMS_CACHE_TIME;
-                    position_feedback_config.ams_config.velocity_loop = AMS_VELOCITY_LOOP;
+                    position_feedback_config.rem_14_config.factory_settings = 1;
+                    position_feedback_config.rem_14_config.hysteresis = 1;
+                    position_feedback_config.rem_14_config.noise_setting = REM_14_NOISE_NORMAL;
+                    position_feedback_config.rem_14_config.uvw_abi = 0;
+                    position_feedback_config.rem_14_config.dyn_angle_comp = 0;
+                    position_feedback_config.rem_14_config.data_select = 0;
+                    position_feedback_config.rem_14_config.pwm_on = REM_14_PWM_OFF;
+                    position_feedback_config.rem_14_config.abi_resolution = 0;
+                    position_feedback_config.rem_14_config.max_ticks = 0x7fffffff;
+                    position_feedback_config.rem_14_config.cache_time = REM_14_CACHE_TIME;
+                    position_feedback_config.rem_14_config.velocity_loop = REM_14_VELOCITY_LOOP;
 
-                    position_feedback_service(hall_ports, qei_ports, spi_ports,
+                    position_feedback_service(hall_ports, qei_ports, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
                             position_feedback_config, i_shared_memory[0], i_position_feedback,
                             null, null, null);
                 }

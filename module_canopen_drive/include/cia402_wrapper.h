@@ -16,6 +16,7 @@
 #include <control_loops_common.h>
 #include <profile_control.h>
 #include <ethercat_service.h>
+#include <co_interface.h>
 
 /* internal qei single variable selection code */
 #define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX
@@ -23,7 +24,7 @@
 /*
  * FIXME: documentation missing
  */
-void config_sdo_handler(client interface i_coe_communication i_coe);
+void config_sdo_handler(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read sensor select from EtherCAT
@@ -33,7 +34,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe);
  * @return sensor_select HALL/QEI
  *
  */
-int sensor_select_sdo(client interface i_coe_communication i_coe);
+int sensor_select_sdo(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read qei params from EtherCAT
@@ -47,7 +48,7 @@ int sensor_select_sdo(client interface i_coe_communication i_coe);
  * @return sensor polarity
  *
  */
-{int, int, int} qei_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} qei_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read hall params from EtherCAT
@@ -56,7 +57,7 @@ int sensor_select_sdo(client interface i_coe_communication i_coe);
  * @return pole pairs
  *
  */
-int hall_sdo_update(client interface i_coe_communication i_coe);
+int hall_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read commutation parameters from EtherCAT
@@ -66,7 +67,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return winding_type
  *
  */
-{int, int, int} commutation_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} commutation_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read homing parameters from EtherCAT
@@ -75,7 +76,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return limit_switch_type
  *
  */
-{int, int} homing_sdo_update(client interface i_coe_communication i_coe);
+{int, int} homing_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read profile torque params from EtherCAT
@@ -84,7 +85,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return polarity
  *
  */
-{int, int} pt_sdo_update(client interface i_coe_communication i_coe);
+{int, int} pt_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read profile velocity params from EtherCAT
@@ -96,7 +97,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return polarity
  *
  */
-{int, int, int, int, int} pv_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int, int, int} pv_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read profile position params from EtherCAT
@@ -112,7 +113,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return max_acceleration
  *
  */
-{int, int, int, int, int, int, int, int, int} pp_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int, int, int, int, int, int, int} pp_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read cyclic synchronous torque params from EtherCAT
@@ -124,7 +125,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return motor_torque_constant
  *
  */
-{int, int, int} cst_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} cst_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read cyclic synchronous velocity params from EtherCAT
@@ -136,7 +137,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return max_acceleration
  *
  */
-{int, int, int} csv_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} csv_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read cyclic synchronous position params from EtherCAT
@@ -149,7 +150,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return max_acceleration
  *
  */
-{int, int, int, int, int} csp_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int, int, int} csp_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read torque control params from EtherCAT
@@ -161,7 +162,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return Kd
  *
  */
-{int, int, int} torque_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} torque_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read velocity control params from EtherCAT
@@ -173,7 +174,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return Kd
  *
  */
-{int, int, int} velocity_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} velocity_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read position control params from EtherCAT
@@ -185,7 +186,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return Kd
  *
  */
-{int, int, int} position_sdo_update(client interface i_coe_communication i_coe);
+{int, int, int} position_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
  * @brief read nominal speed from EtherCAT
@@ -195,7 +196,7 @@ int hall_sdo_update(client interface i_coe_communication i_coe);
  * @return nominal_speed
  *
  */
-int speed_sdo_update(client interface i_coe_communication i_coe);
+int speed_sdo_update(client interface ODCommunicationInterface i_od);
 
 
 /**
@@ -207,10 +208,10 @@ int speed_sdo_update(client interface i_coe_communication i_coe);
  *    gear-ratio used for the motor
  * @param coe_out
  */
-void update_qei_param_ecat(QEIConfig &qei_params, client interface i_coe_communication i_coe);
+void update_qei_param_ecat(QEIConfig &qei_params, client interface ODCommunicationInterface i_od);
 
 /* obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
-void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface i_coe_communication i_coe);
+void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface ODCommunicationInterface i_od);
 
 
 /**
@@ -219,7 +220,7 @@ void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, clien
  * @param cst_params struct defines the cyclic synchronous torque params
  * @param coe_out
  */
-void update_cst_param_ecat(ProfilerConfig &cst_params, client interface i_coe_communication i_coe);
+void update_cst_param_ecat(ProfilerConfig &cst_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update cyclic synchronous velocity parameters from EtherCAT
@@ -228,7 +229,7 @@ void update_cst_param_ecat(ProfilerConfig &cst_params, client interface i_coe_co
  * @param coe_out
  *
  */
-void update_csv_param_ecat(ProfilerConfig &csv_params, client interface i_coe_communication i_coe);
+void update_csv_param_ecat(ProfilerConfig &csv_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update cyclic synchronous position parameters from EtherCAT
@@ -236,7 +237,7 @@ void update_csv_param_ecat(ProfilerConfig &csv_params, client interface i_coe_co
  * @param csp_params struct defines the cyclic synchronous position params
  * @param coe_out
  */
-void update_csp_param_ecat(ProfilerConfig &csp_params, client interface i_coe_communication i_coe);
+void update_csp_param_ecat(ProfilerConfig &csp_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update profile torque parameters from EtherCAT
@@ -244,7 +245,7 @@ void update_csp_param_ecat(ProfilerConfig &csp_params, client interface i_coe_co
  * @param pt_params struct defines the profile torque params
  * @param coe_out
  */
-void update_pt_param_ecat(ProfilerConfig &pt_params, client interface i_coe_communication i_coe);
+void update_pt_param_ecat(ProfilerConfig &pt_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update profile velocity parameters from EtherCAT
@@ -252,7 +253,7 @@ void update_pt_param_ecat(ProfilerConfig &pt_params, client interface i_coe_comm
  * @param pv_params struct defines the profile velocity params
  * @param coe_out
  */
-void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_communication i_coe);
+void update_pv_param_ecat(ProfilerConfig &pv_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update profile position parameters from EtherCAT
@@ -262,7 +263,7 @@ void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_coe_comm
  * @param pp_params struct defines the profile position params
  * @param coe_out
  */
-void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_communication i_coe);
+void update_pp_param_ecat(ProfilerConfig &pp_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update torque control PID parameters from EtherCAT
@@ -272,7 +273,7 @@ void update_pp_param_ecat(ProfilerConfig &pp_params, client interface i_coe_comm
  * @param torque_ctrl_params struct defines torque control PID params
  * @param coe_out
  */
-void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client interface i_coe_communication i_coe);
+void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update velocity control PID parameters from EtherCAT
@@ -282,7 +283,7 @@ void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client int
  * @param velocity_ctrl_params struct defines velocity control PID params
  * @param coe_out
  */
-void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client interface i_coe_communication i_coe);
+void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client interface ODCommunicationInterface i_od);
 
 /**
  * @brief Update position control PID params from EtherCAT
@@ -292,5 +293,5 @@ void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client
  * @param position_ctrl_params struct defines position control PID params
  * @param coe_out
  */
-void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client interface i_coe_communication i_coe);
+void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client interface ODCommunicationInterface i_od);
 

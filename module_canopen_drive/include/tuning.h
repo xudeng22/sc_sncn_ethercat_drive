@@ -14,7 +14,6 @@
 #include <adc_service.h>
 #include <position_ctrl_service.h>
 #include <profile_control.h>
-#include <ethercat_service.h>
 #include <pdo_handler.h>
 #include <position_feedback_service.h>
 #include <stdint.h>

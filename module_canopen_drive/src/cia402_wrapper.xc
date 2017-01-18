@@ -5,7 +5,6 @@
  */
 
 #include <refclk.h>
-#include <ethercat_service.h>
 #include <cia402_wrapper.h>
 
 #define CIA402WRAPPER_USE_OBSOLETE    0

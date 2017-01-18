@@ -15,7 +15,6 @@
 #include <qei_service.h>
 #include <control_loops_common.h>
 #include <profile_control.h>
-#include <ethercat_service.h>
 #include <co_interface.h>
 
 /* internal qei single variable selection code */

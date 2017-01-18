@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <ethercat_service.h>
 #include <motor_control_interfaces.h>
 #include <hall_service.h>
 #include <qei_service.h>

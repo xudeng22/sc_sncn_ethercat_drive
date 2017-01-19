@@ -45,7 +45,7 @@ typedef struct {
 } TuningStatus;
 
 
-int tuning_handler_ethercat(
+int tuning_handler(
         /* input */  uint16_t    controlword, uint32_t control_extension,
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,

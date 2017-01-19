@@ -32,7 +32,7 @@ static void brake_shake(interface MotorcontrolInterface client i_motorcontrol, i
  * - get rid of {Upsream,Downstream}ControlData here, the data exchange should exclusively happen
  *   in the calling ethercat_drive_service.
  */
-int tuning_handler_ethercat(
+int tuning_handler(
         /* input */  uint16_t    controlword, uint32_t control_extension,
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,

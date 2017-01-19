@@ -626,7 +626,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
 
-            tuning_handler_ethercat(controlword, tuning_control,
+            tuning_handler(controlword, tuning_control,
                     statusword, tuning_result,
                     tuning_status,
                     motorcontrol_config, position_velocity_config, position_feedback_config,

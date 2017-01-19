@@ -49,18 +49,6 @@ int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_v
     unsigned int count = 0;
     int i = 0;
 
-
-//    pdo_in <: DATA_REQUEST;
-//    pdo_in :> count;
-////  printstr("count  "); printintln(count);
-//    if (count == 0)
-//        return 0;
-//
-//    for (i = 0; i < count; i++) {
-//        pdo_in :> buffer[i];
-//        //printhexln(buffer[i]);
-//    }
-
     count = i_pdo.pdo_in(buffer);
 
     if (count == 0)
@@ -81,13 +69,12 @@ int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_v
 //      printhexln(InOut.control_word);
 //      printhexln(InOut.operation_mode);
 //      printhexln(InOut.target_torque);
-//      printhexln(InOut.target_position);
+//      printintln(InOut.target_position);
 //      printhexln(InOut.target_velocity);
     }
 
     if(count > 0)
     {
-//        pdo_out <: MAX_PDO_SIZE;
         buffer[0]  = InOut.status_word ;
         buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.actual_position&0xff)<<8) ;
         buffer[2]  = (InOut.actual_position>> 8)& 0xffff;
@@ -103,10 +90,7 @@ int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_v
         buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
         buffer[13] = ((InOut.user4_out>>8)&0xffff);
         buffer[14] = ((InOut.user4_out>>24)&0xff);
-//        for (i = 0; i < MAX_PDO_SIZE; i++)
-//        {
-//            pdo_out <: (unsigned) buffer[i];
-//        }
+
         i_pdo.pdo_out(MAX_PDO_SIZE, buffer);
     }
     return count;

@@ -7,12 +7,7 @@
 #pragma once
 
 #include <stdint.h>
-//#include <stdbool_xc.h>
-
-#include <adc_service.h>
 #include <position_ctrl_service.h>
-
-//#include <position_feedback_service.h>
 
 #define CTRL_QUICK_STOP_INIT           0x01
 #define CTRL_QUICK_STOP_FINISHED       0x02

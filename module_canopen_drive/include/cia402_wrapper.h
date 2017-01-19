@@ -11,9 +11,6 @@
 #include <stdint.h>
 #include <canod.h>
 
-#include <hall_service.h>
-#include <qei_service.h>
-#include <control_loops_common.h>
 #include <profile_control.h>
 #include <co_interface.h>
 

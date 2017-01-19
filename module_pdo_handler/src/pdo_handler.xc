@@ -52,7 +52,7 @@ int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t
 	if(count > 0)
 	{
 		InOut.control_word    = (((uint16_t)buffer[1] << 8) | (buffer[0])) & 0xffff;
-		InOut.operation_mode  = (int8_t)(buffer[2] | 0xff);
+		InOut.operation_mode  = (int8_t)(buffer[2] & 0xff);
 		InOut.target_torque   = (((int16_t)buffer[4] << 8)  | (buffer[3])) & 0xffff;
 		InOut.target_position = ((int32_t)buffer[8]  << 24) | ((int32_t)buffer[7]  << 16) | ((int32_t)buffer[6]  << 8) | buffer[5];
 		InOut.target_velocity = ((int32_t)buffer[12] << 24) | ((int32_t)buffer[11] << 16) | ((int32_t)buffer[10] << 8) | buffer[9];

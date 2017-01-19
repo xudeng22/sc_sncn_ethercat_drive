@@ -7,7 +7,7 @@
 #include <ethercat_service.h>
 #include <pdo_handler.h>
 
-#define MAX_PDO_SIZE    15
+#define MAX_PDO_SIZE    64
 
 pdo_handler_values_t pdo_handler_init(void)
 {
@@ -43,7 +43,7 @@ pdo_handler_values_t pdo_handler_init(void)
 int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &InOut)
 {
 
-	unsigned char buffer[64];
+	unsigned char buffer[MAX_PDO_SIZE];
 	unsigned int count = 0;
 
 	count = i_pdo.get_pdos_value(buffer);
@@ -69,47 +69,48 @@ int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t
 #endif
 	}
 
+	size_t pdo_count = 0;
 	if(count > 0)
 	{
-		buffer[0]  = InOut.status_word        & 0xff;
-		buffer[1]  = (InOut.status_word >> 8) & 0xff;
+		buffer[pdo_count++]  = InOut.status_word        & 0xff;
+		buffer[pdo_count++]  = (InOut.status_word >> 8) & 0xff;
 
-		buffer[2]  = (InOut.operation_mode_display & 0xff);
+		buffer[pdo_count++]  = (InOut.operation_mode_display & 0xff);
 
-		buffer[3]  = InOut.position_actual         & 0xff;
-		buffer[4]  = (InOut.position_actual >> 8)  & 0xff;
-		buffer[5]  = (InOut.position_actual >> 16) & 0xff;
-		buffer[6]  = (InOut.position_actual >> 24) & 0xff;
+		buffer[pdo_count++]  = InOut.position_actual         & 0xff;
+		buffer[pdo_count++]  = (InOut.position_actual >> 8)  & 0xff;
+		buffer[pdo_count++]  = (InOut.position_actual >> 16) & 0xff;
+		buffer[pdo_count++]  = (InOut.position_actual >> 24) & 0xff;
 
-		buffer[7]  = InOut.velocity_actual         & 0xff;
-		buffer[8]  = (InOut.velocity_actual >> 8)  & 0xff;
-		buffer[9]  = (InOut.velocity_actual >> 16) & 0xff;
-		buffer[10] = (InOut.velocity_actual >> 24) & 0xff;
+		buffer[pdo_count++]  = InOut.velocity_actual         & 0xff;
+		buffer[pdo_count++]  = (InOut.velocity_actual >> 8)  & 0xff;
+		buffer[pdo_count++]  = (InOut.velocity_actual >> 16) & 0xff;
+		buffer[pdo_count++] = (InOut.velocity_actual >> 24) & 0xff;
 
-		buffer[11] = InOut.torque_actual        & 0xff;
-		buffer[12] = (InOut.torque_actual >> 8) & 0xff;
+		buffer[pdo_count++] = InOut.torque_actual        & 0xff;
+		buffer[pdo_count++] = (InOut.torque_actual >> 8) & 0xff;
 
-		buffer[13] = InOut.user1_out         & 0xff;
-		buffer[14] = (InOut.user1_out >> 8)  & 0xff;
-		buffer[15] = (InOut.user1_out >> 16) & 0xff;
-		buffer[16] = (InOut.user1_out >> 24) & 0xff;
+		buffer[pdo_count++] = InOut.user1_out         & 0xff;
+		buffer[pdo_count++] = (InOut.user1_out >> 8)  & 0xff;
+		buffer[pdo_count++] = (InOut.user1_out >> 16) & 0xff;
+		buffer[pdo_count++] = (InOut.user1_out >> 24) & 0xff;
 
-		buffer[17] = InOut.user2_out         & 0xff;
-		buffer[18] = (InOut.user2_out >> 8)  & 0xff;
-		buffer[19] = (InOut.user2_out >> 16) & 0xff;
-		buffer[20] = (InOut.user2_out >> 24) & 0xff;
+		buffer[pdo_count++] = InOut.user2_out         & 0xff;
+		buffer[pdo_count++] = (InOut.user2_out >> 8)  & 0xff;
+		buffer[pdo_count++] = (InOut.user2_out >> 16) & 0xff;
+		buffer[pdo_count++] = (InOut.user2_out >> 24) & 0xff;
 
-		buffer[21] = InOut.user3_out         & 0xff;
-		buffer[22] = (InOut.user3_out >> 8)  & 0xff;
-		buffer[23] = (InOut.user3_out >> 16) & 0xff;
-		buffer[24] = (InOut.user3_out >> 24) & 0xff;
+		buffer[pdo_count++] = InOut.user3_out         & 0xff;
+		buffer[pdo_count++] = (InOut.user3_out >> 8)  & 0xff;
+		buffer[pdo_count++] = (InOut.user3_out >> 16) & 0xff;
+		buffer[pdo_count++] = (InOut.user3_out >> 24) & 0xff;
 
-		buffer[25] = InOut.user4_out         & 0xff;
-		buffer[26] = (InOut.user4_out >> 8)  & 0xff;
-		buffer[27] = (InOut.user4_out >> 16) & 0xff;
-		buffer[28] = (InOut.user4_out >> 24) & 0xff;
+		buffer[pdo_count++] = InOut.user4_out         & 0xff;
+		buffer[pdo_count++] = (InOut.user4_out >> 8)  & 0xff;
+		buffer[pdo_count++] = (InOut.user4_out >> 16) & 0xff;
+		buffer[pdo_count++] = (InOut.user4_out >> 24) & 0xff;
 
-		i_pdo.set_pdos_value(buffer, MAX_PDO_SIZE);
+		i_pdo.set_pdos_value(buffer, pdo_count);
 	}
 	return count;
 }

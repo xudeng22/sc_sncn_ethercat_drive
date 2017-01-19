@@ -128,6 +128,10 @@ int main(int argc, char *argv[])
 
 	/* Initialize EtherCAT Master */
     SNCN_Master_t *master = sncn_master_init(0, ecatlog);
+    if (master == NULL) {
+        fprintf(stderr, "Error, could not initialize master\n");
+        return -1;
+    }
 
     size_t slave_count = sncn_master_slave_count(master);
 

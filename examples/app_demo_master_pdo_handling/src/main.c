@@ -162,6 +162,11 @@ int main(int argc, char *argv[])
     uint16_t     status   = 0;
     unsigned int received = 0;
 
+    uint32_t     user_1   = 0;
+    uint32_t     user_2   = 0;
+    uint32_t     user_3   = 0;
+    uint32_t     user_4   = 0;
+
 	while(g_running) {
         pause();
 
@@ -192,6 +197,30 @@ int main(int argc, char *argv[])
             if (received == velocity) {
                 velocity = (velocity >= MAX_UINT32) ? 0 : velocity + 1;
                 sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_1);
+            if (received == user_1) {
+                user_1 = (user_1 >= MAX_UINT32) ? 0 : user_1 + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_1, user_1);
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_2);
+            if (received == user_2) {
+                user_2 = (user_2 >= MAX_UINT32) ? 0 : user_2 + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_2, user_2);
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_3);
+            if (received == user_3) {
+                user_3 = (user_3 >= MAX_UINT32) ? 0 : user_3 + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_3, user_3);
+            }
+
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
+            if (received == user_4) {
+                user_4 = (user_4 >= MAX_UINT32) ? 0 : user_4 + 1;
+                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_4, user_4);
             }
         }
 	}

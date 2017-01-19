@@ -52,9 +52,10 @@ static void sdo_wait_first_config(client interface ODCommunicationInterface i_od
     i_od.configuration_done();
 }
 
-{int, int} quick_stop_perform(int steps, int velocity)
+{int, int} quick_stop_perform(int opmode, int steps, int velocity)
 {
     static int step = 0;
+    int target = 0;
 
     if (step >= steps) {
         step = 0;
@@ -76,11 +77,17 @@ static void sdo_wait_first_config(client interface ODCommunicationInterface i_od
     }
 #endif
 
-    int target_position = quick_stop_position_profile_generate(step, velocity);
+    if (opmode == OPMODE_CSP) {
+        target = quick_stop_position_profile_generate(step, velocity);
+    } else if (opmode == OPMODE_CSV) {
+        target = quick_stop_velocity_profile_generate(step);
+    } else if (opmode == OPMODE_CST) {
+        target = 0;
+    }
 
     step++;
 
-    return { target_position, steps-step };
+    return { target, steps-step };
 }
 
 static int quick_stop_init(int opmode,
@@ -90,9 +97,8 @@ static int quick_stop_init(int opmode,
                                 ProfilerConfig &profiler_config)
 {
 
-    if (opmode == OPMODE_CST || opmode == OPMODE_CSV) {
-        /* TODO implement quick stop profile */
-    }
+    int steps = 0;
+    int deceleration = profiler_config.max_deceleration;
 
     /* FIXME avoid to accelerate to perform a quick stop */
     if ((actual_velocity < 200) && (actual_velocity > -200)) {
@@ -103,11 +109,22 @@ static int quick_stop_init(int opmode,
         actual_velocity = -actual_velocity;
     }
 
-    int deceleration = profiler_config.max_deceleration;
-    int steps = init_quick_stop_position_profile(
-                (actual_velocity * sensor_resolution) / 60,
-                actual_position,
-                (deceleration * sensor_resolution) / 60);
+    if (opmode == OPMODE_CST) {
+        /* TODO implement quick stop profile */
+        steps = 0;
+    }
+
+    else if (opmode == OPMODE_CSV) {
+        steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
+
+    }
+
+    else if (opmode == OPMODE_CSP) {
+        steps = init_quick_stop_position_profile(
+                    (actual_velocity * sensor_resolution) / 60,
+                    actual_position,
+                    (deceleration * sensor_resolution) / 60);
+    }
 
     return steps;
 }
@@ -115,7 +132,7 @@ static int quick_stop_init(int opmode,
 static void inline update_configuration(
         client interface ODCommunicationInterface           i_od,
         client interface MotorcontrolInterface         i_motorcontrol,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface PositionVelocityCtrlInterface i_position_velocity_control,
         client interface PositionFeedbackInterface i_pos_feedback,
         PosVelocityControlConfig  &position_config,
         PositionFeedbackConfig    &position_feedback_config,
@@ -136,7 +153,7 @@ static void inline update_configuration(
     cm_sync_config_position_feedback(i_od, i_pos_feedback, position_feedback_config);
     cm_sync_config_profiler(i_od, profiler_config);
     cm_sync_config_motor_control(i_od, i_motorcontrol, motorcontrol_config);
-    cm_sync_config_pos_velocity_control(i_od, i_position_control, position_config);
+    cm_sync_config_pos_velocity_control(i_od, i_position_velocity_control, position_config);
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
@@ -211,17 +228,19 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                             client interface PDOCommunicationInterface i_pdo,
                             client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
-                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback)
 {
     int quick_stop_steps = 0;
     int quick_stop_steps_left = 0;
     int quick_stop_count = 0;
 
-    //int target_torque = 0; /* used for CST */
-    //int target_velocity = 0; /* used for CSV */
-    int target_position = 0;
+    int target_torque = 0;   /* used for CST */
+    int target_velocity = 0; /* used for CSV */
+    int target_position = 0; /* used for CSP */
     int qs_target_position = 0;
+    int qs_target_velocity = 0;
+    int qs_target_torque = 0;
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
@@ -240,7 +259,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
 
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    PosVelocityControlConfig position_velocity_config = i_position_velocity_control.get_position_velocity_control_config();
 
     pdo_values_t InOut = pdo_init();
 
@@ -293,7 +312,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
     cm_default_config_position_feedback(i_od, i_position_feedback, position_feedback_config);
     cm_default_config_profiler(i_od, profiler_config);
     cm_default_config_motor_control(i_od, i_motorcontrol, motorcontrol_config);
-    cm_default_config_pos_velocity_control(i_od, i_position_control);
+    cm_default_config_pos_velocity_control(i_od, i_position_velocity_control);
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
@@ -314,7 +333,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
-            update_configuration(i_od, i_motorcontrol, i_position_control, i_position_feedback,
+            update_configuration(i_od, i_motorcontrol, i_position_velocity_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
                     sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
                     opmode
@@ -330,6 +349,8 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
         controlword     = pdo_get_controlword(InOut);
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
+        target_velocity = pdo_get_target_velocity(InOut);
+        target_torque   = pdo_get_target_torque(InOut);
         send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
         update_position_velocity = InOut.user2_in; /* Update trigger which PID setting should be updated now */
 
@@ -343,22 +364,39 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        if (opmode != OPMODE_SNCN_TUNING)
+//        if (opmode != OPMODE_SNCN_TUNING)
+//            send_to_control.position_cmd = target_position;
+//        if (quick_stop_steps != 0) {
+//            send_to_control.position_cmd = qs_target_position;
+//        }
+
+        if (opmode == OPMODE_CSP) {
             send_to_control.position_cmd = target_position;
-        if (quick_stop_steps != 0) {
-            send_to_control.position_cmd = qs_target_position;
+            if (quick_stop_steps != 0) {
+                send_to_control.position_cmd = qs_target_position;
+            }
+        } else if (opmode == OPMODE_CSV) {
+            send_to_control.velocity_cmd = target_velocity;
+            if (quick_stop_steps != 0) {
+                send_to_control.velocity_cmd = qs_target_velocity;
+            }
+        } else if (opmode == OPMODE_CST) {
+            send_to_control.torque_cmd = target_torque;
+            if (quick_stop_steps != 0) {
+                send_to_control.torque_cmd = qs_target_torque;
+            }
         }
 
-        send_to_master = i_position_control.update_control_data(send_to_control);
+        send_to_master = i_position_velocity_control.update_control_data(send_to_control);
 
-        /* i_position_control.get_all_feedbacks; */
-        actual_velocity = send_to_master.velocity; //i_position_control.get_velocity();
-        actual_position = send_to_master.position; //i_position_control.get_position();
-        actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
+        /* i_position_velocity_control.get_all_feedbacks; */
+        actual_velocity = send_to_master.velocity; //i_position_velocity_control.get_velocity();
+        actual_position = send_to_master.position; //i_position_velocity_control.get_position();
+        actual_torque   = send_to_master.computed_torque; //i_position_velocity_control.get_torque(); /* FIXME expected future implementation! */
         FaultCode fault = send_to_master.error_status;
 
-//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-//        xscope_int(ACTUAL_POSITION, actual_position);
+//        xscope_int(TARGET_VELOCITY, send_to_control.velocity_cmd);
+//        xscope_int(ACTUAL_VELOCITY, actual_velocity);
 //        xscope_int(FAMOUS_FAULT, fault * 1000);
 
         /*
@@ -447,7 +485,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
             statusword = SET_BIT(statusword, SW_CSP_TARGET_POSITION_IGNORED);
             statusword = CLEAR_BIT(statusword, SW_CSP_FOLLOWING_ERROR);
 
-            // FIXME make this function: continous_synchronous_operation(controlword, statusword, state, opmode, checklist, i_position_control);
+            // FIXME make this function: continous_synchronous_operation(controlword, statusword, state, opmode, checklist, i_position_velocity_control);
             switch (state) {
             case S_NOT_READY_TO_SWITCH_ON:
                 /* internal stuff, automatic transition (1) to next state */
@@ -455,7 +493,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                 break;
 
             case S_SWITCH_ON_DISABLED:
-                if (opmode_request == OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
+                if (opmode_request == OPMODE_CSP || opmode_request == OPMODE_CSV || opmode_request == OPMODE_CST) { /* FIXME check for supported opmodes if applicable */
                     opmode = opmode;
                 } else {
                     opmode = opmode_request;
@@ -474,9 +512,18 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-//                    i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
-//                    i_position_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
-                    i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+                    if (opmode == OPMODE_CSP) {
+                        printstrln("enable position ctrl");
+                        i_position_velocity_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+                    } else if (opmode == OPMODE_CSV) {
+                        printstrln("enable velocity ctrl");
+                        i_position_velocity_control.enable_velocity_ctrl();
+
+                    } else if (opmode == OPMODE_CST) {
+                        printstrln("enable torque ctrl");
+                        i_position_velocity_control.enable_torque_ctrl();
+
+                    }
                 }
                 break;
 
@@ -486,7 +533,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                 /* check if state change occured */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_SWITCH_ON || state == S_READY_TO_SWITCH_ON || state == S_SWITCH_ON_DISABLED) {
-                    i_position_control.disable();
+                    i_position_velocity_control.disable();
                 }
 
                 /* if quick stop is requested start immediately */
@@ -497,18 +544,29 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
 
             case S_QUICK_STOP_ACTIVE:
                 /* quick stop function shall be started and running */
-            { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+                int qs_target = 0;
+                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
 
-            if (quick_stop_steps_left == 0 ) {
-                quick_stop_count += 1;
-                qs_target_position = actual_position;
-                i_position_control.disable();
-                if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
-                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                    quick_stop_steps = 0;
-                    quick_stop_count = 0;
+                if (opmode == OPMODE_CSP) {
+                    qs_target_position = qs_target;
+                } else if (opmode == OPMODE_CSV) {
+                    qs_target_velocity = qs_target;
+                } else if (opmode == OPMODE_CST) {
+                    qs_target_torque = qs_target;
                 }
-            }
+
+                if (quick_stop_steps_left == 0 ) {
+                    quick_stop_count += 1;
+                    qs_target_position = actual_position;
+                    qs_target_velocity = actual_velocity;
+                    qs_target_torque   = actual_torque;
+                    i_position_velocity_control.disable();
+                    if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
+                        state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                        quick_stop_steps = 0;
+                        quick_stop_count = 0;
+                    }
+                }
 
             break;
 
@@ -518,13 +576,24 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                     quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
                 }
 
-                { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+                int qs_target = 0;
+                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
+
+                if (opmode == OPMODE_CSP) {
+                    qs_target_position = qs_target;
+                } else if (opmode == OPMODE_CSV) {
+                    qs_target_velocity = qs_target;
+                } else if (opmode == OPMODE_CST) {
+                    qs_target_torque = qs_target;
+                }
 
                 if (quick_stop_steps_left == 0) {
                     state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                     quick_stop_steps = 0;
                     qs_target_position = actual_position;
-                    i_position_control.disable();
+                    qs_target_velocity = actual_velocity;
+                    qs_target_torque   = actual_torque;
+                    i_position_velocity_control.disable();
                 }
                 break;
 
@@ -550,7 +619,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
             /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
             if (opmode_request != opmode) {
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
-                i_position_control.disable();
+                i_position_velocity_control.disable();
                 state = S_FAULT;
                 //reset tuning status
                 tuning_status.brake_flag = 0;
@@ -562,7 +631,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                     tuning_status,
                     motorcontrol_config, position_velocity_config, position_feedback_config,
                     send_to_master, send_to_control,
-                    i_position_control, i_position_feedback);
+                    i_position_velocity_control, i_position_feedback);
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.
@@ -580,7 +649,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
             {position_velocity_config.I_pos, void, void} = i_od.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
             {position_velocity_config.D_pos, void, void} = i_od.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
 
-            i_position_control.set_position_velocity_control_config(position_velocity_config);
+            i_position_velocity_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
@@ -588,7 +657,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
             {position_velocity_config.I_velocity, void, void} = i_od.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
             {position_velocity_config.D_velocity, void, void} = i_od.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
-            i_position_control.set_position_velocity_control_config(position_velocity_config);
+            i_position_velocity_control.set_position_velocity_control_config(position_velocity_config);
         }
 
 
@@ -614,10 +683,10 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface PDOCommunicationInterface i_pdo,
                             client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
-                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback)
 {
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    PosVelocityControlConfig position_velocity_config = i_position_velocity_control.get_position_velocity_control_config();
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
 
@@ -647,7 +716,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
 
     while (1) {
 
-        send_to_master = i_position_control.update_control_data(send_to_control);
+        send_to_master = i_position_velocity_control.update_control_data(send_to_control);
 
 //        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
 //        xscope_int(ACTUAL_POSITION, send_to_master.position);
@@ -656,17 +725,17 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
         if (enabled == 0) {
             //delay_milliseconds(2000);
 //            i_motorcontrol.set_torque_control_enabled();
-//            i_position_control.enable_torque_ctrl();
-           //i_position_control.enable_velocity_ctrl();
+//            i_position_velocity_control.enable_torque_ctrl();
+           //i_position_velocity_control.enable_velocity_ctrl();
            //printstr("enable\n");
-            i_position_control.enable_position_ctrl(POS_PID_CONTROLLER);
+            i_position_velocity_control.enable_position_ctrl(POS_PID_CONTROLLER);
             enabled = 1;
         }
         else {
 //            i_motorcontrol.set_torque(100);
-//            i_position_control.set_velocity(0);
-//            i_position_control.set_position(0);
-//            i_position_control.set_velocity(500);
+//            i_position_velocity_control.set_velocity(0);
+//            i_position_velocity_control.set_position(0);
+//            i_position_velocity_control.set_velocity(500);
             send_to_control.position_cmd = 100000;
 //            send_to_control.offset_torque = 0;
         }

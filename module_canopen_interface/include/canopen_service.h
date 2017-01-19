@@ -1,9 +1,8 @@
-/*
- * canopen_service.h
- *
- *  Created on: 14.12.2016
- *      Author: hstroetgen
- */
+/**
+ * @file canopen_service.h
+ * @brief CANopen service between communication channels and CANopen drive.
+ * @author Synapticon GmbH <support@synapticon.com>
+*/
 
 
 #ifndef CANOPEN_SERVICE_H_

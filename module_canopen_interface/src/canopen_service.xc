@@ -1,3 +1,8 @@
+/**
+ * @file canopen_service.xc
+ * @brief CANopen service between communication channels and CANopen drive.
+ * @author Synapticon GmbH <support@synapticon.com>
+*/
 
 #include <stdint.h>
 #include <string.h>
@@ -52,6 +57,8 @@ void canopen_service(server interface ODCommunicationInterface i_od[3])
                     obj_out = obj;
                     break;
 
+            /* Simple notification interface */
+
             case i_od[int j].configuration_ready(void):
                     configuration_done = 1;
                     break;
@@ -63,8 +70,6 @@ void canopen_service(server interface ODCommunicationInterface i_od[3])
             case i_od[int j].configuration_done(void):
                     configuration_done = 0;
                     break;
-
-
         }
     }
 }

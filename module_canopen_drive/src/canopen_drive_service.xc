@@ -1,6 +1,6 @@
 /**
- * @file ecat_motor_drive.xc
- * @brief EtherCAT Motor Drive Server
+ * @file canopen_drive_service.xc
+ * @brief CANopen Motor Drive Service
  * @author Synapticon GmbH <support@synapticon.com>
  */
 

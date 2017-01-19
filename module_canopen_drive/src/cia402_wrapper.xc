@@ -7,9 +7,7 @@
 #include <refclk.h>
 #include <cia402_wrapper.h>
 
-#define CIA402WRAPPER_USE_OBSOLETE    0
-
-void config_sdo_handler(client interface ODCommunicationInterface i_od)
+void print_object_dictionary(client interface ODCommunicationInterface i_od)
 {
 	int sdo_value;
     {sdo_value, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 3); // Number of pole pairs
@@ -92,7 +90,6 @@ void config_sdo_handler(client interface ODCommunicationInterface i_od)
 }
 
 
-
 {int, int, int, int, int} pv_sdo_update(client interface ODCommunicationInterface i_od)
 {
 	int max_profile_velocity;
@@ -109,6 +106,7 @@ void config_sdo_handler(client interface ODCommunicationInterface i_od)
 	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, polarity};
 }
 
+
 {int, int} pt_sdo_update(client interface ODCommunicationInterface i_od)
 {
 	int torque_slope;
@@ -121,37 +119,27 @@ void config_sdo_handler(client interface ODCommunicationInterface i_od)
 
 {int, int, int} cst_sdo_update(client interface ODCommunicationInterface i_od)
 {
-	//int  nominal_current;
 	int max_motor_speed;
 	int polarity;
 	int max_torque;
-	//int motor_torque_constant;
 
-	//{nominal_current, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 1);
 	{max_motor_speed, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
 	{polarity, void, void} = i_od.get_object_value(CIA402_POLARITY, 0);
 	{max_torque, void, void} = i_od.get_object_value(CIA402_MAX_TORQUE, 0);
-	//{motor_torque_constant, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
 
-	//return {nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant};
 	return {max_motor_speed, polarity, max_torque};
 }
 
 {int, int, int} csv_sdo_update(client interface ODCommunicationInterface i_od)
 {
 	int max_motor_speed;
-	//int nominal_current;
 	int polarity;
-	//int motor_torque_constant;
 	int max_acceleration;
 
-	//{nominal_current, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 1);
 	{max_motor_speed, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-	//{motor_torque_constant, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
-
 	{polarity, void, void} = i_od.get_object_value(CIA402_POLARITY, 0);
 	{max_acceleration, void, void} = i_od.get_object_value(CIA402_MAX_ACCELERATION, 0);
-	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
+
 	return {max_motor_speed, polarity, max_acceleration};
 }
 
@@ -160,14 +148,12 @@ void config_sdo_handler(client interface ODCommunicationInterface i_od)
 {
 	int max_motor_speed;
 	int polarity;
-	//int nominal_current;
 	int min;
 	int max;
 	int max_acc;
 
 	{max_motor_speed, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
 	{polarity, void, void} = i_od.get_object_value(CIA402_POLARITY, 0);
-	//{nominal_current, void, void} = i_od.get_object_value(CIA402_MOTOR_SPECIFIC, 1);
 	{min, void, void} = i_od.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);
 	{max, void, void} = i_od.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);
 	{max_acc, void, void} = i_od.get_object_value(CIA402_MAX_ACCELERATION, 0);

@@ -1,6 +1,6 @@
 /**
  * @file cia402_wrapper.h
- * @brief Control Protocol Handler
+ * @brief CANopen CiA402 wrapper
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
@@ -21,56 +21,15 @@
 #define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX
 
 /*
- * FIXME: documentation missing
+ * @brief Print whole object dictionary
+ * @param i_od CANopen service communication Interface
  */
-void config_sdo_handler(client interface ODCommunicationInterface i_od);
+void print_object_dictionary(client interface ODCommunicationInterface i_od);
 
 /**
- * @brief read sensor select from EtherCAT
+ * @brief read homing parameters from CANopen object dictionary
  *
- * obsoleted by direct call
- *
- * @return sensor_select HALL/QEI
- *
- */
-int sensor_select_sdo(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read qei params from EtherCAT
- *
- * obsoleted by sm_sync_config_qei()
- *
- * @return real counts
- * @return max position
- * @return min position
- * @return qei type
- * @return sensor polarity
- *
- */
-{int, int, int} qei_sdo_update(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read hall params from EtherCAT
- *
- * obsolete by cm_sync_config_hall()
- * @return pole pairs
- *
- */
-int hall_sdo_update(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read commutation parameters from EtherCAT
- *
- * @return hall_offset_clk
- * @return hall_offset_cclk
- * @return winding_type
- *
- */
-{int, int, int} commutation_sdo_update(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read homing parameters from EtherCAT
- *
+ * @param i_od CANopen service communication Interface
  * @return homing_method
  * @return limit_switch_type
  *
@@ -78,17 +37,9 @@ int hall_sdo_update(client interface ODCommunicationInterface i_od);
 {int, int} homing_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
- * @brief read profile torque params from EtherCAT
+ * @brief read profile velocity params from CANopen object dictionary
  *
- * @return torque_slope
- * @return polarity
- *
- */
-{int, int} pt_sdo_update(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read profile velocity params from EtherCAT
- *
+ * @param i_od CANopen service communication Interface
  * @return max_profile_velocity
  * @return profile_acceleration
  * @return profile_deceleration
@@ -99,51 +50,46 @@ int hall_sdo_update(client interface ODCommunicationInterface i_od);
 {int, int, int, int, int} pv_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
- * @brief read profile position params from EtherCAT
+ * @brief read profile torque params from CANopen object dictionary
  *
- * @return max_profile_velocity
- * @return profile_velocity
- * @return profile_acceleration
- * @return profile_deceleration
- * @return quick_stop_deceleration
- * @return min
- * @return max
+ * @param i_od CANopen service communication Interface
+ * @return torque_slope
  * @return polarity
- * @return max_acceleration
  *
  */
-{int, int, int, int, int, int, int, int, int} pp_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int} pt_sdo_update(client interface ODCommunicationInterface i_od);
+
 
 /**
- * @brief read cyclic synchronous torque params from EtherCAT
+ * @brief read cyclic synchronous torque params from CANopen object dictionary
  *
- * @return nominal_current
+ * @param i_od CANopen service communication Interface
  * @return max_motor_speed
  * @return polarity
  * @return max_torque
- * @return motor_torque_constant
  *
  */
 {int, int, int} cst_sdo_update(client interface ODCommunicationInterface i_od);
 
+
 /**
- * @brief read cyclic synchronous velocity params from EtherCAT
+ * @brief read cyclic synchronous velocity params from CANopen object dictionary
  *
+ * @param i_od CANopen service communication Interface
  * @return max_motor_speed
- * @return nominal_current
  * @return polarity
- * @return motor_torque_constant
  * @return max_acceleration
  *
  */
 {int, int, int} csv_sdo_update(client interface ODCommunicationInterface i_od);
 
+
 /**
- * @brief read cyclic synchronous position params from EtherCAT
+ * @brief read cyclic synchronous position params from CANopen object dictionary
  *
+ * @param i_od CANopen service communication Interface
  * @return max_motor_speed
  * @return polarity
- * @return nominal_current
  * @return min position
  * @return max position
  * @return max_acceleration
@@ -151,146 +97,46 @@ int hall_sdo_update(client interface ODCommunicationInterface i_od);
  */
 {int, int, int, int, int} csp_sdo_update(client interface ODCommunicationInterface i_od);
 
-/**
- * @brief read torque control params from EtherCAT
- *
- * obsolete by cm_sync_config_rotque_control()
- *
- * @return Kp
- * @return Ki
- * @return Kd
- *
- */
-{int, int, int} torque_sdo_update(client interface ODCommunicationInterface i_od);
 
 /**
- * @brief read velocity control params from EtherCAT
- *
- * obsolete by cm_sync_config_velocity_control()
- *
- * @return Kp
- * @return Ki
- * @return Kd
- *
- */
-{int, int, int} velocity_sdo_update(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read position control params from EtherCAT
- *
- * obsolete by cm_sync_config_position_control()
- *
- * @return Kp
- * @return Ki
- * @return Kd
- *
- */
-{int, int, int} position_sdo_update(client interface ODCommunicationInterface i_od);
-
-/**
- * @brief read nominal speed from EtherCAT
- *
- * obsoleted by direct call
- *
- * @return nominal_speed
- *
- */
-int speed_sdo_update(client interface ODCommunicationInterface i_od);
-
-
-/**
- * @brief Update QEI sensor parameters from EtherCAT
- *
- * obsoleted by sm_sync_config_qei()
- *
- * @param qei_params struct defines the quadrature encoder (QEI) resolution, sensor type and
- *    gear-ratio used for the motor
- * @param coe_out
- */
-void update_qei_param_ecat(QEIConfig &qei_params, client interface ODCommunicationInterface i_od);
-
-/* obsoleted by cm_sync_config_motor_commutation() or cm_sync_config_motor_control() */
-void update_commutation_param_ecat(MotorcontrolConfig &commutation_params, client interface ODCommunicationInterface i_od);
-
-
-/**
- * @brief Update cyclic synchronous torque parameters from EtherCAT
+ * @brief Update cyclic synchronous torque parameters from CANopen object dictionary
  *
  * @param cst_params struct defines the cyclic synchronous torque params
- * @param coe_out
+ * @param i_od CANopen service communication Interface
  */
 void update_cst_param_ecat(ProfilerConfig &cst_params, client interface ODCommunicationInterface i_od);
 
+
 /**
- * @brief Update cyclic synchronous velocity parameters from EtherCAT
+ * @brief Update cyclic synchronous velocity parameters from CANopen object dictionary
  *
  * @param csv_params struct defines the cyclic synchronous velocity params
- * @param coe_out
- *
+ * @param i_od CANopen service communication Interface
  */
 void update_csv_param_ecat(ProfilerConfig &csv_params, client interface ODCommunicationInterface i_od);
 
+
 /**
- * @brief Update cyclic synchronous position parameters from EtherCAT
+ * @brief Update cyclic synchronous position parameters from CANopen object dictionary
  *
  * @param csp_params struct defines the cyclic synchronous position params
- * @param coe_out
+ * @param i_od CANopen service communication Interface
  */
 void update_csp_param_ecat(ProfilerConfig &csp_params, client interface ODCommunicationInterface i_od);
 
 /**
- * @brief Update profile torque parameters from EtherCAT
+ * @brief Update profile torque parameters from CANopen object dictionary
  *
  * @param pt_params struct defines the profile torque params
- * @param coe_out
+ * @param i_od CANopen service communication Interface
  */
 void update_pt_param_ecat(ProfilerConfig &pt_params, client interface ODCommunicationInterface i_od);
 
 /**
- * @brief Update profile velocity parameters from EtherCAT
+ * @brief Update profile velocity parameters from CANopen object dictionary
  *
  * @param pv_params struct defines the profile velocity params
- * @param coe_out
+ * @param i_od CANopen service communication Interface
  */
 void update_pv_param_ecat(ProfilerConfig &pv_params, client interface ODCommunicationInterface i_od);
-
-/**
- * @brief Update profile position parameters from EtherCAT
- *
- * obsoleted by cm_sync_config_profiler
- *
- * @param pp_params struct defines the profile position params
- * @param coe_out
- */
-void update_pp_param_ecat(ProfilerConfig &pp_params, client interface ODCommunicationInterface i_od);
-
-/**
- * @brief Update torque control PID parameters from EtherCAT
- *
- * obsoleted by cm_sync_config_velocity_control()
- *
- * @param torque_ctrl_params struct defines torque control PID params
- * @param coe_out
- */
-void update_torque_ctrl_param_ecat(ControlConfig &torque_ctrl_params, client interface ODCommunicationInterface i_od);
-
-/**
- * @brief Update velocity control PID parameters from EtherCAT
- *
- * obsolete by cm_sync_config_velocity_control()
- *
- * @param velocity_ctrl_params struct defines velocity control PID params
- * @param coe_out
- */
-void update_velocity_ctrl_param_ecat(ControlConfig &velocity_ctrl_params, client interface ODCommunicationInterface i_od);
-
-/**
- * @brief Update position control PID params from EtherCAT
- *
- * obsolete by cm_sync_config_position_control()
- *
- * @param position_ctrl_params struct defines position control PID params
- * @param coe_out
- */
-void update_position_ctrl_param_ecat(ControlConfig &position_ctrl_params, client interface ODCommunicationInterface i_od);
 

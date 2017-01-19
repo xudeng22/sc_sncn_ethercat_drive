@@ -1,6 +1,6 @@
 /**
  * @file config_manager.h
- * @brief EtherCAT Motor Drive Configuration Manager
+ * @brief CANopen Motor Drive Configuration Manager
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
@@ -15,7 +15,7 @@
 
 /*
  * General, syncronize configuration with the object dictionary values provided
- * by the EtherCAT master.
+ * by the master.
  */
 
 void cm_sync_config_position_feedback(

@@ -1,6 +1,6 @@
 /**
  * @file config_manager.xc
- * @brief EtherCAT Motor Drive Configuration Manager
+ * @brief CANopen Motor Drive Configuration Manager
  * @author Synapticon GmbH <support@synapticon.com>
  */
 

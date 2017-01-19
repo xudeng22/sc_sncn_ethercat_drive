@@ -1,6 +1,6 @@
 /**
- * @file ethercat_drive_service.h
- * @brief EtherCAT Motor Drive Server
+ * @file canopen_drive_service.h
+ * @brief CANopen Motor Drive Service
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
@@ -16,31 +16,25 @@
 #include <profile_control.h>
 
 /**
- * @brief This Service enables motor drive functions via EtherCAT.
+ * @brief This Service enables motor drive functions with CANopen.
  *
  * @param profiler_config Configuration for profile mode control.
- * @param pdo_out Channel to send out information to EtherCAT Service.
- * @param pdo_in Channel to receive information from EtherCAT Service.
- * @param coe_out Channel to receive motor configuration information from EtherCAT Service.
+ * @param i_pdo Interface for PDOs to communication module.
+ * @param i_od Interface for SDOs to CANopen service.
  * @param i_motorcontrol Interface to Motor Commutation Service
- * @param i_hall Interface to Hall Service.
- * @param i_qei Interface to Incremental Encoder Service.
- * @param i_biss Interface to BiSS Encoder Service.
- * @param i_gpio Interface to the GPIO Service.
- * @param i_torque_control Interface to Torque Control Loop Service.
- * @param i_velocity_control Interface to Velocity Control Loop Service.
- * @param i_position_control Interface to Position Control Loop Service.
+ * @param i_position_velocity_control Interface to Position-Velocity Control Loop Service.
+ * @param i_position_feedback Inteface to Position Feedback Service.
  */
 void canopen_drive_service(ProfilerConfig &profiler_config,
                             client interface PDOCommunicationInterface i_pdo,
                             client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
-                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback);
 
 void canopen_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface PDOCommunicationInterface i_pdo,
                             client interface ODCommunicationInterface i_od,
                             client interface MotorcontrolInterface i_motorcontrol,
-                            client interface PositionVelocityCtrlInterface i_position_control,
+                            client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback);

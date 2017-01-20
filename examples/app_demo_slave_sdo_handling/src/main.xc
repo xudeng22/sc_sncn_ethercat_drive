@@ -20,7 +20,7 @@ EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(chanend pdo_out, chanend pdo_in)
+static void pdo_handler(client interface i_pdo_coummunication i_pdo)
 {
 	timer t;
 
@@ -250,8 +250,7 @@ int main(void)
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
     interface i_foe_communication i_foe;
-    chan pdo_in;
-    chan pdo_out;
+    interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
 	par
@@ -261,7 +260,7 @@ int main(void)
 		{
 		    par {
                     ethercat_service(i_ecat_reboot, i_coe, null,
-                                     i_foe, pdo_out, pdo_in, ethercat_ports);
+                                     i_foe, i_pdo, ethercat_ports);
                     reboot_service_ethercat(i_ecat_reboot);
                 }
         }
@@ -270,7 +269,7 @@ int main(void)
 		on tile[APP_TILE] :
 		{
 #if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
-			pdo_handler(pdo_out, pdo_in);
+			pdo_handler(i_pdo);
 #endif
 			sdo_handler(i_coe);
 		}

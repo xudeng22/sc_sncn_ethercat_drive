@@ -52,6 +52,7 @@ int main(void)
     interface ADCInterface i_adc[2];
     interface MotorcontrolInterface i_motorcontrol[2];
     interface update_pwm i_update_pwm;
+    interface update_brake i_update_brake;
     interface shared_memory_interface i_shared_memory[2];
     interface PositionVelocityCtrlInterface i_position_control[3];
     interface PositionFeedbackInterface i_position_feedback[3];
@@ -145,6 +146,11 @@ int main(void)
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
 
 
+                    init_brake(i_update_brake, IFM_TILE_USEC, VDC,
+                            pos_velocity_ctrl_config.voltage_pull_brake,
+                            pos_velocity_ctrl_config.time_pull_brake,
+                            pos_velocity_ctrl_config.voltage_hold_brake);
+
                     position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control);
                 }
             }
@@ -166,8 +172,8 @@ int main(void)
 
                     //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
                     pwm_service_task(MOTOR_ID, pwm_ports, i_update_pwm,
-                            DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE, PERIOD_START_BRAKE,
-                            IFM_TILE_USEC);
+                            i_update_brake, IFM_TILE_USEC);
+
                 }
 
                 /* ADC Service */

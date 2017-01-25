@@ -11,7 +11,7 @@
 #include "co_interface.h"
 #include "canod_constants.h"
 #include "canod_datatypes.h"
-//#include "pdo_handler.h"
+#include "pdo_handler.h"
 
 /**
  * @brief Provides a service, which managed the object dictionary communication and stores all necessary values.

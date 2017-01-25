@@ -21,7 +21,7 @@ EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
 #if 1 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(client interface PDOCommunicationInterface i_pdo)
+static void pdo_handler(client interface i_co_communication i_co)
 {
 	timer t;
 
@@ -37,7 +37,7 @@ static void pdo_handler(client interface PDOCommunicationInterface i_pdo)
 
 	while(1)
 	{
-	    pdo_protocol_handler(i_pdo,InOut);
+	    InOut = i_co.pdo_exchange_app(InOut);
 
 		i++;
 		if(i >= 999) {
@@ -195,7 +195,7 @@ static const uint16_t g_listarrayobjects[] = {
    CIA402_POSITION_GAIN, 3,
 };
 
-static void read_od_config(client interface ODCommunicationInterface i_od)
+static void read_od_config(client interface i_co_communication i_co)
 {
     /* Read the values of hand picked objects */
     uint32_t value    = 0;
@@ -204,14 +204,14 @@ static void read_od_config(client interface ODCommunicationInterface i_od)
     size_t object_list_size = sizeof(g_listobjects) / sizeof(g_listobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i++) {
-        {value, void, error} = i_od.get_object_value(g_listobjects[i], 0);
+        {value, void, error} = i_co.get_object_value(g_listobjects[i], 0);
         printstr("Object 0x"); printhex(g_listobjects[i]); printstr(" = "); printintln(value);
     }
 
     object_list_size = sizeof(g_listarrayobjects) / sizeof(g_listarrayobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i+=2) {
-        {value, void, error} = i_od.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
+        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
         printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
         printstr(" = "); printintln(value);
     }
@@ -219,7 +219,7 @@ static void read_od_config(client interface ODCommunicationInterface i_od)
     return;
 }
 
-static void sdo_handler(client interface ODCommunicationInterface i_od)
+static void sdo_handler(client interface i_co_communication i_co)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
@@ -228,12 +228,12 @@ static void sdo_handler(client interface ODCommunicationInterface i_od)
     int read_config = 0;
 
     while (1) {
-        read_config = i_od.configuration_get();
+        read_config = i_co.configuration_get();
 
         if (read_config) {
-            read_od_config(i_od);
+            read_od_config(i_co);
             printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
-            i_od.configuration_done(); /* clear notification */
+            i_co.configuration_done(); /* clear notification */
         }
 
         t when timerafter(time+delay) :> time;
@@ -246,8 +246,7 @@ int main(void)
     /* EtherCat Communication channels */
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
-    interface ODCommunicationInterface i_od[3];
-    interface PDOCommunicationInterface i_pdo;
+    interface i_co_communication i_co[3];
 
 	par
 	{
@@ -257,8 +256,7 @@ int main(void)
 		    par
 		    {
                 ethercat_service(i_ecat_reboot,
-                                   i_od,
-                                   i_pdo,
+                                   i_co,
                                    null,
                                    i_foe,
                                    ethercat_ports);
@@ -273,9 +271,9 @@ int main(void)
 		    par
 		    {
 #if 1 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
-		        pdo_handler(i_pdo);
+		        pdo_handler(i_co[1]);
 #endif
-			    sdo_handler(i_od[1]);
+			    sdo_handler(i_co[2]);
 		    }
 		}
 	}

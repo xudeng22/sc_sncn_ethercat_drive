@@ -41,60 +41,74 @@ pdo_values_t pdo_init(void)
 	return InOut;
 }
 
-
-int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_values_t &InOut)
+void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut)
 {
-
-    pdo_size_t buffer[64];
-    unsigned int count = 0;
-    int i = 0;
-
-    count = i_pdo.pdo_in(buffer);
-
-    if (count == 0)
-        return 0;
-
-    //Test for matching number of words
-    if(count > 0)
-    {
-        InOut.control_word    = (buffer[0]) & 0xffff;
-        InOut.operation_mode  = buffer[1] & 0xff;
-        InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
-        InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
-        InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-        InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
-        InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
-        InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
-        InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
-//      printhexln(InOut.control_word);
-//      printhexln(InOut.operation_mode);
-//      printhexln(InOut.target_torque);
-//      printintln(InOut.target_position);
-//      printhexln(InOut.target_velocity);
-    }
-
-    if(count > 0)
-    {
-        buffer[0]  = InOut.status_word ;
-        buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.actual_position&0xff)<<8) ;
-        buffer[2]  = (InOut.actual_position>> 8)& 0xffff;
-        buffer[3]  = ((InOut.actual_position>>24) & 0xff) | ((InOut.actual_velocity&0xff)<<8);
-        buffer[4]  = (InOut.actual_velocity>> 8)& 0xffff;
-        buffer[5]  = ((InOut.actual_velocity>>24) & 0xff) | ((InOut.actual_torque&0xff)<<8) ;
-        buffer[6]  = ((InOut.user1_out<<8)&0xff00) | ((InOut.actual_torque >> 8)&0xff);
-        buffer[7]  = ((InOut.user1_out>>8)&0xffff);
-        buffer[8]  = ((InOut.user2_out<<8)&0xff00) | ((InOut.user1_out>>24)&0xff);
-        buffer[9]  = ((InOut.user2_out>>8)&0xffff);
-        buffer[10] = ((InOut.user3_out<<8)&0xff00) | ((InOut.user2_out>>24)&0xff);
-        buffer[11] = ((InOut.user3_out>>8)&0xffff);
-        buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
-        buffer[13] = ((InOut.user4_out>>8)&0xffff);
-        buffer[14] = ((InOut.user4_out>>24)&0xff);
-
-        i_pdo.pdo_out(MAX_PDO_SIZE, buffer);
-    }
-    return count;
+    InOut.control_word    = (buffer[0]) & 0xffff;
+    InOut.operation_mode  = buffer[1] & 0xff;
+    InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
+    InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
+    InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
+    InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
+    InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
+    InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
+    InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
 }
+
+void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut)
+{
+    buffer[0]  = InOut.status_word ;
+    buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.actual_position&0xff)<<8) ;
+    buffer[2]  = (InOut.actual_position>> 8)& 0xffff;
+    buffer[3]  = ((InOut.actual_position>>24) & 0xff) | ((InOut.actual_velocity&0xff)<<8);
+    buffer[4]  = (InOut.actual_velocity>> 8)& 0xffff;
+    buffer[5]  = ((InOut.actual_velocity>>24) & 0xff) | ((InOut.actual_torque&0xff)<<8) ;
+    buffer[6]  = ((InOut.user1_out<<8)&0xff00) | ((InOut.actual_torque >> 8)&0xff);
+    buffer[7]  = ((InOut.user1_out>>8)&0xffff);
+    buffer[8]  = ((InOut.user2_out<<8)&0xff00) | ((InOut.user1_out>>24)&0xff);
+    buffer[9]  = ((InOut.user2_out>>8)&0xffff);
+    buffer[10] = ((InOut.user3_out<<8)&0xff00) | ((InOut.user2_out>>24)&0xff);
+    buffer[11] = ((InOut.user3_out>>8)&0xffff);
+    buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
+    buffer[13] = ((InOut.user4_out>>8)&0xffff);
+    buffer[14] = ((InOut.user4_out>>24)&0xff);
+}
+
+
+//void pdo_protocol_handler(pdo_size_t buffer[], pdo_values_t &InOut)
+//{
+//
+//    InOut.control_word    = (buffer[0]) & 0xffff;
+//    InOut.operation_mode  = buffer[1] & 0xff;
+//    InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
+//    InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
+//    InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
+//    InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
+//    InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
+//    InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
+//    InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
+////      printhexln(InOut.control_word);
+////      printhexln(InOut.operation_mode);
+////      printhexln(InOut.target_torque);
+////      printintln(InOut.target_position);
+////      printhexln(InOut.target_velocity);
+//
+//    buffer[0]  = InOut.status_word ;
+//    buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.actual_position&0xff)<<8) ;
+//    buffer[2]  = (InOut.actual_position>> 8)& 0xffff;
+//    buffer[3]  = ((InOut.actual_position>>24) & 0xff) | ((InOut.actual_velocity&0xff)<<8);
+//    buffer[4]  = (InOut.actual_velocity>> 8)& 0xffff;
+//    buffer[5]  = ((InOut.actual_velocity>>24) & 0xff) | ((InOut.actual_torque&0xff)<<8) ;
+//    buffer[6]  = ((InOut.user1_out<<8)&0xff00) | ((InOut.actual_torque >> 8)&0xff);
+//    buffer[7]  = ((InOut.user1_out>>8)&0xffff);
+//    buffer[8]  = ((InOut.user2_out<<8)&0xff00) | ((InOut.user1_out>>24)&0xff);
+//    buffer[9]  = ((InOut.user2_out>>8)&0xffff);
+//    buffer[10] = ((InOut.user3_out<<8)&0xff00) | ((InOut.user2_out>>24)&0xff);
+//    buffer[11] = ((InOut.user3_out>>8)&0xffff);
+//    buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
+//    buffer[13] = ((InOut.user4_out>>8)&0xffff);
+//    buffer[14] = ((InOut.user4_out>>24)&0xff);
+//
+//}
 
 int pdo_get_target_torque(pdo_values_t InOut)
 {

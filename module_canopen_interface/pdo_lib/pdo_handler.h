@@ -22,39 +22,7 @@
 */
 #define DATA_REQUEST     1
 
-/**
- * @brief
- *  Struct for Tx, Rx PDOs
- */
-typedef struct
-{
-    int8_t operation_mode;     //      Modes of Operation
-    uint16_t control_word;     //      Control Word
 
-    int16_t target_torque;
-    int32_t target_velocity;
-    int32_t target_position;
-
-    /* User defined PDOs */
-    int32_t user1_in;
-    int32_t user2_in;
-    int32_t user3_in;
-    int32_t user4_in;
-
-
-    int8_t operation_mode_display; //      Modes of Operation Display
-    uint16_t status_word;                   //  Status Word
-
-    int16_t actual_torque;
-    int32_t actual_velocity;
-    int32_t actual_position;
-
-    /* User defined PDOs */
-    int32_t user1_out;
-    int32_t user2_out;
-    int32_t user3_out;
-    int32_t user4_out;
-} pdo_values_t;
 
 /**
  * @brief
@@ -71,7 +39,11 @@ typedef struct
  *
  * @return      1 if communication is active else 0
  */
-int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_values_t &InOut);
+//int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_values_t &InOut);
+void pdo_protocol_handler(pdo_size_t buffer[], pdo_values_t &InOut);
+
+void pdo_encode(pdo_size_t buffer[], pdo_values_t InOut);
+void pdo_decode(pdo_size_t buffer[], pdo_values_t &InOut);
 
 /**
  *  @brief

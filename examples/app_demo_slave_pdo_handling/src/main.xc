@@ -18,11 +18,11 @@
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
 /* function declaration of later used functions */
-static void read_od_config(client interface ODCommunicationInterface i_od);
+static void read_od_config(client interface i_co_communication i_co);
 
 /* Wait until the EtherCAT enters operation mode. At this point the master
  * should have finished all client configuration. */
-static void sdo_configuration(client interface ODCommunicationInterface i_od)
+static void sdo_configuration(client interface i_co_communication i_co)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
@@ -31,7 +31,7 @@ static void sdo_configuration(client interface ODCommunicationInterface i_od)
     int sdo_configured = 0;
 
     while (sdo_configured == 0) {
-        if (i_od.configuration_get()) {
+        if (i_co.configuration_get()) {
             printstrln("Master requests OP mode - cyclic operation is about to start.");
             sdo_configured = 1;
         }
@@ -44,11 +44,11 @@ static void sdo_configuration(client interface ODCommunicationInterface i_od)
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
 
     /* clear the notification before proceeding the operation */
-    i_od.configuration_done();
+    i_co.configuration_done();
 }
 
 /* Test application handling pdos from EtherCat */
-static void pdo_handler(client interface ODCommunicationInterface i_od, client interface PDOCommunicationInterface i_pdo)
+static void pdo_service(client interface i_co_communication i_co)
 {
 	timer t;
 
@@ -62,12 +62,12 @@ static void pdo_handler(client interface ODCommunicationInterface i_od, client i
 	InOut = pdo_init();
 	t :> time;
 
-	sdo_configuration(i_od);
+	sdo_configuration(i_co);
 
 	printstrln("Starting PDO protocol");
 	while(1)
 	{
-		pdo_handler(i_pdo, InOut);
+		InOut = i_co.pdo_exchange_app(InOut);
 
 		i++;
 		if(i >= 999) {
@@ -229,7 +229,7 @@ static const uint16_t g_listarrayobjects[] = {
 };
 
 /* This function simply iterates throuch the objects given in /see g_listobjects and /see g_listarrayobjects. */
-static void read_od_config(client interface ODCommunicationInterface i_od)
+static void read_od_config(client interface i_co_communication i_co)
 {
     /* Read the values of hand picked objects */
     uint32_t value    = 0;
@@ -238,14 +238,14 @@ static void read_od_config(client interface ODCommunicationInterface i_od)
     size_t object_list_size = sizeof(g_listobjects) / sizeof(g_listobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i++) {
-        {value, void, error} = i_od.get_object_value(g_listobjects[i], 0);
+        {value, void, error} = i_co.get_object_value(g_listobjects[i], 0);
         printstr("Object 0x"); printhex(g_listobjects[i]); printstr(" = "); printintln(value);
     }
 
     object_list_size = sizeof(g_listarrayobjects) / sizeof(g_listarrayobjects[0]);
 
     for (size_t i = 0; i < object_list_size; i+=2) {
-        {value, void, error} = i_od.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
+        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
         printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
         printstr(" = "); printintln(value);
     }
@@ -258,8 +258,7 @@ int main(void)
 {
 	/* EtherCat Communication channels */
     interface i_foe_communication i_foe;
-    interface ODCommunicationInterface i_od[3];
-    interface PDOCommunicationInterface i_pdo;
+    interface i_co_communication i_co[3];
     interface EtherCATRebootInterface i_ecat_reboot;
 
 	par
@@ -268,7 +267,7 @@ int main(void)
 		on tile[COM_TILE] :
 		{
 		    par {
-                    ethercat_service(i_ecat_reboot, i_od, i_pdo,
+                    ethercat_service(i_ecat_reboot, i_co,
                                      null, i_foe, ethercat_ports);
 
                     reboot_service_ethercat(i_ecat_reboot);
@@ -278,11 +277,7 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-<<<<<<< HEAD
-			pdo_handler(i_od[1], i_pdo);
-=======
-			pdo_service(i_coe, i_pdo);
->>>>>>> develop
+			pdo_service(i_co[1]);
 		}
 	}
 

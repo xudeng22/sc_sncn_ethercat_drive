@@ -46,13 +46,13 @@ void canopen_service(server interface i_co_communication i_co[3])
             case i_co[int j].get_all_list_length(uint32_t list_out[]):
                     unsigned list[5];
                     canod_get_all_list_length(list);
-                    memcpy(list_out, list, 5);
+                    memcpy(list_out, list, 5); // FIXME SIZEOF !!!!!!!!!!!!!!!!!!!!!!!!!!
                     break;
 
             case i_co[int j].get_list(unsigned list_out[], unsigned size, unsigned listtype) -> {int size_out}:
                     unsigned list[100];
                     size_out = canod_get_list(list, 100, listtype);
-                    memcpy(list_out, list, size);
+                    memcpy(list_out, list, size_out * sizeof(unsigned));
                     break;
 
             case i_co[int j].get_object_description(struct _sdoinfo_entry_description &obj_out, unsigned index_) -> { int error }:
@@ -80,9 +80,8 @@ void canopen_service(server interface i_co_communication i_co[3])
             case i_co[int j].pdo_in_com(unsigned int size_in, pdo_size_t data_in[]):
                 pdo_size = size_in;
                 memcpy(pdo_buffer, data_in, pdo_size);
-                //for (int i = 0; i < size; i++) printint(data_in[i]);
                 pdo_decode(pdo_buffer, InOut);
-                //printcharln(' ');
+                //printintln(InOut.a)
                 break;
 
             case i_co[int j].pdo_out_com(pdo_size_t data_out[]) -> { unsigned int size_out }:

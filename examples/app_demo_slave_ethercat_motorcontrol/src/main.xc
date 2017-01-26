@@ -39,8 +39,12 @@ WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
 HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
-SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
 QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
+SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
+port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
+port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
+port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
+port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
 
 port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
 port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
@@ -54,6 +58,7 @@ int main(void)
     interface ADCInterface i_adc[2];
     interface MotorcontrolInterface i_motorcontrol[2];
     interface update_pwm i_update_pwm;
+    interface update_brake i_update_brake;
     interface shared_memory_interface i_shared_memory[2];
     interface PositionVelocityCtrlInterface i_position_control[3];
     interface PositionFeedbackInterface i_position_feedback[3];
@@ -74,9 +79,11 @@ int main(void)
         on tile[COM_TILE] :
         {
             par {
+
                 ethercat_service(i_ecat_reboot, i_od,
                                  i_pdo, null,
                                  i_foe, ethercat_ports);
+
 
                 reboot_service_ethercat(i_ecat_reboot);
 
@@ -97,6 +104,7 @@ int main(void)
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
 #if 0
+
             canopen_drive_service_debug( profiler_config,
                                     i_pdo, i_od[1],
                                     i_motorcontrol[1],
@@ -104,8 +112,7 @@ int main(void)
 #else
             canopen_drive_service( profiler_config,
                                     i_pdo, i_od[1],
-                                    i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback[0]);
+                        i_position_control[0], i_position_feedback[0]);
 #endif
         }
 
@@ -150,6 +157,11 @@ int main(void)
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
 
 
+                    init_brake(i_update_brake, IFM_TILE_USEC, VDC,
+                            pos_velocity_ctrl_config.voltage_pull_brake,
+                            pos_velocity_ctrl_config.time_pull_brake,
+                            pos_velocity_ctrl_config.voltage_hold_brake);
+
                     position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control);
                 }
             }
@@ -171,8 +183,8 @@ int main(void)
 
                     //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
                     pwm_service_task(MOTOR_ID, pwm_ports, i_update_pwm,
-                            DUTY_START_BRAKE, DUTY_MAINTAIN_BRAKE, PERIOD_START_BRAKE,
-                            IFM_TILE_USEC);
+                            i_update_brake, IFM_TILE_USEC);
+
                 }
 
                 /* ADC Service */

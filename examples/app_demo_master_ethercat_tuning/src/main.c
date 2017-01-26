@@ -76,8 +76,8 @@
 #define FREQUENCY 1000
 #define PRIORITY 1
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 22
-#define NUM_CONFIG_SDOS   26
+#define DISPLAY_LINE 27
+#define HELP_ROW_COUNT 12
 #define MAX_RECORD_MSEC 120000
 #define MAX_RECORD_FILENAME 20
 
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
         /* SDO configuration of the slave */
         /* FIXME set per slave SDO configuration */
         for (int i = 0; i < num_slaves; i++) {
-            int ret = write_sdo_config(master->master, i, slave_config[i], NUM_CONFIG_SDOS);
+            int ret = write_sdo_config(master->master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));
             if (ret != 0) {
                 fprintf(stderr, "Error configuring SDOs\n");
                 return -1;
@@ -349,7 +349,13 @@ int main(int argc, char **argv)
     profile_config.max_position = 0x7fffffff;
     profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
-    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position);
+    for (int i=0 ; i<sizeof(slave_config[0])/sizeof(slave_config[0][0]) ; i++) {
+        if (slave_config[0][i].index == 0x308f) {
+            profile_config.ticks_per_turn = slave_config[0][i].value;
+            break;
+        }
+    }
+    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
 
     //init recorder
     RecordConfig record_config = {0};
@@ -368,7 +374,7 @@ int main(int argc, char **argv)
 
     //init prompt
     Cursor cursor = { DISPLAY_LINE, 2 };
-    display_tuning_help(wnd, DISPLAY_LINE-8);
+    display_tuning_help(wnd, DISPLAY_LINE-HELP_ROW_COUNT);
     move(cursor.row, 0);
     printw("> ");
     
@@ -415,7 +421,7 @@ int main(int argc, char **argv)
             tuning_record(&record_config, pdo_input[num_slaves-1], pdo_output[num_slaves-1], record_filename);
 
             //position profile
-            tuning_position(&profile_config, &pdo_output[num_slaves-1]);
+            tuning_position(&profile_config, &pdo_output[num_slaves-1], pdo_input[num_slaves-1]);
 
             //read user input
             tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &record_config, &cursor);

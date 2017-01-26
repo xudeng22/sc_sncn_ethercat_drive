@@ -66,6 +66,9 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case 15:
         (*input).integral_limit_velocity = pdo_input.user_in_4;
         break;
+    case 16: //fault code
+        (*input).error_status = pdo_input.user_in_4;
+        break;
     default://brake_release_strategy
         (*input).brake_release_strategy = pdo_input.user_in_4;
         break;
@@ -125,14 +128,23 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     profile_config->mode = POSITION_PROFILER;
                     profile_config->step = 0;
                     profile_config->steps = init_position_profile(&(profile_config->motion_profile), (*output).value, pdo_input.actual_position,\
-                            profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration);
+                            profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
                 } else if ((*output).mode_2 == 's') {//position step
-                    profile_config->mode = POSITION_STEP;
-                    profile_config->step = 0;
-                    profile_config->steps = 4500;
-                    (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+                    if ((*output).mode_3 == 'p') {//position step profiler
+                        profile_config->mode = POSITION_STEP_PROFILER;
+                        profile_config->step = 0;
+                        profile_config->target_position = (*output).value;
+                        profile_config->steps = init_position_profile(&(profile_config->motion_profile), profile_config->target_position, pdo_input.actual_position,\
+                                profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
+                    } else {
+                        profile_config->mode = POSITION_STEP;
+                        profile_config->step = 0;
+                        profile_config->steps = 4500;
+                        (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
+                    }
                 } else { //position direct
                     pdo_output->controlword = 'p';
+                    profile_config->mode = POSITION_DIRECT;
                     (*pdo_output).user_out_3 = (*output).value; //put value in user_out_3
                 }
             } else {
@@ -173,13 +185,21 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
     }
 }
 
-void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output)
+void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input)
 {
+    int max_follow_error = config->ticks_per_turn;
+
     if (config->mode == POSITION_PROFILER) {
         if (config->step <= config->steps) {
             pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
             pdo_output->controlword = 'p';
             (*config).step++;
+            //check follow error
+            if (((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) > max_follow_error || ((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) < -max_follow_error)
+            {
+                config->mode = POSITION_DIRECT;
+                pdo_output->controlword = 0;
+            }
         } else {
             config->mode = POSITION_DIRECT;
             pdo_output->controlword = 0;
@@ -195,6 +215,34 @@ void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *p
             pdo_output->controlword = 0;
         }
         (*config).step++;
+    }
+    else if (config->mode == POSITION_STEP_PROFILER) {
+        pdo_output->controlword = 'p';
+        if (config->step < config->steps) {
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
+        } else if (config->target_position == 0) { //small target pos = we are reached the end
+            config->mode = POSITION_DIRECT;
+            pdo_output->controlword = 0;
+        } else if (config->target_position > 0) { //positive target = end of first step
+            config->step = 0;
+            config->target_position = -config->target_position;
+            config->steps = init_position_profile(&(config->motion_profile), config->target_position, pdo_input.actual_position,\
+                    config->profile_speed, config->profile_acceleration, config->profile_acceleration, config->ticks_per_turn);
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
+        } else if (config->target_position < 0) { //negative target = end of second step
+            config->step = 0;
+            config->target_position = 0;
+            config->steps = init_position_profile(&(config->motion_profile), config->target_position, pdo_input.actual_position,\
+                    config->profile_speed, config->profile_acceleration, config->profile_acceleration, config->ticks_per_turn);
+            pdo_output->user_out_3 = position_profile_generate(&(config->motion_profile), config->step);
+        }
+        (*config).step++;
+        //check follow error
+        if (((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) > max_follow_error || ((int)pdo_output->user_out_3 - (int)pdo_input.actual_position) < -max_follow_error)
+        {
+            config->mode = POSITION_DIRECT;
+            pdo_output->controlword = 0;
+        }
     }
 }
 

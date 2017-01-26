@@ -16,28 +16,10 @@ LDFLAGS = -static
 #
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
-LIB_DIRS += -L ../../lib_linux_ctrlproto/lib
 
-LIBS += -lsncn_ctrlproto
-LIBS += -lethercat -lm
+LIBS += -lsncnecat -lethercat -lm
 
-INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/inc_ctrlproto-common
-INCLUDE_DIRS += -I $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_profile/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_motorcontrol_common/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_qei/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_biss/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_biss/biss_configs
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_contelec_encoder/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_position_feedback/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_ams_rotary_sensor/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_advanced_torquecontrol_lib/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_pwm_symmetrical/src/common
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
-INCLUDE_DIRS += -I ../config_motor_master
 
 #
 # Check for Linux machine
@@ -60,18 +42,6 @@ ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 # Installation directory of the  EtherCAT Master by IgH EtherLAB
 ifeq (,$(wildcard /opt/etherlab))
   $(error Directory /opt/etherlab does not exist, please check your EtherLAB installation and fix the path)
-endif
-
-ETHERCAT_DRIVE_PATH := ../../.
-MOTORCONTROL_PATH := ../../.
-MOTORCONTROL_LIB_PATH := ../../.
-
-ifneq (,$(wildcard ../../../sc_sncn_motorcontrol/.))
-	MOTORCONTROL_PATH := ../../../sc_sncn_motorcontrol
-endif
-
-ifneq (,$(wildcard ../../../sc_sncn_motorcontrol_new/.))
-	MOTORCONTROL_LIB_PATH := ../../../sc_sncn_motorcontrol_new
 endif
 
 #
@@ -105,7 +75,6 @@ justpreprocess:
 
 prerequisite:
 	$(MKDIR) -p $(BUILD_DIR) $(OUT_DIR)
-	$(MAKE) -C $(ETHERCAT_DRIVE_PATH)/lib_linux_ctrlproto
 
 clean:
 	$(RM) $(BUILD_DIR)/*.o $(OUT_DIR)/$(TARGET)

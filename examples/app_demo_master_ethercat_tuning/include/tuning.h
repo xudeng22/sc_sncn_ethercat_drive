@@ -27,6 +27,7 @@ typedef struct {
     int sensor_polarity;
     int brake_release_strategy;
     int brake_flag;
+    int error_status;
     int max_position;
     int min_position;
     int max_speed;
@@ -57,7 +58,8 @@ typedef struct {
 typedef enum {
     POSITION_DIRECT=0,
     POSITION_PROFILER=1,
-    POSITION_STEP=2
+    POSITION_STEP=2,
+    POSITION_STEP_PROFILER=3
 } PositionCtrlMode;
 
 typedef struct {
@@ -68,6 +70,8 @@ typedef struct {
     int profile_acceleration;
     int max_position;
     int min_position;
+    int target_position;
+    int ticks_per_turn;
     int step;
     int steps;
     PositionCtrlMode mode;
@@ -100,7 +104,7 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input);
 void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output,\
         PositionProfileConfig *profile_config, RecordConfig *record_config, Cursor *cursor);
 
-void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output);
+void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input);
 
 void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, struct _pdo_cia402_output pdo_output, char *filename);
 

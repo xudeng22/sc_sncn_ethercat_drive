@@ -225,8 +225,8 @@ static void debug_print_state(DriveState_t state)
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
 void canopen_drive_service(ProfilerConfig &profiler_config,
-                            client interface PDOCommunicationInterface i_pdo,
-                            client interface ODCommunicationInterface i_od,
+                            client interface i_pdo_communication i_pdo,
+                            client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback)
@@ -260,8 +260,10 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
     int opmode_request = OPMODE_NONE;
 
     PosVelocityControlConfig position_velocity_config = i_position_velocity_control.get_position_velocity_control_config();
+;
 
-    pdo_values_t InOut = pdo_init();
+    pdo_handler_values_t InOut = pdo_handler_init();
+
 
     int setup_loop_flag = 0;
 
@@ -433,7 +435,8 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
         //xscope_int(USER_TORQUE, InOut.user1_out);
 
         /* Read/Write packets to ethercat Master application */
-        communication_active = pdo_protocol_handler(i_pdo, InOut);
+        communication_active = pdo_handler(i_pdo, InOut);
+
 
         if (communication_active == 0) {
             if (comm_inactive_flag == 0) {
@@ -680,8 +683,8 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
  * test if the motor will move.
  */
 void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
-                            client interface PDOCommunicationInterface i_pdo,
-                            client interface ODCommunicationInterface i_od,
+                            client interface i_pdo_communication i_pdo,
+                            client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback)

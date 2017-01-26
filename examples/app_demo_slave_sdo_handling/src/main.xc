@@ -270,9 +270,7 @@ int main(void)
 		{
 		    par
 		    {
-#if 1 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
 		        pdo_handler(i_co[1]);
-#endif
 			    sdo_handler(i_co[2]);
 		    }
 		}

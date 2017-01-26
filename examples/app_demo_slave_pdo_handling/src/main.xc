@@ -67,7 +67,7 @@ static void pdo_handler(client interface ODCommunicationInterface i_od, client i
 	printstrln("Starting PDO protocol");
 	while(1)
 	{
-	    pdo_protocol_handler(i_pdo,InOut);
+		pdo_handler(i_pdo, InOut);
 
 		i++;
 		if(i >= 999) {
@@ -278,7 +278,11 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
+<<<<<<< HEAD
 			pdo_handler(i_od[1], i_pdo);
+=======
+			pdo_service(i_coe, i_pdo);
+>>>>>>> develop
 		}
 	}
 

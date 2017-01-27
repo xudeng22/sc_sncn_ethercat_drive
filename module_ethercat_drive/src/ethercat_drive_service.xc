@@ -344,12 +344,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         controlword     = pdo_get_controlword(InOut);
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
-        send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
-        update_position_velocity = InOut.user2_in; /* Update trigger which PID setting should be updated now */
+        send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
+        update_position_velocity = pdo_get_command_pid_update(InOut); /* Update trigger which PID setting should be updated now */
 
         /* tuning pdos */
-        tuning_control = InOut.user4_in;
-        tuning_status.value = InOut.user3_in;
+        tuning_control = pdo_get_tuning_control(InOut);
+        tuning_status.value = pdo_get_tuning_status(InOut);
 
         /*
         printint(state);
@@ -400,13 +400,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         pdo_set_statusword(statusword, InOut);
         pdo_set_opmode_display(opmode, InOut);
-        pdo_set_actual_velocity(actual_velocity, InOut);
-        pdo_set_actual_torque(actual_torque, InOut );
-        pdo_set_actual_position(actual_position, InOut);
-        InOut.user1_out = (1000 * 5 * send_to_master.sensor_torque) / 4096;  /* ticks to (edit:) milli-volt */
-        InOut.user4_out = tuning_result;
+        pdo_set_velocity_value(actual_velocity, InOut);
+        pdo_set_torque_value(actual_torque, InOut );
+        pdo_set_position_value(actual_position, InOut);
+        pdo_set_additional_feedbacksensor_value((1000 * 5 * send_to_master.sensor_torque) / 4096, InOut); /* FIXME Add missing documentation of the calculation! And simplify! */
+        pdo_set_tuning_result(tuning_result, InOut);
 
-        //xscope_int(USER_TORQUE, InOut.user1_out);
+        //xscope_int(USER_TORQUE, (1000 * 5 * send_to_master.sensor_torque) / 4096);
 
         /* Read/Write packets to ethercat Master application */
         communication_active = pdo_handler(i_pdo, InOut);
@@ -588,9 +588,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_P_VALUE; */
+            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_I_VALUE; */
+            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_D_VALUE; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }

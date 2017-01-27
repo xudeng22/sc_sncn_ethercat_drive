@@ -19,32 +19,22 @@
  */
 typedef struct
 {
-    int8_t operation_mode;     //      Modes of Operation
-    uint16_t control_word;     //      Control Word
-
+    uint16_t controlword;
+    int8_t op_mode;
     int16_t target_torque;
-    int32_t target_velocity;
     int32_t target_position;
-
-    /* User defined PDOs */
-    int32_t user1_in;
-    int32_t user2_in;
-    int32_t user3_in;
-    int32_t user4_in;
-
-
-    int8_t operation_mode_display; //      Modes of Operation Display
-    uint16_t status_word;                   //  Status Word
-
-    int16_t torque_actual;
-    int32_t velocity_actual;
-    int32_t position_actual;
-
-    /* User defined PDOs */
-    int32_t user1_out;
-    int32_t user2_out;
-    int32_t user3_out;
-    int32_t user4_out;
+    int32_t target_velocity;
+    int32_t offset_torque;
+    int32_t tuning_status;
+    int32_t tuning_control;
+    int32_t command_pid_update;
+    uint16_t statusword;
+    int8_t op_mode_display;
+    int32_t position_value;
+    int32_t velocity_value;
+    int16_t torque_value;
+    int32_t additional_feedbacksensor_value;
+    int32_t tuning_result;
 } pdo_handler_values_t;
 
 
@@ -128,7 +118,7 @@ int pdo_get_opmode(pdo_handler_values_t InOut);
  * @param[in] actual_torque sent to EtherCAT in range [0 - mNm * Current Resolution]
  * @param InOut Structure containing all PDO data
  */
-void pdo_set_actual_torque(int actual_torque, pdo_handler_values_t &InOut);
+void pdo_set_torque_value(int actual_torque, pdo_handler_values_t &InOut);
 
 /**
  * @brief Send actual velocity to EtherCAT
@@ -136,7 +126,7 @@ void pdo_set_actual_torque(int actual_torque, pdo_handler_values_t &InOut);
  * @param[in] actual_velocity sent to EtherCAT in rpm
  * @param InOut Structure containing all PDO data
  */
-void pdo_set_actual_velocity(int actual_velocity, pdo_handler_values_t &InOut);
+void pdo_set_velocity_value(int actual_velocity, pdo_handler_values_t &InOut);
 
 /**
  * @brief Send actual position to EtherCAT
@@ -144,7 +134,7 @@ void pdo_set_actual_velocity(int actual_velocity, pdo_handler_values_t &InOut);
  * @param[in] actual_position sent to EtherCAT in ticks
  * @param InOut Structure containing all PDO data
  */
-void pdo_set_actual_position(int actual_position, pdo_handler_values_t &InOut);
+void pdo_set_position_value(int actual_position, pdo_handler_values_t &InOut);
 
 /**
  * @brief Send the current status
@@ -161,3 +151,11 @@ void pdo_set_statusword(int statusword, pdo_handler_values_t &InOut);
  * @param InOut PDO object
  */
 void pdo_set_opmode_display(int opmode, pdo_handler_values_t &InOut);
+
+
+int pdo_get_offset_torque(pdo_handler_values_t &InOut);
+int pdo_get_tuning_status(pdo_handler_values_t &InOut);
+int pdo_get_tuning_control(pdo_handler_values_t &InOut);
+int pdo_get_command_pid_update(pdo_handler_values_t &InOut);
+void pdo_set_tuning_result(int value, pdo_handler_values_t &InOut);
+void pdo_set_additional_feedbacksensor_value(int value, pdo_handler_values_t &InOut);

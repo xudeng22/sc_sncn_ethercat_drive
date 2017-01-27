@@ -13,34 +13,32 @@ pdo_handler_values_t pdo_handler_init(void)
 {
 	pdo_handler_values_t InOut;
 
-	InOut.control_word    = 0x00;    		// shutdown
-	InOut.operation_mode  = 0x00;  			// undefined
+	InOut.controlword                     = 0x00;
+	InOut.op_mode                         = 0x00;
 
-	InOut.target_torque   = 0x0;
-	InOut.target_velocity = 0x0;
-	InOut.target_position = 0x0;
+	InOut.target_torque                   = 0x0;
+	InOut.target_velocity                 = 0x0;
+	InOut.target_position                 = 0x0;
 
-	InOut.user1_in        = 0x0;
-	InOut.user2_in        = 0x0;
-	InOut.user3_in        = 0x0;
-	InOut.user4_in        = 0x0;
+	InOut.offset_torque                   = 0x0;
+	InOut.tuning_status                   = 0x0;
+	InOut.tuning_control                  = 0x0;
+	InOut.command_pid_update              = 0x0;
 
-	InOut.status_word     = 0x0000;  		// not set
-	InOut.operation_mode_display = 0x00; 	/* no operation mode selected */
+	InOut.statusword                      = 0x0000;
+	InOut.op_mode_display                 = 0x00;
 
-	InOut.torque_actual   = 0x0;
-	InOut.velocity_actual = 0x0;
-	InOut.position_actual = 0x0;
+	InOut.torque_value                    = 0x0;
+	InOut.velocity_value                  = 0x0;
+	InOut.position_value                  = 0x0;
 
-	InOut.user1_out       = 0x0;
-	InOut.user2_out       = 0x0;
-	InOut.user3_out       = 0x0;
-	InOut.user4_out       = 0x0;
+	InOut.additional_feedbacksensor_value = 0x0;
+	InOut.tuning_result                   = 0x0;
 
 	return InOut;
 }
 
-int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &InOut)
+int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &inout)
 {
 
 	unsigned char buffer[MAX_PDO_SIZE];
@@ -51,65 +49,43 @@ int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t
 	//Test for matching number of words
 	if(count > 0)
 	{
-		InOut.control_word    = (((uint16_t)buffer[1] << 8) | (buffer[0])) & 0xffff;
-		InOut.operation_mode  = (int8_t)(buffer[2] & 0xff);
-		InOut.target_torque   = (((int16_t)buffer[4] << 8)  | (buffer[3])) & 0xffff;
-		InOut.target_position = ((int32_t)buffer[8]  << 24) | ((int32_t)buffer[7]  << 16) | ((int32_t)buffer[6]  << 8) | buffer[5];
-		InOut.target_velocity = ((int32_t)buffer[12] << 24) | ((int32_t)buffer[11] << 16) | ((int32_t)buffer[10] << 8) | buffer[9];
-		InOut.user1_in        = ((int32_t)buffer[16] << 24) | ((int32_t)buffer[15] << 16) | ((int32_t)buffer[14] << 8) | buffer[13];
-		InOut.user2_in        = ((int32_t)buffer[20] << 24) | ((int32_t)buffer[19] << 16) | ((int32_t)buffer[18] << 8) | buffer[17];
-		InOut.user3_in        = ((int32_t)buffer[24] << 24) | ((int32_t)buffer[23] << 16) | ((int32_t)buffer[22] << 8) | buffer[21];
-		InOut.user4_in        = ((int32_t)buffer[28] << 24) | ((int32_t)buffer[27] << 16) | ((int32_t)buffer[26] << 8) | buffer[25];
-#if 0
-        printhexln(InOut.control_word);
-        printhexln(InOut.operation_mode);
-        printhexln(InOut.target_torque);
-        printhexln(InOut.target_position);
-        printhexln(InOut.target_velocity);
-#endif
+		inout.controlword = buffer[0] << 8 | buffer[1];
+		inout.op_mode = buffer[2];
+		inout.target_torque = buffer[3] << 8 | buffer[4];
+		inout.target_position = buffer[5] << 24 | buffer[6] << 16 | buffer[7] << 8 | buffer[8];
+		inout.target_velocity = buffer[9] << 24 | buffer[10] << 16 | buffer[11] << 8 | buffer[12];
+		inout.offset_torque = buffer[13] << 24 | buffer[14] << 16 | buffer[15] << 8 | buffer[16];
+		inout.tuning_status = buffer[17] << 24 | buffer[18] << 16 | buffer[19] << 8 | buffer[20];
+		inout.tuning_control = buffer[21] << 24 | buffer[22] << 16 | buffer[23] << 8 | buffer[24];
+		inout.command_pid_update = buffer[25] << 24 | buffer[26] << 16 | buffer[27] << 8 | buffer[28];
 	}
 
 	size_t pdo_count = 0;
 	if(count > 0)
 	{
-		buffer[pdo_count++]  = InOut.status_word        & 0xff;
-		buffer[pdo_count++]  = (InOut.status_word >> 8) & 0xff;
+		buffer[0] = inout.statusword;
+		buffer[1] = inout.statusword >> 8;
+		buffer[2] = inout.op_mode_display;
+		buffer[3] = inout.position_value;
+		buffer[4] = inout.position_value >> 8;
+		buffer[5] = inout.position_value >> 16;
+		buffer[6] = inout.position_value >> 24;
+		buffer[7] = inout.velocity_value;
+		buffer[8] = inout.velocity_value >> 8;
+		buffer[9] = inout.velocity_value >> 16;
+		buffer[10] = inout.velocity_value >> 24;
+		buffer[11] = inout.torque_value;
+		buffer[12] = inout.torque_value >> 8;
+		buffer[13] = inout.additional_feedbacksensor_value;
+		buffer[14] = inout.additional_feedbacksensor_value >> 8;
+		buffer[15] = inout.additional_feedbacksensor_value >> 16;
+		buffer[16] = inout.additional_feedbacksensor_value >> 24;
+		buffer[17] = inout.tuning_result;
+		buffer[18] = inout.tuning_result >> 8;
+		buffer[19] = inout.tuning_result >> 16;
+		buffer[20] = inout.tuning_result >> 24;
 
-		buffer[pdo_count++]  = (InOut.operation_mode_display & 0xff);
-
-		buffer[pdo_count++]  = InOut.position_actual         & 0xff;
-		buffer[pdo_count++]  = (InOut.position_actual >> 8)  & 0xff;
-		buffer[pdo_count++]  = (InOut.position_actual >> 16) & 0xff;
-		buffer[pdo_count++]  = (InOut.position_actual >> 24) & 0xff;
-
-		buffer[pdo_count++]  = InOut.velocity_actual         & 0xff;
-		buffer[pdo_count++]  = (InOut.velocity_actual >> 8)  & 0xff;
-		buffer[pdo_count++]  = (InOut.velocity_actual >> 16) & 0xff;
-		buffer[pdo_count++] = (InOut.velocity_actual >> 24) & 0xff;
-
-		buffer[pdo_count++] = InOut.torque_actual        & 0xff;
-		buffer[pdo_count++] = (InOut.torque_actual >> 8) & 0xff;
-
-		buffer[pdo_count++] = InOut.user1_out         & 0xff;
-		buffer[pdo_count++] = (InOut.user1_out >> 8)  & 0xff;
-		buffer[pdo_count++] = (InOut.user1_out >> 16) & 0xff;
-		buffer[pdo_count++] = (InOut.user1_out >> 24) & 0xff;
-
-		buffer[pdo_count++] = InOut.user2_out         & 0xff;
-		buffer[pdo_count++] = (InOut.user2_out >> 8)  & 0xff;
-		buffer[pdo_count++] = (InOut.user2_out >> 16) & 0xff;
-		buffer[pdo_count++] = (InOut.user2_out >> 24) & 0xff;
-
-		buffer[pdo_count++] = InOut.user3_out         & 0xff;
-		buffer[pdo_count++] = (InOut.user3_out >> 8)  & 0xff;
-		buffer[pdo_count++] = (InOut.user3_out >> 16) & 0xff;
-		buffer[pdo_count++] = (InOut.user3_out >> 24) & 0xff;
-
-		buffer[pdo_count++] = InOut.user4_out         & 0xff;
-		buffer[pdo_count++] = (InOut.user4_out >> 8)  & 0xff;
-		buffer[pdo_count++] = (InOut.user4_out >> 16) & 0xff;
-		buffer[pdo_count++] = (InOut.user4_out >> 24) & 0xff;
-
+                pdo_count = 21;
 		i_pdo.set_pdos_value(buffer, pdo_count);
 	}
 	return count;
@@ -132,35 +108,78 @@ int pdo_get_target_position(pdo_handler_values_t InOut)
 
 int pdo_get_controlword(pdo_handler_values_t InOut)
 {
-    return InOut.control_word;
+    return InOut.controlword;
 }
 
 int pdo_get_opmode(pdo_handler_values_t InOut)
 {
-    return InOut.operation_mode;
+    return InOut.op_mode;
 }
 
-void pdo_set_actual_torque(int actual_torque, pdo_handler_values_t &InOut)
+void pdo_set_torque_value(int actual_torque, pdo_handler_values_t &InOut)
 {
-    InOut.torque_actual = actual_torque;
+    InOut.torque_value = actual_torque;
 }
 
-void pdo_set_actual_velocity(int actual_velocity, pdo_handler_values_t &InOut)
+void pdo_set_velocity_value(int actual_velocity, pdo_handler_values_t &InOut)
 {
-    InOut.velocity_actual = actual_velocity;
+    InOut.velocity_value = actual_velocity;
 }
 
-void pdo_set_actual_position(int actual_position, pdo_handler_values_t &InOut)
+void pdo_set_position_value(int actual_position, pdo_handler_values_t &InOut)
 {
-    InOut.position_actual = actual_position;
+    InOut.position_value = actual_position;
 }
 
 void pdo_set_statusword(int statusword, pdo_handler_values_t &InOut)
 {
-    InOut.status_word = statusword & 0xffff;
+    InOut.statusword = statusword & 0xffff;
 }
 
 void pdo_set_opmode_display(int opmode, pdo_handler_values_t &InOut)
 {
-    InOut.operation_mode_display = opmode & 0xff;
+    InOut.op_mode_display = opmode & 0xff;
 }
+
+int pdo_get_offset_torque(pdo_handler_values_t &InOut)
+{
+    return InOut.offset_torque;
+}
+
+int pdo_get_tuning_status(pdo_handler_values_t &InOut)
+{
+    return InOut.tuning_status;
+}
+
+int pdo_get_tuning_control(pdo_handler_values_t &InOut)
+{
+    return InOut.tuning_control;
+}
+
+int pdo_get_command_pid_update(pdo_handler_values_t &InOut)
+{
+    return InOut.command_pid_update;
+}
+
+void pdo_set_tuning_result(int value, pdo_handler_values_t &InOut)
+{
+    InOut.tuning_result = value;
+}
+
+void pdo_set_additional_feedbacksensor_value(int value, pdo_handler_values_t &InOut)
+{
+    InOut.additional_feedbacksensor_value = value;
+}
+
+#if 0 /* DON'T COMMIT */
+/* template for getter and setter functions to access PDOs */
+int pdo_get_NAME(pdo_handler_values_t &InOut)
+{
+    return InOut.NAME;
+}
+
+void pdo_set_NAME(int value, pdo_handler_values &InOut)
+{
+    InOut.NAME = value;
+}
+#endif

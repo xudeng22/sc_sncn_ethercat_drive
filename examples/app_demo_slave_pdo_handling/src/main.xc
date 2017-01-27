@@ -88,6 +88,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 		InOut.user4_out = InOut.user4_in;
 #endif
 
+#if 0
 		if(InOutOld.control_word != InOut.control_word)
 		{
 			printstr("\nMotor: ");
@@ -117,7 +118,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 			printstr("\nTorque: ");
 			printintln(InOut.target_torque);
 		}
-
+#endif
 	   InOutOld.control_word 	= InOut.control_word;
 	   InOutOld.target_position = InOut.target_position;
 	   InOutOld.target_velocity = InOut.target_velocity;

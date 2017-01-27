@@ -12,13 +12,16 @@
 #include "canod_constants.h"
 #include "canopen_service.h"
 
-void canopen_service(server interface i_co_communication i_co[3])
+[[distributable]]
+void canopen_service(server interface i_co_communication i_co[n], unsigned n)
 {
     pdo_values_t InOut;
     pdo_size_t pdo_buffer[PDO_BUFFER_SIZE];
     unsigned pdo_size = 0;
 
     int configuration_done = 0;
+
+    printstrln("Start CANopen Service");
 
     while (1)
     {
@@ -46,7 +49,7 @@ void canopen_service(server interface i_co_communication i_co[3])
             case i_co[int j].get_all_list_length(uint32_t list_out[]):
                     unsigned list[5];
                     canod_get_all_list_length(list);
-                    memcpy(list_out, list, 5); // FIXME SIZEOF !!!!!!!!!!!!!!!!!!!!!!!!!!
+                    memcpy(list_out, list, 5 * sizeof(unsigned));
                     break;
 
             case i_co[int j].get_list(unsigned list_out[], unsigned size, unsigned listtype) -> {int size_out}:
@@ -79,14 +82,14 @@ void canopen_service(server interface i_co_communication i_co[3])
 
             case i_co[int j].pdo_in_com(unsigned int size_in, pdo_size_t data_in[]):
                 pdo_size = size_in;
-                memcpy(pdo_buffer, data_in, pdo_size);
+                memcpy(pdo_buffer, data_in, pdo_size * sizeof(pdo_size_t));
                 pdo_decode(pdo_buffer, InOut);
                 //printintln(InOut.a)
                 break;
 
             case i_co[int j].pdo_out_com(pdo_size_t data_out[]) -> { unsigned int size_out }:
                 pdo_encode(pdo_buffer, InOut);
-                memcpy(data_out, pdo_buffer, pdo_size);
+                memcpy(data_out, pdo_buffer, pdo_size * sizeof(pdo_size_t));
                 size_out = pdo_size;
                 break;
 

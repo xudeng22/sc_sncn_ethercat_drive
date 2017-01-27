@@ -19,24 +19,24 @@
 
 /*
  * @brief Print whole object dictionary
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  */
-void print_object_dictionary(client interface ODCommunicationInterface i_od);
+void print_object_dictionary(client interface i_co_communication i_co);
 
 /**
  * @brief read homing parameters from CANopen object dictionary
  *
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  * @return homing_method
  * @return limit_switch_type
  *
  */
-{int, int} homing_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int} homing_sdo_update(client interface i_co_communication i_co);
 
 /**
  * @brief read profile velocity params from CANopen object dictionary
  *
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  * @return max_profile_velocity
  * @return profile_acceleration
  * @return profile_deceleration
@@ -44,47 +44,47 @@ void print_object_dictionary(client interface ODCommunicationInterface i_od);
  * @return polarity
  *
  */
-{int, int, int, int, int} pv_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int, int, int, int} pv_sdo_update(client interface i_co_communication i_co);
 
 /**
  * @brief read profile torque params from CANopen object dictionary
  *
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  * @return torque_slope
  * @return polarity
  *
  */
-{int, int} pt_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int} pt_sdo_update(client interface i_co_communication i_co);
 
 
 /**
  * @brief read cyclic synchronous torque params from CANopen object dictionary
  *
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  * @return max_motor_speed
  * @return polarity
  * @return max_torque
  *
  */
-{int, int, int} cst_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int, int} cst_sdo_update(client interface i_co_communication i_co);
 
 
 /**
  * @brief read cyclic synchronous velocity params from CANopen object dictionary
  *
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  * @return max_motor_speed
  * @return polarity
  * @return max_acceleration
  *
  */
-{int, int, int} csv_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int, int} csv_sdo_update(client interface i_co_communication i_co);
 
 
 /**
  * @brief read cyclic synchronous position params from CANopen object dictionary
  *
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  * @return max_motor_speed
  * @return polarity
  * @return min position
@@ -92,48 +92,48 @@ void print_object_dictionary(client interface ODCommunicationInterface i_od);
  * @return max_acceleration
  *
  */
-{int, int, int, int, int} csp_sdo_update(client interface ODCommunicationInterface i_od);
+{int, int, int, int, int} csp_sdo_update(client interface i_co_communication i_co);
 
 
 /**
  * @brief Update cyclic synchronous torque parameters from CANopen object dictionary
  *
  * @param cst_params struct defines the cyclic synchronous torque params
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  */
-void update_cst_param_ecat(ProfilerConfig &cst_params, client interface ODCommunicationInterface i_od);
+void update_cst_param_ecat(ProfilerConfig &cst_params, client interface i_co_communication i_co);
 
 
 /**
  * @brief Update cyclic synchronous velocity parameters from CANopen object dictionary
  *
  * @param csv_params struct defines the cyclic synchronous velocity params
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  */
-void update_csv_param_ecat(ProfilerConfig &csv_params, client interface ODCommunicationInterface i_od);
+void update_csv_param_ecat(ProfilerConfig &csv_params, client interface i_co_communication i_co);
 
 
 /**
  * @brief Update cyclic synchronous position parameters from CANopen object dictionary
  *
  * @param csp_params struct defines the cyclic synchronous position params
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  */
-void update_csp_param_ecat(ProfilerConfig &csp_params, client interface ODCommunicationInterface i_od);
+void update_csp_param_ecat(ProfilerConfig &csp_params, client interface i_co_communication i_co);
 
 /**
  * @brief Update profile torque parameters from CANopen object dictionary
  *
  * @param pt_params struct defines the profile torque params
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  */
-void update_pt_param_ecat(ProfilerConfig &pt_params, client interface ODCommunicationInterface i_od);
+void update_pt_param_ecat(ProfilerConfig &pt_params, client interface i_co_communication i_co);
 
 /**
  * @brief Update profile velocity parameters from CANopen object dictionary
  *
  * @param pv_params struct defines the profile velocity params
- * @param i_od CANopen service communication Interface
+ * @param i_co CANopen service communication Interface
  */
-void update_pv_param_ecat(ProfilerConfig &pv_params, client interface ODCommunicationInterface i_od);
+void update_pv_param_ecat(ProfilerConfig &pv_params, client interface i_co_communication i_co);
 

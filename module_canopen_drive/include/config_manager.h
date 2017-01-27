@@ -16,21 +16,21 @@
  */
 
 void cm_sync_config_position_feedback(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
         PositionFeedbackConfig &config);
 
 void cm_sync_config_motor_control(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         client interface MotorcontrolInterface ?i_commutation,
         MotorcontrolConfig &commutation_params);
 
 void cm_sync_config_profiler(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         ProfilerConfig &profiler);
 
 void cm_sync_config_pos_velocity_control(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         client interface PositionVelocityCtrlInterface i_position_control,
         PosVelocityControlConfig &position_config);
 
@@ -40,19 +40,19 @@ void cm_sync_config_pos_velocity_control(
  */
 
 void cm_default_config_position_feedback(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
         PositionFeedbackConfig &config);
 
 void cm_default_config_motor_control(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         client interface MotorcontrolInterface ?i_commutation,
         MotorcontrolConfig &commutation_params);
 
 void cm_default_config_profiler(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         ProfilerConfig &profiler);
 
 void cm_default_config_pos_velocity_control(
-        client interface ODCommunicationInterface i_od,
+        client interface i_co_communication i_co,
         client interface PositionVelocityCtrlInterface i_position_control);

@@ -26,15 +26,13 @@
  * @param i_position_feedback Inteface to Position Feedback Service.
  */
 void canopen_drive_service(ProfilerConfig &profiler_config,
-                            client interface PDOCommunicationInterface i_pdo,
-                            client interface ODCommunicationInterface i_od,
+                            client interface i_co_communication i_co,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback);
 
 void canopen_drive_service_debug(ProfilerConfig &profiler_config,
-                            client interface PDOCommunicationInterface i_pdo,
-                            client interface ODCommunicationInterface i_od,
+                            client interface i_co_communication i_co,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback);

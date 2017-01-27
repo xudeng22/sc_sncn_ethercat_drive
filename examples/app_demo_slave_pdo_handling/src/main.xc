@@ -59,7 +59,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 	uint16_t status = 255;
 	int i = 0;
 	pdo_handler_values_t InOut;
-	pdo_handler_values_t InOutOld;
+	pdo_handler_values_t InOutOld = { 0 };
 	InOut = pdo_handler_init();
 	t :> time;
 
@@ -75,29 +75,30 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 			i = 100;
 		}
 
-		InOut.position_actual = InOut.target_position;
-		InOut.torque_actual = InOut.target_torque;
-		InOut.velocity_actual = InOut.target_velocity;
-		InOut.status_word = InOut.control_word;
-		InOut.operation_mode_display = InOut.operation_mode;
+		InOut.position_value = InOut.target_position;
+		InOut.torque_value = InOut.target_torque;
+		InOut.velocity_value = InOut.target_velocity;
+		InOut.statusword = InOut.controlword;
+		InOut.op_mode_display = InOut.op_mode;
 
-#if 1 /* Mirror user defined fields */
-		InOut.user1_out = InOut.user1_in;
-		InOut.user2_out = InOut.user2_in;
-		InOut.user3_out = InOut.user3_in;
-		InOut.user4_out = InOut.user4_in;
-#endif
+		InOut.additional_feedbacksensor_value = InOut.offset_torque;
+		InOut.tuning_result = InOut.tuning_status;
 
-		if(InOutOld.control_word != InOut.control_word)
+		/*
+		 *  The PDOs InOut.tuning_control and InOut.command_pid_update don't have
+		 * a associated incoming PDO so they are left out.
+		 */
+
+		if(InOutOld.controlword != InOut.controlword)
 		{
 			printstr("\nMotor: ");
-			printintln(InOut.control_word);
+			printintln(InOut.controlword);
 		}
 
-		if(InOutOld.operation_mode != InOut.operation_mode )
+		if(InOutOld.op_mode != InOut.op_mode )
 		{
 			printstr("\nOperation mode: ");
-			printintln(InOut.operation_mode);
+			printintln(InOut.op_mode);
 		}
 
 		if(InOutOld.target_position != InOut.target_position)
@@ -118,42 +119,26 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 			printintln(InOut.target_torque);
 		}
 
-	   InOutOld.control_word 	= InOut.control_word;
+	   InOutOld.controlword 	= InOut.controlword;
 	   InOutOld.target_position = InOut.target_position;
 	   InOutOld.target_velocity = InOut.target_velocity;
-	   InOutOld.target_torque = InOut.target_torque;
-	   InOutOld.operation_mode = InOut.operation_mode;
+	   InOutOld.target_torque   = InOut.target_torque;
+	   InOutOld.op_mode         = InOut.op_mode;
 
-#if 0 /* Print user PDOs */
-	   if (InOutOld.user1_in != InOut.user1_in)
+	   if (InOutOld.offset_torque != InOut.offset_torque)
 	   {
-	       printstr("\nUser 1 Data: ");
-	       printhexln(InOut.user1_in);
+	       printstr("\nOffset Torque Data: ");
+	       printhexln(InOut.offset_torque);
 	   }
 
-	   if (InOutOld.user2_in != InOut.user2_in)
+	   if (InOutOld.tuning_status != InOut.tuning_status)
 	   {
-	       printstr("User 2 Data: ");
-	       printhexln(InOut.user2_in);
+	       printstr("Tuning Status Data: ");
+	       printhexln(InOut.tuning_status);
 	   }
 
-	   if (InOutOld.user3_in != InOut.user3_in)
-	   {
-	       printstr("User 1 Data: ");
-	       printhexln(InOut.user3_in);
-	   }
-
-	   if (InOutOld.user4_in != InOut.user4_in)
-	   {
-	       printstr("User 1 Data: ");
-	       printhexln(InOut.user4_in);
-	   }
-#endif
-
-	   InOutOld.user1_in        = InOut.user1_in;
-	   InOutOld.user2_in        = InOut.user2_in;
-	   InOutOld.user3_in        = InOut.user3_in;
-	   InOutOld.user4_in        = InOut.user4_in;
+	   InOutOld.offset_torque        = InOut.offset_torque;
+	   InOutOld.tuning_status        = InOut.tuning_status;
 
 	   t when timerafter(time+delay) :> time;
 	}

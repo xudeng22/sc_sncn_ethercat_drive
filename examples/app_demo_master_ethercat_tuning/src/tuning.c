@@ -260,7 +260,7 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
     } else {
         if (config->data != NULL) { //save to file
             FILE *fd = fopen(filename, "w");
-            fprintf(fd, "count,target position,position,velocity,torque\n");
+            fprintf(fd, "count,target value,position,velocity,torque\n");
             for (int i=0 ; i<config->count ; i++) {
                 fprintf(fd, "%d,%d,%d,%d,%d\n", i, config->data[i].target_position, config->data[i].position, config->data[i].velocity, config->data[i].torque);
             }

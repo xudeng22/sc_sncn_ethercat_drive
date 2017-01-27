@@ -93,7 +93,7 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                 size_out = pdo_size;
                 break;
 
-            case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in }:
+            case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out}:
                 InOut.status_word    = pdo_out.status_word;
                 InOut.operation_mode_display  = pdo_out.operation_mode_display;
                 InOut.actual_torque   = pdo_out.actual_torque;
@@ -113,6 +113,10 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                 pdo_in.user2_in        = InOut.user2_in;
                 pdo_in.user3_in        = InOut.user3_in;
                 pdo_in.user4_in        = InOut.user4_in;
+
+                status_out = (pdo_size > 0) ? 1 : 0;
+                pdo_size = 0;
+
                break;
         }
     }

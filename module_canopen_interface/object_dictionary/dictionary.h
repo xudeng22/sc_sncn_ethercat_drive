@@ -20,10 +20,6 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	 *
 	 * Mode Bits: csp, csv, cst
 	 */
-#if 0
-	{ 0x1000, 0, DEFTYPE_UNSIGNED32, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x0007, 0x00000000, "Device Type" }, /* FIXME why is this entry not readable in opmode */
-	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x0007, 0x70020192, "Device Type" }, /* FIXME why is this entry not readable in opmode */
-#endif
 	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x0007, 0x00020192, "Device Type" }, /* FIXME why is this entry not readable in opmode */
 	{ 0x1001, 0, 0, DEFTYPE_UNSIGNED8, CANOD_TYPE_VAR, 8, 0x0007, 0x00,  "Error Register" },
 	/* identity object */
@@ -94,9 +90,6 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ CIA402_SOFTWARE_POSITION_LIMIT, 2, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, 0x003f, 0, "Max Software Postition Range Limit"},
 	{ CIA402_VELOCITY_OFFSET, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Velocity Offset" }, /* csp */
 	{ CIA402_TORQUE_OFFSET, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Torque Offset" }, /* csv, csp */
-//	{ CIA402_INTERPOL_TIME_PERIOD, 0, 0, DEFTYPE_UNSIGNED8, CANOD_TYPE_RECORD, 8, 0x0007, 2, "Interpolation Time Period"}, /* csv, csp, cst */
-//	{ CIA402_INTERPOL_TIME_PERIOD, 1, 0, DEFTYPE_UNSIGNED8, CANOD_TYPE_RECORD, 8, 0x003f, 1, "Interpolation Time Unit"}, /* value range: 1..255msec */
-//	{ CIA402_INTERPOL_TIME_PERIOD, 2, 0, DEFTYPE_INTEGER8,  CANOD_TYPE_RECORD, 8, 0x003f, -3, "Interpolation Time Index"}, /* value range: -3, -4 (check!)*/
 	{ CIA402_FOLLOWING_ERROR,         0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Following Error" },
 	{ CIA402_TARGET_VELOCITY, 0, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Target Velocity" }, /* csv */
 	/* FIXME new objects, change description accordingly */
@@ -110,13 +103,10 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ CIA402_MAX_PROFILE_VELOCITY,    0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Max Profile Velocity" },
 	{ CIA402_MAX_MOTOR_SPEED,         0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR,  32, 0x003f, 0,   "Max Motor Speed" },
 	{ CIA402_PROFILE_VELOCITY,        0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Profile Velocity" },
-//  { CIA402_END_VELOCITY,            0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR,  32, 0x003f, 0,   "End Velocity" },
 	{ CIA402_PROFILE_ACCELERATION,    0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Profile Acceleration" },
 	{ CIA402_PROFILE_DECELERATION,    0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Profile Deceleration" },
 	{ CIA402_QUICK_STOP_DECELERATION, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Quick Stop Deceleration" },
-//  { CIA402_MOTION_PROFILE_TYPE,     0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Motion Profile Type" },
 	{ CIA402_TORQUE_SLOPE,            0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR,  32, 0x003f, 0,   "Torque Slope" },
-//  { CIA402_TORQUE_PROFILE_TYPE,     0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Torque Profile Type" },
 	{ CIA402_POSITION_ENC_RESOLUTION, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR,  32, 0x003f, 0,   "Position Encoder Resolution" },
 	{ CIA402_GEAR_RATIO,              0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Gear Ratio" },
 	{ CIA402_MAX_ACCELERATION,    	  0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Max Acceleration" },
@@ -128,8 +118,6 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ MOTOR_WINDING_TYPE,	          0, 0,	DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 	  8, 0x003f, 0,   "Motor Winding Type"},
 	{ SNCN_SENSOR_POLARITY,	         	  0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 	 16, 0x003f, 1,   "Position Sensor Polarity"},
 	{ LIMIT_SWITCH_TYPE,			  0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 	  8, 0x003f, 0,   "Limit Switch Type"},
-//  { CIA402_POSITIVE_TORQUE_LIMIT,   0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Positive Torque Limit" },
-//  { CIA402_NEGATIVE_TORQUE_LIMIT,   0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Negative Torque Limit" },
 	{ CIA402_MOTOR_TYPE,              0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR,  16, 0x003f, 0,   "Motor Type" },
 	/* the following objects are vendor specific and defined by CiA402_Objects.xlsx */
 	{ CIA402_MOTOR_SPECIFIC,          0, 0, DEFTYPE_UNSIGNED8,  CANOD_TYPE_ARRAY,    8, 0x0007, 6,   "Motor Specific Settings" },

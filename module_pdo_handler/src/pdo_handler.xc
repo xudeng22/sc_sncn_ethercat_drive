@@ -49,15 +49,15 @@ int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t
 	//Test for matching number of words
 	if(count > 0)
 	{
-		inout.controlword = buffer[0] << 8 | buffer[1];
+		inout.controlword = buffer[1] << 8 | buffer[0];
 		inout.op_mode = buffer[2];
-		inout.target_torque = buffer[3] << 8 | buffer[4];
-		inout.target_position = buffer[5] << 24 | buffer[6] << 16 | buffer[7] << 8 | buffer[8];
-		inout.target_velocity = buffer[9] << 24 | buffer[10] << 16 | buffer[11] << 8 | buffer[12];
-		inout.offset_torque = buffer[13] << 24 | buffer[14] << 16 | buffer[15] << 8 | buffer[16];
-		inout.tuning_status = buffer[17] << 24 | buffer[18] << 16 | buffer[19] << 8 | buffer[20];
-		inout.tuning_control = buffer[21] << 24 | buffer[22] << 16 | buffer[23] << 8 | buffer[24];
-		inout.command_pid_update = buffer[25] << 24 | buffer[26] << 16 | buffer[27] << 8 | buffer[28];
+		inout.target_torque = buffer[4] << 8 | buffer[3];
+		inout.target_position = buffer[8] << 24 | buffer[7] << 16 | buffer[6] << 8 | buffer[5];
+		inout.target_velocity = buffer[12] << 24 | buffer[11] << 16 | buffer[10] << 8 | buffer[9];
+		inout.offset_torque = buffer[16] << 24 | buffer[15] << 16 | buffer[14] << 8 | buffer[13];
+		inout.tuning_status = buffer[20] << 24 | buffer[19] << 16 | buffer[18] << 8 | buffer[17];
+		inout.tuning_control = buffer[24] << 24 | buffer[23] << 16 | buffer[22] << 8 | buffer[21];
+		inout.command_pid_update = buffer[28] << 24 | buffer[27] << 16 | buffer[26] << 8 | buffer[25];
 	}
 
 	size_t pdo_count = 0;

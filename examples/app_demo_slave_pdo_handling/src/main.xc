@@ -65,6 +65,7 @@ static void pdo_service(client interface i_co_communication i_co)
 	sdo_configuration(i_co);
 
 	printstrln("Starting PDO protocol");
+
 	while(1)
 	{
 		InOut = i_co.pdo_exchange_app(InOut);
@@ -87,9 +88,11 @@ static void pdo_service(client interface i_co_communication i_co)
 		InOut.user4_out = InOut.user4_in;
 #endif
 
+#if 0
+
 		if(InOutOld.control_word != InOut.control_word)
 		{
-			printstr("\nMotor: ");
+			printstr("\nControl word: ");
 			printintln(InOut.control_word);
 		}
 
@@ -116,6 +119,7 @@ static void pdo_service(client interface i_co_communication i_co)
 			printstr("\nTorque: ");
 			printintln(InOut.target_torque);
 		}
+#endif
 
 	   InOutOld.control_word 	= InOut.control_word;
 	   InOutOld.target_position = InOut.target_position;
@@ -127,25 +131,25 @@ static void pdo_service(client interface i_co_communication i_co)
 	   if (InOutOld.user1_in != InOut.user1_in)
 	   {
 	       printstr("\nUser 1 Data: ");
-	       printhexln(InOut.user1_in);
+	       printintln(InOut.user1_in);
 	   }
 
 	   if (InOutOld.user2_in != InOut.user2_in)
 	   {
 	       printstr("User 2 Data: ");
-	       printhexln(InOut.user2_in);
+	       printintln(InOut.user2_in);
 	   }
 
 	   if (InOutOld.user3_in != InOut.user3_in)
 	   {
-	       printstr("User 1 Data: ");
-	       printhexln(InOut.user3_in);
+	       printstr("User 3 Data: ");
+	       printintln(InOut.user3_in);
 	   }
 
 	   if (InOutOld.user4_in != InOut.user4_in)
 	   {
-	       printstr("User 1 Data: ");
-	       printhexln(InOut.user4_in);
+	       printstr("User 4 Data: ");
+	       printintln(InOut.user4_in);
 	   }
 #endif
 
@@ -254,6 +258,7 @@ static void read_od_config(client interface i_co_communication i_co)
 }
 /*/DEBUG */
 
+
 int main(void)
 {
 	/* EtherCat Communication channels */
@@ -277,7 +282,7 @@ int main(void)
 		/* Test application handling pdos from EtherCat */
 		on tile[APP_TILE] :
 		{
-			pdo_service(i_co[1]);
+             pdo_service(i_co[1]);
 		}
 	}
 

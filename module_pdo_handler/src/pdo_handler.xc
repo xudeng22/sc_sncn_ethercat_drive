@@ -85,7 +85,7 @@ int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t
 		buffer[19] = inout.tuning_result >> 16;
 		buffer[20] = inout.tuning_result >> 24;
 
-                pdo_count = 21;
+		pdo_count = 21;
 		i_pdo.set_pdos_value(buffer, pdo_count);
 	}
 	return count;

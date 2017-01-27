@@ -27,8 +27,8 @@
 #define PDO_INDEX_POSITION_VALUE    2
 #define PDO_INDEX_VELOCITY_VALUE    3
 #define PDO_INDEX_TORQUE_VALUE      4
-#define PDO_INDEX_USER_IN_1         5
-#define PDO_INDEX_USER_IN_2         6
+#define PDO_INDEX_ADDITIONAL_FEEDBACKSENSOR_VALUE         5
+#define PDO_INDEX_TUNING_RESULT         6
 #define PDO_INDEX_USER_IN_3         7
 #define PDO_INDEX_USER_IN_4         8
 
@@ -38,8 +38,8 @@
 #define PDO_INDEX_TORQUE_REQUEST    2
 #define PDO_INDEX_POSITION_REQUEST  3
 #define PDO_INDEX_VELOCITY_REQUEST  4
-#define PDO_INDEX_USER_OUT_1        5
-#define PDO_INDEX_USER_OUT_2        6
+#define PDO_INDEX_OFFSET_TORQUE        5
+#define PDO_INDEX_TUNING_STATUS        6
 #define PDO_INDEX_USER_OUT_3        7
 #define PDO_INDEX_USER_OUT_4        8
 
@@ -203,29 +203,18 @@ int main(int argc, char *argv[])
                 sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_1);
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_ADDITIONAL_FEEDBACKSENSOR_VALUE);
             if (received == user_1) {
                 user_1 = (user_1 >= MAX_UINT32) ? 0 : user_1 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_1, user_1);
+                sncn_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, user_1);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_2);
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TUNING_RESULT);
             if (received == user_2) {
                 user_2 = (user_2 >= MAX_UINT32) ? 0 : user_2 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_2, user_2);
+                sncn_slave_set_out_value(slave, PDO_INDEX_TUNING_STATUS, user_2);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_3);
-            if (received == user_3) {
-                user_3 = (user_3 >= MAX_UINT32) ? 0 : user_3 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_3, user_3);
-            }
-
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
-            if (received == user_4) {
-                user_4 = (user_4 >= MAX_UINT32) ? 0 : user_4 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_4, user_4);
-            }
         }
 	}
 

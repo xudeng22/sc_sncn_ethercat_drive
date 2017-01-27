@@ -46,11 +46,6 @@ port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
 port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
 port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
 
-port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
-port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
-port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
-port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
-
 int main(void)
 {
     /* Motor control channels */
@@ -64,8 +59,7 @@ int main(void)
     interface PositionFeedbackInterface i_position_feedback[3];
 
     /* EtherCat Communication channels */
-    interface ODCommunicationInterface i_od[3];
-    interface PDOCommunicationInterface i_pdo;
+    interface i_co_communication i_co[3];
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
 
@@ -80,8 +74,7 @@ int main(void)
         {
             par {
 
-                ethercat_service(i_ecat_reboot, i_od,
-                                 i_pdo, null,
+                ethercat_service(i_ecat_reboot, i_co, null,
                                  i_foe, ethercat_ports);
 
 
@@ -106,13 +99,14 @@ int main(void)
 #if 0
 
             canopen_drive_service_debug( profiler_config,
-                                    i_pdo, i_od[1],
+                                    i_co[1],
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #else
             canopen_drive_service( profiler_config,
-                                    i_pdo, i_od[1],
-                        i_position_control[0], i_position_feedback[0]);
+                                    i_co[1],
+                                    i_motorcontrol[1],
+                                    i_position_control[0], i_position_feedback[0]);
 #endif
         }
 

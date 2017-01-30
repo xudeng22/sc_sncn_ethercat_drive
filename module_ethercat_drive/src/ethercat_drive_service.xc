@@ -150,7 +150,7 @@ static void inline update_configuration(
     profiler_config.ticks_per_turn = i_pos_feedback.get_ticks_per_turn();
     polarity = profiler_config.polarity;
 
-    nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+    nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
     sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
@@ -588,26 +588,26 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_P_VALUE; */
-            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_I_VALUE; */
-            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_D_VALUE; */
+            position_velocity_config.P_pos          = i_coe.get_object_value(DICT_POSITION_PID, 1); /* POSITION_P_VALUE; */
+            position_velocity_config.I_pos          = i_coe.get_object_value(DICT_POSITION_PID, 2); /* POSITION_I_VALUE; */
+            position_velocity_config.D_pos          = i_coe.get_object_value(DICT_POSITION_PID, 3); /* POSITION_D_VALUE; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            position_velocity_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-            position_velocity_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-            position_velocity_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+            position_velocity_config.P_velocity          = i_coe.get_object_value(DICT_VELOCITY_PID, 1); /* 18; */
+            position_velocity_config.I_velocity          = i_coe.get_object_value(DICT_VELOCITY_PID, 2); /* 22; */
+            position_velocity_config.D_velocity          = i_coe.get_object_value(DICT_VELOCITY_PID, 2); /* 25; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
 
         /*
-        motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
-        motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
-        motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+        motorcontrol_config.current_P_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 1);
+        motorcontrol_config.current_I_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 2);
+        motorcontrol_config.current_D_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 3);
          */
 #endif
 

@@ -106,9 +106,9 @@ void cm_sync_config_pos_velocity_control(
     position_config.min_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
     position_config.max_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
     position_config.polarity       = i_coe.get_object_value(CIA402_POLARITY, 0);
-    position_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-    position_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-    position_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+    position_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_P_VALUE; */
+    position_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_I_VALUE; */
+    position_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_D_VALUE; */
     //position_config.int32_cmd_limit_position     = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);/* 15000; */
     //position_config.int32_cmd_limit_position_min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);/* 15000; */
 
@@ -231,9 +231,9 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  1, position_config.min_pos);  /* -8000; */
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  2, position_config.max_pos);  /* 8000; */
     i_coe.set_object_value(CIA402_POLARITY, 0, position_config.polarity);
-    i_coe.set_object_value(CIA402_POSITION_GAIN, 1, position_config.P_pos); /* POSITION_Kp; */
-    i_coe.set_object_value(CIA402_POSITION_GAIN, 2, position_config.I_pos); /* POSITION_Ki; */
-    i_coe.set_object_value(CIA402_POSITION_GAIN, 3, position_config.D_pos); /* POSITION_Kd; */
+    i_coe.set_object_value(CIA402_POSITION_GAIN, 1, position_config.P_pos); /* POSITION_P_VALUE; */
+    i_coe.set_object_value(CIA402_POSITION_GAIN, 2, position_config.I_pos); /* POSITION_I_VALUE; */
+    i_coe.set_object_value(CIA402_POSITION_GAIN, 3, position_config.D_pos); /* POSITION_D_VALUE; */
     //position_config._cmd_limit_position     = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);/* 15000; */
     //position_config._cmd_limit_position_min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);/* 15000; */
 

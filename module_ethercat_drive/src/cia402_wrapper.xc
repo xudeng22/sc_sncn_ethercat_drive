@@ -22,7 +22,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 	printstr("motor torque constant: ");printintln(sdo_value);
     sdo_value = i_coe.get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0); //Commutation offset CLKWISE
     printstr("Commutation offset CLKWISE: ");printintln(sdo_value);
-//    sdo_value = i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0); //Commutation offset CCLKWISE
+//    sdo_value = i_coe.get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0); //Commutation offset CCLKWISE
 //    printstr("Commutation offset CCLKWISE: ");printintln(sdo_value);
 //    sdo_value = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); //Motor Winding type STAR = 1, DELTA = 2
 //    printstr("Motor Winding type: ");printintln(sdo_value);
@@ -103,7 +103,7 @@ void config_sdo_handler(client interface i_coe_communication i_coe)
 	int winding_type;
 
 	hall_offset_clk = i_coe.get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
-	hall_offset_cclk = i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0);
+	hall_offset_cclk = i_coe.get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0);
 	winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0);
 
 	return {hall_offset_clk, hall_offset_cclk, winding_type};

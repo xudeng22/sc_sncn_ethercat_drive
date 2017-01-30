@@ -121,7 +121,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.D_velocity          = i_coe.get_object_value(DICT_VELOCITY_PID, 2); /* 25; */
 
     //FIXME use a proper object to set the control mode
-    switch(i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0))
+    switch(i_coe.get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0))
     //set integral limits depending on the mode
     {
     case POS_PID_CONTROLLER:
@@ -246,7 +246,7 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_VELOCITY_PID, 3, position_config.D_velocity); /* 25; */
 
     //FIXME use a proper object to set the control mode
-    //i_coe.set_object_value(COMMUTATION_OFFSET_CCLKWISE, 0, position_config.control_mode); /* FIXME gone */
+    //i_coe.set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.control_mode); /* FIXME gone */
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us

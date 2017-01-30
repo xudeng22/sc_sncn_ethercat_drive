@@ -88,7 +88,7 @@ int main(void)
             profiler_config.max_position = MAX_POSITION_LIMIT;   /* Set by Object Dictionary value! */
             profiler_config.min_position = MIN_POSITION_LIMIT;   /* Set by Object Dictionary value! */
 
-            profiler_config.max_velocity = MAX_SPEED;
+            profiler_config.max_velocity = MAX_MOTOR_SPEED;
             profiler_config.max_acceleration = MAX_ACCELERATION;
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
@@ -118,8 +118,8 @@ int main(void)
                     pos_velocity_ctrl_config.min_pos =                              MIN_POSITION_LIMIT;
                     pos_velocity_ctrl_config.max_pos =                              MAX_POSITION_LIMIT;
                     pos_velocity_ctrl_config.pos_limit_threshold =                  POSITION_LIMIT_THRESHOLD;
-                    pos_velocity_ctrl_config.max_speed =                            MAX_SPEED;
-                    pos_velocity_ctrl_config.max_torque =                           TORQUE_CONTROL_LIMIT;
+                    pos_velocity_ctrl_config.max_speed =                            MAX_MOTOR_SPEED;
+                    pos_velocity_ctrl_config.max_torque =                           MAXIMUM_TORQUE;
                     pos_velocity_ctrl_config.polarity =                             POLARITY;
 
                     pos_velocity_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
@@ -128,15 +128,15 @@ int main(void)
 
                     pos_velocity_ctrl_config.control_mode =                         NL_POSITION_CONTROLLER;
 
-                    pos_velocity_ctrl_config.P_pos =                                POSITION_Kp;
-                    pos_velocity_ctrl_config.I_pos =                                POSITION_Ki;
-                    pos_velocity_ctrl_config.D_pos =                                POSITION_Kd;
+                    pos_velocity_ctrl_config.P_pos =                                POSITION_P_VALUE;
+                    pos_velocity_ctrl_config.I_pos =                                POSITION_I_VALUE;
+                    pos_velocity_ctrl_config.D_pos =                                POSITION_D_VALUE;
                     pos_velocity_ctrl_config.integral_limit_pos =                   POSITION_INTEGRAL_LIMIT;
                     pos_velocity_ctrl_config.j =                                    MOMENT_OF_INERTIA;
 
-                    pos_velocity_ctrl_config.P_velocity =                           VELOCITY_Kp;
-                    pos_velocity_ctrl_config.I_velocity =                           VELOCITY_Ki;
-                    pos_velocity_ctrl_config.D_velocity =                           VELOCITY_Kd;
+                    pos_velocity_ctrl_config.P_velocity =                           VELOCITY_P_VALUE;
+                    pos_velocity_ctrl_config.I_velocity =                           VELOCITY_I_VALUE;
+                    pos_velocity_ctrl_config.D_velocity =                           VELOCITY_D_VALUE;
                     pos_velocity_ctrl_config.integral_limit_velocity =              VELOCITY_INTEGRAL_LIMIT;
 
                     pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
@@ -195,12 +195,12 @@ int main(void)
                     motorcontrol_config.v_dc =  VDC;
                     motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
                     motorcontrol_config.polarity_type=MOTOR_POLARITY;
-                    motorcontrol_config.current_P_gain =  TORQUE_Kp;
-                    motorcontrol_config.current_I_gain =  TORQUE_Ki;
-                    motorcontrol_config.current_D_gain =  TORQUE_Kd;
+                    motorcontrol_config.current_P_gain =  TORQUE_P_VALUE;
+                    motorcontrol_config.current_I_gain =  TORQUE_I_VALUE;
+                    motorcontrol_config.current_D_gain =  TORQUE_D_VALUE;
                     motorcontrol_config.pole_pair =  POLE_PAIRS;
                     motorcontrol_config.commutation_sensor=MOTOR_COMMUTATION_SENSOR;
-                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
                     motorcontrol_config.hall_state_1_angle=HALL_STATE_1_ANGLE;
                     motorcontrol_config.hall_state_2_angle=HALL_STATE_2_ANGLE;
                     motorcontrol_config.hall_state_3_angle=HALL_STATE_3_ANGLE;
@@ -214,7 +214,7 @@ int main(void)
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
                     motorcontrol_config.rated_current =  RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;
-                    motorcontrol_config.percent_offset_torque =  PERCENT_OFFSET_TORQUE;
+                    motorcontrol_config.percent_offset_torque =  TUNING_TORQUE_PERCENT;
                     motorcontrol_config.recuperation = RECUPERATION;
                     motorcontrol_config.battery_e_max = BATTERY_E_MAX;
                     motorcontrol_config.battery_e_min = BATTERY_E_MIN;
@@ -222,7 +222,7 @@ int main(void)
                     motorcontrol_config.regen_p_min = REGEN_P_MIN;
                     motorcontrol_config.regen_speed_max = REGEN_SPEED_MAX;
                     motorcontrol_config.regen_speed_min = REGEN_SPEED_MIN;
-                    motorcontrol_config.protection_limit_over_current =  I_MAX;
+                    motorcontrol_config.protection_limit_over_current =  MAX_CURRENT;
                     motorcontrol_config.protection_limit_over_voltage =  V_DC_MAX;
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
 

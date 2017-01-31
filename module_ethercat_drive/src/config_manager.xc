@@ -31,15 +31,19 @@ static int tick2bits(int tick_resolution)
 void cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PositionFeedbackConfig &config)
+        PositionFeedbackConfig &config,
+        int sensor_index)
 {
     config = i_pos_feedback.get_config();
 
+    uint16_t feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_LIST, sensor_index);
+
     int old_sensor_type = config.sensor_type;
-    config.sensor_type = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-    config.polarity       = sext(i_coe.get_object_value(SNCN_SENSOR_POLARITY, 0), 8);
+    config.sensor_type = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_SENSOR_TYPE);
+    // FIXME is this sensor polarity missing in the configuration? Or parse object 0x607E (DICT_POLARITY)
+    //config.polarity       = sext(i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_SENSOR_POLARITY), 8);
     config.pole_pairs     = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS);
-    config.resolution = i_coe.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
+    config.resolution = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_RESOLUTION);
 
     i_pos_feedback.set_config(config);
     if (old_sensor_type != config.sensor_type) { //restart the service if the sensor type is changed
@@ -160,13 +164,15 @@ void cm_sync_config_pos_velocity_control(
 void cm_default_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PositionFeedbackConfig &config)
+        PositionFeedbackConfig &config,
+        int sensor_index)
 {
     config = i_pos_feedback.get_config();
 
-    i_coe.set_object_value(CIA402_SENSOR_SELECTION_CODE, 0, config.sensor_type);
-    i_coe.set_object_value(CIA402_POSITION_ENC_RESOLUTION, 0, config.resolution);
-    i_coe.set_object_value(SNCN_SENSOR_POLARITY, 0, config.polarity);
+    uint16_t feedback_sensor_index = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_LIST, sensor_index);
+    i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_SENSOR_TYPE, config.sensor_type);
+    i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_RESOLUTION, config.resolution);
+    //i_coe.set_object_value(SNCN_SENSOR_POLARITY, 0, config.polarity);
 
     if (config.pole_pairs != 0)
         i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS, config.pole_pairs);

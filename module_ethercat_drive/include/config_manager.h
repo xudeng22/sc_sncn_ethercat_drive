@@ -22,7 +22,8 @@
 void cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PositionFeedbackConfig &config);
+        PositionFeedbackConfig &config,
+        int sensor_index);
 
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
@@ -46,7 +47,8 @@ void cm_sync_config_pos_velocity_control(
 void cm_default_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PositionFeedbackConfig &config);
+        PositionFeedbackConfig &config,
+        int sensor_index);
 
 void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,

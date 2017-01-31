@@ -140,7 +140,8 @@ static void inline update_configuration(
     //position_feedback_config;
     //position_config;
 
-    cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
+    /* FIXME add support for more than one feedback sensor! */
+    cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config, 1);
     cm_sync_config_profiler(i_coe, profiler_config);
     cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
@@ -153,7 +154,16 @@ static void inline update_configuration(
     nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
-    sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
+
+    /* FIXME assumption: this sensor selection code is for the commutation sensor... */
+    int number_of_feedbacks = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_LIST, 0);
+    for (int i = 1; i <= number_of_feedbacks; i++) {
+        uint16_t sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_LIST, i);
+        int usage = i_coe.get_object_value(sensor_object, DICT_SUB_FEEDBACK_USAGE);
+        if (usage == 1) { /* FIXME introduce define or enum for Commutation or Feedback usage */
+            sensor_select = i;
+        }
+    }
 
     sensor_resolution = position_feedback_config.resolution;
 
@@ -297,7 +307,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
 
-    cm_default_config_position_feedback(i_coe, i_position_feedback, position_feedback_config);
+    /* FIXME add support for more than one feedback sensor */
+    cm_default_config_position_feedback(i_coe, i_position_feedback, position_feedback_config, 1);
     cm_default_config_profiler(i_coe, profiler_config);
     cm_default_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_coe, i_position_control);

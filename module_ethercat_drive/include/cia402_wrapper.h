@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <canod.h>
+#include <dictionary_symbols.h>
 
 #include <hall_service.h>
 #include <qei_service.h>

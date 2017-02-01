@@ -21,10 +21,14 @@
 /* internal qei single variable selection code */
 #define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX
 
-/*
- * FIXME: documentation missing
+/**
+ * @brief Debug function to print content of the boject dictionary
+ *
+ * FIXME: Update to print (again) the complete object dictionary
+ *
+ * @param i_coe interface to communicate with the dictionary service
  */
-void config_sdo_handler(client interface i_coe_communication i_coe);
+void config_print_dictionary(client interface i_coe_communication i_coe);
 
 /**
  * @brief read sensor select from EtherCAT

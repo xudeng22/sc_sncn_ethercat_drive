@@ -11,7 +11,7 @@
 
 #define CIA402WRAPPER_USE_OBSOLETE    0
 
-void config_sdo_handler(client interface i_coe_communication i_coe)
+void config_print_dictionary(client interface i_coe_communication i_coe)
 {
 	int sdo_value;
     sdo_value = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 3); // Number of pole pairs

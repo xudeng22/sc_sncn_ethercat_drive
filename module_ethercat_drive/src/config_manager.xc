@@ -257,8 +257,7 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_VELOCITY_PID, 2, position_config.I_velocity); /* 22; */
     i_coe.set_object_value(DICT_VELOCITY_PID, 3, position_config.D_velocity); /* 25; */
 
-    //FIXME use a proper object to set the control mode
-    //i_coe.set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.control_mode); /* FIXME gone */
+    //i_coe.set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.control_mode);
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us

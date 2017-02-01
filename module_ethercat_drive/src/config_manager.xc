@@ -70,8 +70,8 @@ void cm_sync_config_motor_control(
     motorcontrol_config.pole_pair          = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS);
     motorcontrol_config.max_torque         = i_coe.get_object_value(DICT_MAX_TORQUE, 0);
     //motorcontrol_config.max_current        = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
-    //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
-    //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
+    //motorcontrol_config.rated_current      = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
+    //motorcontrol_config.rated_torque       = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
     motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
     motorcontrol_config.current_P_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 1);
     motorcontrol_config.current_I_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 2);
@@ -201,8 +201,8 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_MAX_TORQUE, 0, motorcontrol_config.max_torque);
     i_coe.set_object_value(DICT_POLARITY, 0, motorcontrol_config.polarity_type);
     //motorcontrol_config.max_current        = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
-    //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
-    //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
+    //motorcontrol_config.rated_current      = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
+    //motorcontrol_config.rated_torque       = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
     i_coe.set_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0, motorcontrol_config.commutation_angle_offset);
     i_coe.set_object_value(DICT_TORQUE_PID, 1, motorcontrol_config.current_P_gain);
     i_coe.set_object_value(DICT_TORQUE_PID, 2, motorcontrol_config.current_I_gain);

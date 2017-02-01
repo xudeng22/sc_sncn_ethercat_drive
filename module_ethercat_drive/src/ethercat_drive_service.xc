@@ -414,7 +414,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_velocity_value(actual_velocity, InOut);
         pdo_set_torque_value(actual_torque, InOut );
         pdo_set_position_value(actual_position, InOut);
-        pdo_set_additional_feedbacksensor_value((1000 * 5 * send_to_master.sensor_torque) / 4096, InOut); /* FIXME Add missing documentation of the calculation! And simplify! */
+        pdo_set_additional_feedbacksensor_value((1000 * 5 * send_to_master.sensor_torque) / 4096, InOut); /* ticks to (edit:) milli-volt */
         pdo_set_tuning_result(tuning_result, InOut);
 
         //xscope_int(USER_TORQUE, (1000 * 5 * send_to_master.sensor_torque) / 4096);

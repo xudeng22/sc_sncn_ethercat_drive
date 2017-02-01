@@ -5,7 +5,6 @@
  */
 
 #include <stdint.h>
-#include <canod.h> /* FIXME removeable? */
 #include <dictionary_symbols.h>
 #include <position_feedback_service.h>
 #include "config_manager.h"

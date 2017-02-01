@@ -40,8 +40,11 @@ void cm_sync_config_position_feedback(
 
     int old_sensor_type = config.sensor_type;
     config.sensor_type = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_SENSOR_TYPE);
-    // FIXME is this sensor polarity missing in the configuration? Or parse object 0x607E (DICT_POLARITY)
-    //config.polarity       = sext(i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_SENSOR_POLARITY), 8);
+    // FIXME the polarity object changed to a uint8_t bitfield with
+    // - bit 7: polarity for position
+    // - bit 6: polarity for velocity
+    // where to figure out which polarity is necessary ot use?
+    config.polarity       = sext(i_coe.get_object_value(DICT_POLARITY, 0), 8);
     config.pole_pairs     = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS);
     config.resolution = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_RESOLUTION);
 
@@ -97,6 +100,7 @@ void cm_sync_config_profiler(
     //profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
     profiler.min_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 1);
     profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 2);
+    // @see FIXME in cm_sync_config_position_feedback()!
     profiler.polarity         =  i_coe.get_object_value(DICT_POLARITY, 0);
     //profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0); /* */
 }
@@ -110,6 +114,7 @@ void cm_sync_config_pos_velocity_control(
 
     position_config.min_pos = i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 1);  /* -8000; */
     position_config.max_pos = i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 2);  /* 8000; */
+    // @see FIXME in cm_sync_config_position_feedback()!
     position_config.polarity       = i_coe.get_object_value(DICT_POLARITY, 0);
     position_config.P_pos          = i_coe.get_object_value(DICT_POSITION_PID, 1); /* POSITION_P_VALUE; */
     position_config.I_pos          = i_coe.get_object_value(DICT_POSITION_PID, 2); /* POSITION_I_VALUE; */
@@ -172,7 +177,8 @@ void cm_default_config_position_feedback(
     uint16_t feedback_sensor_index = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_LIST, sensor_index);
     i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_SENSOR_TYPE, config.sensor_type);
     i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_RESOLUTION, config.resolution);
-    //i_coe.set_object_value(SNCN_SENSOR_POLARITY, 0, config.polarity);
+    // @see FIXME in cm_sync_config_position_feedback()!
+    i_coe.set_object_value(DICT_POLARITY, 0, config.polarity);
 
     if (config.pole_pairs != 0)
         i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS, config.pole_pairs);

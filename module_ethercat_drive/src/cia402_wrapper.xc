@@ -128,7 +128,7 @@ void config_print_dictionary(client interface i_coe_communication i_coe)
 	//int motor_torque_constant;
 
 	//nominal_current = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 1);
-	max_motor_speed = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 4);
+	max_motor_speed = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
 	polarity = i_coe.get_object_value(DICT_POLARITY, 0);
 	max_torque = i_coe.get_object_value(DICT_MAX_TORQUE, 0);
 	//motor_torque_constant = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 6);
@@ -146,7 +146,7 @@ void config_print_dictionary(client interface i_coe_communication i_coe)
 	int max_acceleration;
 
 	//nominal_current = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 1);
-	max_motor_speed = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 4);
+	max_motor_speed = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
 	//motor_torque_constant = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 6);
 
 	polarity = i_coe.get_object_value(DICT_POLARITY, 0);
@@ -164,7 +164,7 @@ void config_print_dictionary(client interface i_coe_communication i_coe)
 	int max;
 	int max_acc;
 
-	max_motor_speed = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 4);
+	max_motor_speed = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
 	polarity = i_coe.get_object_value(DICT_POLARITY, 0);
 	//nominal_current = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 1);
 	min = i_coe.get_object_value(DICT_POSITION_LIMIT, 1);

@@ -89,9 +89,9 @@ void cm_sync_config_motor_control(
 
     motorcontrol_config.pole_pair          = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS);
     motorcontrol_config.max_torque         = i_coe.get_object_value(DICT_MAX_TORQUE, 0);
-    //motorcontrol_config.max_current        = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
-    //motorcontrol_config.rated_current      = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
-    //motorcontrol_config.rated_torque       = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
+    motorcontrol_config.max_current        = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
+    motorcontrol_config.rated_current      = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
+    motorcontrol_config.rated_torque       = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
     motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
     motorcontrol_config.current_P_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 1);
     motorcontrol_config.current_I_gain     = i_coe.get_object_value(DICT_TORQUE_PID, 2);
@@ -112,8 +112,8 @@ void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
         ProfilerConfig &profiler)
 {
-    /* FIXME check the objects */
-    //profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
+    /* FIXME check the parameters - are they acutally used? */
+    profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
     //profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
     //profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     //profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);

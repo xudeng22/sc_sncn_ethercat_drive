@@ -118,8 +118,8 @@ void cm_sync_config_profiler(
     //profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     //profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
     //profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
-    profiler.min_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 1);
-    profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 2);
+    profiler.min_position     =  i_coe.get_object_value(DICT_POSITION_LIMIT, 1);
+    profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_LIMIT, 2);
     // @see FIXME in cm_sync_config_position_feedback()!
     profiler.polarity         =  i_coe.get_object_value(DICT_POLARITY, 0);
     //profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0); /* */
@@ -132,8 +132,8 @@ void cm_sync_config_pos_velocity_control(
 {
     i_position_control.get_position_velocity_control_config();
 
-    position_config.min_pos = i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 1);  /* -8000; */
-    position_config.max_pos = i_coe.get_object_value(DICT_POSITION_RANGE_LIMIT, 2);  /* 8000; */
+    position_config.min_pos = i_coe.get_object_value(DICT_POSITION_LIMIT, 1);  /* -8000; */
+    position_config.max_pos = i_coe.get_object_value(DICT_POSITION_LIMIT, 2);  /* 8000; */
     // @see FIXME in cm_sync_config_position_feedback()!
     position_config.polarity       = i_coe.get_object_value(DICT_POLARITY, 0);
     position_config.P_pos          = i_coe.get_object_value(DICT_POSITION_PID, 1); /* POSITION_P_VALUE; */
@@ -248,8 +248,8 @@ void cm_default_config_profiler(
     //profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     //profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
     //profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMIT, 1, profiler.min_position);
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMIT, 2, profiler.max_position);
+    i_coe.set_object_value(DICT_POSITION_LIMIT, 1, profiler.min_position);
+    i_coe.set_object_value(DICT_POSITION_LIMIT, 2, profiler.max_position);
     //i_coe.set_object_value(DICT_POLARITY, 0,            profiler.polarity);
     //profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0); /* */
 }
@@ -261,8 +261,8 @@ void cm_default_config_pos_velocity_control(
 {
     PosVelocityControlConfig position_config = i_position_control.get_position_velocity_control_config();
 
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMIT,  1, position_config.min_pos);  /* -8000; */
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMIT,  2, position_config.max_pos);  /* 8000; */
+    i_coe.set_object_value(DICT_POSITION_LIMIT,  1, position_config.min_pos);  /* -8000; */
+    i_coe.set_object_value(DICT_POSITION_LIMIT,  2, position_config.max_pos);  /* 8000; */
     i_coe.set_object_value(DICT_POLARITY, 0, position_config.polarity);
     i_coe.set_object_value(DICT_POSITION_PID, 1, position_config.P_pos); /* POSITION_P_VALUE; */
     i_coe.set_object_value(DICT_POSITION_PID, 2, position_config.I_pos); /* POSITION_I_VALUE; */

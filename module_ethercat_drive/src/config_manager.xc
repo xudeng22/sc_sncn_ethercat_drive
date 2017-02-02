@@ -115,9 +115,9 @@ void cm_sync_config_profiler(
     /* FIXME check the parameters - are they acutally used? */
     profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
     //profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    //profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
-    //profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
-    //profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
+    profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
+    profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
+    profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
     profiler.min_position     =  i_coe.get_object_value(DICT_POSITION_LIMIT, 1);
     profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_LIMIT, 2);
     // @see FIXME in cm_sync_config_position_feedback()!

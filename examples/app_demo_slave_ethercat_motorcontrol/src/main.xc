@@ -55,7 +55,7 @@ int main(void)
     interface update_brake i_update_brake;
     interface shared_memory_interface i_shared_memory[2];
     interface PositionVelocityCtrlInterface i_position_control[3];
-    interface PositionFeedbackInterface i_position_feedback[3];
+    interface PositionFeedbackInterface i_position_feedback_1[3];
 
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
@@ -101,7 +101,7 @@ int main(void)
             ethercat_drive_service( profiler_config,
                                     i_pdo, i_coe,
                                     i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback[0]);
+                                    i_position_control[0], i_position_feedback_1[0]);
 #endif
         }
 
@@ -141,7 +141,7 @@ int main(void)
 
                     pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
                     pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
-                    pos_velocity_ctrl_config.resolution  =                          POSITION_SENSOR_RESOLUTION;
+                    pos_velocity_ctrl_config.resolution  =                          FEEDBACK_SENSOR_RESOLUTION;
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
 
@@ -237,9 +237,9 @@ int main(void)
                 {
                     PositionFeedbackConfig position_feedback_config;
                     position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
-                    position_feedback_config.polarity    = SENSOR_POLARITY;
+                    position_feedback_config.polarity    = COMMUTATION_SENSOR_POLARITY;
                     position_feedback_config.pole_pairs  = POLE_PAIRS;
-                    position_feedback_config.resolution  = POSITION_SENSOR_RESOLUTION;
+                    position_feedback_config.resolution  = COMMUTATION_SENSOR_RESOLUTION;
                     position_feedback_config.offset      = 0;
                     position_feedback_config.enable_push_service = PushAll;
 
@@ -274,7 +274,7 @@ int main(void)
                     position_feedback_config.rem_14_config.velocity_loop = REM_14_VELOCITY_LOOP;
 
                     position_feedback_service(hall_ports, qei_ports, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
-                            position_feedback_config, i_shared_memory[0], i_position_feedback,
+                            position_feedback_config, i_shared_memory[0], i_position_feedback_1,
                             null, null, null);
                 }
             }

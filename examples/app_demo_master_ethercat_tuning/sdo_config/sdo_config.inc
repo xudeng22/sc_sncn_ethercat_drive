@@ -6,9 +6,9 @@ struct _ecat_sdo_config slave_config[6][59] = {
         { 0x2003, 2, 600, 4 },        /* Torque Constant */
         { 0x2003, 3, 1270000, 4 },    /* Phase Resistance */
         { 0x2003, 4, 1330, 4 },       /* Phase Inductance */
-        { 0x2004, 1, 0x00, 4 },       /* Duty Start Brake */
-        { 0x2004, 2, 0x00, 4 },       /* Duty Maintain Brake */
-        { 0x2004, 3, 0x00, 4 },       /* Period Start Brake */
+        { 0x2004, 1, 0x00, 4 },       /* Pull Brake Voltage */
+        { 0x2004, 2, 0x00, 4 },       /* Hold Brake Voltage */
+        { 0x2004, 3, 0x00, 4 },       /* Pull Brake Time*/
         { 0x2005, 1, 0x00, 4 },       /* Max battery energy */
         { 0x2005, 2, 0x00, 4 },       /* Min battery energy */
         { 0x2005, 3, 0x00, 4 },       /* Max regeneration power */

@@ -64,7 +64,13 @@ void cm_sync_config_position_feedback(
     // - bit 7: polarity for position
     // - bit 6: polarity for velocity
     // where to figure out which polarity is necessary ot use?
-    config.polarity       = sext(i_coe.get_object_value(DICT_POLARITY, 0), 8);
+    //config.polarity       = sext(i_coe.get_object_value(DICT_POLARITY, 0), 8);
+    uint8_t polarity = i_coe.get_object_value(DICT_POLARITY, 0);
+    if ((polarity & 0xC0) != 0) {
+        config.polarity = -1;
+    } else {
+        config.polarity = 1;
+    }
     config.pole_pairs     = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS);
     config.resolution = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_RESOLUTION);
 
@@ -120,8 +126,13 @@ void cm_sync_config_profiler(
     profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
     profiler.min_position     =  i_coe.get_object_value(DICT_POSITION_LIMIT, 1);
     profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_LIMIT, 2);
-    // @see FIXME in cm_sync_config_position_feedback()!
-    profiler.polarity         =  i_coe.get_object_value(DICT_POLARITY, 0);
+    /* FIXME does this belong here? */
+    uint8_t polarity = i_coe.get_object_value(DICT_POLARITY, 0);
+    if ((polarity & 0xC0) != 0) {
+        profiler.polarity = -1;
+    } else {
+        profiler.polarity = 1;
+    }
     //profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0); /* */
 }
 
@@ -134,8 +145,13 @@ void cm_sync_config_pos_velocity_control(
 
     position_config.min_pos = i_coe.get_object_value(DICT_POSITION_LIMIT, 1);  /* -8000; */
     position_config.max_pos = i_coe.get_object_value(DICT_POSITION_LIMIT, 2);  /* 8000; */
-    // @see FIXME in cm_sync_config_position_feedback()!
-    position_config.polarity       = i_coe.get_object_value(DICT_POLARITY, 0);
+    /* FIXME does this belong here? */
+    uint8_t polarity = i_coe.get_object_value(DICT_POLARITY, 0);
+    if ((polarity & 0xC0) != 0) {
+        position_config.polarity = -1;
+    } else {
+        position_config.polarity = 1;
+    }
     position_config.P_pos          = i_coe.get_object_value(DICT_POSITION_PID, 1); /* POSITION_P_VALUE; */
     position_config.I_pos          = i_coe.get_object_value(DICT_POSITION_PID, 2); /* POSITION_I_VALUE; */
     position_config.D_pos          = i_coe.get_object_value(DICT_POSITION_PID, 3); /* POSITION_D_VALUE; */
@@ -198,7 +214,11 @@ void cm_default_config_position_feedback(
     i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_SENSOR_TYPE, config.sensor_type);
     i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_RESOLUTION, config.resolution);
     // @see FIXME in cm_sync_config_position_feedback()!
-    i_coe.set_object_value(DICT_POLARITY, 0, config.polarity);
+    if (config.polarity == -1) {
+        i_coe.set_object_value(DICT_POLARITY, 0, 0xC0);
+    } else {
+        i_coe.set_object_value(DICT_POLARITY, 0, 0x0);
+    }
 
     if (config.pole_pairs != 0)
         i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS, config.pole_pairs);
@@ -219,7 +239,7 @@ void cm_default_config_motor_control(
 
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, DICT_SUB_POLE_PAIRS, motorcontrol_config.pole_pair);
     i_coe.set_object_value(DICT_MAX_TORQUE, 0, motorcontrol_config.max_torque);
-    i_coe.set_object_value(DICT_POLARITY, 0, motorcontrol_config.polarity_type);
+    //i_coe.set_object_value(DICT_POLARITY, 0, motorcontrol_config.polarity_type); /* ??? FIXME the object DICT_POLARITY is for the sensor! */
     //motorcontrol_config.max_current        = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
     //motorcontrol_config.rated_current      = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
     //motorcontrol_config.rated_torque       = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
@@ -263,7 +283,7 @@ void cm_default_config_pos_velocity_control(
 
     i_coe.set_object_value(DICT_POSITION_LIMIT,  1, position_config.min_pos);  /* -8000; */
     i_coe.set_object_value(DICT_POSITION_LIMIT,  2, position_config.max_pos);  /* 8000; */
-    i_coe.set_object_value(DICT_POLARITY, 0, position_config.polarity);
+    //i_coe.set_object_value(DICT_POLARITY, 0, position_config.polarity);
     i_coe.set_object_value(DICT_POSITION_PID, 1, position_config.P_pos); /* POSITION_P_VALUE; */
     i_coe.set_object_value(DICT_POSITION_PID, 2, position_config.I_pos); /* POSITION_I_VALUE; */
     i_coe.set_object_value(DICT_POSITION_PID, 3, position_config.D_pos); /* POSITION_D_VALUE; */

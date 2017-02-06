@@ -179,56 +179,11 @@ static void list_slaves(SNCN_Master_t *master)
     }
 }
 
-int main(int argc, char *argv[])
-{
-	int slaveid = 0;
-    int command = CMD_NORMAL_OP;
 
+static int cyclic_operation(SNCN_Master_t *master, SNCN_Slave_t *slave)
+{
     struct sigaction sa;
     struct itimerval tv;
-
-    /* FIXME use getopt(1) with -h, -v etc. * /
-    if (argc > 1) {
-        slaveid =  atoi(argv[1]);
-    }
-    */
-    parse_cmd_line(argc, argv, &slaveid, &command);
-
-    FILE *ecatlog = fopen("./ecat.log", "w");
-
-	/* Initialize EtherCAT Master */
-    SNCN_Master_t *master = sncn_master_init(0, ecatlog);
-    if (master == NULL) {
-        fprintf(stderr, "Error, could not initialize master\n");
-        return -1;
-    }
-
-    if (command == CMD_LIST_SLVAVES) {
-        list_slaves(master);
-        sncn_master_release(master);
-        fclose(ecatlog);
-        return 0;
-    }
-
-    size_t slave_count = sncn_master_slave_count(master);
-
-    if (slave_count < ((unsigned int)slaveid + 1)) {
-        fprintf(stderr, "Error only %lu slaves present, but requested slave index is %d\n",
-                slave_count, slaveid);
-        return -1;
-    }
-
-    if (master == NULL) {
-        fprintf(stderr, "Error could not initialize master\n");
-        return -1;
-    }
-
-    /* only talk to slave 0 */
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    if (slave == NULL) {
-        fprintf(stderr, "Error could not retrieve slave %d", slaveid);
-        return -1;
-    }
 
     sncn_master_start(master);
 	printf("starting Master application\n");
@@ -295,11 +250,100 @@ int main(int argc, char *argv[])
         }
 	}
 
-    sncn_master_release(master);
-    fclose(ecatlog);
-
 	return 0;
 }
 
+static void printsdoinfo(Sdo_t *sdo)
+{
+    printf("  Index: 0x%04x\n", sdo->index);
+    printf("  Subindex: 0x%04x\n", sdo->subindex);
+    printf("  Name: %s\n", sdo->name);
+    printf("  Value:  %d (0x%x)\n", sdo->value);
+}
+
+static int access_object_dictionary(master, slave)
+{
+    size_t sdocount = sncn_slave_get_sdo_count(slave);
+    Sdo_t **sdolist = malloc(sdocount * sizeof(Sdo_t *));
+
+    for (size_t i = 0; i < sdocount; i++) {
+        sdolist[i] = sncn_slave_get_sdo_index(slave, i);
+
+        if (sdolist[i] == NULL) {
+            fprintf(stderr, "Error requesting object nubmer %d\n", i);
+            //return -1;
+        } else {
+            printf("Object position: %u\n", i);
+            printsdoinfo(sdolist[i]);
+        }
+    }
+
+    return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    int startcyclic = 0;
+    int check_object_dictionary = 1;
+	int slaveid = 0;
+    int command = CMD_NORMAL_OP;
+
+    /* FIXME use getopt(1) with -h, -v etc. * /
+    if (argc > 1) {
+        slaveid =  atoi(argv[1]);
+    }
+    */
+    parse_cmd_line(argc, argv, &slaveid, &command);
+
+    FILE *ecatlog = fopen("./ecat.log", "w");
+
+	/* Initialize EtherCAT Master */
+    SNCN_Master_t *master = sncn_master_init(0, ecatlog);
+    if (master == NULL) {
+        fprintf(stderr, "Error, could not initialize master\n");
+        return -1;
+    }
+
+    if (command == CMD_LIST_SLVAVES) {
+        list_slaves(master);
+        sncn_master_release(master);
+        fclose(ecatlog);
+        return 0;
+    }
+
+    size_t slave_count = sncn_master_slave_count(master);
+
+    if (slave_count < ((unsigned int)slaveid + 1)) {
+        fprintf(stderr, "Error only %lu slaves present, but requested slave index is %d\n",
+                slave_count, slaveid);
+        return -1;
+    }
+
+    if (master == NULL) {
+        fprintf(stderr, "Error could not initialize master\n");
+        return -1;
+    }
+
+    /* only talk to specified slave */
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    if (slave == NULL) {
+        fprintf(stderr, "Error could not retrieve slave %d", slaveid);
+        return -1;
+    }
+
+    if (check_object_dictionary) {
+        if (access_object_dictionary(master, slave)) {
+            startcyclic = 0; /* On error don't execute cyclic behavior, even if requested! */
+        }
+    }
+
+    if (startcyclic) {
+        cyclic_operation(master, slave);
+    }
 
 
+    sncn_master_release(master);
+    fclose(ecatlog);
+
+    return 0;
+}

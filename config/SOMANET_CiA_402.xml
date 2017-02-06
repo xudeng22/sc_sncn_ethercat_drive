@@ -1471,6 +1471,7 @@
                 <BitSize>16</BitSize>
                 <Info>
                   <DefaultData>0000</DefaultData>
+                  <Unit/>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -1554,6 +1555,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
+                  <Unit>00470000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -1568,6 +1570,7 @@
                 <BitSize>16</BitSize>
                 <Info>
                   <DefaultData>0000</DefaultData>
+                  <Unit/>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -1722,6 +1725,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
+                  <Unit>00470000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -1839,6 +1843,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
+                  <Unit>00470000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>

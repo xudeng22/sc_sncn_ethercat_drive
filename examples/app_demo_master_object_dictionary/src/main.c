@@ -200,8 +200,6 @@ static int cyclic_operation(SNCN_Master_t *master, SNCN_Slave_t *slave)
 
     uint32_t     user_1   = 0;
     uint32_t     user_2   = 0;
-    uint32_t     user_3   = 0;
-    uint32_t     user_4   = 0;
 
 	while(g_running) {
         pause();
@@ -255,13 +253,13 @@ static int cyclic_operation(SNCN_Master_t *master, SNCN_Slave_t *slave)
 
 static void printsdoinfo(Sdo_t *sdo)
 {
-    printf("  Index: 0x%04x\n", sdo->index);
-    printf("  Subindex: 0x%04x\n", sdo->subindex);
-    printf("  Name: %s\n", sdo->name);
-    printf("  Value:  %d (0x%x)\n", sdo->value);
+    printf("  Index:    0x%04x\n",    sdo->index);
+    printf("  Subindex: %d\n",        sdo->subindex);
+    printf("  Name:     %s\n",        sdo->name);
+    printf("  Value:    %d (0x%x)\n", sdo->value, sdo->value);
 }
 
-static int access_object_dictionary(master, slave)
+static int access_object_dictionary(SNCN_Slave_t *slave)
 {
     size_t sdocount = sncn_slave_get_sdo_count(slave);
     Sdo_t **sdolist = malloc(sdocount * sizeof(Sdo_t *));
@@ -270,10 +268,10 @@ static int access_object_dictionary(master, slave)
         sdolist[i] = sncn_slave_get_sdo_index(slave, i);
 
         if (sdolist[i] == NULL) {
-            fprintf(stderr, "Error requesting object nubmer %d\n", i);
+            fprintf(stderr, "Error requesting object nubmer %lu\n", i);
             //return -1;
         } else {
-            printf("Object position: %u\n", i);
+            printf("Object position: %lu\n", i);
             printsdoinfo(sdolist[i]);
         }
     }
@@ -283,10 +281,10 @@ static int access_object_dictionary(master, slave)
 
 int main(int argc, char *argv[])
 {
-    int startcyclic = 0;
     int check_object_dictionary = 1;
-	int slaveid = 0;
-    int command = CMD_NORMAL_OP;
+    int startcyclic             = 0;
+    int slaveid                 = 0;
+    int command                 = CMD_NORMAL_OP;
 
     /* FIXME use getopt(1) with -h, -v etc. * /
     if (argc > 1) {
@@ -332,7 +330,7 @@ int main(int argc, char *argv[])
     }
 
     if (check_object_dictionary) {
-        if (access_object_dictionary(master, slave)) {
+        if (access_object_dictionary(slave)) {
             startcyclic = 0; /* On error don't execute cyclic behavior, even if requested! */
         }
     }

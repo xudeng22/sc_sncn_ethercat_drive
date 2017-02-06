@@ -2194,13 +2194,13 @@
                   <SubItem>
                     <Name>Type</Name>
                     <Info>
-                      <DefaultData>01</DefaultData>
+                      <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Usage</Name>
                     <Info>
-                      <DefaultData>31</DefaultData>
+                      <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2231,13 +2231,13 @@
                   <SubItem>
                     <Name>Type</Name>
                     <Info>
-                      <DefaultData>02</DefaultData>
+                      <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Usage</Name>
                     <Info>
-                      <DefaultData>28</DefaultData>
+                      <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>

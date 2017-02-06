@@ -1466,7 +1466,7 @@
               </Object>
               <Object>
                 <Index>#x2001</Index>
-                <Name>CommutationOffsetClockwise</Name>
+                <Name>Commutation angle offset</Name>
                 <Type>INT</Type>
                 <BitSize>16</BitSize>
                 <Info>

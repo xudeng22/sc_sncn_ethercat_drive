@@ -267,6 +267,54 @@ static void printsdoinfo(Sdo_t *sdo)
     printf("  Write Access:  %s\n", (write_access > 0) ? "yes" : "no");
 }
 
+static int object_test_write(SNCN_Slave_t *slave, Sdo_t *sdo)
+{
+    int success     = 1; /* 0 = success; 1 = failed */
+    int testvalue   = 1;
+    int value       = 0;
+    int backupvalue = 0;
+
+    if (sncn_slave_get_sdo_value(slave, sdo->index, sdo->subindex, &value) != 0) {
+        fprintf(stderr, "Error could not access object 0x%04x:%d on slave %d\n",
+            sdo->index, sdo->subindex, sncn_slave_get_slaveid(slave));
+        return -1;
+    }
+
+    int write_access = (sdo->write_access[0] + sdo->write_access[1] +  sdo->write_access[2]);
+
+    if (sncn_slave_set_sdo_value(slave, sdo->index, sdo->subindex, testvalue) != 0) {
+        if (write_access == 0) {
+            success = 0;
+        } else {
+            success = 1;
+        }
+    }
+
+    backupvalue = value;
+    sncn_slave_get_sdo_value(slave, sdo->index, sdo->subindex, &value);
+//printf("[DEBUG] value = %d; testvalue = %d; backupvalue = %d\n", value, testvalue, backupvalue);
+    if (value == testvalue) {
+        if (write_access == 0) {
+            fprintf(stderr, "Written non-writeable object 0x%04x:%d\n", sdo->index, sdo->subindex);
+            success = 1;
+        } else {
+            success = 0;
+        }
+    } else {
+        if (write_access == 0) {
+            success = 0;
+        } else {
+            fprintf(stderr, "Unable to write writeable object 0x%04x:%d\n", sdo->index, sdo->subindex);
+            success = 1;
+        }
+    }
+
+    /* reset the original value */
+    sncn_slave_set_sdo_value(slave, sdo->index, sdo->subindex, backupvalue);
+
+    return success;
+}
+
 static int access_object_dictionary(SNCN_Slave_t *slave)
 {
     size_t sdocount = sncn_slave_get_sdo_count(slave);
@@ -281,6 +329,15 @@ static int access_object_dictionary(SNCN_Slave_t *slave)
         } else {
             printf("Object position: %lu\n", i);
             printsdoinfo(sdolist[i]);
+        }
+    }
+
+    for (size_t i = 0; i < sdocount; i++) {
+        if (sdolist[i]->index >= 0x2000) {
+            int ret = object_test_write(slave, sdolist[i]);
+            printf("Test 0x%04x:%d - %s\n",
+                    sdolist[i]->index, sdolist[i]->subindex,
+                    (ret == 0) ? "success" : "failed");
         }
     }
 

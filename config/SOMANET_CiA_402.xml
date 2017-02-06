@@ -1488,6 +1488,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>m</Category>
+                  <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1501,6 +1502,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>m</Category>
+                  <PdoMapping>t</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1514,6 +1516,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>m</Category>
+                  <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1527,6 +1530,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>m</Category>
+                  <PdoMapping>t</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1540,6 +1544,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>c</Category>
+                  <PdoMapping>t</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1553,6 +1558,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>c</Category>
+                  <PdoMapping>t</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1566,6 +1572,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>c</Category>
+                  <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1631,6 +1638,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>c</Category>
+                  <PdoMapping>t</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1644,6 +1652,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>c</Category>
+                  <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -1717,6 +1726,7 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>c</Category>
+                  <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
               <Object>

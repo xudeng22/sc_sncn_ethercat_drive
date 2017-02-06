@@ -1875,19 +1875,19 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 001</Name>
+                    <Name>Torque P-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 002</Name>
+                    <Name>Torque I-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 003</Name>
+                    <Name>Torque D-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
@@ -1912,19 +1912,19 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 001</Name>
+                    <Name>Velocity P-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 002</Name>
+                    <Name>Velocity I-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 003</Name>
+                    <Name>Velocity D-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
@@ -1949,19 +1949,19 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 001</Name>
+                    <Name>Position P-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 002</Name>
+                    <Name>Position I-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>SubIndex 003</Name>
+                    <Name>Position D-Value</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>

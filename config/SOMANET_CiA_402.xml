@@ -658,7 +658,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -669,7 +669,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>24</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -680,7 +680,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>56</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -691,7 +691,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>88</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -717,7 +717,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -728,7 +728,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -739,7 +739,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -799,7 +799,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -810,7 +810,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>24</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -821,7 +821,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>32</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -847,7 +847,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -858,7 +858,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>24</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -869,7 +869,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>32</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -895,7 +895,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -906,7 +906,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -917,7 +917,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -928,7 +928,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>112</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -939,7 +939,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>144</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -950,7 +950,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>176</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -976,7 +976,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -987,7 +987,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1013,7 +1013,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1024,7 +1024,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1050,7 +1050,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1061,7 +1061,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1072,7 +1072,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1083,7 +1083,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>96</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1094,7 +1094,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>112</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1120,7 +1120,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1131,7 +1131,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1894,6 +1894,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -1930,6 +1931,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -1966,6 +1968,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -2166,6 +2169,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -2239,6 +2243,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -2293,6 +2298,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -2323,6 +2329,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -2353,6 +2360,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>
@@ -2432,6 +2440,7 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Access>rw</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>

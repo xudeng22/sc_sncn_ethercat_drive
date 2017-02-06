@@ -257,6 +257,8 @@ static void printsdoinfo(Sdo_t *sdo)
     printf("  Subindex: %d\n",        sdo->subindex);
     printf("  Name:     %s\n",        sdo->name);
     printf("  Value:    %d (0x%x)\n", sdo->value, sdo->value);
+    printf("  Read Access:   %d %d %d\n", sdo->read_access[0], sdo->read_access[1],  sdo->read_access[2]);
+    printf("  Write Access:  %d %d %d\n", sdo->write_access[0], sdo->write_access[1],  sdo->write_access[2]);
 }
 
 static int access_object_dictionary(SNCN_Slave_t *slave)

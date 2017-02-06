@@ -257,8 +257,14 @@ static void printsdoinfo(Sdo_t *sdo)
     printf("  Subindex: %d\n",        sdo->subindex);
     printf("  Name:     %s\n",        sdo->name);
     printf("  Value:    %d (0x%x)\n", sdo->value, sdo->value);
-    printf("  Read Access:   %d %d %d\n", sdo->read_access[0], sdo->read_access[1],  sdo->read_access[2]);
-    printf("  Write Access:  %d %d %d\n", sdo->write_access[0], sdo->write_access[1],  sdo->write_access[2]);
+
+    int read_access  = (sdo->read_access[0]  + sdo->read_access[1]  + sdo->read_access[2]);
+    int write_access = (sdo->write_access[0] + sdo->write_access[1] +  sdo->write_access[2]);
+    if (((3 > read_access) && (read_access > 0)) || ((3 > write_access) && (write_access > 0)))
+        fprintf(stderr, "Warning accessrights different for some EtherCAT states\n");
+
+    printf("  Read Access:   %s\n", (read_access  > 0) ? "yes" : "no");
+    printf("  Write Access:  %s\n", (write_access > 0) ? "yes" : "no");
 }
 
 static int access_object_dictionary(SNCN_Slave_t *slave)

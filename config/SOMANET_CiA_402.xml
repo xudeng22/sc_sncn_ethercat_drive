@@ -642,7 +642,7 @@
                 <BitSize>120</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Motor Specific Settings</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -701,7 +701,7 @@
                 <BitSize>112</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Brake Release</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -783,7 +783,7 @@
                 <BitSize>64</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Feedback Sensor 1</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -831,7 +831,7 @@
                 <BitSize>64</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Feedback Sensor 2</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -879,7 +879,7 @@
                 <BitSize>208</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Recuperation</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -960,7 +960,7 @@
                 <BitSize>80</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Voltage limits</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -997,7 +997,7 @@
                 <BitSize>80</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>Filter coefficients</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -1034,7 +1034,7 @@
                 <BitSize>144</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>BISS Sensor</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -1104,7 +1104,7 @@
                 <BitSize>80</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
-                  <Name>QEI Sensor</Name>
+                  <Name>Number of entries</Name>
                   <Type>USINT</Type>
                   <BitSize>8</BitSize>
                   <BitOffs>0</BitOffs>
@@ -1869,7 +1869,7 @@
                 <BitSize>112</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>SubIndex 000</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>03</DefaultData>
                     </Info>
@@ -1980,7 +1980,7 @@
                 <BitSize>120</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Motor Specific Settings</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>04</DefaultData>
                     </Info>
@@ -2023,7 +2023,7 @@
                 <BitSize>112</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Brake Release</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>03</DefaultData>
                     </Info>
@@ -2181,7 +2181,7 @@
                 <BitSize>64</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Feedback Sensor 1</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>03</DefaultData>
                     </Info>
@@ -2218,7 +2218,7 @@
                 <BitSize>64</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Feedback Sensor 2</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>03</DefaultData>
                     </Info>
@@ -2255,7 +2255,7 @@
                 <BitSize>208</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Recuperation</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>06</DefaultData>
                     </Info>
@@ -2310,7 +2310,7 @@
                 <BitSize>80</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Voltage limits</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>02</DefaultData>
                     </Info>
@@ -2341,7 +2341,7 @@
                 <BitSize>80</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>Filter coefficients</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>02</DefaultData>
                     </Info>
@@ -2372,7 +2372,7 @@
                 <BitSize>144</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>BISS Sensor</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>05</DefaultData>
                     </Info>
@@ -2421,7 +2421,7 @@
                 <BitSize>80</BitSize>
                 <Info>
                   <SubItem>
-                    <Name>QEI Sensor</Name>
+                    <Name>Number of entries</Name>
                     <Info>
                       <DefaultData>02</DefaultData>
                     </Info>

@@ -1115,7 +1115,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>1</SubIdx>
-                  <Name>Index type</Name>
+                  <Name>Number of Channels</Name>
                   <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
@@ -1126,7 +1126,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>2</SubIdx>
-                  <Name>Sensor signal type</Name>
+                  <Name>Access signal type</Name>
                   <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
@@ -2432,13 +2432,13 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>Index type</Name>
+                    <Name>Number of Channels</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>Sensor signal type</Name>
+                    <Name>Access signal type</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
                     </Info>

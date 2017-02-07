@@ -48,11 +48,9 @@ void cm_sync_config_position_feedback(
 
     case FEEDBACK_SENSOR_BISS:
         config.biss_config.multiturn_resolution   = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_MULTITURN_RESOLUTION);
-        config.biss_config.singleturn_resolution  = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_SINGLETURN_RESOLUTION);
-        /* FIXME `clock_divident` is not part of the objdict record for the BISS sensor, instead there is a
-         * entry `clock`. Where does this belong and how is it used? */
+        /* FIXME How is the usage of the clock frequency field? */
         //config.biss_config.clock_divdent          = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_CLOCK);
-        config.biss_config.clock_divisor          = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_CLOCK_DIVISOR);
+        //config.biss_config.clock_divisor          = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_CLOCK_DIVISOR);
         config.biss_config.timeout                = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_TIMEOUT);
         break;
     case FEEDBACK_SENSOR_UNDEFINED: /* FIXME need error handling here, or in position feedback service */

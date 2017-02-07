@@ -39,10 +39,13 @@ void cm_sync_config_position_feedback(
 
     int old_sensor_type = config.sensor_type;
     config.sensor_type = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_SENSOR_TYPE);
-    // FIXME if sensor_type == FEEDBACK_SENSOR_BISS or FEEDBACK_SENSOR_QEI the respective objects must be read
+
     switch (config.sensor_type) {
     case FEEDBACK_SENSOR_QEI:
+        config.qei_config.index_type  = i_coe.get_object_value(DICT_QEI_SENSOR, DICT_SUB_NUMBER_OF_CHANNELS);
+        config.qei_config.signal_type = i_coe.get_object_value(DICT_QEI_SENSOR, DICT_SUB_ACCESS_SIGNAL_TYPE);
         break;
+
     case FEEDBACK_SENSOR_BISS:
         config.biss_config.multiturn_resolution   = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_MULTITURN_RESOLUTION);
         config.biss_config.singleturn_resolution  = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_SINGLETURN_RESOLUTION);
@@ -53,9 +56,8 @@ void cm_sync_config_position_feedback(
         config.biss_config.timeout                = i_coe.get_object_value(DICT_BISS_SENSOR, DICT_SUB_TIMEOUT);
         break;
     case FEEDBACK_SENSOR_UNDEFINED: /* FIXME need error handling here, or in position feedback service */
-        config.qei_config.index_type  = i_coe.get_object_value(DICT_QEI_SENSOR, DICT_SUB_INDEX_TYPE);
-        config.qei_config.signal_type = i_coe.get_object_value(DICT_QEI_SENSOR, DICT_SUB_SIGNAL_TYPE);
         break;
+
     default: /* REM16MT, REM14 and HALL don't need any special handling */
         break;
     }

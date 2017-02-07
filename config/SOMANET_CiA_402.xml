@@ -310,7 +310,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>6</SubIdx>
-                  <Name>Additional Feedbacksensor Value</Name>
+                  <Name>Measured torque value</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>176</BitOffs>
@@ -1299,7 +1299,7 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>Additional Feedbacksensor Value</Name>
+                    <Name>Measured torque value</Name>
                     <Info>
                       <DefaultData>20000123</DefaultData>
                     </Info>
@@ -2097,7 +2097,7 @@
               </Object>
               <Object>
                 <Index>#x2301</Index>
-                <Name>Additional Feedbacksensor Value</Name>
+                <Name>Measured torque value</Name>
                 <Comment/>
                 <Type>DINT</Type>
                 <BitSize>32</BitSize>
@@ -2561,7 +2561,7 @@
             <Index>#x2301</Index>
             <SubIndex>0</SubIndex>
             <BitLen>32</BitLen>
-            <Name>Additional Feedbacksensor Value</Name>
+            <Name>Measured torque value</Name>
             <DataType>DINT</DataType>
           </Entry>
           <Entry>

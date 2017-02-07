@@ -27,7 +27,7 @@
 #define PDO_INDEX_POSITION_VALUE    2
 #define PDO_INDEX_VELOCITY_VALUE    3
 #define PDO_INDEX_TORQUE_VALUE      4
-#define PDO_INDEX_ADDITIONAL_FEEDBACKSENSOR_VALUE         5
+#define PDO_INDEX_MEASURE_TORQUE_VALUE         5
 #define PDO_INDEX_TUNING_RESULT         6
 #define PDO_INDEX_USER_IN_3         7
 #define PDO_INDEX_USER_IN_4         8
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
                 sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_ADDITIONAL_FEEDBACKSENSOR_VALUE);
+            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_MEASURED_TORQUE_VALUE);
             if (received == user_1) {
                 user_1 = (user_1 >= MAX_UINT32) ? 0 : user_1 + 1;
                 sncn_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, user_1);

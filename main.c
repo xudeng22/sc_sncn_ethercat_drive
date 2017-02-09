@@ -9,6 +9,10 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    if (dc_read_file(argv[1], NULL) != 0) {
+            fprintf(stderr, "Error parsing file\n");
+            return -1;
+    }
 
     return 0;
 }

@@ -31,8 +31,6 @@ static size_t get_token_count(char *buf, size_t bufsize)
 
 static void dc_tokenize_inbuf(char *buf, size_t bufsize, char **token, size_t *token_count)
 {
-	static int line = 0;
-
 	char *sep = ",";
 	char *b = malloc(bufsize * sizeof(char));
 	char *word = NULL;
@@ -42,24 +40,26 @@ static void dc_tokenize_inbuf(char *buf, size_t bufsize, char **token, size_t *t
 	token = malloc(*token_count);
 
 	memmove(b, buf, bufsize * sizeof(char));
-	printf("[DEBUG line %d] ", line);
+
 	for (word = strtok(b, sep);  word; word = strtok(NULL, sep)) {
-		//printf("tok-'%s', ", word);
 		*(token + tokenitem) = malloc(strlen(word) + 1);
 		strncpy(*(token + tokenitem), word, strlen(word));
-		printf("'%s', ", *(token + tokenitem));
 		tokenitem++;
 	}
-	printf("\n");
+
 
 	free(b);
-	line++;
 }
 
-static void dc_parse_tokens(char **token, SdoParam_t **params)
+static void dc_parse_tokens(char **token, size_t token_count, SdoParam_t **params)
 {
-	(void)token;
 	(void)params;
+
+	printf("[DEBUG tokens] ");
+	for (size_t i = 0; i < token_count; i++) {
+		printf("'%s', ", *(token + i));
+	}
+	printf("\n");
 }
 
 int dc_read_file(const char *path, SdoParam_t **params)
@@ -75,6 +75,7 @@ int dc_read_file(const char *path, SdoParam_t **params)
 	char inbuf[MAX_INPUT_LINE];
 	size_t inbuf_length = 0;
 	int c;
+
 	while ((c = fgetc(f)) != EOF) {
 		if (c == '#') {
 			while (c != '\n') {
@@ -86,7 +87,7 @@ int dc_read_file(const char *path, SdoParam_t **params)
 			if (inbuf_length > 1) {
 				inbuf[inbuf_length++] = '\0';
 				dc_tokenize_inbuf(inbuf, inbuf_length, token, &token_count);
-				dc_parse_tokens(token, params);
+				dc_parse_tokens(token, token_count, params);
 			}
 
 			inbuf_length = 0;

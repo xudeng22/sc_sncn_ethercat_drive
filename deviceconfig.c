@@ -14,20 +14,41 @@
 #include <string.h>
 
 #define MAX_INPUT_LINE    1024
+#define MAX_TOKEN_SIZE    255
 
-static void dc_tokenize_inbuf(char *buf, size_t size, char **token)
+static size_t get_token_count(char *buf, size_t bufsize)
+{
+	size_t separator = 0;
+	char *c = buf;
+
+	for (size_t i = 0; i < bufsize && *c != '\0'; i++, c++) {
+		if (*c == ',')
+			separator++;
+	}
+
+	return (separator + 1);
+}
+
+static void dc_tokenize_inbuf(char *buf, size_t bufsize, char **token, size_t *token_count)
 {
 	static int line = 0;
-	//printf("[DEBUG] parse(l = %lu): '%s'\n", size, buf);
 
 	char *sep = ",";
-	char *b = malloc(size * sizeof(char));
+	char *b = malloc(bufsize * sizeof(char));
 	char *word = NULL;
 
-	memmove(b, buf, size * sizeof(char));
+	size_t tokenitem = 0;
+	*token_count = get_token_count(buf, bufsize);
+	token = malloc(*token_count);
+
+	memmove(b, buf, bufsize * sizeof(char));
 	printf("[DEBUG line %d] ", line);
 	for (word = strtok(b, sep);  word; word = strtok(NULL, sep)) {
-		printf("tok-'%s', ", word);
+		//printf("tok-'%s', ", word);
+		*(token + tokenitem) = malloc(strlen(word) + 1);
+		strncpy(*(token + tokenitem), word, strlen(word));
+		printf("'%s', ", *(token + tokenitem));
+		tokenitem++;
 	}
 	printf("\n");
 
@@ -48,8 +69,8 @@ int dc_read_file(const char *path, SdoParam_t **params)
 		return -1;
 	}
 
-	char **tokens;
-	size_t tokencount = 0;
+	char **token = NULL;
+	size_t token_count = 0;
 
 	char inbuf[MAX_INPUT_LINE];
 	size_t inbuf_length = 0;
@@ -64,8 +85,8 @@ int dc_read_file(const char *path, SdoParam_t **params)
 		if (c == '\n') {
 			if (inbuf_length > 1) {
 				inbuf[inbuf_length++] = '\0';
-				dc_tokenize_inbuf(inbuf, inbuf_length, tokens, &token_count);
-				dc_parse_tokens(tokens, params);
+				dc_tokenize_inbuf(inbuf, inbuf_length, token, &token_count);
+				dc_parse_tokens(token, params);
 			}
 
 			inbuf_length = 0;

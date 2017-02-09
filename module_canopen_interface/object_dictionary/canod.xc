@@ -59,6 +59,15 @@ static int get_maxvalue(unsigned datatype)
 	return 0;
 }
 
+/*---------------------------------------------------------------------------
+ Find data length od the object based on index and subindex
+ ---------------------------------------------------------------------------*/
+int canod_find_data_length(unsigned index)
+{
+    return SDO_Info_Entries[index].bitLength / 8;
+}
+
+
 /* get number of objects without subobjects */
 static unsigned get_object_count(void)
 {
@@ -73,6 +82,22 @@ static unsigned get_object_count(void)
 }
 
 /* API implementation */
+
+int canod_find_index(unsigned address, unsigned subindex)
+{
+    for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
+        if (SDO_Info_Entries[i].index == address
+         && SDO_Info_Entries[i].subindex == subindex)
+            return i;
+    }
+
+    return -1;
+}
+
+unsigned char canod_get_access(unsigned index)
+{
+    return SDO_Info_Entries[index].objectAccess;
+}
 
 int canod_get_all_list_length(unsigned length[])
 {
@@ -151,30 +176,20 @@ int canod_get_list(unsigned list[], unsigned size, unsigned listtype)
 
 int canod_get_object_description(struct _sdoinfo_entry_description &obj, unsigned index)
 {
-	int i = 0, k;
+	int k;
 
-	for (i=0; i<sizeof(SDO_Info_Entries)/sizeof(SDO_Info_Entries[0]); i++) {
-		if (SDO_Info_Entries[i].index == index) {
-			obj.index = SDO_Info_Entries[i].index;
-			obj.subindex = SDO_Info_Entries[i].subindex;
-			obj.objectDataType = SDO_Info_Entries[i].objectDataType;
-			obj.dataType = SDO_Info_Entries[i].dataType;
-			obj.objectCode = SDO_Info_Entries[i].objectCode;
-			if (obj.subindex == 0 && obj.objectCode != CANOD_TYPE_VAR)
-			    obj.value = SDO_Info_Entries[i].value;
-			else
-			    obj.value = 0;
-			for (k=0; k<50; k++) { /* FIXME set a define for max string length */
-				obj.name[k] = SDO_Info_Entries[i].name[k];
-			}
-
-			break;
-		}
-
-		if (SDO_Info_Entries[i].index == 0x0) {
-			return 1; /* object not found */
-		}
-	}
+    obj.index = SDO_Info_Entries[index].index;
+    obj.subindex = SDO_Info_Entries[index].subindex;
+    obj.objectDataType = SDO_Info_Entries[index].objectDataType;
+    obj.dataType = SDO_Info_Entries[index].dataType;
+    obj.objectCode = SDO_Info_Entries[index].objectCode;
+    if (obj.subindex == 0 && obj.objectCode != CANOD_TYPE_VAR)
+        obj.value = SDO_Info_Entries[index].value;
+    else
+        obj.value = 0;
+    for (k=0; k<50; k++) { /* FIXME set a define for max string length */
+        obj.name[k] = SDO_Info_Entries[index].name[k];
+    }
 
 	return 0;
 }
@@ -192,33 +207,28 @@ static int canod_get_entry_description_lowerindex(unsigned index, unsigned subin
     return 0;
 }
 
-int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
+int canod_get_entry_description(unsigned index, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
 {
 	struct _sdoinfo_entry_description entry;
 	int i,k;
 
 	if (index < 0x1000) {
-	    return canod_get_entry_description_lowerindex(index, subindex, valueinfo, desc);
+	    return canod_get_entry_description_lowerindex(SDO_Info_Entries[index].index, SDO_Info_Entries[index].subindex, valueinfo, desc);
 	}
 
-	for (i=0; i<SDO_Info_Entries[i].index != 0x0; i++) {
-		if ((SDO_Info_Entries[i].index == index) && (SDO_Info_Entries[i].subindex == subindex))
-			break;
-	}
-
-	if (SDO_Info_Entries[i].index == 0x0)
+	if (SDO_Info_Entries[index].index == 0x0)
 		return -1; /* Entry object not found */
 
 	/* FIXME implement entry_description */
 	desc.index = index;
 	desc.subindex = subindex;
 
-	desc.dataType = SDO_Info_Entries[i].dataType;
-	desc.bitLength = SDO_Info_Entries[i].bitLength;
-	desc.objectAccess = SDO_Info_Entries[i].objectAccess;
+	desc.dataType = SDO_Info_Entries[index].dataType;
+	desc.bitLength = SDO_Info_Entries[index].bitLength;
+	desc.objectAccess = SDO_Info_Entries[index].objectAccess;
 
 #if 1
-	desc.value = SDO_Info_Entries[i].value;
+	desc.value = SDO_Info_Entries[index].value;
 #else /* wrong assumption of packet content? */
 	switch (valueinfo) {
 	case CANOD_VALUEINFO_UNIT:
@@ -243,8 +253,8 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 #endif
 
 	/* copy name */
-	for (k=0; k<50 && SDO_Info_Entries[i].name[k] != '\0'; k++) {
-		desc.name[k] = SDO_Info_Entries[i].name[k];
+	for (k=0; k<50 && SDO_Info_Entries[index].name[k] != '\0'; k++) {
+		desc.name[k] = SDO_Info_Entries[index].name[k];
 	}
 	desc.name[k] = '\0';
 
@@ -281,7 +291,7 @@ int canod_get_lowerentry(unsigned index, unsigned subindex, unsigned &value, uns
    return 0;
 }
 
-int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
+int canod_get_entry(unsigned index, unsigned &value, unsigned &bitlength)
 {
 	int i;
 	unsigned mask = 0xffffffff;
@@ -290,64 +300,53 @@ int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned
 
 	/* special file handling for object requests of index < 0x1000 */
     if (index < 0x1000) {
-        return canod_get_lowerentry(index, subindex, value, bitlength);
+        return canod_get_lowerentry(SDO_Info_Entries[index].index,
+                SDO_Info_Entries[index].subindex, value, bitlength);
     }
 
 	/* regular request */
-	for (i=0; SDO_Info_Entries[i].index != 0x0; i++) {
-		if (SDO_Info_Entries[i].index == index
-		    && SDO_Info_Entries[i].subindex == subindex) {
-			switch (SDO_Info_Entries[i].bitLength) {
-			case 8:
-				mask = 0xff;
-				break;
-			case 16:
-				mask = 0xffff;
-				break;
-			case 32:
-				mask = 0xffffffff;
-				break;
-			default:
-				break;
-			}
-			value = SDO_Info_Entries[i].value & mask;
-			bitlength = SDO_Info_Entries[i].bitLength; /* alternative bitLength */
 
-			return 0;
-		}
-	}
+    switch (SDO_Info_Entries[index].bitLength) {
+    case 8:
+        mask = 0xff;
+        break;
+    case 16:
+        mask = 0xffff;
+        break;
+    case 32:
+        mask = 0xffffffff;
+        break;
+    default:
+        break;
+    }
+    value = SDO_Info_Entries[index].value & mask;
+    bitlength = SDO_Info_Entries[index].bitLength; /* alternative bitLength */
 
-	return 1; /* not found */
+    return 0;
 }
 
-int canod_set_entry(unsigned index, unsigned subindex, unsigned value, unsigned type)
+int canod_set_entry(unsigned index, unsigned value, unsigned type)
 {
 	unsigned mask = 0xffffffff;
 
-	for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
-		if (SDO_Info_Entries[i].index == index
-				&& SDO_Info_Entries[i].subindex == subindex) {
 
-		    if ((SDO_Info_Entries[i].objectAccess & 0x38) == 0) /* object not writeable, FIXME should be destinguished according to the current state */
-		        return 1;
+    if ((SDO_Info_Entries[index].objectAccess & 0x38) == 0) /* object not writeable, FIXME should be destinguished according to the current state */
+        return 1;
 
-			switch (SDO_Info_Entries[i].bitLength) {
-			case 8:
-				mask = 0xff;
-				break;
-			case 16:
-				mask = 0xffff;
-				break;
-			case 32:
-				mask = 0xffffffff;
-				break;
-			default:
-				break;
-			}
-			SDO_Info_Entries[i].value = value & mask;
-			return 0;
-		}
-	}
+    switch (SDO_Info_Entries[index].bitLength) {
+    case 8:
+        mask = 0xff;
+        break;
+    case 16:
+        mask = 0xffff;
+        break;
+    case 32:
+        mask = 0xffffffff;
+        break;
+    default:
+        break;
+    }
+    SDO_Info_Entries[index].value = value & mask;
 
-	return 1; /* cannot set value */
+    return 0;
 }

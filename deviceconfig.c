@@ -11,14 +11,34 @@
 #include "deviceconfig.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_INPUT_LINE    1024
 
-static void dc_parse_inbuf(char *buf, size_t size, SdoParam_t **params)
+static void dc_tokenize_inbuf(char *buf, size_t size, char **token)
 {
+	static int line = 0;
+	//printf("[DEBUG] parse(l = %lu): '%s'\n", size, buf);
+
+	char *sep = ",";
+	char *b = malloc(size * sizeof(char));
+	char *word = NULL;
+
+	memmove(b, buf, size * sizeof(char));
+	printf("[DEBUG line %d] ", line);
+	for (word = strtok(b, sep);  word; word = strtok(NULL, sep)) {
+		printf("tok-'%s', ", word);
+	}
+	printf("\n");
+
+	free(b);
+	line++;
+}
+
+static void dc_parse_tokens(char **token, SdoParam_t **params)
+{
+	(void)token;
 	(void)params;
-	printf("[DEBUG] parse(l = %lu): '%s'\n", size, buf);
-	return;
 }
 
 int dc_read_file(const char *path, SdoParam_t **params)
@@ -27,6 +47,9 @@ int dc_read_file(const char *path, SdoParam_t **params)
 	if (f == NULL) {
 		return -1;
 	}
+
+	char **tokens;
+	size_t tokencount = 0;
 
 	char inbuf[MAX_INPUT_LINE];
 	size_t inbuf_length = 0;
@@ -41,7 +64,8 @@ int dc_read_file(const char *path, SdoParam_t **params)
 		if (c == '\n') {
 			if (inbuf_length > 1) {
 				inbuf[inbuf_length++] = '\0';
-				dc_parse_inbuf(inbuf, inbuf_length, params);
+				dc_tokenize_inbuf(inbuf, inbuf_length, tokens, &token_count);
+				dc_parse_tokens(tokens, params);
 			}
 
 			inbuf_length = 0;

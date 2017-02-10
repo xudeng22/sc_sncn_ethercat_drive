@@ -22,6 +22,23 @@ struct _token_t {
 	struct _token_t *next;
 };
 
+/* every token list has the size (token_count) = 2 + number_of_axis */
+static size_t get_node_count(struct _token_t *token_list)
+{
+	struct _token_t *t = token_list;
+	size_t token_count = t->count;
+	t = t->next;
+
+	while (t->next != NULL) {
+		if (token_count != t->count)
+			return 0; /* parse error -> token count == 0 */
+
+		t = t->next;
+	}
+
+	return (token_count - 2); /* substract index and subindex fields */
+}
+
 static size_t get_token_count(char *buf, size_t bufsize)
 {
 	size_t separator = 0;
@@ -65,20 +82,18 @@ static void dc_tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
 	free(b);
 }
 
-static unsigned parse_token(char *token_str)
+static long parse_token(char *token_str)
 {
-	unsigned value = 0;
-
-	printf("[DEBUG] Input: '%s'\n", token_str);
-	if (strncmp(token_str, "0x", 2) >= 0) {
-		sscanf(token_str, "0x%x", (int *)&value);
-	} else {
-		sscanf(token_str, "%u", &value);
-	}
-
-	printf("[DEBUG] Output: 0x%02x\n", value);
+	long value = strtol(token_str, NULL, 0);
 
 	return value;
+}
+
+static void parse_token_for_node(struct _token_t *tokens, SdoParam_t *param, size_t node)
+{
+	param->index    = (uint16_t) parse_token(*(tokens->token));
+	param->subindex = (uint8_t)  parse_token(*(tokens->token + 1));
+	param->value    = (uint32_t) parse_token(*(tokens->token + 2 + node));
 }
 
 static void dc_parse_tokens(struct _token_t *token, SdoParam_t **params)
@@ -118,9 +133,7 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 	token->next  = NULL;
 
 	struct _token_t *t = token;
-	size_t token_count = 0;
-
-	SdoParam_t **paramlist = NULL;
+	size_t param_count = 0;
 
 	char inbuf[MAX_INPUT_LINE];
 	size_t inbuf_length = 0;
@@ -138,7 +151,7 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 			if (inbuf_length > 1) {
 				inbuf[inbuf_length++] = '\0';
 				dc_tokenize_inbuf(inbuf, inbuf_length, t);
-				token_count++;
+				param_count++;
 				t->next = calloc(1, sizeof(struct _token_t));
 				if (t->next != NULL)
 					t = t->next;
@@ -161,6 +174,35 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 	int retval = -1;
 	if (feof(f)) {
 		retval = 0;
+	}
+
+	fclose(f);
+
+	parameter->param_count = param_count;
+	parameter->node_count  = get_node_count(token);
+	if (parameter->node_count == 0 || parameter->param_count == 0) {
+		fprintf(stderr, "Parse error number of nodes are different!\n");
+		free_token(token);
+		return -1;
+	}
+
+	parameter->parameter = (SdoParam_t **)malloc(parameter->node_count * sizeof(SdoParam_t *));
+	SdoParam_t **sdoparam = parameter->parameter;
+
+	for (size_t node = 0; node < parameter->node_count; node++) {
+		SdoParam_t *p = *(sdoparam + node);
+		p = malloc(parameter->param_count * sizeof(SdoParam_t));
+
+		t = token;
+		for (size_t param = 0; param < parameter->param_count; param++) {
+			if (t->next == NULL) {
+				fprintf(stderr, "Warning, token ran out before parameter count was reached.\n");
+				break;
+			}
+
+			parse_token_for_node(t, (p + param), node);
+			t = t->next;
+		}
 	}
 
 	free_token(token);

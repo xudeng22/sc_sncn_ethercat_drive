@@ -44,6 +44,21 @@ static void free_token(struct _token_t *t)
 	}
 }
 
+static void print_token(struct _token_t *t)
+{
+	static size_t count = 0;
+
+	printf("[Token] %d:", count);
+
+	for (size_t i = 0; i < t->count; i++) {
+		char *value =  *(t->token + i);
+		printf(" %s", value);
+	}
+	printf("\n");
+
+	count++;
+}
+
 static void dc_tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
 {
 	char *sep = ",";
@@ -126,6 +141,7 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 	size_t inbuf_length = 0;
 	int c;
 
+	/* read file and tokenize */
 	while ((c = fgetc(f)) != EOF) {
 		if (c == '#') {
 			while (c != '\n') {
@@ -136,7 +152,7 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 		if (c == '\n') {
 			if (inbuf_length > 1) {
 				inbuf[inbuf_length++] = '\0';
-				dc_tokenize_inbuf(inbuf, inbuf_length, token);
+				dc_tokenize_inbuf(inbuf, inbuf_length, t);
 				token_count++;
 				t->next = calloc(1, sizeof(struct _token_t));
 				if (t->next != NULL)
@@ -155,6 +171,14 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 
 		inbuf[inbuf_length] = (char)c;
 		inbuf_length++;
+	}
+
+	t = token;
+	while (t->token != NULL) {
+		print_token(t);
+		if (t->next == NULL)
+			break;
+		t = t->next;
 	}
 
 	int retval = -1;

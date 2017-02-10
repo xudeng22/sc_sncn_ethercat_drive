@@ -44,21 +44,6 @@ static void free_token(struct _token_t *t)
 	}
 }
 
-static void print_token(struct _token_t *t)
-{
-	static size_t count = 0;
-
-	printf("[Token] %d:", count);
-
-	for (size_t i = 0; i < t->count; i++) {
-		char *value =  *(t->token + i);
-		printf(" %s", value);
-	}
-	printf("\n");
-
-	count++;
-}
-
 static void dc_tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
 {
 	char *sep = ",";
@@ -171,14 +156,6 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 
 		inbuf[inbuf_length] = (char)c;
 		inbuf_length++;
-	}
-
-	t = token;
-	while (t->token != NULL) {
-		print_token(t);
-		if (t->next == NULL)
-			break;
-		t = t->next;
 	}
 
 	int retval = -1;

@@ -162,12 +162,17 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 		return -1;
 	}
 
-	parameter->parameter = (SdoParam_t **)malloc(parameter->node_count * sizeof(SdoParam_t *));
+	parameter->parameter = malloc(parameter->node_count * sizeof(SdoParam_t *));
+	if (parameter->parameter == NULL) {
+		fprintf(stderr, "Error allocating enough memory for parameter storage\n");
+		return -1;
+	}
+
 	SdoParam_t **sdoparam = parameter->parameter;
 
 	for (size_t node = 0; node < parameter->node_count; node++) {
-		SdoParam_t *p = *(sdoparam + node);
-		p = malloc(parameter->param_count * sizeof(SdoParam_t));
+		sdoparam[node] = malloc(parameter->param_count * sizeof(SdoParam_t));
+		SdoParam_t *pn = sdoparam[node];
 
 		t = token;
 		for (size_t param = 0; param < parameter->param_count; param++) {
@@ -176,7 +181,8 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 				break;
 			}
 
-			parse_token_for_node(t, (p + param), node);
+			SdoParam_t *p = &pn[param];
+			parse_token_for_node(t, p, node);
 			t = t->next;
 		}
 	}

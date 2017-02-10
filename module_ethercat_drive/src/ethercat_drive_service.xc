@@ -147,7 +147,7 @@ static void inline update_configuration(
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
-    profiler_config.ticks_per_turn = i_pos_feedback.get_ticks_per_turn();
+    profiler_config.ticks_per_turn = position_feedback_config.resolution;
     polarity = profiler_config.polarity;
 
     nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);

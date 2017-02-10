@@ -17,7 +17,7 @@
 typedef struct {
     uint16_t index;
     uint8_t  subindex;
-    uint8_t  *value;   /* FIXME hold value as array of bytes or stick to uint32_t? */
+    uint32_t value;      /* FIXME hold values of arbitrary size! */
     size_t   bytecount;
 } SdoParam_t;
 

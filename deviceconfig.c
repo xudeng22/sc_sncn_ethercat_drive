@@ -55,9 +55,56 @@ static void dc_tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
 	free(b);
 }
 
+static uint16_t parse_index(char *index_str)
+{
+	uint16_t value = 0;
+	printf("[DEBUG] Input: '%s'\n", index_str);
+	if (strncmp(index_str, "0x", 2) >= 0) {
+		sscanf(index_str, "0x%hx", &value);
+	} else {
+		sscanf(index_str, "%hd", &value);
+	}
+
+	printf("[DEBUG] Output: 0x%04x\n", value);
+
+	return value;
+}
+
+static uint16_t parse_subindex(char *index_str)
+{
+	uint8_t value = 0;
+	printf("[DEBUG] Input: '%s'\n", index_str);
+	if (strncmp(index_str, "0x", 2) >= 0) {
+		sscanf(index_str, "0x%x", (int *)&value);
+	} else {
+		sscanf(index_str, "%d", (int *)&value);
+	}
+
+	printf("[DEBUG] Output: 0x%02x\n", value);
+
+	return value;
+}
+
+static size_t parse_value(char *value_str)
+{
+	return 0;
+}
+
 static void dc_parse_tokens(struct _token_t *token, SdoParam_t **params)
 {
 	(void)params;
+
+	uint16_t index    = parse_index(*(token->token + 0));
+	uint8_t  subindex = parse_subindex(*(token->token + 1));
+
+	for (size_t k = 0; k < (token->count - 2); k++) {
+		SdoParam_t *p = /*malloc(sizeof(SdoParam_t)); */ *(params + k); /* FIXME allocate the params memory! */
+		p->index = index;
+		p->subindex = subindex;
+		p->bytecount = parse_value(*(token->token + k + 2));
+
+		printf("I: 0x%04x:%d - bitsize: %lu\n", p->index, p->subindex, p->bytecount);
+	}
 
 	printf("[DEBUG tokens] ");
 	for (size_t i = 0; i < token->count; i++) {

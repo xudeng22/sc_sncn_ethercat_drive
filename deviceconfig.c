@@ -96,27 +96,6 @@ static void parse_token_for_node(struct _token_t *tokens, SdoParam_t *param, siz
 	param->value    = (uint32_t) parse_token(*(tokens->token + 2 + node));
 }
 
-static void dc_parse_tokens(struct _token_t *token, SdoParam_t **params)
-{
-	uint16_t index    = (uint16_t)parse_token(*(token->token + 0));
-	uint8_t  subindex = (uint8_t)parse_token(*(token->token + 1));
-
-	for (size_t k = 0; k < (token->count - 2); k++) {
-		SdoParam_t *p = /*malloc(sizeof(SdoParam_t)); */ *(params + k); /* FIXME allocate the params memory! */
-		p->index = index;
-		p->subindex = subindex;
-		p->value = (uint32_t)parse_token(*(token->token + k + 2));
-
-		printf("I: 0x%04x:%d - bitsize: %lu\n", p->index, p->subindex, p->bytecount);
-	}
-
-	printf("[DEBUG tokens] ");
-	for (size_t i = 0; i < token->count; i++) {
-		printf("'%s', ", *(token->token + i));
-	}
-	printf("\n");
-}
-
 int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 {
 	if (parameter == NULL)
@@ -155,9 +134,6 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
 				t->next = calloc(1, sizeof(struct _token_t));
 				if (t->next != NULL)
 					t = t->next;
-
-				//dc_parse_tokens(token, parameter->parameter);
-
 			}
 
 			inbuf_length = 0;

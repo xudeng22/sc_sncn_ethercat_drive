@@ -89,7 +89,7 @@ static int g_dbglvl = 1;
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
 
-static const char *sdo_config = "sdo_config.csv";
+static const char *sdo_config_file = "sdo_config/sdo_config.inc";
 
 /****************************************************************************/
 
@@ -276,7 +276,7 @@ int main(int argc, char **argv)
     /* /Debug */
 
     SdoConfigParameter_t sdo_config_parameter;
-    if (read_sdo_config(sdo_config, sdo_config_parameter) != 0) {
+    if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
    	    fprintf(stderr, "Error, could not read SDO configuration file.\n");
         return -1;
     }
@@ -285,13 +285,14 @@ int main(int argc, char **argv)
      * Activate master and start operation
      */
 
+    /* SDO configuration of the slave */
+    SdoParam_t **slave_config = sdo_config_parameter.parameter;
+
     if (sdo_enable) {
-        /* SDO configuration of the slave */
-        SdoParam_t **slave_config = sdo_config_parameter.parameter;
 
         /* FIXME set per slave SDO configuration */
         for (int i = 0; i < num_slaves; i++) {
-            int ret = write_sdo_config(master->master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));
+            int ret = write_sdo_config(master->master, i, slave_config[i], sdo_config_parameter.param_count);
             if (ret != 0) {
                 fprintf(stderr, "Error configuring SDOs\n");
                 return -1;
@@ -356,7 +357,7 @@ int main(int argc, char **argv)
     profile_config.max_position = 0x7fffffff;
     profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
-    for (int i=0 ; i<sizeof(slave_config[0])/sizeof(slave_config[0][0]) ; i++) {
+    for (int i=0 ; i<sdo_config_parameter.param_count; i++) {
         if (slave_config[0][i].index == 0x308f) {
             profile_config.ticks_per_turn = slave_config[0][i].value;
             break;

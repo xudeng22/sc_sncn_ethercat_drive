@@ -9,6 +9,7 @@
 #ifndef ECATCONFIG_H
 #define ECATCONFIG_H
 
+#include <readsdoconfig.h>
 #include <ecrt.h>
 
 #ifdef __cplusplus
@@ -33,7 +34,7 @@ struct _ecat_sdo_config {
  * @param *config pointer to SDO configuration object
  * @return 0 on success, != 0 otherwise
  */
-int write_sdo(ec_master_t *master, int slave_number, struct _ecat_sdo_config *conf);
+int write_sdo(ec_master_t *master, int slave_number, SdoParam_t *conf);
 
 /**
  * @brief Write list of configuration SDO objects to slave device
@@ -44,7 +45,7 @@ int write_sdo(ec_master_t *master, int slave_number, struct _ecat_sdo_config *co
  * @param max_objects number of objects to transfer
  * @return 0 on success, != 0 otherwise
  */
-int write_sdo_config(ec_master_t *master, int slave, struct _ecat_sdo_config *config, size_t max_objects);
+int write_sdo_config(ec_master_t *master, int slave, SdoParam_t *config, size_t max_objects);
 
 #ifdef __cplusplus
 }

@@ -4,12 +4,15 @@ CC = gcc
 LD = gcc
 
 INCLUDE = -I/opt/etherlab/include
+INCLUDE += -I../libreadsdoconfig/include
 INCLUDE += -Iinclude
+INCLUDE += -I
 INCLUDE += -I.
 INCLUDE += -Isdo_config
 LIB_PATH = -L/opt/etherlab/lib
+LIB_PATH += -L../libreadsdoconfig/lib
 
-LIBRARY = -lethercat -lm
+LIBRARY = -lethercat -lm -lreadsdoconfig
 
 CFLAGS += $(FLAGS)
 CFLAGS += -Wall --std=c99 -g -O2 $(INCLUDE) -D_XOPEN_SOURCE

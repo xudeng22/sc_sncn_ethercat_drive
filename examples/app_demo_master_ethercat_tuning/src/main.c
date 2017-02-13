@@ -53,6 +53,8 @@
 
 /****************************************************************************/
 
+#include <readsdoconfig.h>
+
 #include "ecrt.h" //IgH lib
 
 #include "ecat_master.h"
@@ -65,12 +67,6 @@
 #include "profile.h"
 
 /****************************************************************************/
-
-/* ----------- OD setup -------------- */
-
-#include "sdo_config.inc"
-
-/* ----------- /OD setup -------------- */
 
 // Application parameters
 #define FREQUENCY 1000
@@ -92,6 +88,8 @@ static int g_dbglvl = 1;
 // Timer
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
+
+static const char *sdo_config = "sdo_config.csv";
 
 /****************************************************************************/
 
@@ -277,11 +275,20 @@ int main(int argc, char **argv)
     }
     /* /Debug */
 
+    SdoConfigParameter_t sdo_config_parameter;
+    if (read_sdo_config(sdo_config, sdo_config_parameter) != 0) {
+   	    fprintf(stderr, "Error, could not read SDO configuration file.\n");
+        return -1;
+    }
+
     /*
      * Activate master and start operation
      */
+
     if (sdo_enable) {
         /* SDO configuration of the slave */
+        SdoParam_t **slave_config = sdo_config_parameter.parameter;
+
         /* FIXME set per slave SDO configuration */
         for (int i = 0; i < num_slaves; i++) {
             int ret = write_sdo_config(master->master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));

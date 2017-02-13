@@ -37,6 +37,7 @@ int write_sdo_config(ec_master_t *master, int slave, struct _ecat_sdo_config *co
     //struct _ecat_config *config_objects;
     int ret = -1;
 
+    /* FIXME add bytesize from SDO entry info into parameter list */
     for (size_t i = 0; i < max_objects; i++) {
         ret = write_sdo(master, slave, config+i);
 

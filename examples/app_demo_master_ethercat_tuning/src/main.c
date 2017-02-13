@@ -89,7 +89,7 @@ static int g_dbglvl = 1;
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
 
-static const char *sdo_config_file = "sdo_config/sdo_config.inc";
+static const char *sdo_config_file = "sdo_config/sdo_config.csv";
 
 /****************************************************************************/
 

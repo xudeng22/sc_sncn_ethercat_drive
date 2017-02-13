@@ -1,5 +1,5 @@
 /*
- * deviceconfig.h
+ * readsdoconfig.h
  *
  * Read device configuration for the SDO transfers from CSV file.
  *
@@ -8,8 +8,8 @@
  * 2017 Synapticon GmbH
  */
 
-#ifndef DEVICECONFIG_H
-#define DEVICECONFIG_H
+#ifndef READSDOCONFIG_H
+#define READSDOCONFIG_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -37,6 +37,6 @@ typedef struct {
  * \param params   Pointer to a \c SdoConfigParameter_t object
  * \return         0 if no error
  */
-int dc_read_file(const char *path, SdoConfigParameter_t *params);
+int read_sdo_config(const char *path, SdoConfigParameter_t *params);
 
-#endif /* DEVICECONFIG_H */
+#endif /* READSDOCONFIG_H */

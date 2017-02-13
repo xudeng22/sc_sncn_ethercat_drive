@@ -1,5 +1,4 @@
-#include "deviceconfig.h"
-
+#include <readsdoconfig.h>
 #include <stdio.h>
 
 int main(int argc, char *argv[])
@@ -14,7 +13,7 @@ int main(int argc, char *argv[])
   /*
    * Read the device configurations from file `filename`
    */
-  if (dc_read_file(argv[1], &config_parameter) != 0) {
+  if (read_sdo_config(argv[1], &config_parameter) != 0) {
     fprintf(stderr, "Error parsing file\n");
     return -1;
   }

@@ -12,7 +12,7 @@ TARGETPATH = lib
 
 TARGETBASE = readsdoconfig
 TARGET = lib$(TARGETBASE).a
-OBJECTS = src/deviceconfig.o
+OBJECTS = src/readsdoconfig.o
 
 TEST = testreadconfig
 TESTOBJ = src/main.o
@@ -20,13 +20,13 @@ TESTOBJ = src/main.o
 %.o: %c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-all: $(TARGET)
+all: $(TARGET) $(TEST)
 
 $(TARGET): $(OBJECTS)
 	@test -d $(TARGETPATH) || mkdir $(TARGETPATH)
-	$(AR) $(ARFLAGS) $(TARGETPATH)/lib$@.a $^
+	$(AR) $(ARFLAGS) $(TARGETPATH)/$@ $^
 
-$(TEST): $(TESTOBJ) $(TARGET)
+$(TEST): $(TESTOBJ)
 	$(LD) $(LDFLAGS) -o $@ $< -L$(TARGETPATH) -l$(TARGETBASE)
 
 .PHONY: clean

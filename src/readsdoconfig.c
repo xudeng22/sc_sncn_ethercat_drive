@@ -1,5 +1,5 @@
 /*
- * deviceconfig.c
+ * readsdoconfig.c
  *
  * Read device configuration for the SDO transfers from CSV file.
  *
@@ -8,7 +8,7 @@
  * 2017 Synapticon GmbH
  */
 
-#include "deviceconfig.h"
+#include "readsdoconfig.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -63,7 +63,7 @@ static void free_token(struct _token_t *t)
   }
 }
 
-static void dc_tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
+static void tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
 {
   char *sep = ",";
   char *b = malloc(bufsize * sizeof(char));
@@ -99,7 +99,7 @@ static void parse_token_for_node(struct _token_t *tokens, SdoParam_t *param,
   param->value    = (uint32_t) parse_token(*(tokens->token + 2 + node));
 }
 
-int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
+int read_sdo_config(const char *path, SdoConfigParameter_t *parameter)
 {
   if (parameter == NULL) {
     return -1;
@@ -133,7 +133,7 @@ int dc_read_file(const char *path, SdoConfigParameter_t *parameter)
     if (c == '\n') {
       if (inbuf_length > 1) {
         inbuf[inbuf_length++] = '\0';
-        dc_tokenize_inbuf(inbuf, inbuf_length, t);
+        tokenize_inbuf(inbuf, inbuf_length, t);
         param_count++;
         t->next = calloc(1, sizeof(struct _token_t));
         if (t->next != NULL) {

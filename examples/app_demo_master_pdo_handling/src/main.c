@@ -6,8 +6,8 @@
 
 #define _XOPEN_SOURCE
 
-#include <sncn_ethercat.h>
-#include <sncn_slave.h>
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
 #include <ecrt.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -127,13 +127,13 @@ int main(int argc, char *argv[])
     FILE *ecatlog = fopen("./ecat.log", "w");
 
 	/* Initialize EtherCAT Master */
-    SNCN_Master_t *master = sncn_master_init(0, ecatlog);
+    Ethercat_Master_t *master = ecw_master_init(0, ecatlog);
     if (master == NULL) {
         fprintf(stderr, "Error, could not initialize master\n");
         return -1;
     }
 
-    size_t slave_count = sncn_master_slave_count(master);
+    size_t slave_count = ecw_master_slave_count(master);
 
     if (slave_count < ((unsigned int)slaveid + 1)) {
         fprintf(stderr, "Error only %lu slaves present, but requested slave index is %d\n",
@@ -147,13 +147,13 @@ int main(int argc, char *argv[])
     }
 
     /* only talk to slave 0 */
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
     if (slave == NULL) {
         fprintf(stderr, "Error could not retrieve slave %d", slaveid);
         return -1;
     }
 
-    sncn_master_start(master);
+    ecw_master_start(master);
 	printf("starting Master application\n");
 
     set_priority();
@@ -177,48 +177,48 @@ int main(int argc, char *argv[])
         while (sig_alarms != user_alarms) {
             user_alarms++;
 
-            sncn_master_cyclic_function(master);
+            ecw_master_cyclic_function(master);
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
             if (received == status) {
                 status = (status >= MAX_UINT16) ? 0 : status + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
+                ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
+            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
             if (received == torque) {
                 torque = (torque >= MAX_UINT16) ? 0 : torque + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
+                ecw_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
+            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
             if (received == position) {
                 position = (position >= MAX_UINT32) ? 0 : position + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
+                ecw_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
+            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
             if (received == velocity) {
                 velocity = (velocity >= MAX_UINT32) ? 0 : velocity + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
+                ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_MEASURED_TORQUE_VALUE);
+            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
             if (received == user_1) {
                 user_1 = (user_1 >= MAX_UINT32) ? 0 : user_1 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, user_1);
+                ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, user_1);
             }
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TUNING_RESULT);
+            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TUNING_STATUS);
             if (received == user_2) {
                 user_2 = (user_2 >= MAX_UINT32) ? 0 : user_2 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_TUNING_STATUS, user_2);
+                ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, user_2);
             }
 
         }
 	}
 
-    sncn_master_release(master);
+    ecw_master_release(master);
     fclose(ecatlog);
 
 	return 0;

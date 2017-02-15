@@ -62,7 +62,7 @@ struct _sdoinfo_service {
  * bit 16-32: index of the mapped object
  */
 
-int canod_find_data_length(unsigned index);
+int canod_find_data_length(uint16_t index);
 /**
  * Return the length of all five cathegories
  */
@@ -114,6 +114,8 @@ int canod_set_entry(unsigned index, unsigned value, unsigned type);
 
 unsigned char canod_get_access(unsigned index);
 
-int canod_find_index(unsigned address, unsigned subindex);
+signed int canod_find_index(unsigned address, unsigned subindex);
+
+unsigned canod_get_no_of_si_entries(unsigned index);
 
 #endif /* CANOD_H */

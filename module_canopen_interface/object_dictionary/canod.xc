@@ -6,6 +6,7 @@
 #include "canod.h"
 #include "canod_datatypes.h"
 #include "dictionary.h"
+#include "print.h"
 
 #include <xs1.h>
 
@@ -62,7 +63,7 @@ static int get_maxvalue(unsigned datatype)
 /*---------------------------------------------------------------------------
  Find data length od the object based on index and subindex
  ---------------------------------------------------------------------------*/
-int canod_find_data_length(unsigned index)
+int canod_find_data_length(uint16_t index)
 {
     return SDO_Info_Entries[index].bitLength / 8;
 }
@@ -74,8 +75,9 @@ static unsigned get_object_count(void)
 	unsigned count = 0;
 
 	for (unsigned i=0; SDO_Info_Entries[i].index != 0; i++) {
-		if (SDO_Info_Entries[i].subindex == 0)
+		if (SDO_Info_Entries[i].subindex == 0) {
 			count++;
+		}
 	}
 
 	return count;
@@ -83,7 +85,20 @@ static unsigned get_object_count(void)
 
 /* API implementation */
 
-int canod_find_index(unsigned address, unsigned subindex)
+unsigned canod_get_no_of_si_entries(unsigned index)
+{
+    unsigned od_index = SDO_Info_Entries[index].index;
+    unsigned count = index;
+
+    while (SDO_Info_Entries[count].index == od_index)
+    {
+        count++;
+    }
+
+    return count - index;
+}
+
+signed int canod_find_index(unsigned address, unsigned subindex)
 {
     for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
         if (SDO_Info_Entries[i].index == address
@@ -91,7 +106,7 @@ int canod_find_index(unsigned address, unsigned subindex)
             return i;
     }
 
-    return -1;
+    return (signed int) 0xffffffff;
 }
 
 unsigned char canod_get_access(unsigned index)
@@ -220,8 +235,8 @@ int canod_get_entry_description(unsigned index, unsigned valueinfo, struct _sdoi
 		return -1; /* Entry object not found */
 
 	/* FIXME implement entry_description */
-	desc.index = index;
-	desc.subindex = subindex;
+	desc.index = SDO_Info_Entries[index].index;
+	desc.subindex = SDO_Info_Entries[index].subindex;
 
 	desc.dataType = SDO_Info_Entries[index].dataType;
 	desc.bitLength = SDO_Info_Entries[index].bitLength;
@@ -293,33 +308,17 @@ int canod_get_lowerentry(unsigned index, unsigned subindex, unsigned &value, uns
 
 int canod_get_entry(unsigned index, unsigned &value, unsigned &bitlength)
 {
-	int i;
 	unsigned mask = 0xffffffff;
 
 	/* FIXME handle special subindex 0xff to request object type -> see also CiA 301 */
 
 	/* special file handling for object requests of index < 0x1000 */
-    if (index < 0x1000) {
+    if (SDO_Info_Entries[index].index < 0x1000) {
         return canod_get_lowerentry(SDO_Info_Entries[index].index,
                 SDO_Info_Entries[index].subindex, value, bitlength);
     }
 
-	/* regular request */
-
-    switch (SDO_Info_Entries[index].bitLength) {
-    case 8:
-        mask = 0xff;
-        break;
-    case 16:
-        mask = 0xffff;
-        break;
-    case 32:
-        mask = 0xffffffff;
-        break;
-    default:
-        break;
-    }
-    value = SDO_Info_Entries[index].value & mask;
+    value = SDO_Info_Entries[index].value & (mask >> (32 - SDO_Info_Entries[index].bitLength) );
     bitlength = SDO_Info_Entries[index].bitLength; /* alternative bitLength */
 
     return 0;
@@ -329,24 +328,11 @@ int canod_set_entry(unsigned index, unsigned value, unsigned type)
 {
 	unsigned mask = 0xffffffff;
 
+	// TODO Find solution for access from application side
+//    if ((SDO_Info_Entries[index].objectAccess & 0x38) == 0) /* object not writeable, FIXME should be distinguished according to the current state */
+//        return 1;
 
-    if ((SDO_Info_Entries[index].objectAccess & 0x38) == 0) /* object not writeable, FIXME should be destinguished according to the current state */
-        return 1;
-
-    switch (SDO_Info_Entries[index].bitLength) {
-    case 8:
-        mask = 0xff;
-        break;
-    case 16:
-        mask = 0xffff;
-        break;
-    case 32:
-        mask = 0xffffffff;
-        break;
-    default:
-        break;
-    }
-    SDO_Info_Entries[index].value = value & mask;
+    SDO_Info_Entries[index].value = value & (mask >> (32 - SDO_Info_Entries[index].bitLength) );
 
     return 0;
 }

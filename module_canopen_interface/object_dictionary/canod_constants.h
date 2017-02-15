@@ -45,6 +45,25 @@
 /* create pdo mapping parameter */
 #define PDOMAPING(idx,sub,bit)    ( ((unsigned)idx<<16) | ((unsigned)sub<<8) | bit )
 
+
+#define RPDO_0_COMMUNICATION_PARAMETER 0x1400, /**<CANOpen communication parameter index of receive PDO 0 */
+#define RPDO_1_COMMUNICATION_PARAMETER 0x1401, /**<CANOpen communication parameter index of receive PDO 1 */
+#define RPDO_2_COMMUNICATION_PARAMETER 0x1402, /**<CANOpen communication parameter index of receive PDO 2 */
+#define RPDO_3_COMMUNICATION_PARAMETER 0x1403, /**<CANOpen communication parameter index of receive PDO 3 */
+#define RPDO_0_MAPPING_PARAMETER       0x1600, /**<CANOpen mapping parameter index of receive PDO 0 */
+#define RPDO_1_MAPPING_PARAMETER       0x1601, /**<CANOpen mapping parameter index of receive PDO 1 */
+#define RPDO_2_MAPPING_PARAMETER       0x1602, /**<CANOpen mapping parameter index of receive PDO 2 */
+#define RPDO_3_MAPPING_PARAMETER       0x1603, /**<CANOpen mapping parameter index of receive PDO 3 */
+#define TPDO_0_COMMUNICATION_PARAMETER 0x1800, /**<CANOpen communication parameter index of transmit PDO 0 */
+#define TPDO_1_COMMUNICATION_PARAMETER 0x1801, /**<CANOpen communication parameter index of transmit PDO 1 */
+#define TPDO_2_COMMUNICATION_PARAMETER 0x1802, /**<CANOpen communication parameter index of transmit PDO 2 */
+#define TPDO_3_COMMUNICATION_PARAMETER 0x1803, /**<CANOpen communication parameter index of transmit PDO 3 */
+#define TPDO_0_MAPPING_PARAMETER       0x1A00, /**<CANOpen mapping parameter index of transmit PDO 0 */
+#define TPDO_1_MAPPING_PARAMETER       0x1A01, /**<CANOpen mapping parameter index of transmit PDO 1 */
+#define TPDO_2_MAPPING_PARAMETER       0x1A02, /**<CANOpen mapping parameter index of transmit PDO 2 */
+#define TPDO_3_MAPPING_PARAMETER       0x1A03  /**<CANOpen mapping parameter index of transmit PDO 3 */
+
+
 /* object dictionary address defines for CIA 402 */
 #define CIA402_CONTROLWORD              0x6040 /* RPDO */
 #define CIA402_STATUSWORD               0x6041 /* TPDO */

@@ -23,13 +23,47 @@ pdo_values_t pdo_init(void)
 	return InOut;
 }
 
-inline void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in)
+char pdo_write_data_to_od(int address, char data_buffer[])
 {
-    InOut.led_set       = pdo_in.led_set;
-    InOut.txpdo2        = pdo_in.txpdo2;
+    int index = 0,
+        temp_index = 0;
+    char entries[4],
+        count = 0,
+        no_of_entries = 0,
+        sub_index = 0,
+        data_length = 0,
+        data_counter = 0;
+    unsigned bitlength = 0;
 
-    InOut.counter       = pdo_out.counter;
-    InOut.led_status    = pdo_out.led_status;
+    index = canod_find_index(address, 0);
+    canod_get_entry(index, (entries, unsigned), bitlength);
+    no_of_entries = entries[0];
+
+    while(count != no_of_entries)
+    {
+        canod_get_entry(index + count + 1, (entries, unsigned), bitlength);
+        address = (entries[2]) | (entries[3] << 8);
+        sub_index = entries[1];
+        data_length = entries[0];
+        count++;
+
+        temp_index = canod_find_index(address, sub_index);
+        if (temp_index != -1)
+        {
+            canod_set_entry(temp_index, &data_buffer[(int)data_counter], 0);
+        }
+        data_counter += data_length/8;
+    }
+    return data_counter;
+}
+
+void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in)
+{
+    pdo_in.led_set       = InOut.led_set;
+    pdo_in.txpdo2        = InOut.txpdo2;
+
+    InOut.counter     = pdo_out.counter;
+    InOut.led_status  = pdo_out.led_status;
 //    InOut.status_word    = pdo_out.status_word;
 //    InOut.operation_mode_display  = pdo_out.operation_mode_display;
 //    InOut.actual_torque   = pdo_out.actual_torque;
@@ -91,6 +125,7 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut)
     {
         case 0:
             InOut.led_set = value;
+            pdo_write_data_to_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]))
             break;
         case 1:
             InOut.txpdo2 = value;

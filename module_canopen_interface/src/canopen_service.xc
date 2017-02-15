@@ -11,14 +11,16 @@
 #include "co_interface.h"
 #include "canod_constants.h"
 #include "canopen_service.h"
+#include "pdo_handler.h"
+#include "print.h"
 
 [[distributable]]
-#pragma ordered
 void canopen_service(server interface i_co_communication i_co[n], unsigned n)
 {
-    pdo_values_t InOut;
+    pdo_values_t InOut = pdo_init();
     pdo_size_t pdo_buffer[PDO_BUFFER_SIZE];
     unsigned pdo_size = 0;
+    char pdo_state = 0;
 
     int configuration_done = 0;
 
@@ -34,38 +36,44 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                 pdo_size = size_in;
                 memcpy(pdo_buffer, data_in, pdo_size * sizeof(pdo_size_t));
                 pdo_decode_buffer(pdo_buffer, InOut);
+                pdo_state = 1;
                 break;
 
             case i_co[int j].pdo_out_com(pdo_size_t data_out[]) -> { unsigned int size_out }:
                 pdo_encode_buffer(pdo_buffer, InOut);
                 memcpy(data_out, pdo_buffer, pdo_size * sizeof(pdo_size_t));
                 size_out = pdo_size;
+                pdo_state = 0;
                 break;
 
             case i_co[int j].pdo_in(unsigned char pdo_number, long value):
                 pdo_decode(pdo_number, value, InOut);
+                pdo_state = 1;
                 break;
 
             case i_co[int j].pdo_out(unsigned char pdo_number) -> {long value_out}:
                 long value;
                 pdo_encode(pdo_number, value, InOut);
                 value_out = value;
+                pdo_state = 0;
                 break;
 
-            case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out}:
+            case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out }:
                 pdo_exchange(InOut, pdo_out, pdo_in);
-                status_out = (pdo_size > 0) ? 1 : 0;
-                pdo_size = 0;
+                status_out = pdo_state;
+                //pdo_size = 0;
                 break;
 
 
             /* SDO */
 
             case i_co[int j].od_find_index(uint16_t address, uint8_t subindex) -> {int index_out}:
-                    index_out = canod_find_index(address, subindex);
+                    int index = canod_find_index(address, subindex);
+                    index_out = index;
                     break;
 
-            case i_co[int j].od_get_access(uint16_t index_) -> { uint8_t access}:
+            case i_co[int j].od_get_access(uint16_t index_) -> { uint8_t access }:
+                    access = canod_get_access(index_);
                     break;
 
             case i_co[int j].od_get_object_value(uint16_t index_) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
@@ -76,12 +84,34 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                     value_out = value;
                     break;
 
-            case i_co[int j].od_set_object_value(uint16_t index_, uint32_t value) -> {uint8_t error_out }:
+            case i_co[int j].od_set_object_value(uint16_t index_, uint32_t value) -> { uint8_t error_out }:
                     unsigned type = 0;
                     error_out = canod_set_entry(index_, value, type);
                     break;
 
-            case i_co[int j].od_get_entry_description(uint16_t index_, uint32_t valueinfo) -> {struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
+            case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
+                    unsigned bitlength = 0;
+                    unsigned value = 0;
+                    error_out = canod_get_entry(index_, value, bitlength);
+                    bitlength_out = bitlength;
+                    for (int i = 0; i < (bitlength/8); i++) {
+                        data_buffer[i] = (value >> (i*8)) & 0xff;
+                    }
+                    break;
+
+            case i_co[int j].od_set_object_value_buffer(uint16_t index_, uint8_t data_buffer[]) -> { uint8_t error_out }:
+                    unsigned type = 0;
+                    unsigned byte_len = canod_find_data_length(index_);
+                    unsigned value = 0;
+                    for (int i = 0; i < byte_len; i++) {
+                        value |= (unsigned) data_buffer[i] << (i*8);
+                    }
+                    //value = (data_buffer, unsigned);
+                    error_out = canod_set_entry(index_, value, type);
+                    break;
+
+
+            case i_co[int j].od_get_entry_description(uint16_t index_, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
                     error_out = canod_get_entry_description(index_, valueinfo, desc);
                     desc_out = desc;
@@ -106,7 +136,13 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                     break;
 
             case i_co[int j].od_get_data_length(uint16_t index_) -> {uint32_t len}:
-                    len = canod_find_data_length(index_);
+                    len = canod_find_data_length(index_); // return value: count of byte
+                    break;
+
+            case i_co[int j].od_get_no_of_si_entries(uint16_t index_) -> { uint32_t no_si}:
+                    no_si = canod_get_no_of_si_entries(index_);
+                    break;
+
 
             /* Simple notification interface */
 

@@ -110,7 +110,7 @@ int canod_get_entry(unsigned index, unsigned &value, unsigned &type);
  * @param type      the type of &value
  * @return 0 on success
  */
-int canod_set_entry(unsigned index, unsigned value, unsigned type);
+int canod_set_entry(unsigned index, unsigned value);
 
 unsigned char canod_get_access(unsigned index);
 

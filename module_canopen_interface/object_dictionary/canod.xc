@@ -324,7 +324,7 @@ int canod_get_entry(unsigned index, unsigned &value, unsigned &bitlength)
     return 0;
 }
 
-int canod_set_entry(unsigned index, unsigned value, unsigned type)
+int canod_set_entry(unsigned index, unsigned value)
 {
 	unsigned mask = 0xffffffff;
 

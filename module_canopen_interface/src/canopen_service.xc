@@ -83,8 +83,7 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                     break;
 
             case i_co[int j].od_set_object_value(uint16_t index_, uint32_t value) -> { uint8_t error_out }:
-                    unsigned type = 0;
-                    error_out = canod_set_entry(index_, value, type);
+                    error_out = canod_set_entry(index_, value);
                     break;
 
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
@@ -98,14 +97,13 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                     break;
 
             case i_co[int j].od_set_object_value_buffer(uint16_t index_, uint8_t data_buffer[]) -> { uint8_t error_out }:
-                    unsigned type = 0;
                     unsigned byte_len = canod_find_data_length(index_);
                     unsigned value = 0;
                     for (int i = 0; i < byte_len; i++) {
                         value |= (unsigned) data_buffer[i] << (i*8);
                     }
                     //value = (data_buffer, unsigned);
-                    error_out = canod_set_entry(index_, value, type);
+                    error_out = canod_set_entry(index_, value);
                     break;
 
 

@@ -7,8 +7,15 @@
 #include <stdint.h>
 //#include <foefs.h>
 #include "pdo_handler.h"
+#include "canod_constants.h"
+#include "canod.h"
 
 #define MAX_PDO_BUFFER_SIZE    15
+
+enum {
+    READ_FROM_OD = 0,
+    WRITE_TO_OD = 1,
+};
 
 pdo_values_t pdo_init(void)
 {
@@ -23,7 +30,7 @@ pdo_values_t pdo_init(void)
 	return InOut;
 }
 
-char pdo_write_data_to_od(int address, char data_buffer[])
+char pdo_read_write_data_od(int address, char data_buffer[], char write)
 {
     int index = 0,
         temp_index = 0;
@@ -33,7 +40,8 @@ char pdo_write_data_to_od(int address, char data_buffer[])
         sub_index = 0,
         data_length = 0,
         data_counter = 0;
-    unsigned bitlength = 0;
+    unsigned bitlength = 0,
+            value = 0;
 
     index = canod_find_index(address, 0);
     canod_get_entry(index, (entries, unsigned), bitlength);
@@ -44,18 +52,55 @@ char pdo_write_data_to_od(int address, char data_buffer[])
         canod_get_entry(index + count + 1, (entries, unsigned), bitlength);
         address = (entries[2]) | (entries[3] << 8);
         sub_index = entries[1];
-        data_length = entries[0];
+        data_length = entries[0]/8;
         count++;
 
         temp_index = canod_find_index(address, sub_index);
-        if (temp_index != -1)
-        {
-            canod_set_entry(temp_index, &data_buffer[(int)data_counter], 0);
+
+        if (temp_index != -1) {
+            if (write) {
+//                for (int i = 0; i < data_length; i++) {
+//                    value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
+//                }
+                //canod_set_entry(temp_index, (&data_buffer[(int)data_counter], unsigned));
+            } else {
+                //canod_get_entry(temp_index, &data_buffer[(int)data_counter], bitlength);
+            }
         }
-        data_counter += data_length/8;
+        data_counter += data_length;
     }
     return data_counter;
 }
+
+//char pdo_read_data_from_od(unsigned address, char data_buffer[8])
+//{
+//    int index = 0,
+//        temp_index = 0;
+//    char entries[4], count = 0, no_of_entries, sub_index, data_length,
+//    data_counter = 0;
+//    char error = 0, bitlength = 0;
+//
+//    index = canod_find_index(address, 0);
+//    canod_get_entry(index, (entries, unsigned), bitlength);
+//    no_of_entries = entries[0];
+//
+//    while(count != no_of_entries)
+//    {
+//        canod_get_entry(index + count + 1, (entries, unsigned), bitlength);
+//        address = (entries[2]) | (entries[3] << 8);
+//        sub_index = entries[1];
+//        data_length = entries[0];
+//        count++;
+//
+//        temp_index = i_co.od_find_index(mapping_parameter, sub_index);
+//
+//        if (temp_index != -1) {
+//            canod_get_entry(temp_index, &data_buffer[(int)data_counter], bitlength);
+//        }
+//        data_counter += data_length/8;
+//    }
+//    return (data_counter);
+//}
 
 void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in)
 {

@@ -45,7 +45,7 @@ void pdo_protocol_handler(pdo_size_t buffer[], pdo_values_t &InOut);
 void pdo_encode_buffer(pdo_size_t buffer[], pdo_values_t InOut);
 void pdo_decode_buffer(pdo_size_t buffer[], pdo_values_t &InOut);
 
-void pdo_encode(unsigned char pdo_number, long &value, pdo_values_t InOut);
+{long, char} pdo_encode(unsigned char pdo_number, pdo_values_t InOut);
 void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut);
 
 void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in);
@@ -57,7 +57,7 @@ void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in
  */
 pdo_values_t pdo_init(void);
 
-char pdo_write_data_to_od(int address, char data_buffer[]);
+char pdo_read_write_data_od(int address, char data_buffer[], char write);
 
 /**
  * @brief Get target torque from EtherCAT

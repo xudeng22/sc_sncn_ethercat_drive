@@ -124,11 +124,13 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut)
     switch (pdo_number)
     {
         case 0:
-            InOut.led_set = value;
-            pdo_write_data_to_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]))
+            InOut.led_set = value & 0xff;
+            InOut.txpdo2 = (value >> 8) & 0xff;
+            //pdo_read_write_data_od(RPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
         case 1:
-            InOut.txpdo2 = value;
+            //InOut.txpdo2 = value;
+            //pdo_read_write_data_od(RPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
 //        case 2:
 //            InOut.actual_torque = value;
@@ -156,15 +158,22 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut)
     }
 }
 
-void pdo_encode(unsigned char pdo_number, long &value, pdo_values_t InOut)
+{long, char} pdo_encode(unsigned char pdo_number, pdo_values_t InOut)
 {
+    char data_length = 0;
+    long value = 0;
+
     switch (pdo_number)
     {
         case 0:
             value = InOut.counter;
+            value |= (InOut.led_status << 8) & 0xff;
+            data_length = 2;
+            //data_length = pdo_read_write_data_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
         case 1:
-            value = InOut.led_status;
+            //value = InOut.led_status;
+            //data_length = pdo_read_write_data_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
 //        case 2:
 //            value = InOut.target_torque;
@@ -190,6 +199,8 @@ void pdo_encode(unsigned char pdo_number, long &value, pdo_values_t InOut)
         default:
             break;
     }
+
+    return {value, data_length};
 }
 //
 //

@@ -114,7 +114,7 @@ int canod_set_entry(unsigned index, unsigned value);
 
 unsigned char canod_get_access(unsigned index);
 
-signed int canod_find_index(unsigned address, unsigned subindex);
+int canod_find_index(unsigned address, unsigned subindex);
 
 unsigned canod_get_no_of_si_entries(unsigned index);
 

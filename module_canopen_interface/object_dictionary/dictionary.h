@@ -1,7 +1,6 @@
 #ifndef DICTIONARY_H_
 #define DICTIONARY_H_
 
-#include "common.h"
 
 #define NUMBER_OF_SUBINDEX 97
 #define PDO_COUNT 2

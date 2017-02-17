@@ -98,15 +98,38 @@ unsigned canod_get_no_of_si_entries(unsigned index)
     return count - index;
 }
 
-signed int canod_find_index(unsigned address, unsigned subindex)
+int canod_find_index(unsigned address, unsigned subindex)
 {
-    for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
-        if (SDO_Info_Entries[i].index == address
-         && SDO_Info_Entries[i].subindex == subindex)
-            return i;
-    }
+//    for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
+//        if (SDO_Info_Entries[i].index == address
+//         && SDO_Info_Entries[i].subindex == subindex)
+//            return i;
+//    }
+//
+//    return -1;
 
-    return (signed int) 0xffffffff;
+    int i,
+    j = -1,
+    k = -1;
+    for(i = 0; i < SDO_Info_Entries[i].index != 0x0; i++)
+    {
+      if(SDO_Info_Entries[i].index == address)
+      {
+        j = i;
+        break;
+      }
+    }
+    if(j == -1) return -1;
+    for(i = j; i < SDO_Info_Entries[i].index != 0x0; i++)
+    {
+      if((SDO_Info_Entries[i].index == address) && (SDO_Info_Entries[i].entry == subindex))
+      {
+        k = i;
+        break;
+      }
+    }
+    if(k == -1) return -2;
+    return k;
 }
 
 unsigned char canod_get_access(unsigned index)

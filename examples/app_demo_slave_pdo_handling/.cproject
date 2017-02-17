@@ -739,13 +739,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
-<<<<<<< 75931371dc57a1cce1e2779ba1987011d4b9fbc1
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/src/canopen}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/bin}&quot;"/>
-=======
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
@@ -761,7 +754,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_spi_master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor/include}&quot;"/>
->>>>>>> add new_state_machine.xc
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.95438848" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1173,13 +1165,11 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_misc/include}&quot;"/>
-<<<<<<< 75931371dc57a1cce1e2779ba1987011d4b9fbc1
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/src/canopen}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/bin}&quot;"/>
-=======
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_biss/src}&quot;"/>
@@ -1195,7 +1185,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_spi_master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_foc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ams_rotary_sensor/include}&quot;"/>
->>>>>>> add new_state_machine.xc
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.22657252" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>
@@ -1738,5 +1727,12 @@
 		</profile>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/app_demo_slave_pdo_handling"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/app_demo_slave_pdo_handling"/>
+		</configuration>
+	</storageModule>
 </cproject>

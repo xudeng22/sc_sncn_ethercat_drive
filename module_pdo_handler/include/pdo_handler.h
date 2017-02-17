@@ -24,16 +24,29 @@ typedef struct
     int32_t target_position;
     int32_t target_velocity;
     int32_t offset_torque;
-    int32_t tuning_status;
-    int32_t tuning_control;
-    int32_t command_pid_update;
+    uint32_t tuning_command;
+    uint8_t digital_output1;
+    uint8_t digital_output2;
+    uint8_t digital_output3;
+    uint8_t digital_output4;
+    uint32_t user_mosi;
     uint16_t statusword;
     int8_t op_mode_display;
     int32_t position_value;
     int32_t velocity_value;
     int16_t torque_value;
-    int32_t additional_feedbacksensor_value;
-    int32_t tuning_result;
+    int32_t secondary_position_value;
+    int32_t secondary_velocity_value;
+    uint16_t analog_input1;
+    uint16_t analog_input2;
+    uint16_t analog_input3;
+    uint16_t analog_input4;
+    uint32_t tuning_status;
+    uint8_t digital_input1;
+    uint8_t digital_input2;
+    uint8_t digital_input3;
+    uint8_t digital_input4;
+    uint32_t user_miso;
 } pdo_handler_values_t;
 
 
@@ -153,8 +166,21 @@ void pdo_set_opmode_display(int opmode, pdo_handler_values_t &InOut);
 
 
 int pdo_get_offset_torque(pdo_handler_values_t &InOut);
-int pdo_get_tuning_status(pdo_handler_values_t &InOut);
-int pdo_get_tuning_control(pdo_handler_values_t &InOut);
-int pdo_get_command_pid_update(pdo_handler_values_t &InOut);
-void pdo_set_tuning_result(int value, pdo_handler_values_t &InOut);
-void pdo_set_additional_feedbacksensor_value(int value, pdo_handler_values_t &InOut);
+int pdo_get_tuning_command(pdo_handler_values_t &InOut);
+int pdo_get_dgitial_output1(pdo_handler_values_t &InOut);
+int pdo_get_dgitial_output2(pdo_handler_values_t &InOut);
+int pdo_get_dgitial_output3(pdo_handler_values_t &InOut);
+int pdo_get_dgitial_output4(pdo_handler_values_t &InOut);
+int pdo_get_user_mosi(pdo_handler_values_t &InOut);
+
+void pdo_set_secondary_position_value(int value, pdo_handler_values_t &InOut);
+void pdo_set_secondary_velocity_value(int value, pdo_handler_values_t &InOut);
+void pdo_set_analog_input1(int value, pdo_handler_values_t &InOut);
+void pdo_set_analog_input2(int value, pdo_handler_values_t &InOut);
+void pdo_set_analog_input3(int value, pdo_handler_values_t &InOut);
+void pdo_set_analog_input4(int value, pdo_handler_values_t &InOut);
+void pdo_set_tuning_status(int value, pdo_handler_values_t &InOut);
+void pdo_set_digital_input1(int value, pdo_handler_values_t &InOut);
+void pdo_set_digital_input2(int value, pdo_handler_values_t &InOut);
+void pdo_set_digital_input3(int value, pdo_handler_values_t &InOut);
+void pdo_set_digital_input4(int value, pdo_handler_values_t &InOut);

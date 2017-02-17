@@ -17,6 +17,7 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include <string.h>
+#include <curses.h>
 
 #define MAX_UINT16                  0xffff
 #define MAX_UINT32                  0xffffffff
@@ -54,6 +55,39 @@
 #define PDO_INDEX_DIGITAL_OUTPUT4            10
 #define PDO_INDEX_USER_MOSI                  11
 
+struct _input_t {
+    int statusword;
+    int op_mode_display;
+    int position_value;
+    int velocity_value;
+    int torque_value;
+    int secondary_position_value;
+    int secondary_velocity_value;
+    int analog_input1;
+    int analog_input2;
+    int analog_input3;
+    int analog_input4;
+    int tuning_status;
+    int digital_input1;
+    int digital_input2;
+    int digital_input3;
+    int digital_input4;
+    int user_miso;
+};
+
+struct _output_t {
+    int controlword;
+    int op_mode;
+    int target_position;
+    int target_velocity;
+    int target_torque;
+    int tuning_command;
+    int digital_output1;
+    int digital_output2;
+    int digital_output3;
+    int digital_output4;
+    int user_mosi;
+};
 
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
@@ -124,6 +158,86 @@ static void setup_timer(struct itimerval *tv)
     }
 }
 
+static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t *output)
+{
+    int row = 0;
+    int output_column = 0;
+    int input_column  = 20;
+
+    wmove(wnd, row++, 0);
+    wprintw(wnd, "Send Values");
+    wmove(wnd, row++, 0);
+    wprintw(wnd, "-----------");
+
+    /* print the output values */
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->controlword);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->op_mode);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->target_position);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->target_velocity);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->target_torque);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->tuning_command);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->digital_output1);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->digital_output2);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->digital_output3);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->digital_output4);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->user_mosi);
+
+    row = 0;
+
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "Receive Values");
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "-----------");
+
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->statusword);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->op_mode_display);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->position_value);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->velocity_value);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->torque_value);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->secondary_position_value);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->secondary_velocity_value);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input1);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input2);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input3);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input4);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->tuning_status);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->digital_input1);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->digital_input2);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->digital_input3);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->digital_input4);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->user_miso);
+
+    wrefresh(wnd);
+}
+
 int main(int argc, char *argv[])
 {
 	int slaveid = 0;
@@ -172,6 +286,14 @@ int main(int argc, char *argv[])
     setup_signal_handler(&sa);
     setup_timer(&tv);
 
+    /* Init display */
+    WINDOW *wnd = initscr();
+    noecho();
+    clear();
+    refresh();
+    nodelay(stdscr, TRUE);
+
+/*
     uint32_t     position = 0;
     uint32_t     velocity = 0;
     uint16_t     torque   = 0;
@@ -182,6 +304,11 @@ int main(int argc, char *argv[])
     uint32_t     user_2   = 0;
     uint32_t     user_3   = 0;
     uint32_t     user_4   = 0;
+ */
+    struct _input_t input   = { 0 };
+    struct _output_t output = { 0 };
+
+    display_update(wnd, &input, &output);
 
 	while(g_running) {
         pause();
@@ -228,8 +355,11 @@ int main(int argc, char *argv[])
             }
 
         }
+
+        display_update(wnd, &input, &output);
 	}
 
+    endwin();
     ecw_master_release(master);
     fclose(ecatlog);
 

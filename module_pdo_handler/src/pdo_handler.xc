@@ -169,30 +169,96 @@ int pdo_get_offset_torque(pdo_handler_values_t &InOut)
     return InOut.offset_torque;
 }
 
-int pdo_get_tuning_status(pdo_handler_values_t &InOut)
+int pdo_get_tuning_command(pdo_handler_values_t &InOut)
 {
-    return InOut.tuning_status;
+    return InOut.tuning_command;
 }
 
-int pdo_get_tuning_control(pdo_handler_values_t &InOut)
+int pdo_get_dgitial_output1(pdo_handler_values_t &InOut)
 {
-    return InOut.tuning_control;
+    return InOut.digital_output1;
 }
 
-int pdo_get_command_pid_update(pdo_handler_values_t &InOut)
+int pdo_get_dgitial_output2(pdo_handler_values_t &InOut)
 {
-    return InOut.command_pid_update;
+    return InOut.digital_output2;
 }
 
-void pdo_set_tuning_result(int value, pdo_handler_values_t &InOut)
+int pdo_get_dgitial_output3(pdo_handler_values_t &InOut)
 {
-    InOut.tuning_result = value;
+    return InOut.digital_output3;
 }
 
-void pdo_set_additional_feedbacksensor_value(int value, pdo_handler_values_t &InOut)
+int pdo_get_dgitial_output4(pdo_handler_values_t &InOut)
 {
-    InOut.additional_feedbacksensor_value = value;
+    return InOut.digital_output4;
 }
+
+int pdo_get_user_mosi(pdo_handler_values_t &InOut)
+{
+    return InOut.user_mosi;
+}
+
+void pdo_set_secondary_position_value(int value, pdo_handler_values_t &InOut)
+{
+    InOut.secondary_position_value = value;
+}
+
+void pdo_set_secondary_velocity_value(int value, pdo_handler_values_t &InOut)
+{
+    InOut.secondary_velocity_value = value;
+}
+
+void pdo_set_analog_input1(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input1 = value;
+}
+
+void pdo_set_analog_input2(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input2 = value;
+}
+
+void pdo_set_analog_input3(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input3 = value;
+}
+
+void pdo_set_analog_input4(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input4 = value;
+}
+
+void pdo_set_tuning_status(int value, pdo_handler_values_t &InOut)
+{
+    InOut.tuning_status = value;
+}
+
+void pdo_set_digital_input1(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input1 = value;
+}
+
+void pdo_set_digital_input2(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input2 = value;
+}
+
+void pdo_set_digital_input3(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input3 = value;
+}
+
+void pdo_set_digital_input4(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input4 = value;
+}
+
+void pdo_set_user_miso(int value, pdo_handler_values_t &InOut)
+{
+    InOut.user_miso = value;
+}
+
 
 #if 0 /* DON'T COMMIT */
 /* template for getter and setter functions to access PDOs */

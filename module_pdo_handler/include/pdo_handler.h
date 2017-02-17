@@ -184,3 +184,4 @@ void pdo_set_digital_input1(int value, pdo_handler_values_t &InOut);
 void pdo_set_digital_input2(int value, pdo_handler_values_t &InOut);
 void pdo_set_digital_input3(int value, pdo_handler_values_t &InOut);
 void pdo_set_digital_input4(int value, pdo_handler_values_t &InOut);
+void pdo_set_user_miso(int value, pdo_handler_values_t &InOut);

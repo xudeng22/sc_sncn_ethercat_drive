@@ -135,10 +135,6 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                     len = canod_find_data_length(index_); // return value: count of byte
                     break;
 
-            case i_co[int j].od_get_no_of_si_entries(uint16_t index_) -> { uint32_t no_si}:
-                    no_si = canod_get_no_of_si_entries(index_);
-                    break;
-
 
             /* Simple notification interface */
 

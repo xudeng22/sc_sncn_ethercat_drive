@@ -9,35 +9,6 @@
 
 #define MAX_PDO_SIZE    64
 
-pdo_handler_values_t pdo_handler_init(void)
-{
-	pdo_handler_values_t InOut;
-
-	InOut.controlword                     = 0x00;
-	InOut.op_mode                         = 0x00;
-
-	InOut.target_torque                   = 0x0;
-	InOut.target_velocity                 = 0x0;
-	InOut.target_position                 = 0x0;
-
-	InOut.offset_torque                   = 0x0;
-	InOut.tuning_status                   = 0x0;
-	InOut.tuning_control                  = 0x0;
-	InOut.command_pid_update              = 0x0;
-
-	InOut.statusword                      = 0x0000;
-	InOut.op_mode_display                 = 0x00;
-
-	InOut.torque_value                    = 0x0;
-	InOut.velocity_value                  = 0x0;
-	InOut.position_value                  = 0x0;
-
-	InOut.additional_feedbacksensor_value = 0x0;
-	InOut.tuning_result                   = 0x0;
-
-	return InOut;
-}
-
 int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &inout)
 {
 

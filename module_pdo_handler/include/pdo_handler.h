@@ -69,14 +69,6 @@ typedef struct
 int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &InOut);
 
 /**
- *  @brief
- *       This function initializes a struct from the type of pdo_handler_values_t
- *
- *      \return pdo_handler_values_t with values initialized
- */
-pdo_handler_values_t pdo_handler_init(void);
-
-/**
  * @brief Get target torque from EtherCAT
  *
  * @param InOut Structure containing all PDO data

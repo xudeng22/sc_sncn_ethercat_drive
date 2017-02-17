@@ -55,12 +55,12 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
 	unsigned int delay = 100000;
 	unsigned int time = 0;
+	unsigned int analog_value = 0;
 
 	uint16_t status = 255;
 	int i = 0;
-	pdo_handler_values_t InOut;
+	pdo_handler_values_t InOut = { 0 };
 	pdo_handler_values_t InOutOld = { 0 };
-	InOut = pdo_handler_init();
 	t :> time;
 
 	sdo_configuration(i_coe);

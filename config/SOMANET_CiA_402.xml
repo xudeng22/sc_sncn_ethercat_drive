@@ -127,7 +127,7 @@
               </DataType>
               <DataType>
                 <Name>DT1600</Name>
-                <BitSize>368</BitSize>
+                <BitSize>400</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>SubIndex 000</Name>
@@ -260,10 +260,21 @@
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
+                <SubItem>
+                  <SubIdx>12</SubIdx>
+                  <Name>User MOSI</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>368</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
               </DataType>
               <DataType>
                 <Name>DT1A00</Name>
-                <BitSize>528</BitSize>
+                <BitSize>560</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>SubIndex 000</Name>
@@ -446,6 +457,17 @@
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>496</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>17</SubIdx>
+                  <Name>User MISO</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>528</BitOffs>
                   <Flags>
                     <Access>ro</Access>
                     <Category>o</Category>
@@ -2076,12 +2098,12 @@
                 <Index>#x1600</Index>
                 <Name>Rx PDO Mapping</Name>
                 <Type>DT1600</Type>
-                <BitSize>368</BitSize>
+                <BitSize>400</BitSize>
                 <Info>
                   <SubItem>
                     <Name>SubIndex 000</Name>
                     <Info>
-                      <DefaultData>0B</DefaultData>
+                      <DefaultData>0C</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2150,6 +2172,12 @@
                       <DefaultData>01000426</DefaultData>
                     </Info>
                   </SubItem>
+                  <SubItem>
+                    <Name>User MOSI</Name>
+                    <Info>
+                      <DefaultData>2000FE2F</DefaultData>
+                    </Info>
+                  </SubItem>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -2160,12 +2188,12 @@
                 <Index>#x1A00</Index>
                 <Name>Tx PDO Mapping</Name>
                 <Type>DT1A00</Type>
-                <BitSize>528</BitSize>
+                <BitSize>560</BitSize>
                 <Info>
                   <SubItem>
                     <Name>SubIndex 000</Name>
                     <Info>
-                      <DefaultData>10</DefaultData>
+                      <DefaultData>11</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2262,6 +2290,12 @@
                     <Name>Digital Input 4</Name>
                     <Info>
                       <DefaultData>01000425</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>User MISO</Name>
+                    <Info>
+                      <DefaultData>2000FF2F</DefaultData>
                     </Info>
                   </SubItem>
                 </Info>
@@ -4097,6 +4131,36 @@
                   <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
+              <Object>
+                <Index>#x2FFF</Index>
+                <Name>User MISO</Name>
+                <Comment/>
+                <Type>UDINT</Type>
+                <BitSize>32</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                  <PdoMapping>t</PdoMapping>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x2FFE</Index>
+                <Name>User MOSI</Name>
+                <Comment/>
+                <Type>UDINT</Type>
+                <BitSize>32</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                  <PdoMapping>r</PdoMapping>
+                </Flags>
+              </Object>
             </Objects>
           </Dictionary>
         </Profile>
@@ -4209,6 +4273,13 @@
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
             <DataType/>
+          </Entry>
+          <Entry>
+            <Index>#x2FFE</Index>
+            <SubIndex>0</SubIndex>
+            <BitLen>32</BitLen>
+            <Name>User MOSI</Name>
+            <DataType>UDINT</DataType>
           </Entry>
         </RxPdo>
         <TxPdo Fixed="true" Sm="3">
@@ -4349,6 +4420,13 @@
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
             <DataType/>
+          </Entry>
+          <Entry>
+            <Index>#x2FFF</Index>
+            <SubIndex>0</SubIndex>
+            <BitLen>32</BitLen>
+            <Name>User MISO</Name>
+            <DataType>UDINT</DataType>
           </Entry>
         </TxPdo>
         <Mailbox DataLinkLayer="true">

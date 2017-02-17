@@ -5,7 +5,6 @@
  */
 
 #include <stdint.h>
-//#include <foefs.h>
 #include "pdo_handler.h"
 #include "canod_constants.h"
 #include "canod.h"
@@ -40,8 +39,7 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
         sub_index = 0,
         data_length = 0,
         data_counter = 0;
-    unsigned bitlength = 0,
-            value = 0;
+    unsigned bitlength = 0;
 
     index = canod_find_index(address, 0);
     canod_get_entry(index, (entries, unsigned), bitlength);
@@ -177,27 +175,6 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut)
             //InOut.txpdo2 = value;
             //pdo_read_write_data_od(RPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
-//        case 2:
-//            InOut.actual_torque = value;
-//            break;
-//        case 3:
-//            InOut.actual_position = value;
-//            break;
-//        case 4:
-//            InOut.actual_velocity = value;
-//            break;
-//        case 5:
-//            InOut.user1_in = value;
-//            break;
-//        case 6:
-//            InOut.user2_in = value;
-//            break;
-//        case 7:
-//            InOut.user3_in = value;
-//            break;
-//        case 8:
-//            InOut.user4_in = value;
-//            break;
         default:
             break;
     }
@@ -220,81 +197,9 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut)
             //value = InOut.led_status;
             //data_length = pdo_read_write_data_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
-//        case 2:
-//            value = InOut.target_torque;
-//            break;
-//        case 3:
-//            value = InOut.target_position;
-//            break;
-//        case 4:
-//            value = InOut.target_velocity;
-//            break;
-//        case 5:
-//            value = InOut.user1_out;
-//            break;
-//        case 6:
-//            value = InOut.user2_out;
-//            break;
-//        case 7:
-//            value = InOut.user3_out;
-//            break;
-//        case 8:
-//            value = InOut.user4_out;
-//            break;
         default:
             break;
     }
 
     return {value, data_length};
 }
-//
-//
-//int pdo_get_target_torque(pdo_values_t InOut)
-//{
-//    return InOut.target_torque;
-//}
-//
-//int pdo_get_target_velocity(pdo_values_t InOut)
-//{
-//    return InOut.target_velocity;
-//}
-//
-//int pdo_get_target_position(pdo_values_t InOut)
-//{
-//    return InOut.target_position;
-//}
-//
-//int pdo_get_controlword(pdo_values_t InOut)
-//{
-//    return InOut.control_word;
-//}
-//
-//int pdo_get_opmode(pdo_values_t InOut)
-//{
-//    return InOut.operation_mode;
-//}
-//
-//void pdo_set_actual_torque(int actual_torque, pdo_values_t &InOut)
-//{
-//    InOut.actual_torque = actual_torque;
-//}
-//
-//void pdo_set_actual_velocity(int actual_velocity, pdo_values_t &InOut)
-//{
-//    InOut.actual_velocity = actual_velocity;
-//}
-//
-//void pdo_set_actual_position(int actual_position, pdo_values_t &InOut)
-//{
-//    InOut.actual_position = actual_position;
-//}
-//
-//void pdo_set_statusword(int statusword, pdo_values_t &InOut)
-//{
-//    InOut.status_word = statusword & 0xffff;
-//}
-//
-//void pdo_set_opmode_display(int opmode, pdo_values_t &InOut)
-//{
-//    InOut.operation_mode_display = opmode & 0xff;
-//}

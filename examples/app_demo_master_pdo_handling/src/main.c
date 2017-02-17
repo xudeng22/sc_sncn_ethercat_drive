@@ -19,6 +19,7 @@
 #include <string.h>
 #include <curses.h>
 
+#define MAX_UINT8                   0xff
 #define MAX_UINT16                  0xffff
 #define MAX_UINT32                  0xffffffff
 
@@ -56,37 +57,37 @@
 #define PDO_INDEX_USER_MOSI                  11
 
 struct _input_t {
-    int statusword;
-    int op_mode_display;
-    int position_value;
-    int velocity_value;
-    int torque_value;
-    int secondary_position_value;
-    int secondary_velocity_value;
-    int analog_input1;
-    int analog_input2;
-    int analog_input3;
-    int analog_input4;
-    int tuning_status;
-    int digital_input1;
-    int digital_input2;
-    int digital_input3;
-    int digital_input4;
-    int user_miso;
+    unsigned int statusword;
+    unsigned int op_mode_display;
+    unsigned int position_value;
+    unsigned int velocity_value;
+    unsigned int torque_value;
+    unsigned int secondary_position_value;
+    unsigned int secondary_velocity_value;
+    unsigned int analog_input1;
+    unsigned int analog_input2;
+    unsigned int analog_input3;
+    unsigned int analog_input4;
+    unsigned int tuning_status;
+    unsigned int digital_input1;
+    unsigned int digital_input2;
+    unsigned int digital_input3;
+    unsigned int digital_input4;
+    unsigned int user_miso;
 };
 
 struct _output_t {
-    int controlword;
-    int op_mode;
-    int target_position;
-    int target_velocity;
-    int target_torque;
-    int tuning_command;
-    int digital_output1;
-    int digital_output2;
-    int digital_output3;
-    int digital_output4;
-    int user_mosi;
+    unsigned int controlword;
+    unsigned int op_mode;
+    unsigned int target_position;
+    unsigned int target_velocity;
+    unsigned int target_torque;
+    unsigned int tuning_command;
+    unsigned int digital_output1;
+    unsigned int digital_output2;
+    unsigned int digital_output3;
+    unsigned int digital_output4;
+    unsigned int user_mosi;
 };
 
 static int g_running = 1;
@@ -156,6 +157,95 @@ static void setup_timer(struct itimerval *tv)
         fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
         exit(-1);
     }
+}
+
+static void data_update_pdos(Ethercat_Slave_t *slave,
+                        struct _input_t  *input,
+                        struct _output_t *output)
+{
+    unsigned int received = 0;
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+    if (received == input->statusword) {
+        input->statusword = received;
+        output->controlword = (input->statusword >= MAX_UINT16) ? 0 : input->statusword + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, output->controlword);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
+    if (received == input->op_mode_display) {
+        input->op_mode_display = received;
+        output->op_mode = (input->op_mode_display >= MAX_UINT8) ? 0 : input->op_mode_display + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_OPMODE, output->op_mode);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
+    if (received == input->torque_value) {
+        input->torque_value = input->torque_value;
+        output->target_torque = (input->torque_value >= MAX_UINT16) ? 0 : input->torque_value + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, output->target_torque);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
+    if (received == input->position_value) {
+        input->position_value = received;
+        output->target_position = (input->position_value >= MAX_UINT32) ? 0 : input->position_value + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, output->target_position);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
+    if (received == input->velocity_value) {
+        input->velocity_value = received;
+        output->target_velocity = (input->velocity_value >= MAX_UINT32) ? 0 : input->velocity_value + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, output->target_velocity);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
+    if (received == input->user_miso) {
+        input->user_miso = received;
+        output->user_mosi = (input->user_miso >= MAX_UINT32) ? 0 : input->user_miso + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, output->user_mosi);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TUNING_STATUS);
+    if (received == input->tuning_status) {
+        input->tuning_status = received;
+        output->tuning_command = (input->tuning_status >= MAX_UINT32) ? 0 : input->tuning_status + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, output->tuning_command);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT1);
+    if (received == input->digital_input1) {
+        input->digital_input1 = received;
+        output->digital_output1 = ~input->digital_input1 & 0x1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT1, output->digital_output1);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT2);
+    if (received == input->digital_input2) {
+        input->digital_input2 = received;
+        output->digital_output2 = ~input->digital_input2 & 0x1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT2, output->digital_output2);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT3);
+    if (received == input->digital_input3) {
+        input->digital_input3 = received;
+        output->digital_output3 = ~input->digital_input3 & 0x1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT3, output->digital_output3);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT4);
+    if (received == input->digital_input4) {
+        input->digital_input4 = received;
+        output->digital_output4 = ~input->digital_input4 & 0x1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT4, output->digital_output4);
+    }
+
+    input->analog_input1 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT1);
+    input->analog_input2 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT2);
+    input->analog_input3 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT3);
+    input->analog_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
 }
 
 static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t *output)
@@ -293,18 +383,6 @@ int main(int argc, char *argv[])
     refresh();
     nodelay(stdscr, TRUE);
 
-/*
-    uint32_t     position = 0;
-    uint32_t     velocity = 0;
-    uint16_t     torque   = 0;
-    uint16_t     status   = 0;
-    unsigned int received = 0;
-
-    uint32_t     user_1   = 0;
-    uint32_t     user_2   = 0;
-    uint32_t     user_3   = 0;
-    uint32_t     user_4   = 0;
- */
     struct _input_t input   = { 0 };
     struct _output_t output = { 0 };
 
@@ -318,42 +396,7 @@ int main(int argc, char *argv[])
 
             ecw_master_cyclic_function(master);
 
-            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
-            if (received == status) {
-                status = (status >= MAX_UINT16) ? 0 : status + 1;
-                ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
-            }
-
-            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
-            if (received == torque) {
-                torque = (torque >= MAX_UINT16) ? 0 : torque + 1;
-                ecw_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
-            }
-
-            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
-            if (received == position) {
-                position = (position >= MAX_UINT32) ? 0 : position + 1;
-                ecw_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
-            }
-
-            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
-            if (received == velocity) {
-                velocity = (velocity >= MAX_UINT32) ? 0 : velocity + 1;
-                ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
-            }
-
-            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
-            if (received == user_1) {
-                user_1 = (user_1 >= MAX_UINT32) ? 0 : user_1 + 1;
-                ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, user_1);
-            }
-
-            received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TUNING_STATUS);
-            if (received == user_2) {
-                user_2 = (user_2 >= MAX_UINT32) ? 0 : user_2 + 1;
-                ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, user_2);
-            }
-
+            data_update_pdos(slave, &input, &output);
         }
 
         display_update(wnd, &input, &output);

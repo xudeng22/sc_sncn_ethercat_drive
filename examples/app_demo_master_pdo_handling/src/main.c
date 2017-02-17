@@ -22,26 +22,38 @@
 #define MAX_UINT32                  0xffffffff
 
 /* Index of receiving (in) PDOs */
-#define PDO_INDEX_STATUSWORD        0
-#define PDO_INDEX_OPMODEDISP        1
-#define PDO_INDEX_POSITION_VALUE    2
-#define PDO_INDEX_VELOCITY_VALUE    3
-#define PDO_INDEX_TORQUE_VALUE      4
-#define PDO_INDEX_MEASURE_TORQUE_VALUE         5
-#define PDO_INDEX_TUNING_RESULT         6
-#define PDO_INDEX_USER_IN_3         7
-#define PDO_INDEX_USER_IN_4         8
+#define PDO_INDEX_STATUSWORD                  0
+#define PDO_INDEX_OPMODEDISP                  1
+#define PDO_INDEX_POSITION_VALUE              2
+#define PDO_INDEX_VELOCITY_VALUE              3
+#define PDO_INDEX_TORQUE_VALUE                4
+#define PDO_INDEX_SECONDARY_POSITION_VALUE    5
+#define PDO_INDEX_SECONDARY_VELOCITY_VALUE    6
+#define PDO_INDEX_ANALOG_INPUT1               7
+#define PDO_INDEX_ANALOG_INPUT2               8
+#define PDO_INDEX_ANALOG_INPUT3               9
+#define PDO_INDEX_ANALOG_INPUT4              10
+#define PDO_INDEX_TUNING_STATUS              11
+#define PDO_INDEX_DIGITAL_INPUT1             12
+#define PDO_INDEX_DIGITAL_INPUT2             13
+#define PDO_INDEX_DIGITAL_INPUT3             14
+#define PDO_INDEX_DIGITAL_INPUT4             15
+#define PDO_INDEX_USER_MISO                  16
 
 /* Index of sending (out) PDOs */
-#define PDO_INDEX_CONTROLWORD       0
-#define PDO_INDEX_OPMODE            1
-#define PDO_INDEX_TORQUE_REQUEST    2
-#define PDO_INDEX_POSITION_REQUEST  3
-#define PDO_INDEX_VELOCITY_REQUEST  4
-#define PDO_INDEX_OFFSET_TORQUE        5
-#define PDO_INDEX_TUNING_STATUS        6
-#define PDO_INDEX_USER_OUT_3        7
-#define PDO_INDEX_USER_OUT_4        8
+#define PDO_INDEX_CONTROLWORD                 0
+#define PDO_INDEX_OPMODE                      1
+#define PDO_INDEX_TORQUE_REQUEST              2
+#define PDO_INDEX_POSITION_REQUEST            3
+#define PDO_INDEX_VELOCITY_REQUEST            4
+#define PDO_INDEX_OFFFSET_TORQUE              5
+#define PDO_INDEX_TUNING_COMMAND              6
+#define PDO_INDEX_DIGITAL_OUTPUT1             7
+#define PDO_INDEX_DIGITAL_OUTPUT2             8
+#define PDO_INDEX_DIGITAL_OUTPUT3             9
+#define PDO_INDEX_DIGITAL_OUTPUT4            10
+#define PDO_INDEX_USER_MOSI                  11
+
 
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;

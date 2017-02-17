@@ -81,8 +81,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 		InOut.statusword = InOut.controlword;
 		InOut.op_mode_display = InOut.op_mode;
 
-		InOut.additional_feedbacksensor_value = InOut.offset_torque;
-		InOut.tuning_result = InOut.tuning_status;
+		InOut.tuning_status = InOut.tuning_command;
 
 		/*
 		 *  The PDOs InOut.tuning_control and InOut.command_pid_update don't have
@@ -125,20 +124,31 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 	   InOutOld.target_torque   = InOut.target_torque;
 	   InOutOld.op_mode         = InOut.op_mode;
 
-	   if (InOutOld.offset_torque != InOut.offset_torque)
-	   {
-	       printstr("\nOffset Torque Data: ");
-	       printhexln(InOut.offset_torque);
-	   }
+	   InOutOld.tuning_command        = InOut.tuning_command;
 
-	   if (InOutOld.tuning_status != InOut.tuning_status)
+	   if (InOutOld.tuning_command != InOut.tuning_command)
 	   {
 	       printstr("Tuning Status Data: ");
 	       printhexln(InOut.tuning_status);
 	   }
 
-	   InOutOld.offset_torque        = InOut.offset_torque;
-	   InOutOld.tuning_status        = InOut.tuning_status;
+		/* mirror digital inputs */
+		InOut.digital_input1 = InOut.digital_output1;
+		InOut.digital_input2 = InOut.digital_output2;
+		InOut.digital_input3 = InOut.digital_output3;
+		InOut.digital_input4 = InOut.digital_output4;
+
+		/* increment analog values */
+		InOut.analog_input1 = analog_value + 1000;
+		InOut.analog_input2 = analog_value + 2000;
+		InOut.analog_input3 = analog_value + 3000;
+		InOut.analog_input4 = analog_value + 4000;
+		analog_value = analog_value >= 1000 ? 0 : analog_value + 1;
+
+		InOut.user_miso = InOut.user_mosi;
+
+		InOut.secondary_position_value = InOut.offset_torque;
+		InOut.secondary_velocity_value = ~InOut.offset_torque;
 
 	   t when timerafter(time+delay) :> time;
 	}

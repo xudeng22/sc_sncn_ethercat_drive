@@ -357,11 +357,6 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if (master == NULL) {
-        fprintf(stderr, "Error could not initialize master\n");
-        return -1;
-    }
-
     /* only talk to slave 0 */
     Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
     if (slave == NULL) {

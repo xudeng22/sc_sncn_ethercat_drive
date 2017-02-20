@@ -167,49 +167,49 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
     unsigned int received = 0;
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
-    if (received == input->statusword) {
+    if (received == output->controlword) {
         input->statusword = received;
         output->controlword = (input->statusword >= MAX_UINT16) ? 0 : input->statusword + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, output->controlword);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
-    if (received == input->op_mode_display) {
+    if (received == output->op_mode) {
         input->op_mode_display = received;
-        output->op_mode = (input->op_mode_display >= MAX_UINT8) ? 0 : input->op_mode_display + 1;
+        output->op_mode = ((input->op_mode_display >= MAX_UINT8) ? 0 : input->op_mode_display + 1) & 0xff;
         ecw_slave_set_out_value(slave, PDO_INDEX_OPMODE, output->op_mode);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
-    if (received == input->torque_value) {
-        input->torque_value = input->torque_value;
+    if (received == output->target_torque) {
+        input->torque_value = received;
         output->target_torque = (input->torque_value >= MAX_UINT16) ? 0 : input->torque_value + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, output->target_torque);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
-    if (received == input->position_value) {
+    if (received == output->target_position) {
         input->position_value = received;
         output->target_position = (input->position_value >= MAX_UINT32) ? 0 : input->position_value + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, output->target_position);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
-    if (received == input->velocity_value) {
+    if (received == output->target_velocity) {
         input->velocity_value = received;
         output->target_velocity = (input->velocity_value >= MAX_UINT32) ? 0 : input->velocity_value + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, output->target_velocity);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
-    if (received == input->user_miso) {
+    if (received == output->user_mosi) {
         input->user_miso = received;
         output->user_mosi = (input->user_miso >= MAX_UINT32) ? 0 : input->user_miso + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, output->user_mosi);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TUNING_STATUS);
-    if (received == input->tuning_status) {
+    if (received == output->tuning_command) {
         input->tuning_status = received;
         output->tuning_command = (input->tuning_status >= MAX_UINT32) ? 0 : input->tuning_status + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, output->tuning_command);
@@ -218,33 +218,34 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_POSITION_VALUE);
     if (received == output->offset_torque) {
         input->secondary_position_value = received;
+        input->secondary_velocity_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_VELOCITY_VALUE);
         output->offset_torque = (input->secondary_position_value >= MAX_UINT32) ? 0 : input->secondary_position_value + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, output->offset_torque);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT1);
-    if (received == input->digital_input1) {
+    if (received == output->digital_output1) {
         input->digital_input1 = received;
         output->digital_output1 = ~input->digital_input1 & 0x1;
         ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT1, output->digital_output1);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT2);
-    if (received == input->digital_input2) {
+    if (received == output->digital_output2) {
         input->digital_input2 = received;
         output->digital_output2 = ~input->digital_input2 & 0x1;
         ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT2, output->digital_output2);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT3);
-    if (received == input->digital_input3) {
+    if (received == output->digital_output3) {
         input->digital_input3 = received;
         output->digital_output3 = ~input->digital_input3 & 0x1;
         ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT3, output->digital_output3);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT4);
-    if (received == input->digital_input4) {
+    if (received == output->digital_output4) {
         input->digital_input4 = received;
         output->digital_output4 = ~input->digital_input4 & 0x1;
         ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT4, output->digital_output4);

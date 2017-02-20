@@ -37,10 +37,10 @@
 #define PDO_INDEX_ANALOG_INPUT4              10
 #define PDO_INDEX_TUNING_STATUS              11
 #define PDO_INDEX_DIGITAL_INPUT1             12
-#define PDO_INDEX_DIGITAL_INPUT2             13
-#define PDO_INDEX_DIGITAL_INPUT3             14
-#define PDO_INDEX_DIGITAL_INPUT4             15
-#define PDO_INDEX_USER_MISO                  16
+#define PDO_INDEX_DIGITAL_INPUT2             14
+#define PDO_INDEX_DIGITAL_INPUT3             16
+#define PDO_INDEX_DIGITAL_INPUT4             18
+#define PDO_INDEX_USER_MISO                  20
 
 /* Index of sending (out) PDOs */
 #define PDO_INDEX_CONTROLWORD                 0
@@ -51,10 +51,10 @@
 #define PDO_INDEX_OFFSET_TORQUE               5
 #define PDO_INDEX_TUNING_COMMAND              6
 #define PDO_INDEX_DIGITAL_OUTPUT1             7
-#define PDO_INDEX_DIGITAL_OUTPUT2             8
-#define PDO_INDEX_DIGITAL_OUTPUT3             9
-#define PDO_INDEX_DIGITAL_OUTPUT4            10
-#define PDO_INDEX_USER_MOSI                  11
+#define PDO_INDEX_DIGITAL_OUTPUT2             9
+#define PDO_INDEX_DIGITAL_OUTPUT3            11
+#define PDO_INDEX_DIGITAL_OUTPUT4            13
+#define PDO_INDEX_USER_MOSI                  15
 
 struct _input_t {
     unsigned int statusword;

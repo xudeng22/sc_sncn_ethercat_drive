@@ -257,22 +257,70 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
     input->analog_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
 }
 
+static void display_printframe(WINDOW *wnd)
+{
+    int output_column = 30;
+    int input_column  = 50;
+    int title_column  = 0;
+    int row = 0;
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "Packet");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "-----------");
+
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "control-/statusword");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "op_mode");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "position");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "velocity");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "torque");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "tuning_status");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "user_miso");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "secondary_position_value");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "secondary_velocity_value");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "digital_input1");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "digital_input2");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "digital_input3");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "digital_input4");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "analog_input1");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "analog_input2");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "analog_input3");
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "analog_input4");
+}
+
 static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t *output)
 {
-    int row = 0;
-    int output_column = 0;
-    int input_column  = 20;
+    int title_column  = 0;
+    int output_column = 30;
+    int input_column  = 50;
 
-    wmove(wnd, row++, 0);
+    int row = 0;
+    wmove(wnd, row++, output_column);
     wprintw(wnd, "Send Values");
-    wmove(wnd, row++, 0);
+    wmove(wnd, row++, output_column);
     wprintw(wnd, "-----------");
 
     /* print the output values */
     wmove(wnd, row++, output_column);
     wprintw(wnd, "%d", output->controlword);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->op_mode);
+    wprintw(wnd, "%4d", output->op_mode);
     wmove(wnd, row++, output_column);
     wprintw(wnd, "%d", output->target_position);
     wmove(wnd, row++, output_column);
@@ -393,6 +441,7 @@ int main(int argc, char *argv[])
     struct _input_t input   = { 0 };
     struct _output_t output = { 0 };
 
+    display_printframe(wnd);
     display_update(wnd, &input, &output);
 
 	while(g_running) {

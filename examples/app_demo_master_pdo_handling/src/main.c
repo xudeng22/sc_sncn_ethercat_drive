@@ -259,8 +259,6 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
 
 static void display_printframe(WINDOW *wnd)
 {
-    int output_column = 30;
-    int input_column  = 50;
     int title_column  = 0;
     int row = 0;
     wmove(wnd, row++, title_column);
@@ -306,7 +304,6 @@ static void display_printframe(WINDOW *wnd)
 
 static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t *output)
 {
-    int title_column  = 0;
     int output_column = 30;
     int input_column  = 50;
 

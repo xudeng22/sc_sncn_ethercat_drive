@@ -71,15 +71,15 @@ int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t
 		buffer[31] = inout.tuning_status >> 16;
 		buffer[32] = inout.tuning_status >> 24;
 		buffer[33] = inout.digital_input1;
-		buffer[35] = inout.digital_input2;
-		buffer[37] = inout.digital_input3;
-		buffer[39] = inout.digital_input4;
-		buffer[41] = inout.user_miso;
-		buffer[42] = inout.user_miso >> 8;
-		buffer[43] = inout.user_miso >> 16;
-		buffer[44] = inout.user_miso >> 24;
+		buffer[34] = inout.digital_input2;
+		buffer[35] = inout.digital_input3;
+		buffer[36] = inout.digital_input4;
+		buffer[37] = inout.user_miso;
+		buffer[38] = inout.user_miso >> 8;
+		buffer[39] = inout.user_miso >> 16;
+		buffer[40] = inout.user_miso >> 24;
 
-		pdo_count = 45;
+		pdo_count = 41;
 		i_pdo.set_pdos_value(buffer, pdo_count);
 	}
 	return count;

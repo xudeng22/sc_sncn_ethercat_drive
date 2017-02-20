@@ -48,7 +48,7 @@
 #define PDO_INDEX_TORQUE_REQUEST              2
 #define PDO_INDEX_POSITION_REQUEST            3
 #define PDO_INDEX_VELOCITY_REQUEST            4
-#define PDO_INDEX_OFFFSET_TORQUE              5
+#define PDO_INDEX_OFFSET_TORQUE               5
 #define PDO_INDEX_TUNING_COMMAND              6
 #define PDO_INDEX_DIGITAL_OUTPUT1             7
 #define PDO_INDEX_DIGITAL_OUTPUT2             8
@@ -216,10 +216,10 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_POSITION_VALUE);
-    if (received == input->secondary_position_value) {
+    if (received == output->offset_torque) {
         input->secondary_position_value = received;
         output->offset_torque = (input->secondary_position_value >= MAX_UINT32) ? 0 : input->secondary_position_value + 1;
-        ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, output->offset_torque);
+        ecw_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, output->offset_torque);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT1);

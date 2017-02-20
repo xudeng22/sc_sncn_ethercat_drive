@@ -281,6 +281,11 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wmove(wnd, row++, output_column);
     wprintw(wnd, "%d", output->tuning_command);
     wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->user_mosi);
+    wmove(wnd, row++, output_column);
+    wprintw(wnd, "%d", output->offset_torque);
+    row++; /* extra space */
+    wmove(wnd, row++, output_column);
     wprintw(wnd, "%d", output->digital_output1);
     wmove(wnd, row++, output_column);
     wprintw(wnd, "%d", output->digital_output2);
@@ -288,8 +293,6 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wprintw(wnd, "%d", output->digital_output3);
     wmove(wnd, row++, output_column);
     wprintw(wnd, "%d", output->digital_output4);
-    wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->user_mosi);
 
     row = 0;
 
@@ -309,19 +312,13 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wmove(wnd, row++, input_column);
     wprintw(wnd, "%d", input->torque_value);
     wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->tuning_status);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->user_miso);
+    wmove(wnd, row++, input_column);
     wprintw(wnd, "%d", input->secondary_position_value);
     wmove(wnd, row++, input_column);
     wprintw(wnd, "%d", input->secondary_velocity_value);
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input1);
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input2);
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input3);
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input4);
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->tuning_status);
     wmove(wnd, row++, input_column);
     wprintw(wnd, "%d", input->digital_input1);
     wmove(wnd, row++, input_column);
@@ -331,7 +328,13 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wmove(wnd, row++, input_column);
     wprintw(wnd, "%d", input->digital_input4);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->user_miso);
+    wprintw(wnd, "%d", input->analog_input1);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input2);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input3);
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%d", input->analog_input4);
 
     wrefresh(wnd);
 }

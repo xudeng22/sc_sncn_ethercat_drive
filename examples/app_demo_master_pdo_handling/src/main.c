@@ -97,6 +97,53 @@ static unsigned int user_alarms = 0;
 
 /* set eventually higher priority */
 
+static inline const char *_basename(const char *prog)
+{
+    const char *p = prog;
+    const char *i = p;
+    for (i = p; *i != '\0'; i++) {
+        if (*i == '/')
+            p = i+1;
+    }
+
+    return p;
+}
+
+#if 0
+static void printversion(const char *prog)
+{
+    printf("%s %s\n", _basename(prog), VERSION);
+}
+#endif
+
+static void printhelp(const char *prog)
+{
+    printf("Usage: %s [-h] [-n slave]\n", _basename(prog));
+    printf("\n");
+    printf("  -h             print this help and exit\n");
+    printf("  -n slave       slave number, default to 0\n");
+}
+
+static void cmdline(int argc, char **argv, int *num_slaves)
+{
+    int  opt;
+
+    const char *options = "hvlos:n:f:";
+
+    while ((opt = getopt(argc, argv, options)) != -1) {
+        switch (opt) {
+        case 'n':
+            *num_slaves = atoi(optarg);
+            break;
+
+        case 'h':
+        default:
+            printhelp(argv[0]);
+            exit(1);
+            break;
+        }
+    }
+}
 
 static void set_priority(void)
 {
@@ -393,9 +440,7 @@ int main(int argc, char *argv[])
     struct itimerval tv;
 
     /* FIXME use getopt(1) with -h, -v etc. */
-    if (argc > 1) {
-        slaveid =  atoi(argv[1]);
-    }
+    cmdline(argc, argv, &slaveid);
 
     FILE *ecatlog = fopen("./ecat.log", "w");
 

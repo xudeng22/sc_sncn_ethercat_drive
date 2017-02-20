@@ -372,30 +372,30 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
 
     /* print the output values */
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->controlword);
+    wprintw(wnd, "%5d", output->controlword);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%4d", output->op_mode);
+    wprintw(wnd, "%5d", output->op_mode);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->target_position);
+    wprintw(wnd, "%5d", output->target_position);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->target_velocity);
+    wprintw(wnd, "%5d", output->target_velocity);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->target_torque);
+    wprintw(wnd, "%5d", output->target_torque);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->tuning_command);
+    wprintw(wnd, "%5d", output->tuning_command);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->user_mosi);
+    wprintw(wnd, "%5d", output->user_mosi);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->offset_torque);
+    wprintw(wnd, "%5d", output->offset_torque);
     row++; /* extra space */
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->digital_output1);
+    wprintw(wnd, "%5d", output->digital_output1);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->digital_output2);
+    wprintw(wnd, "%5d", output->digital_output2);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->digital_output3);
+    wprintw(wnd, "%5d", output->digital_output3);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%d", output->digital_output4);
+    wprintw(wnd, "%5d", output->digital_output4);
 
     row = 0;
 

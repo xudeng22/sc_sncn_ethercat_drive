@@ -83,6 +83,7 @@ struct _output_t {
     unsigned int target_velocity;
     unsigned int target_torque;
     unsigned int tuning_command;
+    unsigned int offset_torque;
     unsigned int digital_output1;
     unsigned int digital_output2;
     unsigned int digital_output3;
@@ -212,6 +213,13 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
         input->tuning_status = received;
         output->tuning_command = (input->tuning_status >= MAX_UINT32) ? 0 : input->tuning_status + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, output->tuning_command);
+    }
+
+    received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_POSITION_VALUE);
+    if (received == input->secondary_position_value) {
+        input->secondary_position_value = received;
+        output->offset_torque = (input->secondary_position_value >= MAX_UINT32) ? 0 : input->secondary_position_value + 1;
+        ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, output->offset_torque);
     }
 
     received = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT1);

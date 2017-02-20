@@ -122,18 +122,28 @@ static void printhelp(const char *prog)
     printf("\n");
     printf("  -h             print this help and exit\n");
     printf("  -n slave       slave number, default to 0\n");
+    printf("  -d             print domain registry before start\n");
+    printf("  -w             enable graphical output (attention slow!\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves)
+static void cmdline(int argc, char **argv, int *num_slaves, int *curses, int *debuginfo)
 {
     int  opt;
 
-    const char *options = "hvlos:n:f:";
+    const char *options = "hn:wd";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
         case 'n':
             *num_slaves = atoi(optarg);
+            break;
+
+        case 'd':
+            *debuginfo = 1;
+            break;
+
+        case 'w':
+            *curses = 1;
             break;
 
         case 'h':
@@ -395,52 +405,55 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wprintw(wnd, "-----------");
 
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->statusword);
+    wprintw(wnd, "%5d", input->statusword);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->op_mode_display);
+    wprintw(wnd, "%5d", input->op_mode_display);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->position_value);
+    wprintw(wnd, "%5d", input->position_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->velocity_value);
+    wprintw(wnd, "%5d", input->velocity_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->torque_value);
+    wprintw(wnd, "%5d", input->torque_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->tuning_status);
+    wprintw(wnd, "%5d", input->tuning_status);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->user_miso);
+    wprintw(wnd, "%5d", input->user_miso);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->secondary_position_value);
+    wprintw(wnd, "%5d", input->secondary_position_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->secondary_velocity_value);
+    wprintw(wnd, "%5d", input->secondary_velocity_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->digital_input1);
+    wprintw(wnd, "%5d", input->digital_input1);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->digital_input2);
+    wprintw(wnd, "%5d", input->digital_input2);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->digital_input3);
+    wprintw(wnd, "%5d", input->digital_input3);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->digital_input4);
+    wprintw(wnd, "%5d", input->digital_input4);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input1);
+    wprintw(wnd, "%5d", input->analog_input1);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input2);
+    wprintw(wnd, "%5d", input->analog_input2);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input3);
+    wprintw(wnd, "%5d", input->analog_input3);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%d", input->analog_input4);
+    wprintw(wnd, "%5d", input->analog_input4);
 
     wrefresh(wnd);
 }
 
 int main(int argc, char *argv[])
 {
+    WINDOW *wnd = NULL;
 	int slaveid = 0;
+    int curses  = 0;
+    int debuginfo = 0;
 
     struct sigaction sa;
     struct itimerval tv;
 
     /* FIXME use getopt(1) with -h, -v etc. */
-    cmdline(argc, argv, &slaveid);
+    cmdline(argc, argv, &slaveid, &curses, &debuginfo);
 
     FILE *ecatlog = fopen("./ecat.log", "w");
 
@@ -466,6 +479,12 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    if (debuginfo) {  /* DEBUG Information */
+        ecw_print_domainregs(master);
+        puts("Hit <Enter> to continue");
+        getchar();
+    }
+
     ecw_master_start(master);
 	printf("starting Master application\n");
 
@@ -473,18 +492,22 @@ int main(int argc, char *argv[])
     setup_signal_handler(&sa);
     setup_timer(&tv);
 
-    /* Init display */
-    WINDOW *wnd = initscr();
-    noecho();
-    clear();
-    refresh();
-    nodelay(stdscr, TRUE);
+    if (curses == 1) {
+        /* Init display */
+        wnd = initscr();
+        noecho();
+        clear();
+        refresh();
+        nodelay(stdscr, TRUE);
+    }
 
     struct _input_t input   = { 0 };
     struct _output_t output = { 0 };
 
-    display_printframe(wnd);
-    display_update(wnd, &input, &output);
+    if (curses) {
+        display_printframe(wnd);
+        display_update(wnd, &input, &output);
+    }
 
 	while(g_running) {
         pause();
@@ -497,10 +520,15 @@ int main(int argc, char *argv[])
             data_update_pdos(slave, &input, &output);
         }
 
-        display_update(wnd, &input, &output);
+        if (curses) {
+            display_update(wnd, &input, &output);
+        }
 	}
 
-    endwin();
+    if (curses) {
+        endwin();
+    }
+
     ecw_master_release(master);
     fclose(ecatlog);
 

@@ -100,7 +100,7 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
 //    return (data_counter);
 //}
 
-void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in)
+void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_in)
 {
     pdo_in.led_set       = InOut.led_set;
     pdo_in.txpdo2        = InOut.txpdo2;
@@ -162,7 +162,7 @@ void pdo_encode_buffer(pdo_size_t buffer[], pdo_values_t InOut)
 }
 
 
-void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut)
+void pdo_decode(unsigned char pdo_number, long value, pdo_values_t &InOut)
 {
     switch (pdo_number)
     {

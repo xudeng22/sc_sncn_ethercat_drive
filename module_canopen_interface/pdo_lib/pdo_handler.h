@@ -46,9 +46,9 @@ void pdo_encode_buffer(pdo_size_t buffer[], pdo_values_t InOut);
 void pdo_decode_buffer(pdo_size_t buffer[], pdo_values_t &InOut);
 
 {long, char} pdo_encode(unsigned char pdo_number, pdo_values_t InOut);
-void pdo_decode(unsigned char pdo_number, long value, pdo_values_t InOut);
+void pdo_decode(unsigned char pdo_number, long value, pdo_values_t &InOut);
 
-void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in);
+void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_in);
 /**
  *  @brief
  *       This function initializes a struct from the type of pdo_values_t

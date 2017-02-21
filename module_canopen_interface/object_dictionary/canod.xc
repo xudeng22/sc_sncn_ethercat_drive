@@ -122,7 +122,7 @@ int canod_find_index(unsigned address, unsigned subindex)
     if(j == -1) return -1;
     for(i = j; i < SDO_Info_Entries[i].index != 0x0; i++)
     {
-      if((SDO_Info_Entries[i].index == address) && (SDO_Info_Entries[i].entry == subindex))
+      if((SDO_Info_Entries[i].index == address) && (SDO_Info_Entries[i].subindex == subindex))
       {
         k = i;
         break;

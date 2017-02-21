@@ -173,7 +173,7 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t &InOut)
         case 0:
             InOut.led_set = value & 0xff;
             InOut.txpdo2 = (value >> 8) & 0xff;
-            //pdo_read_write_data_od(RPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
+            //pdo_read_write_data_od((RPDO_COMMUNICATION_PARAMETER + pdo_number), (value, char[]), WRITE_TO_OD);
             break;
         case 1:
             //InOut.txpdo2 = value;
@@ -192,10 +192,9 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t &InOut)
     switch (pdo_number)
     {
         case 0:
-            value = InOut.counter;
-            value |= (InOut.led_status << 8) & 0xff;
+            value = (InOut.counter & 0xff) | ((InOut.led_status << 8) & 0xff00);
             data_length = 2;
-            //data_length = pdo_read_write_data_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
+            //data_length = pdo_read_write_data_od((TPDO_COMMUNICATION_PARAMETER + pdo_number), (value, char[]), WRITE_TO_OD);
             break;
         case 1:
             //value = InOut.led_status;

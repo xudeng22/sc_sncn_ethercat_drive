@@ -16,7 +16,7 @@ enum {
     WRITE_TO_OD = 1,
 };
 
-pdo_values_t pdo_init(void)
+pdo_values_t pdo_init_data(void)
 {
 	pdo_values_t InOut;
 

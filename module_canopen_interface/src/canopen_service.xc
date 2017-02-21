@@ -17,7 +17,7 @@
 [[distributable]]
 void canopen_service(server interface i_co_communication i_co[n], unsigned n)
 {
-    pdo_values_t InOut = pdo_init();
+    pdo_values_t InOut = pdo_init_data();
     pdo_size_t pdo_buffer[PDO_BUFFER_SIZE];
     unsigned pdo_size = 0;
     char pdo_state = 0;

@@ -55,7 +55,7 @@ void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t pdo_in
  *
  *      \return pdo_values_t with values initialized
  */
-pdo_values_t pdo_init(void);
+pdo_values_t pdo_init_data(void);
 
 char pdo_read_write_data_od(int address, char data_buffer[], char write);
 

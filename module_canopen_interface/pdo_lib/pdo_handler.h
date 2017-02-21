@@ -57,8 +57,6 @@ void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_i
  */
 pdo_values_t pdo_init_data(void);
 
-char pdo_read_write_data_od(int address, char data_buffer[], char write);
-
 /**
  * @brief Get target torque from EtherCAT
  *

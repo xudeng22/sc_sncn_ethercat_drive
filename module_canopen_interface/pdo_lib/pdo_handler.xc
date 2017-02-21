@@ -33,36 +33,40 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
 {
     int index = 0,
         temp_index = 0;
-    char entries[4],
-        count = 0,
+    char count = 0,
         no_of_entries = 0,
         sub_index = 0,
         data_length = 0,
         data_counter = 0;
-    unsigned bitlength = 0;
+    unsigned bitlength = 0,
+            entries = 0,
+            value;
 
     index = canod_find_index(address, 0);
-    canod_get_entry(index, (entries, unsigned), bitlength);
-    no_of_entries = entries[0];
+    canod_get_entry(index, entries, bitlength);
+    no_of_entries = entries & 0xff;
 
     while(count != no_of_entries)
     {
-        canod_get_entry(index + count + 1, (entries, unsigned), bitlength);
-        address = (entries[2]) | (entries[3] << 8);
-        sub_index = entries[1];
-        data_length = entries[0]/8;
+        canod_get_entry(index + count + 1, entries, bitlength);
+        address = (entries >> 16) & 0xffff;
+        sub_index = (entries >> 8) & 0xff;
+        data_length = (entries & 0xff)/8;
         count++;
 
         temp_index = canod_find_index(address, sub_index);
 
         if (temp_index != -1) {
             if (write) {
-//                for (int i = 0; i < data_length; i++) {
-//                    value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
-//                }
-                //canod_set_entry(temp_index, (&data_buffer[(int)data_counter], unsigned));
+                for (int i = 0; i < data_length; i++) {
+                    value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
+                }
+                canod_set_entry(temp_index, value);
             } else {
-                //canod_get_entry(temp_index, &data_buffer[(int)data_counter], bitlength);
+                canod_get_entry(temp_index, value, bitlength);
+                for (int i = 0; i < data_length; i++) {
+                    data_buffer[data_counter + i] = (value >> (8*i) ) & 0xff;
+                }
             }
         }
         data_counter += data_length;

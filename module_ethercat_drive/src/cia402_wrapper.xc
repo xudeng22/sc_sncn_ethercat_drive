@@ -58,23 +58,23 @@ void config_print_dictionary(client interface i_coe_communication i_coe)
 	printstr("QUICK STOP DECELERATION: ");printintln(sdo_value);
 //    sdo_value = i_coe.get_object_value(CIA402_TORQUE_SLOPE, 0);//TORQUE SLOPE
 //    printstr("TORQUE SLOPE: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_POSITION_PID, 1);//Position P-Gain
+    sdo_value = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 1);//Position P-Gain
     printstr("Position P-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_POSITION_PID, 2);//Position I-Gain
+    sdo_value = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 2);//Position I-Gain
     printstr("Position I-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_POSITION_PID, 3);//Position D-Gain
+    sdo_value = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 3);//Position D-Gain
     printstr("Position D-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_VELOCITY_PID, 1);//Velocity P-Gain
+    sdo_value = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 1);//Velocity P-Gain
     printstr("Velocity P-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_VELOCITY_PID, 2);//Velocity I-Gain
+    sdo_value = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2);//Velocity I-Gain
     printstr("Velocity I-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_VELOCITY_PID, 3);//Velocity D-Gain
+    sdo_value = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 3);//Velocity D-Gain
     printstr("Velocity D-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_TORQUE_PID, 1);//Current P-Gain
+    sdo_value = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 1);//Current P-Gain
     printstr("Current P-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_TORQUE_PID, 2);//Current I-Gain
+    sdo_value = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 2);//Current I-Gain
     printstr("Current I-Gain: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_TORQUE_PID, 3);//Current D-Gain
+    sdo_value = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 3);//Current D-Gain
     printstr("Current D-Gain: ");printintln(sdo_value);
 //    sdo_value = i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0);//LIMIT SWITCH TYPE: ACTIVE_HIGH = 1, ACTIVE_LOW = 2
 //    printstr("LIMIT SWITCH TYPE: ");printintln(sdo_value);

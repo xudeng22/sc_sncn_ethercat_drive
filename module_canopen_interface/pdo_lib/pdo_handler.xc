@@ -20,11 +20,29 @@ pdo_values_t pdo_init_data(void)
 {
 	pdo_values_t InOut;
 
-	InOut.led_set       = 0x0;
-    InOut.txpdo2        = 0x0;
+    InOut.control_word    = 0x00;           // shutdown
+    InOut.operation_mode  = 0x00;           // undefined
 
-    InOut.counter       = 0x0;
-    InOut.led_status    = 0x0;
+    InOut.target_torque   = 0x0;
+    InOut.target_velocity = 0x0;
+    InOut.target_position = 0x0;
+
+    InOut.user1_in        = 0x0;
+    InOut.user2_in        = 0x0;
+    InOut.user3_in        = 0x0;
+    InOut.user4_in        = 0x0;
+
+    InOut.status_word     = 0x0000;         // not set
+    InOut.operation_mode_display = 0x00;    /* no operation mode selected */
+
+    InOut.actual_torque   = 0x0;
+    InOut.actual_velocity = 0x0;
+    InOut.actual_position = 0x0;
+
+    InOut.user1_out       = 0x0;
+    InOut.user2_out       = 0x0;
+    InOut.user3_out       = 0x0;
+    InOut.user4_out       = 0x0;
 
 	return InOut;
 }
@@ -106,30 +124,26 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
 
 void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_in)
 {
-    pdo_in.led_set       = InOut.led_set;
-    pdo_in.txpdo2        = InOut.txpdo2;
 
-    InOut.counter     = pdo_out.counter;
-    InOut.led_status  = pdo_out.led_status;
-//    InOut.status_word    = pdo_out.status_word;
-//    InOut.operation_mode_display  = pdo_out.operation_mode_display;
-//    InOut.actual_torque   = pdo_out.actual_torque;
-//    InOut.actual_position = pdo_out.actual_position;
-//    InOut.actual_velocity = pdo_out.actual_velocity;
-//    InOut.user1_out       = pdo_out.user1_out;
-//    InOut.user2_out       = pdo_out.user2_out;
-//    InOut.user3_out       = pdo_out.user3_out;
-//    InOut.user4_out       = pdo_out.user4_out;
-//
-//    pdo_in.control_word    = InOut.control_word;
-//    pdo_in.operation_mode  = InOut.operation_mode;
-//    pdo_in.target_torque   = InOut.target_torque;
-//    pdo_in.target_position = InOut.target_position;
-//    pdo_in.target_velocity = InOut.target_velocity;
-//    pdo_in.user1_in        = InOut.user1_in;
-//    pdo_in.user2_in        = InOut.user2_in;
-//    pdo_in.user3_in        = InOut.user3_in;
-//    pdo_in.user4_in        = InOut.user4_in;
+    InOut.status_word    = pdo_out.status_word;
+    InOut.operation_mode_display  = pdo_out.operation_mode_display;
+    InOut.actual_torque   = pdo_out.actual_torque;
+    InOut.actual_position = pdo_out.actual_position;
+    InOut.actual_velocity = pdo_out.actual_velocity;
+    InOut.user1_out       = pdo_out.user1_out;
+    InOut.user2_out       = pdo_out.user2_out;
+    InOut.user3_out       = pdo_out.user3_out;
+    InOut.user4_out       = pdo_out.user4_out;
+
+    pdo_in.control_word    = InOut.control_word;
+    pdo_in.operation_mode  = InOut.operation_mode;
+    pdo_in.target_torque   = InOut.target_torque;
+    pdo_in.target_position = InOut.target_position;
+    pdo_in.target_velocity = InOut.target_velocity;
+    pdo_in.user1_in        = InOut.user1_in;
+    pdo_in.user2_in        = InOut.user2_in;
+    pdo_in.user3_in        = InOut.user3_in;
+    pdo_in.user4_in        = InOut.user4_in;
 
 }
 
@@ -171,13 +185,23 @@ void pdo_decode(unsigned char pdo_number, uint64_t value, pdo_values_t &InOut)
     switch (pdo_number)
     {
         case 0:
-            InOut.led_set = value & 0xff;
-            InOut.txpdo2 = (value >> 8) & 0xff;
+            InOut.control_word = value & 0xffff;
+            InOut.operation_mode = (value >> 16) & 0xff;
+            InOut.target_torque = (value >> 24) & 0xffff;
             //pdo_read_write_data_od((RPDO_COMMUNICATION_PARAMETER + pdo_number), (value, char[]), WRITE_TO_OD);
             break;
         case 1:
-            //InOut.txpdo2 = value;
+            InOut.target_position = value & 0xffffffff;
+            InOut.target_velocity = (value >> 32) & 0xffffffff;
             //pdo_read_write_data_od(RPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
+            break;
+        case 2:
+            InOut.user1_in = value & 0xffffffff;
+            InOut.user2_in = (value >> 32) & 0xffffffff;
+            break;
+        case 3:
+            InOut.user3_in = value & 0xffffffff;
+            InOut.user4_in = (value >> 32) & 0xffffffff;
             break;
         default:
             break;
@@ -192,13 +216,22 @@ void pdo_decode(unsigned char pdo_number, uint64_t value, pdo_values_t &InOut)
     switch (pdo_number)
     {
         case 0:
-            value = (InOut.counter & 0xff) | ((InOut.led_status << 8) & 0xff00);
-            data_length = 2;
+            value = (InOut.status_word & 0xffff) | (( (uint64_t)InOut.operation_mode_display << 16) & 0xff0000) | ((uint64_t)InOut.actual_torque << 24);
+            data_length = 5;
             //data_length = pdo_read_write_data_od((TPDO_COMMUNICATION_PARAMETER + pdo_number), (value, char[]), WRITE_TO_OD);
             break;
         case 1:
-            //value = InOut.led_status;
+            value = (( (uint64_t)InOut.actual_position) & 0xffffffff) | (( (uint64_t)InOut.actual_velocity << 32) & 0xffffffff00000000);
+            data_length = 8;
             //data_length = pdo_read_write_data_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
+            break;
+        case 2:
+            value = (( (uint64_t)InOut.user1_out) & 0xffffffff) | (( (uint64_t)InOut.user2_out << 32) & 0xffffffff00000000);
+            data_length = 8;
+            break;
+        case 3:
+            value = (( (uint64_t)InOut.user3_out) & 0xffffffff) | (( (uint64_t)InOut.user4_out << 32) & 0xffffffff00000000);
+            data_length = 8;
             break;
         default:
             break;

@@ -116,7 +116,6 @@ int main(void)
 
                     pos_velocity_ctrl_config.min_pos =                              MIN_POSITION_LIMIT;
                     pos_velocity_ctrl_config.max_pos =                              MAX_POSITION_LIMIT;
-                    pos_velocity_ctrl_config.pos_limit_threshold =                  POSITION_LIMIT_THRESHOLD;
                     pos_velocity_ctrl_config.max_speed =                            MAX_MOTOR_SPEED;
                     pos_velocity_ctrl_config.max_torque =                           MAXIMUM_TORQUE;
                     pos_velocity_ctrl_config.polarity =                             POLARITY;
@@ -127,9 +126,9 @@ int main(void)
 
                     pos_velocity_ctrl_config.control_mode =                         NL_POSITION_CONTROLLER;
 
-                    pos_velocity_ctrl_config.P_pos =                                POSITION_P_VALUE;
-                    pos_velocity_ctrl_config.I_pos =                                POSITION_I_VALUE;
-                    pos_velocity_ctrl_config.D_pos =                                POSITION_D_VALUE;
+                    pos_velocity_ctrl_config.P_pos =                                POSITION_Kp;
+                    pos_velocity_ctrl_config.I_pos =                                POSITION_Ki;
+                    pos_velocity_ctrl_config.D_pos =                                POSITION_Kd;
                     pos_velocity_ctrl_config.integral_limit_pos =                   POSITION_INTEGRAL_LIMIT;
                     pos_velocity_ctrl_config.j =                                    MOMENT_OF_INERTIA;
 

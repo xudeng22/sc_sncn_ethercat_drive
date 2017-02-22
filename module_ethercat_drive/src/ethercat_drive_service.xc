@@ -159,7 +159,7 @@ static void inline update_configuration(
     int number_of_feedbacks = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
     for (int i = 1; i <= number_of_feedbacks; i++) {
         uint16_t sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, i);
-        int usage = i_coe.get_object_value(sensor_object, DICT_SUB_FEEDBACK_USAGE);
+        int usage = i_coe.get_object_value(sensor_object, SUB_FEEDBACK_SENSOR_FUNCTION);
         if (usage == 1) { /* FIXME introduce define or enum for Commutation or Feedback usage */
             sensor_select = i;
         }
@@ -259,7 +259,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
 
-    pdo_handler_values_t InOut = pdo_handler_init();
+    pdo_handler_values_t InOut = { 0 };
 
     int setup_loop_flag = 0;
 
@@ -356,11 +356,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
         send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
-        update_position_velocity = pdo_get_command_pid_update(InOut); /* Update trigger which PID setting should be updated now */
+        /* FIXME removed! what is the next way to do it?
+        update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
+         */
 
         /* tuning pdos */
-        tuning_control = pdo_get_tuning_control(InOut);
-        tuning_status.value = pdo_get_tuning_status(InOut);
+        tuning_control = pdo_get_tuning_command(InOut);
+        //tuning_status.value = pdo_get_tuning_status(InOut); /* FIXME removed! */
 
         /*
         printint(state);
@@ -414,8 +416,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_velocity_value(actual_velocity, InOut);
         pdo_set_torque_value(actual_torque, InOut );
         pdo_set_position_value(actual_position, InOut);
-        pdo_set_additional_feedbacksensor_value((1000 * 5 * send_to_master.sensor_torque) / 4096, InOut); /* ticks to (edit:) milli-volt */
-        pdo_set_tuning_result(tuning_result, InOut);
+        // FIXME this is one of the analog inputs?
+        pdo_set_analog_input1((1000 * 5 * send_to_master.sensor_torque) / 4096, InOut); /* ticks to (edit:) milli-volt */
+        pdo_set_tuning_status(tuning_result, InOut);
 
         //xscope_int(USER_TORQUE, (1000 * 5 * send_to_master.sensor_torque) / 4096);
 

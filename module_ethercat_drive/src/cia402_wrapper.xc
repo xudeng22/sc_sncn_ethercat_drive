@@ -38,9 +38,9 @@ void config_print_dictionary(client interface i_coe_communication i_coe)
 //    printstr("QEI POLARITY: ");printintln(sdo_value);
 	sdo_value = i_coe.get_object_value(DICT_MAX_TORQUE, 0);//MAX_TORQUE
 	printstr("MAX TORQUE: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_POSITION_LIMIT, 1);//negative positioning limit
+    sdo_value = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 1);//negative positioning limit
     printstr("negative positioning limit: ");printintln(sdo_value);
-    sdo_value = i_coe.get_object_value(DICT_POSITION_LIMIT, 2);//positive positioning limit
+    sdo_value = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 2);//positive positioning limit
     printstr("positive positioning limit: ");printintln(sdo_value);
     sdo_value = i_coe.get_object_value(DICT_POLARITY, 0);//motor driving polarity
     printstr("motor driving polarity: ");printintln(sdo_value);  // -1 in 2'complement 255
@@ -167,8 +167,8 @@ void config_print_dictionary(client interface i_coe_communication i_coe)
 	max_motor_speed = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
 	polarity = i_coe.get_object_value(DICT_POLARITY, 0);
 	//nominal_current = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 1);
-	min = i_coe.get_object_value(DICT_POSITION_LIMIT, 1);
-	max = i_coe.get_object_value(DICT_POSITION_LIMIT, 2);
+	min = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 1);
+	max = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 2);
 	max_acc = i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
 
 	return {max_motor_speed, polarity, min, max, max_acc};

@@ -62,6 +62,10 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                 //pdo_size = 0;
                 break;
 
+            case i_co[int j].pdo_init(void) -> {pdo_values_t pdo_out}:
+                pdo_out = pdo_init_data();
+                break;
+
 
             /* SDO */
 

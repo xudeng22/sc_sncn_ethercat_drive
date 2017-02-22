@@ -166,7 +166,7 @@ void pdo_encode_buffer(pdo_size_t buffer[], pdo_values_t InOut)
 }
 
 
-void pdo_decode(unsigned char pdo_number, long value, pdo_values_t &InOut)
+void pdo_decode(unsigned char pdo_number, uint64_t value, pdo_values_t &InOut)
 {
     switch (pdo_number)
     {
@@ -184,10 +184,10 @@ void pdo_decode(unsigned char pdo_number, long value, pdo_values_t &InOut)
     }
 }
 
-{long, char} pdo_encode(unsigned char pdo_number, pdo_values_t InOut)
+{uint64_t, char} pdo_encode(unsigned char pdo_number, pdo_values_t InOut)
 {
     char data_length = 0;
-    long value = 0;
+    uint64_t value = 0;
 
     switch (pdo_number)
     {

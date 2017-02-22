@@ -218,6 +218,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.P_pos          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 1); /* POSITION_P_VALUE; */
     position_config.I_pos          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 2); /* POSITION_I_VALUE; */
     position_config.D_pos          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 3); /* POSITION_D_VALUE; */
+    position_config.integral_limit_pos = i_coe.get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT);
     //position_config.int32_cmd_limit_position     = i_coe.get_object_value(DICT_POSITION_LIMIT, 2);/* 15000; */
     //position_config.int32_cmd_limit_position_min = i_coe.get_object_value(DICT_POSITION_LIMIT, 1);/* 15000; */
 
@@ -227,6 +228,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.P_velocity          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 1); /* 18; */
     position_config.I_velocity          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 22; */
     position_config.D_velocity          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 25; */
+    position_config.integral_limit_velocity  = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT)
 
     //FIXME use a proper object to set the control mode
     switch(i_coe.get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0))

@@ -46,12 +46,12 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                 pdo_state = 0;
                 break;
 
-            case i_co[int j].pdo_in(unsigned char pdo_number, long value):
+            case i_co[int j].pdo_in(unsigned char pdo_number, uint64_t value):
                 pdo_decode(pdo_number, value, InOut);
                 pdo_state = 1;
                 break;
 
-            case i_co[int j].pdo_out(unsigned char pdo_number) -> {long value_out, char data_length}:
+            case i_co[int j].pdo_out(unsigned char pdo_number) -> {uint64_t value_out, char data_length}:
                 {value_out, data_length} = pdo_encode(pdo_number, InOut);
                 pdo_state = 0;
                 break;

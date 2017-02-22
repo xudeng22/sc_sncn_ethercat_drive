@@ -450,7 +450,7 @@ void tuning_command(
                 motorcontrol_config.pole_pair = 0;
                 for (int i=0; i<100; i++) {
                     int status;
-                    { void , void, status } = i_position_feedback.get_real_position();
+                    { void , void, status } = i_position_feedback.get_position();
                     motorcontrol_config.pole_pair += status;
                     delay_milliseconds(1);
                 }

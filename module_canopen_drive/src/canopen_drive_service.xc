@@ -146,6 +146,7 @@ static void inline update_configuration(
         int &homing_method,
         int &opmode)
 {
+    int index = 0;
     /* update structures */
     //position_feedback_config;
     //position_config;
@@ -157,17 +158,19 @@ static void inline update_configuration(
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
-    profiler_config.ticks_per_turn = i_pos_feedback.get_ticks_per_turn();
+    profiler_config.ticks_per_turn = position_feedback_config.resolution;
     polarity = profiler_config.polarity;
 
-    {nominal_speed, void, void} = i_co.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
-    limit_switch_type = 0; //i_co.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
-    homing_method     = 0; //i_co.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
-    {sensor_select, void, void} = i_co.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
+    index = i_co.od_find_index(CIA402_MOTOR_SPECIFIC, 4);
+    {nominal_speed, void, void} = i_co.od_get_object_value(index);
+    limit_switch_type = 0; //i_co.od_get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
+    homing_method     = 0; //i_co.od_get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
+    index = i_co.od_find_index(CIA402_SENSOR_SELECTION_CODE, 0);
+    {sensor_select, void, void} = i_co.od_get_object_value(index);
 
     sensor_resolution = position_feedback_config.resolution;
 
-    //opmode = i_co.get_object_value(CIA402_OP_MODES, 0);
+    //opmode = i_co.od_get_object_value(CIA402_OP_MODES, 0);
 }
 
 static void debug_print_state(DriveState_t state)
@@ -257,7 +260,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
 
     PosVelocityControlConfig position_velocity_config = i_position_velocity_control.get_position_velocity_control_config();
 
-    pdo_values_t InOut = pdo_init();
+    pdo_values_t InOut = i_co.pdo_init();
 
     int sensor_select = 1;
 
@@ -636,28 +639,35 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
 #if 1 /* Draft to get PID updates on the fly */
         t :> time; /* FIXME check the timing here! */
 
+        int index = 0;
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            {position_velocity_config.P_pos, void, void} = i_co.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-            {position_velocity_config.I_pos, void, void} = i_co.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-            {position_velocity_config.D_pos, void, void} = i_co.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+            index = i_co.od_find_index(CIA402_POSITION_GAIN, 1);
+            {position_velocity_config.P_pos, void, void} = i_co.od_get_object_value(index); /* POSITION_Kp; */
+            index = i_co.od_find_index(CIA402_POSITION_GAIN, 2);
+            {position_velocity_config.I_pos, void, void} = i_co.od_get_object_value(index); /* POSITION_Ki; */
+            index = i_co.od_find_index(CIA402_POSITION_GAIN, 3);
+            {position_velocity_config.D_pos, void, void} = i_co.od_get_object_value(index); /* POSITION_Kd; */
 
             i_position_velocity_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            {position_velocity_config.P_velocity, void, void} = i_co.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-            {position_velocity_config.I_velocity, void, void} = i_co.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-            {position_velocity_config.D_velocity, void, void} = i_co.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+            index = i_co.od_find_index(CIA402_VELOCITY_GAIN, 1);
+            {position_velocity_config.P_velocity, void, void} = i_co.od_get_object_value(index); /* 18; */
+            index = i_co.od_find_index(CIA402_VELOCITY_GAIN, 2);
+            {position_velocity_config.I_velocity, void, void} = i_co.od_get_object_value(index); /* 22; */
+            index = i_co.od_find_index(CIA402_VELOCITY_GAIN, 3);
+            {position_velocity_config.D_velocity, void, void} = i_co.od_get_object_value(index); /* 25; */
 
             i_position_velocity_control.set_position_velocity_control_config(position_velocity_config);
         }
 
 
         /*
-        motorcontrol_config.current_P_gain     = i_co.get_object_value(CIA402_CURRENT_GAIN, 1);
-        motorcontrol_config.current_I_gain     = i_co.get_object_value(CIA402_CURRENT_GAIN, 2);
-        motorcontrol_config.current_D_gain     = i_co.get_object_value(CIA402_CURRENT_GAIN, 3);
+        motorcontrol_config.current_P_gain     = i_co.od_get_object_value(CIA402_CURRENT_GAIN, 1);
+        motorcontrol_config.current_I_gain     = i_co.od_get_object_value(CIA402_CURRENT_GAIN, 2);
+        motorcontrol_config.current_D_gain     = i_co.od_get_object_value(CIA402_CURRENT_GAIN, 3);
          */
 #endif
 

@@ -37,8 +37,9 @@ PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
 FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
-HallPorts hall_ports = SOMANET_IFM_HALL_PORTS;
-QEIPorts qei_ports = SOMANET_IFM_QEI_PORTS;
+QEIHallPort qei_hall_port_1 = SOMANET_IFM_HALL_PORTS;
+QEIHallPort qei_hall_port_2 = SOMANET_IFM_QEI_PORTS;
+HallEncSelectPort hall_enc_select_port = SOMANET_IFM_QEI_PORT_INPUT_MODE_SELECTION;
 SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
 port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
 port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
@@ -55,7 +56,7 @@ int main(void)
     interface update_brake i_update_brake;
     interface shared_memory_interface i_shared_memory[2];
     interface PositionVelocityCtrlInterface i_position_control[3];
-    interface PositionFeedbackInterface i_position_feedback[3];
+    interface PositionFeedbackInterface i_position_feedback_1[3];
 
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
@@ -101,7 +102,7 @@ int main(void)
             ethercat_drive_service( profiler_config,
                                     i_pdo, i_coe,
                                     i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback[0]);
+                                    i_position_control[0], i_position_feedback_1[0]);
 #endif
         }
 
@@ -112,8 +113,6 @@ int main(void)
                 /* Position Control Loop */
                 {
                     PosVelocityControlConfig pos_velocity_ctrl_config;
-                    /* Control Loop */
-                    pos_velocity_ctrl_config.control_loop_period =                  CONTROL_LOOP_PERIOD; //us
 
                     pos_velocity_ctrl_config.min_pos =                              MIN_POSITION_LIMIT;
                     pos_velocity_ctrl_config.max_pos =                              MAX_POSITION_LIMIT;
@@ -141,9 +140,13 @@ int main(void)
 
                     pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
                     pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
-                    pos_velocity_ctrl_config.resolution  =                          POSITION_SENSOR_RESOLUTION;
+                    pos_velocity_ctrl_config.resolution  =                          FEEDBACK_SENSOR_RESOLUTION;
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
+
+                    pos_velocity_ctrl_config.voltage_pull_brake=                    VOLTAGE_PULL_BRAKE;
+                    pos_velocity_ctrl_config.time_pull_brake =                      TIME_PULL_BRAKE;
+                    pos_velocity_ctrl_config.voltage_hold_brake =                   VOLTAGE_HOLD_BRAKE;
 
 
                     init_brake(i_update_brake, IFM_TILE_USEC, VDC,
@@ -178,7 +181,7 @@ int main(void)
 
                 /* ADC Service */
                 {
-                    adc_service(adc_ports, null/*c_trigger*/, i_adc /*ADCInterface*/, i_watchdog[1], IFM_TILE_USEC);
+                    adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IFM_TILE_USEC, SINGLE_ENDED);
                 }
 
                 /* Watchdog Service */
@@ -188,7 +191,6 @@ int main(void)
 
                 /* Motor Control Service */
                 {
-
                     MotorcontrolConfig motorcontrol_config;
 
                     motorcontrol_config.licence =  ADVANCED_MOTOR_CONTROL_LICENCE;
@@ -201,12 +203,12 @@ int main(void)
                     motorcontrol_config.pole_pair =  POLE_PAIRS;
                     motorcontrol_config.commutation_sensor=MOTOR_COMMUTATION_SENSOR;
                     motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-                    motorcontrol_config.hall_state_1_angle=HALL_STATE_1_ANGLE;
-                    motorcontrol_config.hall_state_2_angle=HALL_STATE_2_ANGLE;
-                    motorcontrol_config.hall_state_3_angle=HALL_STATE_3_ANGLE;
-                    motorcontrol_config.hall_state_4_angle=HALL_STATE_4_ANGLE;
-                    motorcontrol_config.hall_state_5_angle=HALL_STATE_5_ANGLE;
-                    motorcontrol_config.hall_state_6_angle=HALL_STATE_6_ANGLE;
+                    motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
+                    motorcontrol_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
+                    motorcontrol_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
+                    motorcontrol_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
+                    motorcontrol_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
+                    motorcontrol_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
                     motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
@@ -237,29 +239,25 @@ int main(void)
                 {
                     PositionFeedbackConfig position_feedback_config;
                     position_feedback_config.sensor_type = MOTOR_COMMUTATION_SENSOR;
-                    position_feedback_config.polarity    = SENSOR_POLARITY;
+                    position_feedback_config.polarity    = COMMUTATION_SENSOR_POLARITY;
                     position_feedback_config.pole_pairs  = POLE_PAIRS;
-                    position_feedback_config.resolution  = POSITION_SENSOR_RESOLUTION;
+                    position_feedback_config.resolution  = COMMUTATION_SENSOR_RESOLUTION;
+                    position_feedback_config.ifm_usec    = IFM_TILE_USEC;
+                    position_feedback_config.max_ticks   = SENSOR_MAX_TICKS;
+                    position_feedback_config.velocity_compute_period   = COMMUTATION_VELOCITY_COMPUTE_PERIOD;
                     position_feedback_config.offset      = 0;
                     position_feedback_config.enable_push_service = PushAll;
 
-                    position_feedback_config.biss_config.multiturn_length = BISS_MULTITURN_LENGTH;
                     position_feedback_config.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
-                    position_feedback_config.biss_config.singleturn_length = BISS_SINGLETURN_LENGTH;
-                    position_feedback_config.biss_config.status_length = BISS_STATUS_LENGTH;
+                    position_feedback_config.biss_config.filling_bits = BISS_FILLING_BITS;
                     position_feedback_config.biss_config.crc_poly = BISS_CRC_POLY;
-                    position_feedback_config.biss_config.clock_dividend = BISS_CLOCK_DIVIDEND;
-                    position_feedback_config.biss_config.clock_divisor = BISS_CLOCK_DIVISOR;
+                    position_feedback_config.biss_config.clock_frequency = BISS_CLOCK_FREQUENCY;
                     position_feedback_config.biss_config.timeout = BISS_TIMEOUT;
-                    position_feedback_config.biss_config.max_ticks = BISS_MAX_TICKS;
-                    position_feedback_config.biss_config.velocity_loop = BISS_VELOCITY_LOOP;
+                    position_feedback_config.biss_config.busy = BISS_BUSY;
+                    position_feedback_config.biss_config.clock_port_config = BISS_CLOCK_PORT;
+                    position_feedback_config.biss_config.data_port_config = BISS_DATA_PORT;
 
                     position_feedback_config.rem_16mt_config.filter = REM_16MT_FILTER;
-                    position_feedback_config.rem_16mt_config.timeout = REM_16MT_TIMEOUT;
-                    position_feedback_config.rem_16mt_config.velocity_loop = REM_16MT_VELOCITY_LOOP;
-
-                    position_feedback_config.qei_config.index_type = QEI_SENSOR_INDEX_TYPE;
-                    position_feedback_config.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
 
                     position_feedback_config.rem_14_config.factory_settings = 1;
                     position_feedback_config.rem_14_config.hysteresis = 1;
@@ -269,12 +267,12 @@ int main(void)
                     position_feedback_config.rem_14_config.data_select = 0;
                     position_feedback_config.rem_14_config.pwm_on = REM_14_PWM_OFF;
                     position_feedback_config.rem_14_config.abi_resolution = 0;
-                    position_feedback_config.rem_14_config.max_ticks = 0x7fffffff;
-                    position_feedback_config.rem_14_config.cache_time = REM_14_CACHE_TIME;
-                    position_feedback_config.rem_14_config.velocity_loop = REM_14_VELOCITY_LOOP;
 
-                    position_feedback_service(hall_ports, qei_ports, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
-                            position_feedback_config, i_shared_memory[0], i_position_feedback,
+                    position_feedback_config.qei_config.index_type = QEI_SENSOR_INDEX_TYPE;
+                    position_feedback_config.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
+
+                    position_feedback_service(qei_hall_port_1, qei_hall_port_2, hall_enc_select_port, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
+                            position_feedback_config, i_shared_memory[0], i_position_feedback_1,
                             null, null, null);
                 }
             }

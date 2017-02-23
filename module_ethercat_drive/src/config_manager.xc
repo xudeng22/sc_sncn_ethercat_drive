@@ -44,15 +44,15 @@ void cm_sync_config_position_feedback(
     int old_sensor_type = config.sensor_type;
 
     //config.sensor_type = i_coe.get_object_value(feedback_sensor_object, DICT_SUB_FEEDBACK_SENSOR_TYPE);
-    if (sensor_index == DICT_BISS_ENCODER_1 || sensor_index == DICT_BISS_ENCODER_2) {
+    if (feedback_sensor_object == DICT_BISS_ENCODER_1 || feedback_sensor_object == DICT_BISS_ENCODER_2) {
         config.sensor_type = FEEDBACK_SENSOR_BISS;
-    } else if (sensor_index == DICT_REM_16MT_ENCODER) {
+    } else if (feedback_sensor_object == DICT_REM_16MT_ENCODER) {
         config.sensor_type = FEEDBACK_SENSOR_REM16MT;
-    } else if (sensor_index == DICT_REM_14_ENCODER) {
+    } else if (feedback_sensor_object == DICT_REM_14_ENCODER) {
         config.sensor_type = FEEDBACK_SENSOR_REM14;
-    } else if (sensor_index == DICT_HALL_SENSOR_1 || sensor_index == DICT_HALL_SENSOR_2) {
+    } else if (feedback_sensor_object == DICT_HALL_SENSOR_1 || feedback_sensor_object == DICT_HALL_SENSOR_2) {
         config.sensor_type = FEEDBACK_SENSOR_HALL;
-    } else if (sensor_index == DICT_INCREMENTAL_ENCODER_1 || sensor_index == DICT_INCREMENTAL_ENCODER_2) {
+    } else if (feedback_sensor_object == DICT_INCREMENTAL_ENCODER_1 || feedback_sensor_object == DICT_INCREMENTAL_ENCODER_2) {
         /* FIXME the QEI is now known as incremental encoder to the EtherCAT world. Needs to be fixed here too. */
         config.sensor_type = FEEDBACK_SENSOR_QEI;
     } else {
@@ -61,60 +61,60 @@ void cm_sync_config_position_feedback(
 
     switch (config.sensor_type) {
     case FEEDBACK_SENSOR_QEI:
-        //i_coe.get_object_value(sensor_index, SUB_INCREMENTAL_ENCODER_FUNCTION);
-        config.resolution = i_coe.get_object_value(sensor_index, SUB_INCREMENTAL_ENCODER_RESOLUTION);
-        config.velocity_compute_period = i_coe.get_object_value(sensor_index, SUB_INCREMENTAL_ENCODER_VELOCITY_CALCULATION_PERIOD);
-        config.qei_config.index_type  = i_coe.get_object_value(sensor_index, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
-        config.qei_config.signal_type = i_coe.get_object_value(sensor_index, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_FUNCTION);
+        config.resolution = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_RESOLUTION);
+        config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_VELOCITY_CALCULATION_PERIOD);
+        config.qei_config.index_type  = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
+        config.qei_config.signal_type = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
         break;
 
     case FEEDBACK_SENSOR_BISS:
-        //i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_FUNCTION);
-        config.resolution = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_RESOLUTION);
-        config.velocity_compute_period = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_VELOCITY_CALCULATION_PERIOD);
-        config.biss_config.multiturn_resolution   = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
-        config.biss_config.clock_frequency  = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
-        config.biss_config.timeout                = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_TIMEOUT);
-        config.biss_config.crc_poly  = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_CRC_POLYNOM);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_FUNCTION);
+        config.resolution = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_RESOLUTION);
+        config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_VELOCITY_CALCULATION_PERIOD);
+        config.biss_config.multiturn_resolution   = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
+        config.biss_config.clock_frequency  = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
+        config.biss_config.timeout                = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT);
+        config.biss_config.crc_poly  = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM);
 
         /* FIXME add check for valid enum data of clock_port_config */
-        config.biss_config.clock_port_config = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG);
+        config.biss_config.clock_port_config = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG);
 
-        config.biss_config.data_port_config = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
-        config.biss_config.filling_bits = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
-        config.biss_config.busy = i_coe.get_object_value(sensor_index, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
+        config.biss_config.data_port_config = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
+        config.biss_config.filling_bits = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
+        config.biss_config.busy = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
         break;
 
     case FEEDBACK_SENSOR_HALL:
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_FUNCTION);
-        config.resolution = i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_RESOLUTION);
-        config.velocity_compute_period = i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_VELOCITY_CALCULATION_PERIOD);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_FUNCTION);
+        config.resolution = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_RESOLUTION);
+        config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_VELOCITY_CALCULATION_PERIOD);
         /* FIXME how to handle/store the sensor state angles? */
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_STATE_ANGLE_0);
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_STATE_ANGLE_1);
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_STATE_ANGLE_2);
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_STATE_ANGLE_3);
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_STATE_ANGLE_4);
-        //i_coe.get_object_value(sensor_index, SUB_HALL_SENSOR_STATE_ANGLE_5);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
         break;
 
     case FEEDBACK_SENSOR_REM14:
-        //i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_FUNCTION);
-        config.resolution = i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_RESOLUTION);
-        config.velocity_compute_period = i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_VELOCITY_CALCULATION_PERIOD);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_FUNCTION);
+        config.resolution = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION);
+        config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_VELOCITY_CALCULATION_PERIOD);
 
-        config.rem_14_config.hysteresis      = i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_HYSTERESIS);
-        config.rem_14_config.noise_setting   = i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_NOISE_SETTINGS);
-        config.rem_14_config.dyn_angle_comp  = i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
-        config.rem_14_config.abi_resolution  = i_coe.get_object_value(sensor_index, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
+        config.rem_14_config.hysteresis      = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
+        config.rem_14_config.noise_setting   = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
+        config.rem_14_config.dyn_angle_comp  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
+        config.rem_14_config.abi_resolution  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
         break;
 
     case FEEDBACK_SENSOR_REM16MT:
-        //i_coe.get_object_value(sensor_index, SUB_REM_16MT_ENCODER_FUNCTION);
-        config.resolution = i_coe.get_object_value(sensor_index, SUB_REM_16MT_ENCODER_RESOLUTION);
-        config.velocity_compute_period = i_coe.get_object_value(sensor_index, SUB_REM_16MT_ENCODER_VELOCITY_CALCULATION_PERIOD);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FUNCTION);
+        config.resolution = i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_RESOLUTION);
+        config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_VELOCITY_CALCULATION_PERIOD);
 
-        config.rem_16mt_config.filter = i_coe.get_object_value(sensor_index, SUB_REM_16MT_ENCODER_FILTER);
+        config.rem_16mt_config.filter = i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER);
         break;
 
     case FEEDBACK_SENSOR_UNDEFINED: /* FIXME need error handling here, or in position feedback service */
@@ -228,7 +228,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.P_velocity          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 1); /* 18; */
     position_config.I_velocity          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 22; */
     position_config.D_velocity          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 25; */
-    position_config.integral_limit_velocity  = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT)
+    position_config.integral_limit_velocity  = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
 
     //FIXME use a proper object to set the control mode
     switch(i_coe.get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0))

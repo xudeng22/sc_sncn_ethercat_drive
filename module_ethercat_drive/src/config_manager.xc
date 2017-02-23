@@ -27,6 +27,32 @@ static int tick2bits(int tick_resolution)
     return r;
 }
 
+void cm_sync_config_hall_states(
+        client interface i_coe_communication i_coe,
+        client interface PositionFeedbackInterface i_pos_feedback,
+        interface MotorcontrolInterface client ?i_motorcontrol,
+        PositionFeedbackConfig &feedback_config,
+        MotorcontrolConfig &motorcontrol_config,
+        int sensor_index)
+{
+    if (feedback_config.sensor_type != FEEDBACK_SENSOR_HALL) {
+        return;
+    }
+
+    uint16_t feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index);
+
+    /* See Wrike https://www.wrike.com/workspace.htm#path=folder&id=127649023&a=1384194&c=list&t=135832278&ot=135832278&so=5&sd=0
+     * for more information.
+     */
+    motorcontrol_config.commutation_sensor  = feedback_config.sensor_type;
+    motorcontrol_config.hall_state_angle[0] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
+    motorcontrol_config.hall_state_angle[1] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
+    motorcontrol_config.hall_state_angle[2] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
+    motorcontrol_config.hall_state_angle[3] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
+    motorcontrol_config.hall_state_angle[4] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
+    motorcontrol_config.hall_state_angle[5] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
+}
+
 void cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
@@ -89,7 +115,7 @@ void cm_sync_config_position_feedback(
         //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_FUNCTION);
         config.resolution = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_RESOLUTION);
         config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_VELOCITY_CALCULATION_PERIOD);
-        /* FIXME how to handle/store the sensor state angles? */
+        /* FIXME see cm_sync_config_hall_states() */
         //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
         //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
         //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);

@@ -39,6 +39,15 @@ void cm_sync_config_pos_velocity_control(
         client interface PositionVelocityCtrlInterface i_position_control,
         PosVelocityControlConfig &position_config);
 
+/* This function is a workaround until the hall and motorconfig is reorganized. */
+void cm_sync_config_hall_states(
+        client interface i_coe_communication i_coe,
+        client interface PositionFeedbackInterface i_pos_feedback,
+        interface MotorcontrolInterface client ?i_motorcontrol,
+        PositionFeedbackConfig &feedback_config,
+        MotorcontrolConfig &motorcontrol_config,
+        int sensor_index);
+
 /*
  * Set default configuration of the modules in the object dictionary. If nothing
  * is overwritten, this settings will be used later.

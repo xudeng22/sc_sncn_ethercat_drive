@@ -146,6 +146,9 @@ static void inline update_configuration(
     cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
 
+    cm_sync_config_hall_states(i_coe, i_pos_feedback, i_motorcontrol,
+                                position_feedback_config, motorcontrol_config, 1);
+
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
     profiler_config.ticks_per_turn = position_feedback_config.resolution;

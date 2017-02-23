@@ -180,12 +180,11 @@ void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
         ProfilerConfig &profiler)
 {
-    /* FIXME check the parameters - are they acutally used? */
     profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    //profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
     profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
-    profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
+    /* FIXME this profiler is only used for Quick Stop so the max deceleration is read from the quick stop deceleration */
+    profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
     profiler.min_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 1);
     profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 2);
     /* FIXME does this belong here? */
@@ -195,8 +194,9 @@ void cm_sync_config_profiler(
     } else {
         profiler.polarity = 1;
     }
-    // FIXME what configuration taeks the max acceleration for the profiler
+    // FIXME these parameters are added to the ESI in the next iteration
     //profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0); /* */
+    //profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
 }
 
 void cm_sync_config_pos_velocity_control(

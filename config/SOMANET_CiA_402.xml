@@ -4233,7 +4233,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2602</Index>
@@ -4246,7 +4246,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2603</Index>
@@ -4259,7 +4259,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2604</Index>
@@ -4272,7 +4272,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2FFE</Index>
@@ -4380,7 +4380,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2502</Index>
@@ -4393,7 +4393,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2503</Index>
@@ -4406,7 +4406,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2504</Index>
@@ -4419,7 +4419,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType/>
+            <DataType>PAD16</DataType>
           </Entry>
           <Entry>
             <Index>#x2FFF</Index>

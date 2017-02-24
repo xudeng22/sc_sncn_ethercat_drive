@@ -354,13 +354,13 @@ void cm_default_config_profiler(
         ProfilerConfig &profiler)
 {
     /* FIXME check the objects */
-    //profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    //profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    //profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
-    //profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
-    //profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0); /* */
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, 1, profiler.min_position);
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, 2, profiler.max_position);
+    i_coe.set_object_value(DICT_MAX_PROFILE_VELOCITY,    0, profiler.max_velocity);
+    i_coe.set_object_value(DICT_PROFILE_VELOCITY,        0, profiler.velocity);
+    i_coe.set_object_value(DICT_PROFILE_ACCELERATION,    0, profiler.acceleration);
+    i_coe.set_object_value(DICT_PROFILE_DECELERATION,    0, profiler.deceleration);
+    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler.max_deceleration); /* */
+    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS,   1, profiler.min_position);
+    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS,   2, profiler.max_position);
     //i_coe.set_object_value(DICT_POLARITY, 0,            profiler.polarity);
     //profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0); /* */
 }

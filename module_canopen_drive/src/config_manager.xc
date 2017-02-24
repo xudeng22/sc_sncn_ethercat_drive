@@ -190,9 +190,10 @@ void cm_default_config_position_feedback(
 	index = i_co.od_find_index(SNCN_SENSOR_POLARITY, 0);
     i_co.od_set_object_value(index,  config.polarity);
 
-    if (config.pole_pairs != 0)
-	index = i_co.od_find_index(CIA402_MOTOR_SPECIFIC, 3);
+    if (config.pole_pairs != 0) {
+        index = i_co.od_find_index(CIA402_MOTOR_SPECIFIC, 3);
         i_co.od_set_object_value(index,  config.pole_pairs);
+    }
 }
 
 void cm_default_config_motor_control(

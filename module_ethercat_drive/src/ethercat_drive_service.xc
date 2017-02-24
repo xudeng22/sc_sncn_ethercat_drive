@@ -4,6 +4,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <cia402_error_codes.h>
 #include <ethercat_drive_service.h>
 #include <refclk.h>
 #include <cia402_wrapper.h>
@@ -38,6 +39,39 @@ enum eDirection {
 };
 
 #define MAX_TIME_TO_WAIT_SDO      100000
+
+static int get_cia402_error_code(FaultCode fault)
+{
+    int error_code = 0;
+
+    switch (fault) {
+    case OVER_CURRENT_PHASE_A:
+        error_code = ERROR_CODE_PHASE_FAILURE_L1;
+        break;
+    case OVER_CURRENT_PHASE_B:
+        error_code = ERROR_CODE_PHASE_FAILURE_L2;
+        break;
+    case OVER_CURRENT_PHASE_C:
+        error_code = ERROR_CODE_PHASE_FAILURE_L3;
+        break;
+    case UNDER_VOLTAGE:
+        error_code = ERROR_CODE_DC_LINK_UNDER_VOLTAGE;
+        break;
+    case OVER_VOLTAGE:
+        error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
+        break;
+#if 0 /* FIXME undefined symbol */
+    case OVER_TEMPERATURE:
+        error_code = ERROR_CODE_EXCESS_TEMPEATUR_DEVICE;
+        break;
+#endif
+    default: /* a fault occured but could not be specified further */
+        error_code = ERROR_CODE_CONTROL;
+        break;
+    }
+
+    return error_code;
+}
 
 static void sdo_wait_first_config(client interface i_coe_communication i_coe)
 {
@@ -405,6 +439,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             } else if (fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
             }
+
+            /* Write error code to object dictionary */
+            int error_code = get_cia402_error_code(fault);
+            i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
         }
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */

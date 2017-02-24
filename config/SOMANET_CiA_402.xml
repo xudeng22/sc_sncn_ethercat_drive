@@ -4161,6 +4161,38 @@
                   <PdoMapping>r</PdoMapping>
                 </Flags>
               </Object>
+              <Object>
+                <Index>#x60C5</Index>
+                <Name>Max acceleration</Name>
+                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
+                <Type>UDINT</Type>
+                <BitSize>32</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                  <Unit>00005700</Unit>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                  <PdoMapping>tr</PdoMapping>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x6081</Index>
+                <Name>Profile velocity</Name>
+                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
+                <Type>UDINT</Type>
+                <BitSize>32</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                  <Unit>00b44700</Unit>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>c</Category>
+                  <PdoMapping>tr</PdoMapping>
+                </Flags>
+              </Object>
             </Objects>
           </Dictionary>
         </Profile>

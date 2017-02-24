@@ -4329,6 +4329,21 @@
                   <Category>c</Category>
                 </Flags>
               </Object>
+              <Object>
+                <Index>#x603F</Index>
+                <Name>Error code</Name>
+                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
+                <Type>UINT</Type>
+                <BitSize>16</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>ro</Access>
+                  <Category>o</Category>
+                  <PdoMapping>tr</PdoMapping>
+                </Flags>
+              </Object>
             </Objects>
           </Dictionary>
         </Profile>

@@ -239,3 +239,53 @@ void pdo_decode(unsigned char pdo_number, uint64_t value, pdo_values_t &InOut)
 
     return {value, data_length};
 }
+
+int pdo_get_target_torque(pdo_values_t InOut)
+{
+    return InOut.target_torque;
+}
+
+int pdo_get_target_velocity(pdo_values_t InOut)
+{
+    return InOut.target_velocity;
+}
+
+int pdo_get_target_position(pdo_values_t InOut)
+{
+    return InOut.target_position;
+}
+
+int pdo_get_controlword(pdo_values_t InOut)
+{
+    return InOut.control_word;
+}
+
+int pdo_get_opmode(pdo_values_t InOut)
+{
+    return InOut.operation_mode;
+}
+
+void pdo_set_actual_torque(int actual_torque, pdo_values_t &InOut)
+{
+    InOut.actual_torque = actual_torque;
+}
+
+void pdo_set_actual_velocity(int actual_velocity, pdo_values_t &InOut)
+{
+    InOut.actual_velocity = actual_velocity;
+}
+
+void pdo_set_actual_position(int actual_position, pdo_values_t &InOut)
+{
+    InOut.actual_position = actual_position;
+}
+
+void pdo_set_statusword(int statusword, pdo_values_t &InOut)
+{
+    InOut.status_word = statusword & 0xffff;
+}
+
+void pdo_set_opmode_display(int opmode, pdo_values_t &InOut)
+{
+    InOut.operation_mode_display = opmode & 0xff;
+}

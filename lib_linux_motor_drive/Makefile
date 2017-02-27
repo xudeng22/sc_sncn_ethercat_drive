@@ -29,7 +29,7 @@ INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_rem_14/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_hall/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_position_feedback/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_gpio/include
-INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_advanced_torquecontrol_lib/include
+INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_bldc_torque_control_lib/include
 INCLUDE_DIRS += -I $(MOTORCONTROL_PATH)/module_misc/include
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib

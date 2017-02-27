@@ -328,8 +328,7 @@ static int access_object_dictionary(SNCN_Slave_t *slave)
         sdolist[i] = sncn_slave_get_sdo_index(slave, i);
 
         if (sdolist[i] == NULL) {
-            fprintf(stderr, "Error requesting object nubmer %lu\n", i);
-            //return -1;
+            printf("Warning object nubmer %lu not available\n", i);
         } else {
             printf("Object position: %lu\n", i);
             printsdoinfo(sdolist[i]);
@@ -382,10 +381,12 @@ int main(int argc, char *argv[])
     size_t slave_count = sncn_master_slave_count(master);
 
     if (slave_count < ((unsigned int)slaveid + 1)) {
-        fprintf(stderr, "Error only %lu slaves present, but requested slave index is %d\n",
+        fprintf(stderr, "Error only %lu slaves present, requested slave (%d) not available!\n",
                 slave_count, slaveid);
         return -1;
     }
+
+    printf("Testing slave %d on master %d.\n", slaveid, masterid);
 
     if (master == NULL) {
         fprintf(stderr, "Error could not initialize master\n");

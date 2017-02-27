@@ -50,6 +50,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <curses.h> // required
+#include <linux/limits.h>
 
 /****************************************************************************/
 
@@ -75,7 +76,7 @@
 #define DISPLAY_LINE 27
 #define HELP_ROW_COUNT 12
 #define MAX_RECORD_MSEC 120000
-#define MAX_RECORD_FILENAME 20
+#define MAX_RECORD_FILENAME 1024
 
 #define VERSION    "v0.1-dev"
 #define MAXDBGLVL  3
@@ -89,7 +90,7 @@ static int g_dbglvl = 1;
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
 
-static const char *sdo_config_file = "sdo_config/sdo_config.csv";
+static const char *default_sdo_config_file = "sdo_config/sdo_config.csv";
 
 /****************************************************************************/
 
@@ -190,14 +191,16 @@ static void printhelp(const char *prog)
     //printf("  -l <level>     set log level (0..3)\n");
     printf("  -n <slave number>  first slave is 0\n");
     printf("  -s <profile velocity>\n");
-    printf("  -f <record filename>\n");
+    printf("  -f <SDO config filename>\n");
+    printf("  -F <record filename>\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int *profile_speed, char **record_filename)
+static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable,
+                    int *profile_speed, char **record_filename, char **sdo_config)
 {
     int  opt;
 
-    const char *options = "hvlos:n:f:";
+    const char *options = "hvlos:n:f:F:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -231,7 +234,11 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int
             break;
 
         case 'f':
-            strncpy(*record_filename, optarg, MAX_RECORD_FILENAME);
+            strncpy(*sdo_config, optarg, PATH_MAX);
+            break;
+
+        case 'F':
+            strncpy(*record_filename, optarg, PATH_MAX);
             break;
 
         case 'h':
@@ -249,15 +256,27 @@ int main(int argc, char **argv)
     int sdo_enable = 0;
     int num_slaves = 1;
     int profile_speed = 50;
-    char *record_filename = malloc(MAX_RECORD_FILENAME);
-    strncpy(record_filename, "record.csv", MAX_RECORD_FILENAME);
+    char *record_filename = malloc(PATH_MAX);
+    strncpy(record_filename, "record.csv", PATH_MAX);
+
+    char *sdo_config_file = malloc(PATH_MAX);
+    strncpy(sdo_config_file, default_sdo_config_file, PATH_MAX);
 
     //get parameters from cmdline
-    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed, &record_filename);
+    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed, &record_filename, &sdo_config_file);
 
     struct sigaction sa;
     struct itimerval tv;
     
+
+    SdoConfigParameter_t sdo_config_parameter;
+    if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
+   	    fprintf(stderr, "Error, could not read SDO configuration file.\n");
+        return -1;
+    }
+
+    free(sdo_config_file); /* filename and path to the SDO config parameters is no longer needed */
+
 #ifndef DISABLE_ETHERCAT
 /********* ethercat init **************/
 
@@ -274,12 +293,6 @@ int main(int argc, char **argv)
         get_slave_information(master->master, i);
     }
     /* /Debug */
-
-    SdoConfigParameter_t sdo_config_parameter;
-    if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
-   	    fprintf(stderr, "Error, could not read SDO configuration file.\n");
-        return -1;
-    }
 
     /*
      * Activate master and start operation

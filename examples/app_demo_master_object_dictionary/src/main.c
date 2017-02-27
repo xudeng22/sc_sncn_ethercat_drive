@@ -127,12 +127,12 @@ static void print_usage(char *prog)
             basename = c;
     }
 
-    printf("Usage: %s [-h] [-v] [-n <id>] [-l]\n", basename);
+    printf("Usage: %s [-h] [-v] [-m <id>] [-n <id>] [-l]\n", basename);
 }
 
-static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command)
+static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, int *masterid)
 {
-    const char *optargs = "hVvn:l";
+    const char *optargs = "hVvn:lm:";
 
     int opt = 0;
 
@@ -144,6 +144,10 @@ static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command)
 
         case 'l':
             *command = CMD_LIST_SLVAVES;
+            break;
+
+        case 'm':
+            *masterid = atoi(optarg);
             break;
 
         case 'h':
@@ -348,6 +352,7 @@ int main(int argc, char *argv[])
 {
     int check_object_dictionary = 1;
     int startcyclic             = 0;
+    int masterid                = 0;
     int slaveid                 = 0;
     int command                 = CMD_NORMAL_OP;
 
@@ -356,12 +361,12 @@ int main(int argc, char *argv[])
         slaveid =  atoi(argv[1]);
     }
     */
-    parse_cmd_line(argc, argv, &slaveid, &command);
+    parse_cmd_line(argc, argv, &slaveid, &command, &masterid);
 
     FILE *ecatlog = fopen("./ecat.log", "w");
 
 	/* Initialize EtherCAT Master */
-    SNCN_Master_t *master = sncn_master_init(0, ecatlog);
+    SNCN_Master_t *master = sncn_master_init(masterid, ecatlog);
     if (master == NULL) {
         fprintf(stderr, "Error, could not initialize master\n");
         return -1;

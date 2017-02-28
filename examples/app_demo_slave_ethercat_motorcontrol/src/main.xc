@@ -137,8 +137,6 @@ int main(void)
                     pos_velocity_ctrl_config.D_velocity =                           VELOCITY_Kd;
                     pos_velocity_ctrl_config.integral_limit_velocity =              VELOCITY_INTEGRAL_LIMIT;
 
-                    pos_velocity_ctrl_config.position_fc =                          POSITION_FC;
-                    pos_velocity_ctrl_config.velocity_fc =                          VELOCITY_FC;
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
                     pos_velocity_ctrl_config.resolution  =                          SENSOR_1_RESOLUTION;

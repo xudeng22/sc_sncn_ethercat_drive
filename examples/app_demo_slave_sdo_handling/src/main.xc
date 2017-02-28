@@ -193,16 +193,19 @@ int main(void)
                 }
         }
 
-		/* Test application handling pdos from EtherCat */
-		on tile[APP_TILE] :
-		{
-#if 0 /* Temporarily removed due to incompatibilities with the current cia402_wrapper.h */
-			pdo_handler(i_pdo);
-#endif
-			sdo_handler(i_coe);
-		}
-	}
+        /* Test application handling pdos from EtherCat */
+        on tile[APP_TILE] :
+        {
+            par {
+                /* Start trivial PDO exchange service */
+                pdo_service(i_pdo);
 
-	return 0;
+                /* Start the SDO / Object Dictionary test service */
+                sdo_service(i_coe);
+            }
+        }
+    }
+
+    return 0;
 }
 

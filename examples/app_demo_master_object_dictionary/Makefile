@@ -17,7 +17,7 @@ LDFLAGS = -static
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 
-LIBS += -lsncnecat -lethercat -lm
+LIBS += -lethercat_wrapper -lethercat -lm
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 

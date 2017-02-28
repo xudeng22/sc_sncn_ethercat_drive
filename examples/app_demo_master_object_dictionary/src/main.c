@@ -6,8 +6,8 @@
 
 #define _XOPEN_SOURCE
 
-#include <sncn_ethercat.h>
-#include <sncn_slave.h>
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
 #include <ecrt.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -28,25 +28,11 @@
 
 /* Index of receiving (in) PDOs */
 #define PDO_INDEX_STATUSWORD        0
-#define PDO_INDEX_OPMODEDISP        1
-#define PDO_INDEX_POSITION_VALUE    2
-#define PDO_INDEX_VELOCITY_VALUE    3
-#define PDO_INDEX_TORQUE_VALUE      4
-#define PDO_INDEX_MEASURED_TORQUE_VALUE         5
-#define PDO_INDEX_TUNING_RESULT         6
-#define PDO_INDEX_USER_IN_3         7
-#define PDO_INDEX_USER_IN_4         8
+#define PDO_INDEX_USER_MISO        20
 
 /* Index of sending (out) PDOs */
 #define PDO_INDEX_CONTROLWORD       0
-#define PDO_INDEX_OPMODE            1
-#define PDO_INDEX_TORQUE_REQUEST    2
-#define PDO_INDEX_POSITION_REQUEST  3
-#define PDO_INDEX_VELOCITY_REQUEST  4
-#define PDO_INDEX_OFFSET_TORQUE        5
-#define PDO_INDEX_TUNING_STATUS        6
-#define PDO_INDEX_USER_OUT_3        7
-#define PDO_INDEX_USER_OUT_4        8
+#define PDO_INDEX_USER_MOSI        15
 
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
@@ -173,41 +159,38 @@ static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, in
     }
 }
 
-static void list_slaves(SNCN_Master_t *master)
+static void list_slaves(Ethercat_Master_t *master)
 {
-    int slave_count = sncn_master_slave_count(master);
+    int slave_count = ecw_master_slave_count(master);
 
     for (int i = 0; i < slave_count; i++) {
-        SNCN_Slave_t *slave = sncn_slave_get(master, i);
+        Ethercat_Slave_t *slave = ecw_slave_get(master, i);
 
-        SNCN_Slave_Info_t info; 
-        sncn_slave_get_info(slave, &info);
+        Ethercat_Slave_Info_t info;
+        ecw_slave_get_info(slave, &info);
 
         printf("%d: VID: 0x%.4x PID: 0x%.x \"%s\"\n", i, info.vendor_id, info.product_code, info.name);
     }
 }
 
 
-static int cyclic_operation(SNCN_Master_t *master, SNCN_Slave_t *slave)
+static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
 {
     struct sigaction sa;
     struct itimerval tv;
 
-    sncn_master_start(master);
+    ecw_master_start(master);
 	printf("starting Master application\n");
 
     set_priority();
     setup_signal_handler(&sa);
     setup_timer(&tv);
 
-    uint32_t     position = 0;
-    uint32_t     velocity = 0;
-    uint16_t     torque   = 0;
-    uint16_t     status   = 0;
-    unsigned int received = 0;
+    uint16_t     statusword = 0;
+    uint32_t     user_miso = 0;
 
-    uint32_t     user_1   = 0;
-    uint32_t     user_2   = 0;
+    int get_master_identity = 1;
+    size_t waitcounter = 1000;
 
 	while(g_running) {
         pause();
@@ -215,44 +198,36 @@ static int cyclic_operation(SNCN_Master_t *master, SNCN_Slave_t *slave)
         while (sig_alarms != user_alarms) {
             user_alarms++;
 
-            sncn_master_cyclic_function(master);
+            ecw_master_cyclic_function(master);
 
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
-            if (received == status) {
-                status = (status >= MAX_UINT16) ? 0 : status + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, status);
+            switch (get_master_identity) {
+            case 1:
+                printf("Send request to fetch object 0x1018:1\n");
+                ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 1);
+                ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, 0x10180100);
+                get_master_identity = 2;
+                break;
+
+            case 2:
+                statusword = ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+                if (statusword == 1) {
+                    user_miso = ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
+                    printf("0x%04x:%d = 0x%x\n", 0x1018, 1, user_miso);
+                    get_master_identity = 0;
+                } else {
+                    waitcounter--;
+                    if (waitcounter > 1) {
+                        printf("Error receive requested object\n");
+                        ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 0);
+                        ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, 0);
+                        get_master_identity = 0;
+                        waitcounter = 10000;
+                    }
+                }
+
+            default:
+                break;
             }
-
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
-            if (received == torque) {
-                torque = (torque >= MAX_UINT16) ? 0 : torque + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
-            }
-
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
-            if (received == position) {
-                position = (position >= MAX_UINT32) ? 0 : position + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
-            }
-
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
-            if (received == velocity) {
-                velocity = (velocity >= MAX_UINT32) ? 0 : velocity + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
-            }
-
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_MEASURED_TORQUE_VALUE);
-            if (received == user_1) {
-                user_1 = (user_1 >= MAX_UINT32) ? 0 : user_1 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, user_1);
-            }
-
-            received = (unsigned int)sncn_slave_get_in_value(slave, PDO_INDEX_TUNING_RESULT);
-            if (received == user_2) {
-                user_2 = (user_2 >= MAX_UINT32) ? 0 : user_2 + 1;
-                sncn_slave_set_out_value(slave, PDO_INDEX_TUNING_STATUS, user_2);
-            }
-
         }
 	}
 
@@ -275,22 +250,22 @@ static void printsdoinfo(Sdo_t *sdo)
     printf("  Write Access:  %s\n", (write_access > 0) ? "yes" : "no");
 }
 
-static int object_test_write(SNCN_Slave_t *slave, Sdo_t *sdo)
+static int object_test_write(Ethercat_Slave_t *slave, Sdo_t *sdo)
 {
     int success     = 1; /* 0 = success; 1 = failed */
     int testvalue   = 1;
     int value       = 0;
     int backupvalue = 0;
 
-    if (sncn_slave_get_sdo_value(slave, sdo->index, sdo->subindex, &value) != 0) {
+    if (ecw_slave_get_sdo_value(slave, sdo->index, sdo->subindex, &value) != 0) {
         fprintf(stderr, "Error could not access object 0x%04x:%d on slave %d\n",
-            sdo->index, sdo->subindex, sncn_slave_get_slaveid(slave));
+            sdo->index, sdo->subindex, ecw_slave_get_slaveid(slave));
         return -1;
     }
 
     int write_access = (sdo->write_access[0] + sdo->write_access[1] +  sdo->write_access[2]);
 
-    if (sncn_slave_set_sdo_value(slave, sdo->index, sdo->subindex, testvalue) != 0) {
+    if (ecw_slave_set_sdo_value(slave, sdo->index, sdo->subindex, testvalue) != 0) {
         if (write_access == 0) {
             success = 0;
         } else {
@@ -299,7 +274,7 @@ static int object_test_write(SNCN_Slave_t *slave, Sdo_t *sdo)
     }
 
     backupvalue = value;
-    sncn_slave_get_sdo_value(slave, sdo->index, sdo->subindex, &value);
+    ecw_slave_get_sdo_value(slave, sdo->index, sdo->subindex, &value);
 //printf("[DEBUG] value = %d; testvalue = %d; backupvalue = %d\n", value, testvalue, backupvalue);
     if (value == testvalue) {
         if (write_access == 0) {
@@ -318,18 +293,18 @@ static int object_test_write(SNCN_Slave_t *slave, Sdo_t *sdo)
     }
 
     /* reset the original value */
-    sncn_slave_set_sdo_value(slave, sdo->index, sdo->subindex, backupvalue);
+    ecw_slave_set_sdo_value(slave, sdo->index, sdo->subindex, backupvalue);
 
     return success;
 }
 
-static int access_object_dictionary(SNCN_Slave_t *slave)
+static int access_object_dictionary(Ethercat_Slave_t *slave)
 {
-    size_t sdocount = sncn_slave_get_sdo_count(slave);
+    size_t sdocount = ecw_slave_get_sdo_count(slave);
     Sdo_t **sdolist = malloc(sdocount * sizeof(Sdo_t *));
 
     for (size_t i = 0; i < sdocount; i++) {
-        sdolist[i] = sncn_slave_get_sdo_index(slave, i);
+        sdolist[i] = ecw_slave_get_sdo_index(slave, i);
 
         if (sdolist[i] == NULL) {
             printf("Warning object nubmer %lu not available\n", i);
@@ -369,7 +344,7 @@ int main(int argc, char *argv[])
     FILE *ecatlog = fopen("./ecat.log", "w");
 
 	/* Initialize EtherCAT Master */
-    SNCN_Master_t *master = sncn_master_init(masterid, ecatlog);
+    Ethercat_Master_t *master = ecw_master_init(masterid, ecatlog);
     if (master == NULL) {
         fprintf(stderr, "Error, could not initialize master\n");
         return -1;
@@ -377,12 +352,12 @@ int main(int argc, char *argv[])
 
     if (command == CMD_LIST_SLVAVES) {
         list_slaves(master);
-        sncn_master_release(master);
+        ecw_master_release(master);
         fclose(ecatlog);
         return 0;
     }
 
-    size_t slave_count = sncn_master_slave_count(master);
+    size_t slave_count = ecw_master_slave_count(master);
 
     if (slave_count < ((unsigned int)slaveid + 1)) {
         fprintf(stderr, "Error only %lu slaves present, requested slave (%d) not available!\n",
@@ -398,7 +373,7 @@ int main(int argc, char *argv[])
     }
 
     /* only talk to specified slave */
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
     if (slave == NULL) {
         fprintf(stderr, "Error could not retrieve slave %d", slaveid);
         return -1;
@@ -416,7 +391,7 @@ int main(int argc, char *argv[])
     }
 
 
-    sncn_master_release(master);
+    ecw_master_release(master);
     fclose(ecatlog);
 
     return 0;

@@ -127,12 +127,12 @@ static void print_usage(char *prog)
             basename = c;
     }
 
-    printf("Usage: %s [-h] [-v] [-m <id>] [-n <id>] [-l]\n", basename);
+    printf("Usage: %s [-h] [-v] [-m <id>] [-n <id>] [-c] [-l]\n", basename);
 }
 
-static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, int *masterid)
+static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, int *masterid, int *cyclic)
 {
-    const char *optargs = "hVvn:lm:";
+    const char *optargs = "hVvn:lm:c";
 
     int opt = 0;
 
@@ -148,6 +148,10 @@ static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, in
 
         case 'm':
             *masterid = atoi(optarg);
+            break;
+
+        case 'c':
+            *cyclic = 1;
             break;
 
         case 'h':
@@ -360,7 +364,7 @@ int main(int argc, char *argv[])
         slaveid =  atoi(argv[1]);
     }
     */
-    parse_cmd_line(argc, argv, &slaveid, &command, &masterid);
+    parse_cmd_line(argc, argv, &slaveid, &command, &masterid, &startcyclic);
 
     FILE *ecatlog = fopen("./ecat.log", "w");
 
@@ -402,7 +406,8 @@ int main(int argc, char *argv[])
 
     if (check_object_dictionary) {
         if (access_object_dictionary(slave)) {
-            startcyclic = 0; /* On error don't execute cyclic behavior, even if requested! */
+            printf("Warning, something went wrong - cyclic operation is not started!\n");
+            startcyclic = 0;
         }
     }
 

@@ -215,13 +215,6 @@ int main(void)
                     motorcontrol_config.rated_current =  RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  PERCENT_OFFSET_TORQUE;
-                    motorcontrol_config.recuperation = RECUPERATION;
-                    motorcontrol_config.battery_e_max = BATTERY_E_MAX;
-                    motorcontrol_config.battery_e_min = BATTERY_E_MIN;
-                    motorcontrol_config.regen_p_max = REGEN_P_MAX;
-                    motorcontrol_config.regen_p_min = REGEN_P_MIN;
-                    motorcontrol_config.regen_speed_max = REGEN_SPEED_MAX;
-                    motorcontrol_config.regen_speed_min = REGEN_SPEED_MIN;
                     motorcontrol_config.protection_limit_over_current =  I_MAX;
                     motorcontrol_config.protection_limit_over_voltage =  V_DC_MAX;
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;

@@ -194,7 +194,6 @@ int main(void)
 
                     motorcontrol_config.licence =  ADVANCED_MOTOR_CONTROL_LICENCE;
                     motorcontrol_config.v_dc =  VDC;
-                    motorcontrol_config.commutation_loop_period =  COMMUTATION_LOOP_PERIOD;
                     motorcontrol_config.terminal_connection = NORMAL_CONNECTION;
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
                     motorcontrol_config.current_I_gain =  TORQUE_Ki;

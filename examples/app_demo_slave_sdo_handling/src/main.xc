@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <dictionary_symbols.h>
 
+#define OBJECT_PRINT              0  /* enable object print with 1 */
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 typedef enum {
@@ -350,10 +351,12 @@ static void read_od_config(client interface i_coe_communication i_coe)
     for (size_t i = 0; i < object_list_size; i++) {
         value = i_coe.get_object_value(request_list[i].index, request_list[i].subindex);
 
+#if OBJECT_PRINT == 1
         printstr("Object 0x"); printhex(request_list[i].index);
         printstr(":");         printint(request_list[i].subindex);
         printstr(" = ");
         printintln(value);
+#endif
     }
 
     return;

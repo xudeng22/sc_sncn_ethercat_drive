@@ -17,7 +17,7 @@
 #include <reboot.h>
 
 #include <ethercat_service.h>
-#include <memory_manager.h>
+#include <shared_memory.h>
 
 //BLDC Motor drive libs
 #include <position_feedback_service.h>

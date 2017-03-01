@@ -42,6 +42,8 @@ All the options in detail are:
   * `-n <index>` select the slave to use for testing (index rage: 0 .. n) (default: 0)
   * `-c` experimental function to start cyclic operation after the object dictionary is read
 
+.. important:: The command line parameter `-c` is only useable if :ref:`app_demo_slave_sdo_handling` is running on the slave module!
+
 Examples
 --------
 

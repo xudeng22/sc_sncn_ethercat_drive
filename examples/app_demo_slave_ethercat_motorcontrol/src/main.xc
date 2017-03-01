@@ -222,7 +222,7 @@ int main(void)
                 }
 
                 /* Shared memory Service */
-                [[distribute]] memory_manager(i_shared_memory, 2);
+                [[distribute]] shared_memory_service(i_shared_memory, 2);
 
                 /* Position feedback service */
                 {

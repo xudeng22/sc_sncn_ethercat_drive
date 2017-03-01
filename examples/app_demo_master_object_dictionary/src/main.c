@@ -34,6 +34,7 @@
 #define PDO_INDEX_CONTROLWORD       0
 #define PDO_INDEX_USER_MOSI        15
 
+#define MAX_WAIT_LOOPS            10000
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
 static unsigned int user_alarms = 0;
@@ -173,6 +174,7 @@ static void list_slaves(Ethercat_Master_t *master)
     }
 }
 
+#define BUILD_REQUEST(a, b, c)       (((a & 0xffff) << 16) | ((b & 0xff) << 8) | (c & 0xff))
 
 static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
 {
@@ -190,7 +192,9 @@ static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
     uint32_t     user_miso = 0;
 
     int get_master_identity = 1;
-    size_t waitcounter = 1000;
+    size_t waitcounter = MAX_WAIT_LOOPS;
+
+    uint32_t request_object = BUILD_REQUEST(0x1018, 1, 0);
 
 	while(g_running) {
         pause();
@@ -202,30 +206,62 @@ static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
 
             switch (get_master_identity) {
             case 1:
-                printf("Send request to fetch object 0x1018:1\n");
+                printf("Send request to fetch object 0x%04x:%d\n", (request_object >> 16) & 0xffff, (request_object >> 8) & 0xff);
                 ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 1);
-                ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, 0x10180100);
-                get_master_identity = 2;
+                ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, request_object);
+                get_master_identity += 1;
+                waitcounter = MAX_WAIT_LOOPS;
                 break;
 
             case 2:
                 statusword = ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
                 if (statusword == 1) {
                     user_miso = ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
-                    printf("0x%04x:%d = 0x%x\n", 0x1018, 1, user_miso);
-                    get_master_identity = 0;
+                    printf("0x%04x:%d = 0x%x\n", (request_object >> 16) & 0xffff, (request_object >> 8) & 0xff, user_miso);
+
+                    if (request_object == BUILD_REQUEST(0x1018, 2, 0)) {
+                        get_master_identity = 0; /* finished */
+                    } else {
+                        request_object = BUILD_REQUEST(0x1018, 2, 0);
+                        get_master_identity += 1;
+                    }
                 } else {
                     waitcounter--;
-                    if (waitcounter > 1) {
+                    if (waitcounter <= 1) {
                         printf("Error receive requested object\n");
                         ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 0);
                         ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, 0);
                         get_master_identity = 0;
-                        waitcounter = 10000;
+                        waitcounter = MAX_WAIT_LOOPS;
                     }
                 }
+                break;
+
+            case 3:
+                ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 0);
+                get_master_identity += 1;
+                waitcounter = MAX_WAIT_LOOPS;
+                break;
+
+            case 4:
+                /* Wait until slave resets and is able to serve new requests */
+                statusword = ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+                if (statusword == 0) {
+                    waitcounter = MAX_WAIT_LOOPS;
+                    get_master_identity = 1;
+                    printf("Slave recovered.\n");
+                } else {
+                    waitcounter--;
+                    if (waitcounter <= 1) {
+                        printf("Slave does not recover, giving up.\n");
+                        get_master_identity = 0;
+                    }
+                }
+                break;
 
             default:
+                ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 0);
+                ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, 0);
                 break;
             }
         }

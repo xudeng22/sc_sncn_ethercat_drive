@@ -69,20 +69,24 @@ static void pdo_service(client interface i_pdo_communication i_pdo, client inter
 
 		switch (command) {
 		case ECC_UNKNOWN:
+		    InOut.statusword = ECC_UNDEFINED;
+		    InOut.user_miso = 0;
 		    break;
 
 		case ECC_IDLE:
+		    InOut.statusword = ECC_UNDEFINED;
+		    InOut.user_miso = 0;
 		    break;
 
 		case ECC_READ_OBJECT:
 		    index      = (InOut.user_mosi >> 16) & 0xffff;
 		    subindex   = (InOut.user_mosi >> 8) & 0xff;
 
-		    if (i_cmd.get_object_value(index, subindex, user_value) == 0) {
-		        InOut.statusword = ECC_OK;
+		    EC_Status_t state = i_cmd.get_object_value(index, subindex, user_value);
+		    InOut.statusword = state;
+		    if (state == ECC_OK) {
 		        InOut.user_miso = user_value;
 		    } else {
-		        InOut.statusword = ECC_ERROR;
 		        InOut.user_miso = 0;
 		    }
 		    break;

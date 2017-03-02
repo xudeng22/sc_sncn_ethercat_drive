@@ -34,7 +34,10 @@
 #define PDO_INDEX_CONTROLWORD       0
 #define PDO_INDEX_USER_MOSI        15
 
-#define MAX_WAIT_LOOPS            10000
+#define MAX_WAIT_LOOPS            1000
+
+#define BUILD_REQUEST(a, b, c)       (((a & 0xffff) << 16) | ((b & 0xff) << 8) | (c & 0xff))
+
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
 static unsigned int user_alarms = 0;
@@ -171,8 +174,6 @@ static void list_slaves(Ethercat_Master_t *master)
         printf("%d: VID: 0x%.4x PID: 0x%.x \"%s\"\n", i, info.vendor_id, info.product_code, info.name);
     }
 }
-
-#define BUILD_REQUEST(a, b, c)       (((a & 0xffff) << 16) | ((b & 0xff) << 8) | (c & 0xff))
 
 static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
 {

@@ -12,6 +12,7 @@
 #include <pdo_handler.h>
 #include <reboot.h>
 
+#define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
@@ -101,6 +102,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
         analog_value = analog_value >= 1000 ? 0 : analog_value + 1;
 
+#if DEBUG_CONSOLE_PRINT == 1
         /*
          * Print updated values to the console
          */
@@ -159,6 +161,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
             printstr("Digital output 4 = ");
             printintln(InOut.digital_output4);
         }
+#endif
 
         /*
          *  Update the local stored structure to recognize value changes

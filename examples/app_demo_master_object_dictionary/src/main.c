@@ -150,11 +150,9 @@ static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, in
 
         case 'V': /* version??? */
             /* FIXME print version and exit */
-            fprintf(stderr, "Error, option %c not yet implemented - proceeding\n", (char)opt);
-            break;
 
         default:
-            fprintf(stderr, "Error, unknown option\n");
+            fprintf(stderr, "Error, parse command line option\n");
             exit(-1);
         }
     }

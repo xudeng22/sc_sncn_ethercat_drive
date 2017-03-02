@@ -357,6 +357,8 @@ static void display_printframe(WINDOW *wnd)
     wprintw(wnd, "analog_input3");
     wmove(wnd, row++, title_column);
     wprintw(wnd, "analog_input4");
+    wmove(wnd, row+3, title_column);
+    wprintw(wnd, "Press <Crtl>+C to abort");
 }
 
 static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t *output)

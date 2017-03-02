@@ -509,6 +509,8 @@ int main(int argc, char *argv[])
     if (curses) {
         display_printframe(wnd);
         display_update(wnd, &input, &output);
+    } else {
+        printf("Press <Crtl>+C to abort\n");
     }
 
 	while(g_running) {

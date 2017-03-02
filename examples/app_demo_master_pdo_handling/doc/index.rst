@@ -36,3 +36,9 @@ When the application has been compiled (just execute make), the next step is to 
 
        sudo ./app_demo_master_pdo_handling
 
+The application provides the following command line arguments
+
+  - `-h`             print this help and exit
+  - `-n slave`       slave number, default to 0
+  - `-d`             print domain registry before start
+  - `-w`             enable graphical output

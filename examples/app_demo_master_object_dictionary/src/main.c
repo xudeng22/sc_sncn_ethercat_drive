@@ -219,7 +219,7 @@ static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
                     printf("0x%04x:%d = 0x%x\n", (request_object >> 16) & 0xffff, (request_object >> 8) & 0xff, user_miso);
 
                     if (request_object == BUILD_REQUEST(0x1018, 2, 0)) {
-                        get_master_identity = 0; /* finished */
+                        get_master_identity = 5;
                     } else {
                         request_object = BUILD_REQUEST(0x1018, 2, 0);
                         get_master_identity += 1;
@@ -230,7 +230,7 @@ static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
                         printf("Error receive requested object\n");
                         ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, 0);
                         ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, 0);
-                        get_master_identity = 0;
+                        get_master_identity = 5;
                         waitcounter = MAX_WAIT_LOOPS;
                     }
                 }
@@ -253,9 +253,14 @@ static int cyclic_operation(Ethercat_Master_t *master, Ethercat_Slave_t *slave)
                     waitcounter--;
                     if (waitcounter <= 1) {
                         printf("Slave does not recover, giving up.\n");
-                        get_master_identity = 0;
+                        get_master_identity = 5;
                     }
                 }
+                break;
+
+            case 5: /* finished */
+                printf("Scan finished.\n");
+                g_running = 0;
                 break;
 
             default:

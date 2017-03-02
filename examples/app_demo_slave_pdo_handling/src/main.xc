@@ -58,8 +58,6 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
     unsigned int time = 0;
     unsigned int analog_value = 0;
 
-    uint16_t status = 255;
-    int i = 0;
     pdo_handler_values_t InOut = {0};
     pdo_handler_values_t InOutOld = {0};
     t :> time;
@@ -70,11 +68,6 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
     while(1)
     {
         pdo_handler(i_pdo, InOut);
-
-        i++;
-        if(i >= 999) {
-            i = 100;
-        }
 
         /* Mirror incomimng value to the output */
         InOut.position_value  = InOut.target_position;
@@ -186,7 +179,7 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
 int main(void) {
     /* EtherCat Communication channels */
-interface    i_coe_communication i_coe;
+    interface i_coe_communication i_coe;
     interface i_foe_communication i_foe;
     interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;

@@ -117,7 +117,7 @@ static void print_usage(char *prog)
             basename = c;
     }
 
-    printf("Usage: %s [-h] [-v] [-m <id>] [-n <id>] [-c] [-l]\n", basename);
+    printf("Usage: %s [-h] [-v] [-m <id>] [-n <id>] [-l]\n", basename);
 }
 
 static void parse_cmd_line(int argc, char *argv[], int *nodeid, int *command, int *masterid, int *cyclic)

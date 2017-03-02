@@ -40,9 +40,6 @@ All the options in detail are:
   * `-l` show a list of all connected slaves and exit
   * `-m <index>` select the master with numerical index (value range:  0 .. n), if more than one master is available (default: 0)
   * `-n <index>` select the slave to use for testing (index rage: 0 .. n) (default: 0)
-  * `-c` experimental function to start cyclic operation after the object dictionary is read
-
-.. important:: The command line parameter `-c` is only useable if :ref:`app_demo_slave_sdo_handling` is running on the slave module!
 
 Examples
 --------

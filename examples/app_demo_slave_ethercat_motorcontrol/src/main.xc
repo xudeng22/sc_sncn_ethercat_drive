@@ -146,12 +146,13 @@ int main(void)
                     pos_velocity_ctrl_config.voltage_hold_brake =                   VOLTAGE_HOLD_BRAKE;
 
 
-                    init_brake(i_update_brake, IFM_TILE_USEC, VDC,
-                            pos_velocity_ctrl_config.voltage_pull_brake,
-                            pos_velocity_ctrl_config.time_pull_brake,
-                            pos_velocity_ctrl_config.voltage_hold_brake);
+                    pos_velocity_ctrl_config.nominal_v_dc=                          VDC;
+                    pos_velocity_ctrl_config.voltage_pull_brake=                    VOLTAGE_PULL_BRAKE;
+                    pos_velocity_ctrl_config.time_pull_brake =                      TIME_PULL_BRAKE;
+                    pos_velocity_ctrl_config.voltage_hold_brake =                   VOLTAGE_HOLD_BRAKE;
 
-                    position_velocity_control_service(pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control);
+                    position_velocity_control_service(IFM_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
+
                 }
             }
         }

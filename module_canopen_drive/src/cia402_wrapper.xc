@@ -29,9 +29,9 @@ void print_object_dictionary(client interface i_co_communication i_co)
     {sdo_value, void, void} = i_co.get_object_value(CIA402_GEAR_RATIO, 0);//Gear ratio
     printstr("Gear ratio: ");printintln(sdo_value);
     {sdo_value, void, void} = i_co.get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);//QEI resolution
-    printstr("QEI resolution: ");printintln(sdo_value);
+    printstr("Sensor resolution: ");printintln(sdo_value);
     {sdo_value, void, void} = i_co.get_object_value(SNCN_SENSOR_POLARITY, 0);//QEI_POLARITY_NORMAL = 0, QEI_POLARITY_INVERTED = 1
-    printstr("QEI POLARITY: ");printintln(sdo_value);
+    printstr("SENSOR POLARITY: ");printintln(sdo_value);
 	{sdo_value, void, void} = i_co.get_object_value(CIA402_MAX_TORQUE, 0);//MAX_TORQUE
 	printstr("MAX TORQUE: ");printintln(sdo_value);
     {sdo_value, void, void} = i_co.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);//negative positioning limit

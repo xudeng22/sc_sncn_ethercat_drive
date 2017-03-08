@@ -87,9 +87,7 @@ void cm_sync_config_position_feedback(
 
     config.resolution              = i_coe.get_object_value(feedback_sensor_object, 3);
     config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, 4);
-
-    // FIXME the entry (subentry of sensor objects) needs to be added ASAP
-    //config.polarity = i_coe.get_object_value(feedback_sensor_object, X);
+    config.polarity                = i_coe.get_object_value(feedback_sensor_object, 5);
 
     switch (config.sensor_type) {
     case QEI_SENSOR:

@@ -190,7 +190,7 @@ void cm_sync_config_motor_control(
     motorcontrol_config.regen_speed_min = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
 
     /* Read protection limits */
-    //motorcontrol_config.protection_limit_over_current = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE); // FIXME there will be a new OD entry for over current!
+    motorcontrol_config.protection_limit_over_current = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
     motorcontrol_config.protection_limit_under_voltage = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE);
     motorcontrol_config.protection_limit_over_voltage  = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
 
@@ -279,7 +279,8 @@ void cm_sync_config_pos_velocity_control(
     position_config.integral_limit_velocity = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
 
     /* Brake control settings */
-    //position_config.dc_bus_voltage        = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
+    /* FIXME PosVelocityControlConfig does not contain parameter for dc_bus_voltage */
+//    position_config.dc_bus_voltage        = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     position_config.voltage_pull_brake    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE);
     position_config.time_pull_brake       = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME);
     position_config.voltage_hold_brake    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE);
@@ -356,7 +357,7 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_min);
 
     /* Write protection limits */
-    //i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE, motorcontrol_config.protection_limit_over_current); // FIXME there will be a new OD entry for over current!
+    i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE, motorcontrol_config.protection_limit_under_voltage);
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE, motorcontrol_config.protection_limit_over_voltage);
 }

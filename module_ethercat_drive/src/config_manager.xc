@@ -204,7 +204,8 @@ void cm_sync_config_motor_control(
 
 void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
-        ProfilerConfig &profiler)
+        ProfilerConfig &profiler,
+        enum eProfileType type)
 {
     profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
     profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
@@ -217,10 +218,16 @@ void cm_sync_config_profiler(
     profiler.max_position     =  i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 2);
     /* FIXME does this belong here? */
     uint8_t polarity = i_coe.get_object_value(DICT_POLARITY, 0);
-    if ((polarity & 0xC0) != 0) {
-        profiler.polarity = -1;
-    } else {
-        profiler.polarity = 1;
+    switch (type) {
+    case PROFILE_TYPE_POSITION:
+        profiler.polarity = ((polarity & 0x80) != 0) ? -1 : 1;
+        break;
+    case PROFILE_TYPE_VELOCITY:
+        profiler.polarity = ((polarity & 0x40) != 0) ? -1 : 1;
+        break;
+    default:
+        profiler.polarity = 0;
+        break;
     }
 }
 

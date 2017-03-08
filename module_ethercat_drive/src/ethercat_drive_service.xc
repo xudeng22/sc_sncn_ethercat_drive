@@ -176,7 +176,7 @@ static void inline update_configuration(
 
     /* FIXME add support for more than one feedback sensor! */
     cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config, 1);
-    cm_sync_config_profiler(i_coe, profiler_config);
+    cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
     cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
 

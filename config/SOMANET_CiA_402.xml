@@ -750,7 +750,7 @@
               </DataType>
               <DataType>
                 <Name>DT2004</Name>
-                <BitSize>120</BitSize>
+                <BitSize>136</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>Number of entries</Name>
@@ -812,6 +812,17 @@
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
                   <BitOffs>104</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>6</SubIdx>
+                  <Name>DC bus voltage</Name>
+                  <Type>UINT</Type>
+                  <BitSize>16</BitSize>
+                  <BitOffs>120</BitOffs>
                   <Flags>
                     <Access>ro</Access>
                     <Category>o</Category>
@@ -946,7 +957,7 @@
               </DataType>
               <DataType>
                 <Name>DT2006</Name>
-                <BitSize>80</BitSize>
+                <BitSize>112</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>Number of entries</Name>
@@ -978,6 +989,17 @@
                   <Flags>
                     <Access>ro</Access>
                     <Category>m</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>3</SubIdx>
+                  <Name>Max Current</Name>
+                  <Type>DINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>80</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
                   </Flags>
                 </SubItem>
               </DataType>
@@ -2964,30 +2986,33 @@
                 <Name>Brake Release</Name>
                 <Comment></Comment>
                 <Type>DT2004</Type>
-                <BitSize>120</BitSize>
+                <BitSize>136</BitSize>
                 <Info>
                   <SubItem>
                     <Name>Number of entries</Name>
                     <Info>
-                      <DefaultData>05</DefaultData>
+                      <DefaultData>06</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Pull brake voltage</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#xFD260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Hold brake voltage</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#xFD260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Pull brake time</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#xFD030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3000,6 +3025,14 @@
                     <Name>Brake release delay</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#xFD030000</Unit>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>DC bus voltage</Name>
+                    <Info>
+                      <DefaultData>00</DefaultData>
+                      <Unit>#xFD260000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3126,24 +3159,33 @@
                 <Name>Protection</Name>
                 <Comment></Comment>
                 <Type>DT2006</Type>
-                <BitSize>80</BitSize>
+                <BitSize>112</BitSize>
                 <Info>
                   <SubItem>
                     <Name>Number of entries</Name>
                     <Info>
-                      <DefaultData>02</DefaultData>
+                      <DefaultData>03</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Min DC Voltage</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max DC Voltage</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#x00260000</Unit>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>Max Current</Name>
+                    <Info>
+                      <DefaultData>01</DefaultData>
+                      <Unit>#xFD040000</Unit>
                     </Info>
                   </SubItem>
                 </Info>

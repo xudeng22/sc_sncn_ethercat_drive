@@ -73,25 +73,25 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ CIA402_CONTROLWORD, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Controlword" }, /* map to PDO */
 	{ CIA402_STATUSWORD, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Statusword" },  /* map to PDO */
 //  { CIA402_SUPPORTED_DRIVE_MODES, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x003f, 0x0280 /* csv, csp, cst */, "Supported drive modes" },
-	{ CIA402_OP_MODES, 0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 8, 0x003f, CIA402_OP_MODE_CSP, "Op Mode" },
-	{ CIA402_OP_MODES_DISP, 0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 8, 0x003f, CIA402_OP_MODE_CSP, "Operating mode" },
-	{ CIA402_POSITION_VALUE, 0, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Position Value" }, /* csv, csp */
-	{ CIA402_FOLLOWING_ERROR_WINDOW, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Following Error Window"}, /* csp */
+	{ CIA402_OP_MODES,                0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 8, 0x003f, CIA402_OP_MODE_CSP, "Op Mode" },
+	{ CIA402_OP_MODES_DISP,           0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 8, 0x003f, CIA402_OP_MODE_CSP, "Operating mode" },
+	{ CIA402_POSITION_VALUE,          0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Position Value" }, /* csv, csp */
+	{ CIA402_FOLLOWING_ERROR_WINDOW,  0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Following Error Window"}, /* csp */
 	{ CIA402_FOLLOWING_ERROR_TIMEOUT, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Following Error Timeout"}, /* csp */
-	{ CIA402_VELOCITY_VALUE, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Velocity Value"}, /* csv */
-	{ CIA402_TARGET_TORQUE, 0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Target Torque"}, /* cst */
-	{ CIA402_TORQUE_VALUE, 0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Torque Value"}, /* csv, cst */
-	{ CIA402_TARGET_POSITION, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Target Position" }, /* csp */
-	{ CIA402_POSITION_RANGELIMIT, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x0007, 2, "Postition Range Limits"}, /* csp */
-	{ CIA402_POSITION_RANGELIMIT, 1, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Min Postition Range Limit"},
-	{ CIA402_POSITION_RANGELIMIT, 2, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Max Postition Range Limit"},
-	{ CIA402_SOFTWARE_POSITION_LIMIT, 0, 0,  DEFTYPE_UNSIGNED8, CANOD_TYPE_ARRAY,  8, 0x0007, 2, "Software Postition Range Limits"}, /* csp */
-	{ CIA402_SOFTWARE_POSITION_LIMIT, 1, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, 0x003f, 0, "Min Software Postition Range Limit"},
-	{ CIA402_SOFTWARE_POSITION_LIMIT, 2, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, 0x003f, 0, "Max Software Postition Range Limit"},
-	{ CIA402_VELOCITY_OFFSET, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Velocity Offset" }, /* csp */
-	{ CIA402_TORQUE_OFFSET, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Torque Offset" }, /* csv, csp */
+	{ CIA402_VELOCITY_VALUE,          0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Velocity Value"}, /* csv */
+	{ CIA402_TARGET_TORQUE,           0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Target Torque"}, /* cst */
+	{ CIA402_TORQUE_VALUE,            0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 16, 0x003f, 0, "Torque Value"}, /* csv, cst */
+	{ CIA402_TARGET_POSITION,         0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Target Position" }, /* csp */
+	{ CIA402_POSITION_RANGELIMIT,     0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x0007, 2, "Postition Range Limits"}, /* csp */
+	{ CIA402_POSITION_RANGELIMIT,     1, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Min Postition Range Limit"},
+	{ CIA402_POSITION_RANGELIMIT,     2, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Max Postition Range Limit"},
+	{ CIA402_SOFTWARE_POSITION_LIMIT, 0, 0, DEFTYPE_UNSIGNED8, CANOD_TYPE_ARRAY,  8, 0x0007, 2, "Software Postition Range Limits"}, /* csp */
+	{ CIA402_SOFTWARE_POSITION_LIMIT, 1, 0, DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, 0x003f, 0, "Min Software Postition Range Limit"},
+	{ CIA402_SOFTWARE_POSITION_LIMIT, 2, 0, DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, 0x003f, 0, "Max Software Postition Range Limit"},
+	{ CIA402_VELOCITY_OFFSET,         0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Velocity Offset" }, /* csp */
+	{ CIA402_TORQUE_OFFSET,           0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Torque Offset" }, /* csv, csp */
 	{ CIA402_FOLLOWING_ERROR,         0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Following Error" },
-	{ CIA402_TARGET_VELOCITY, 0, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Target Velocity" }, /* csv */
+	{ CIA402_TARGET_VELOCITY,         0, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, 0x003f, 0, "Target Velocity" }, /* csv */
 	/* FIXME new objects, change description accordingly */
 	{ CIA402_SENSOR_SELECTION_CODE,   0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,   16, 0x003f, 0,   "Sensor Selection Mode" },
 	{ CIA402_MAX_TORQUE,              0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR,   32, 0x003f, 0,   "Max Torque" },
@@ -116,7 +116,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ COMMUTATION_OFFSET_CLKWISE,	  0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR,	 16, 0x003f, 0,   "Commutation Offset Clockwise"},
 	{ COMMUTATION_OFFSET_CCLKWISE,	  0, 0,	DEFTYPE_INTEGER16, CANOD_TYPE_VAR,	 16, 0x003f, 0,   "Commutation Offset Counter Clockwise"},
 	{ MOTOR_WINDING_TYPE,	          0, 0,	DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 	  8, 0x003f, 0,   "Motor Winding Type"},
-	{ SNCN_SENSOR_POLARITY,	         	  0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 	 16, 0x003f, 1,   "Position Sensor Polarity"},
+	{ SNCN_SENSOR_POLARITY,	          0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 	 16, 0x003f, 1,   "Position Sensor Polarity"},
 	{ LIMIT_SWITCH_TYPE,			  0, 0, DEFTYPE_INTEGER8, CANOD_TYPE_VAR, 	  8, 0x003f, 0,   "Limit Switch Type"},
 	{ CIA402_MOTOR_TYPE,              0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR,  16, 0x003f, 0,   "Motor Type" },
 	/* the following objects are vendor specific and defined by CiA402_Objects.xlsx */
@@ -127,6 +127,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ CIA402_MOTOR_SPECIFIC,          4, 0, DEFTYPE_INTEGER32,  CANOD_TYPE_ARRAY,   32, 0x003f, 0,   "Motor Specific Max Speed" },
 	{ CIA402_MOTOR_SPECIFIC,          5, 0, DEFTYPE_INTEGER32,  CANOD_TYPE_ARRAY,   32, 0x003f, 0,   "Motor Specific Phase Inductance" },
 	{ CIA402_MOTOR_SPECIFIC,          6, 0, DEFTYPE_INTEGER32,  CANOD_TYPE_ARRAY,   32, 0x003f, 0,   "Motor Specific Torque Constant" },
+	{ CIA402_MOTOR_SPECIFIC,          7, 0, DEFTYPE_INTEGER32,  CANOD_TYPE_ARRAY,   32, 0x003f, 0,   "Motor Specific Terminal Connection" },
 	{ CIA402_CURRENT_GAIN,            0, 0, DEFTYPE_UNSIGNED8,   CANOD_TYPE_ARRAY,    8, 0x0007, 3,   "Current Gain" },
 	{ CIA402_CURRENT_GAIN,            1, 0, DEFTYPE_INTEGER32,  CANOD_TYPE_ARRAY,   32, 0x003f, 0,   "Current P-Gain" },
 	{ CIA402_CURRENT_GAIN,            2, 0, DEFTYPE_INTEGER32,  CANOD_TYPE_ARRAY,   32, 0x003f, 0,   "Current I-Gain" },

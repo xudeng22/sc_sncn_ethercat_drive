@@ -75,6 +75,8 @@ void cm_sync_config_motor_control(
     {motorcontrol_config.phase_inductance, void, void}   = i_co.get_object_value(CIA402_MOTOR_SPECIFIC, 5);
 //    motorcontrol_config.v_dc; /* FIXME currently not setable - should it be? */
 
+    {motorcontrol_config.terminal_connection, void, void} = i_co.get_object_value(CIA402_MOTOR_SPECIFIC, 7);
+
     {motorcontrol_config.protection_limit_over_current, void, void} = i_co.get_object_value(CIA402_MAX_CURRENT, 0);//motorcontrol_config.max_current;
     i_motorcontrol.set_config(motorcontrol_config);
 

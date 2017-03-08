@@ -49,7 +49,7 @@ static void sdo_wait_first_config(client interface i_co_communication i_co)
     printstrln("start cyclic operation");
 
     /* clear the notification before proceeding the operation */
-    i_co.configuration_done();
+    //i_co.configuration_done();
 }
 
 {int, int} quick_stop_perform(int opmode, int steps, int velocity)
@@ -325,11 +325,11 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
+            //print_object_dictionary(i_co);
             update_configuration(i_co, i_motorcontrol, i_position_velocity_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
                     sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
-                    opmode
-                    );
+                    opmode);
 
             read_configuration = 0;
             i_co.configuration_done();

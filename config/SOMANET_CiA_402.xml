@@ -2716,7 +2716,7 @@
               </Object>
               <Object>
                 <Index>#x607D</Index>
-                <Name>Max Software Postition Range Limit</Name>
+                <Name>Max Software Position Range Limit</Name>
                 <Type>DT607X</Type>
                 <BitSize>80</BitSize>
                 <Info>
@@ -2746,7 +2746,7 @@
               </Object>
               <Object>
                 <Index>#x607B</Index>
-                <Name>Postition Range Limits</Name>
+                <Name>Position Range Limits</Name>
                 <Type>DT607X</Type>
                 <BitSize>80</BitSize>
                 <Info>

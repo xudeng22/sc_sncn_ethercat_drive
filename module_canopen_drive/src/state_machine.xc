@@ -6,6 +6,7 @@
 
 #include <statemachine.h>
 #include <state_modes.h>
+#include <motor_control_structures.h>
 #include <position_ctrl_service.h>
 #include <mc_internal_constants.h>
 
@@ -184,14 +185,14 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
     switch(in_state)
     {
         case S_NOT_READY_TO_SWITCH_ON:
-            if (checklist.fault)
+            if (checklist.fault != NO_FAULT)
                 out_state = S_FAULT_REACTION_ACTIVE;
             else 
                 out_state = S_SWITCH_ON_DISABLED;
             break;
 
         case S_SWITCH_ON_DISABLED:
-            if (checklist.fault || ctrl_communication_timeout(localcontrol))
+            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol))
                 out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_shutdown(controlword)) // aka ready
                 out_state = S_READY_TO_SWITCH_ON;
@@ -201,7 +202,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_READY_TO_SWITCH_ON:
             ctrl_input = read_controlword_switch_on(controlword);
-            if (checklist.fault || ctrl_communication_timeout(localcontrol))
+            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol))
                 out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_switch_on(controlword))
                 out_state = S_SWITCH_ON;
@@ -217,7 +218,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_SWITCH_ON:
             ctrl_input = read_controlword_enable_op(controlword);
-            if (checklist.fault || ctrl_communication_timeout(localcontrol))
+            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol))
                 out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_enable_op(controlword))
                 out_state = S_OPERATION_ENABLE;
@@ -235,7 +236,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_OPERATION_ENABLE:
             ctrl_input = read_controlword_quick_stop(controlword); //quick stop
-            if (checklist.fault || ctrl_communication_timeout(localcontrol))
+            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol))
                 out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_disable_op(controlword))
                 out_state = S_SWITCH_ON;
@@ -256,7 +257,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
             break;
 
         case S_QUICK_STOP_ACTIVE:
-            if (checklist.fault || ctrl_communication_timeout(localcontrol))
+            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol))
                 out_state = S_FAULT_REACTION_ACTIVE;
             else if (ctrl_disable_volt(controlword))
                 out_state = S_SWITCH_ON_DISABLED; /* FIXME Warning: quick stop has to be finished before switch back to SOD */

@@ -3,181 +3,15 @@
  */
 
 #include "ecat_master.h"
+#include <sncn_ethercat.h>
+#include <sncn_slave.h>
 #include <ecrt.h>
 #include <stdint.h>
 #include <stdio.h>
 
-static struct _master_config master;
-
-static int get_slave_config(int id, enum eSlaveType type, struct _slave_config *slave)
-{
-    slave->id = id;
-    slave->type = type;
-
-    switch (type) {
-    case SLAVE_TYPE_CIA402_DRIVE:
-        slave->input  = malloc(sizeof(struct _pdo_cia402_input));
-        slave->output = malloc(sizeof(struct _pdo_cia402_output));
-        break;
-
-    case SLAVE_TYPE_ECATIO:
-        slave->input  = malloc(sizeof(struct _pdo_digi_input));
-        slave->output = malloc(sizeof(struct _pdo_digi_output));
-        break;
-
-    case SLAVE_TYPE_UNKNOWN:
-    default:
-        fprintf(stderr, "[ERROR %s] Unknown slave type\n", __func__);
-        return -1;
-    }
-
-    return 0;
-}
-
-static ec_pdo_entry_reg_t *get_domain_regs_for_slaves(struct _master_config *master, size_t slave_count, ec_domain_t *domain)
-{
-    const int alias = 0;
-    const int subindex = 0;
-
-/* FIXME make more dynamically! */
-#define MAX_NUMBER_PDOS   150
-#define SOMANET_ID        0x000022d2, 0x00000201
-    ec_pdo_entry_reg_t *domain_regs = malloc(MAX_NUMBER_PDOS * sizeof(ec_pdo_entry_reg_t));
-    size_t domainregcount = 0;
-
-    struct _slave_config *slaves = master->slave;
-
-    for (size_t slave_id = 0; slave_id < slave_count; slave_id++) {
-        struct _slave_config *slave = (slaves + slave_id);
-
-        struct _pdo_cia402_output *pdo_output;
-        struct _pdo_cia402_input  *pdo_input;
-
-
-        switch (slave->type) {
-        case SLAVE_TYPE_CIA402_DRIVE:
-            /* FIXME make list of used indexes */
-            pdo_output = (struct _pdo_cia402_output *)(slave->output);
-            pdo_input  = (struct _pdo_cia402_input *)(slave->input);
-
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6040, subindex, &(pdo_output->controlword), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6060, subindex, &(pdo_output->opmode), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6071, subindex, &(pdo_output->target_torque), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x607a, subindex, &(pdo_output->target_position), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x60ff, subindex, &(pdo_output->target_velocity), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4010, subindex, &(pdo_output->user_out_1), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4020, subindex, &(pdo_output->user_out_2), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4030, subindex, &(pdo_output->user_out_3), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4040, subindex, &(pdo_output->user_out_4), NULL };
-
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6041, subindex, &(pdo_input->statusword), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6061, subindex, &(pdo_input->opmodedisplay), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6064, subindex, &(pdo_input->actual_position), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x606c, subindex, &(pdo_input->actual_velocity), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x6077, subindex, &(pdo_input->actual_torque), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4011, subindex, &(pdo_input->user_in_1), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4021, subindex, &(pdo_input->user_in_2), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4031, subindex, &(pdo_input->user_in_3), NULL };
-            domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ alias, slave_id, SOMANET_ID, 0x4041, subindex, &(pdo_input->user_in_4), NULL };
-
-            break;
-
-        case SLAVE_TYPE_ECATIO:
-            fprintf(stderr, "[FAILED %s] Sorry, type ECATIO not yet supported\n", __func__);
-            return NULL;
-            break;
-
-        case SLAVE_TYPE_UNKNOWN:
-        default:
-            fprintf(stderr, "[ERROR %s] Registering domain pointers failed\n", __func__);
-            return NULL;
-        }
-    }
-
-    domain_regs[domainregcount++] = (ec_pdo_entry_reg_t){ 0 };
-    return domain_regs;
-}
-
-struct _master_config *master_config(int number_of_slaves)
-{
-    master.master = ecrt_request_master(0); /* FIXME actually only use first master */
-    master.domain1 = ecrt_master_create_domain(master.master);
-    master.number_of_slaves = number_of_slaves;
-
-    // for each slave:
-    //ec_slave_config_t *sc_data_in = ecrt_master_slave_config(master.master, 0, slave, SOMANET_ID)
-
-    master.slave = malloc(number_of_slaves * sizeof(struct _slave_config));
-
-    /* configure slaves */
-    for (int i = 0; i < number_of_slaves; i++) {
-        struct _slave_config *slave = master.slave + i;
-
-        if (get_slave_config(i, SLAVE_TYPE_CIA402_DRIVE, slave) != 0) {
-            fprintf(stderr, "[ERROR %s] Unable to set slave configuration (slave %i)\n", __func__, i);
-            return NULL;
-        }
-    }
-
-    ec_pdo_entry_reg_t *domain1_regs = get_domain_regs_for_slaves(&master, number_of_slaves, master.domain1); /* FIXME */
-    if (domain1_regs == NULL) {
-        fprintf(stderr, "[ERROR %s] cannot register PDOs to domain\n", __func__);
-        return NULL;
-    }
-
-    /* Configure PDOs */
-    if (ecrt_domain_reg_pdo_entry_list(master.domain1, domain1_regs)) {
-        fprintf(stderr, "[ERROR %s] PDO entry registration failed\n", __func__);
-        return NULL;
-    }
-
-    master.processdata = NULL;
-
-    return &master;
-}
-
-int master_start(struct _master_config *master)
-{
-    printf("Starting master...");
-
-    if (ecrt_master_activate(master->master)) {
-        fprintf(stderr, "[ERROR %s] Unable ot activate master\n", __func__);
-        return -1;
-    }
-
-    if (!(master->processdata = ecrt_domain_data(master->domain1))) {
-        fprintf(stderr, "[ERROR %s] Cannot access process data space\n", __func__);
-        return -1;
-    }
-
-    return 0;
-}
-
-int master_stop(struct _master_config *master)
-{
-    /* ecrt_master_deactivate() cleans up everything that was used for
-     * the master application, during this process the pointers to the
-     * generated structures become invalid. */
-    master->processdata = NULL;
-    master->domain1 = NULL;
-    //free(master->processdata);
-    //free(master->domain1);
-    ecrt_master_deactivate(master->master);
-    return 0;
-}
-
-void master_free(struct _master_config *master)
-{
-    /* thse two are cleaned during ecrt_master_deactivate() which is called
-     * internally in ecrt_release_master() or in a previous call to master_stop() */
-    master->processdata = NULL;
-    master->domain1 = NULL;
-
-    ecrt_release_master(master->master);
-    free(master->slave);
-    //free(master);
-    return;
-}
+/*
+ * CiA402 State defines
+ */
 
 #define STATUS_WORD_MASQ_A           0x6f
 #define STATUS_WORD_MASQ_B           0x4f
@@ -199,9 +33,32 @@ void master_free(struct _master_config *master)
 #define CONTROL_ENABLE_OP            0x0f   /* masq 0x0f */
 #define CONTROL_FAULT_RESET          0x80   /* masq 0x80 */
 
+/*
+ * Indexes of PDO elements
+ */
+#define PDO_INDEX_STATUSWORD       0
+#define PDO_INDEX_OPMODEDISP       1
+#define PDO_INDEX_POSITION_VALUE   2
+#define PDO_INDEX_VELOCITY_VALUE   3
+#define PDO_INDEX_TORQUE_VALUE     4
+#define PDO_INDEX_USER_IN_1        5
+#define PDO_INDEX_USER_IN_2        6
+#define PDO_INDEX_USER_IN_3        7
+#define PDO_INDEX_USER_IN_4        8
+
+#define PDO_INDEX_CONTROLWORD       0
+#define PDO_INDEX_OPMODE            1
+#define PDO_INDEX_TORQUE_REQUEST    2
+#define PDO_INDEX_POSITION_REQUEST  3
+#define PDO_INDEX_VELOCITY_REQUEST  4
+#define PDO_INDEX_USER_OUT_1        5
+#define PDO_INDEX_USER_OUT_2        6
+#define PDO_INDEX_USER_OUT_3        7
+#define PDO_INDEX_USER_OUT_4        8
+
+
 /* Chack the slaves statemachine and generate the correct controlword */
-int master_update_slave_state(struct _master_config *master, int slaveid,
-                                int *statusword, int *controlword)
+int master_update_slave_state(int *statusword, int *controlword)
 {
     static int my_super_flag = 0;
     enum eCIAState slavestate = CONTROL_FAULT_RESET;
@@ -238,166 +95,112 @@ int master_update_slave_state(struct _master_config *master, int slaveid,
  * PDO access functions
  */
 
-uint32_t pd_get_statusword(struct _master_config *master, int slaveid)
+uint32_t pd_get_statusword(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return (EC_READ_U16(master->processdata + input->statusword) & 0xffff);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
 }
 
-uint32_t pd_get_opmodedisplay(struct _master_config *master, int slaveid)
+uint32_t pd_get_opmodedisplay(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return (EC_READ_U16(master->processdata + input->opmodedisplay) & 0xff);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
 }
 
-uint32_t pd_get_position(struct _master_config *master, int slaveid)
+uint32_t pd_get_position(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return EC_READ_U32(master->processdata + input->actual_position);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
 }
 
-uint32_t pd_get_velocity(struct _master_config *master, int slaveid)
+uint32_t pd_get_velocity(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return EC_READ_U32(master->processdata + input->actual_velocity);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
 }
 
-uint32_t pd_get_torque(struct _master_config *master, int slaveid)
+uint32_t pd_get_torque(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return (EC_READ_U16(master->processdata + input->actual_torque) & 0xffff);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
 }
 
-uint32_t pd_get_user1_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user1_in(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return EC_READ_U32(master->processdata + input->user_in_1);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_1);
 }
-uint32_t pd_get_user2_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user2_in(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return EC_READ_U32(master->processdata + input->user_in_2);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_2);
 }
-uint32_t pd_get_user3_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user3_in(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return EC_READ_U32(master->processdata + input->user_in_3);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_3);
 }
-uint32_t pd_get_user4_in(struct _master_config *master, int slaveid)
+uint32_t pd_get_user4_in(SNCN_Master_t *master, int slaveid)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_input *input  = (struct _pdo_cia402_input *)slave->input;
-
-    return EC_READ_U32(master->processdata + input->user_in_4);
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
 }
 
-int pd_set_controlword(struct _master_config *master, int slaveid, uint32_t controlword)
+int pd_set_controlword(SNCN_Master_t *master, int slaveid, uint32_t controlword)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U16(master->processdata + output->controlword, controlword & 0xffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, controlword);
 }
 
-int pd_set_opmode(struct _master_config *master, int slaveid, uint32_t opmode)
+int pd_set_opmode(SNCN_Master_t *master, int slaveid, uint32_t opmode)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U16(master->processdata + output->opmode, opmode & 0xff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_OPMODE, opmode);
 }
 
-int pd_set_position(struct _master_config *master, int slaveid, uint32_t position)
+int pd_set_position(SNCN_Master_t *master, int slaveid, uint32_t position)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->target_position, position & 0xffffffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
 }
 
-int pd_set_torque(struct _master_config *master, int slaveid, uint32_t torque)
+int pd_set_torque(SNCN_Master_t *master, int slaveid, uint32_t torque)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->target_torque, torque & 0xffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
 }
 
-int pd_set_velocity(struct _master_config *master, int slaveid, uint32_t velocity)
+int pd_set_velocity(SNCN_Master_t *master, int slaveid, uint32_t velocity)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->target_velocity, velocity & 0xffffffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
 }
 
-int pd_set_user1_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user1_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->user_out_1, user_out & 0xffffffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_1, user_out);
 }
 
-int pd_set_user2_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user2_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->user_out_2, user_out & 0xffffffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_2, user_out);
 }
 
-int pd_set_user3_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user3_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->user_out_3, user_out & 0xffffffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_3, user_out);
 }
 
-int pd_set_user4_out(struct _master_config *master, int slaveid, uint32_t user_out)
+int pd_set_user4_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
 {
-    struct _slave_config *slave = (master->slave + slaveid);
-    struct _pdo_cia402_output *output  = (struct _pdo_cia402_output *)slave->output;
-
-    EC_WRITE_U32(master->processdata + output->user_out_4, user_out & 0xffffffff);
-
-    return 0;
+    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
+    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_4, user_out);
 }
 
-void pd_get(struct _master_config *master, int slaveid, struct _pdo_cia402_input *pdo_input)
+void pd_get(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input)
 {
     (*pdo_input).statusword = pd_get_statusword(master, slaveid);
     (*pdo_input).opmodedisplay = pd_get_opmodedisplay(master, slaveid);
@@ -412,7 +215,7 @@ void pd_get(struct _master_config *master, int slaveid, struct _pdo_cia402_input
     return;
 }
 
-void pd_set(struct _master_config *master, int slaveid, struct _pdo_cia402_output pdo_output)
+void pd_set(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output)
 {
     pd_set_controlword(master, slaveid, pdo_output.controlword);
     pd_set_opmode(master, slaveid, pdo_output.opmode);

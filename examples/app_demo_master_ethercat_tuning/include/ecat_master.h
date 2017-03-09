@@ -5,18 +5,13 @@
 #ifndef _ECAT_CONFIG_H
 #define _ECAT_CONFIG_H
 
-#include <ecrt.h>
+#include <sncn_ethercat.h>
+#include <sncn_slave.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-enum eSlaveType {
-    SLAVE_TYPE_UNKNOWN = 0
-    ,SLAVE_TYPE_CIA402_DRIVE
-    ,SLAVE_TYPE_ECATIO
-};
 
 enum eCIAState {
      CIASTATE_NOT_READY = 0
@@ -27,14 +22,6 @@ enum eCIAState {
     ,CIASTATE_QUICK_STOP
     ,CIASTATE_FAULT_REACTION_ACTIVE
     ,CIASTATE_FAULT
-};
-
-struct _master_config {
-    ec_master_t *master;
-    ec_domain_t *domain1;
-    size_t number_of_slaves;
-    struct _slave_config *slave;
-    uint8_t *processdata;
 };
 
 struct _slave_config {
@@ -68,82 +55,34 @@ struct _pdo_cia402_output {
     unsigned int user_out_4;
 };
 
-/* FIXME how are the I/O PDOs set up in this mode? */
-struct _pdo_digi_input {
-    uint8_t  input_a_0:1;
-    uint8_t  input_a_1:1;
-    uint8_t  input_a_2:1;
-    uint8_t  input_a_3:1;
-    uint8_t  input_a_4:1;
-    uint8_t  input_a_5:1;
-    uint8_t  input_a_6:1;
-    uint8_t  input_a_7:1;
-    uint8_t  input_b_0:1;
-    uint8_t  input_b_1:1;
-    uint8_t  input_b_2:1;
-    uint8_t  input_b_3:1;
-    uint8_t  input_b_4:1;
-    uint8_t  input_b_5:1;
-    uint8_t  input_b_6:1;
-    uint8_t  input_b_7:1;
-};
 
-struct _pdo_digi_output {
-    uint8_t  output0:1;
-    uint8_t  output1:1;
-    uint8_t  output2:1;
-    uint8_t  output3:1;
-    uint8_t  output4:1;
-    uint8_t  output5:1;
-    uint8_t  output6:1;
-    uint8_t  output7:1;
-};
-
-struct _master_config *master_config(int number_of_slaves);
-
-void master_free(struct _master_config *master);
-
-int master_start(struct _master_config *master);
-
-int master_stop(struct _master_config *master);
-
-int master_update_slave_state(struct _master_config *master, int slaveid,
-                                int *statusword, int *controlword);
+int master_update_slave_state(int *statusword, int *controlword);
 
 /*
  * Access functions for SLAVE_TYPE_CIA402_DRIVE
  * return error if slave is of the wrong type!
  */
-uint32_t pd_get_statusword(struct _master_config *master, int slaveid);
-uint32_t pd_get_opmodedisplay(struct _master_config *master, int slaveid);
-uint32_t pd_get_position(struct _master_config *master, int slaveid);
-uint32_t pd_get_velocity(struct _master_config *master, int slaveid);
-uint32_t pd_get_torque(struct _master_config *master, int slaveid);
-uint32_t pd_get_user1_in(struct _master_config *master, int slaveid);
-uint32_t pd_get_user2_in(struct _master_config *master, int slaveid);
-uint32_t pd_get_user3_in(struct _master_config *master, int slaveid);
-uint32_t pd_get_user4_in(struct _master_config *master, int slaveid);
-void pd_get(struct _master_config *master, int slaveid, struct _pdo_cia402_input *pdo_input);
+uint32_t pd_get_statusword(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_opmodedisplay(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_position(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_velocity(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_torque(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_user1_in(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_user2_in(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_user3_in(SNCN_Master_t *master, int slaveid);
+uint32_t pd_get_user4_in(SNCN_Master_t *master, int slaveid);
+void pd_get(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input);
 
-int pd_set_controlword(struct _master_config *master, int slaveid, uint32_t controlword);
-int pd_set_opmode(struct _master_config *master, int slaveid, uint32_t opmode);
-int pd_set_position(struct _master_config *master, int slaveid, uint32_t position);
-int pd_set_velocity(struct _master_config *master, int slaveid, uint32_t velocity);
-int pd_set_torque(struct _master_config *master, int slaveid, uint32_t torque);
-int pd_set_user1_out(struct _master_config *master, int slaveid, uint32_t user_out);
-int pd_set_user2_out(struct _master_config *master, int slaveid, uint32_t user_out);
-int pd_set_user3_out(struct _master_config *master, int slaveid, uint32_t user_out);
-int pd_set_user4_out(struct _master_config *master, int slaveid, uint32_t user_out);
-void pd_set(struct _master_config *master, int slaveid, struct _pdo_cia402_output pdo_output);
-
-/*
- * Access functions for SLAVE_TYPE_ECATIO
- * return error if slave is of the wrong type
- */
-
-uint8_t pd_get_digital_input(struct _master_config *master, int slaveid);
-int pd_set_digital_output(struct _master_config *master, int slaveid);
-
+int pd_set_controlword(SNCN_Master_t *master, int slaveid, uint32_t controlword);
+int pd_set_opmode(SNCN_Master_t *master, int slaveid, uint32_t opmode);
+int pd_set_position(SNCN_Master_t *master, int slaveid, uint32_t position);
+int pd_set_velocity(SNCN_Master_t *master, int slaveid, uint32_t velocity);
+int pd_set_torque(SNCN_Master_t *master, int slaveid, uint32_t torque);
+int pd_set_user1_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
+int pd_set_user2_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
+int pd_set_user3_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
+int pd_set_user4_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
+void pd_set(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output);
 
 #ifdef __cplusplus
 }

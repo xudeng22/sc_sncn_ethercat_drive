@@ -9,7 +9,6 @@
 #ifndef CYCLICTASK_H
 #define CYCLICTASK_H
 
-#include "ecat_pdo_conf.h"
 #include "ecat_master.h"
 #include <ethercat_wrapper.h>
 

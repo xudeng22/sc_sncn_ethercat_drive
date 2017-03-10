@@ -45,12 +45,13 @@ int tuning_handler_ethercat(
         client interface PositionFeedbackInterface ?i_position_feedback
     )
 {
-    //FIXME get rid of static variables
-    static uint8_t status_mux     = 0;
-    static uint8_t status_display = 0;
+    uint8_t status_mux     = statusword & 0xff;
+    uint8_t status_display = (statusword >> 8) & 0xff;
 
-    //mux send offsets and other data in the user4 pdo using the lower bits of statusword
-    status_mux = ((status_mux + 1) >= 18) ? 0 : status_mux + 1;
+    //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
+    status_mux++;
+    if (status_mux > 17)
+        status_mux = 0;
     switch(status_mux) {
     case 0: //send flags
         //convert polarity flag to 0/1
@@ -143,7 +144,6 @@ int tuning_handler_ethercat(
             status_display = 0; //reset status display
         } else if (status_display != (controlword & 0xff)) {//it's a new command
             status_display = (controlword & 0xff); //set controlword display to the master
-            tuning_status.value    = tuning_status.value;
             tuning_status.mode_1   = controlword         & 0xff;
             tuning_status.mode_2   = (controlword >>  8) & 0xff;
             tuning_status.mode_3   = control_extension   & 0xff;

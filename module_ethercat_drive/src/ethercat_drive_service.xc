@@ -398,8 +398,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
 
         /* tuning pdos */
-        tuning_control = pdo_get_tuning_command(InOut);
-        //tuning_status.value = pdo_get_tuning_status(InOut); /* FIXME removed! */
+        tuning_control = pdo_get_tuning_command(InOut); // mode 3 for tuning (mode 1 and 2 are in controlword)
+        tuning_status.value = pdo_get_user_mosi(InOut); // value of tuning command
 
         /*
         printint(state);
@@ -458,7 +458,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_torque_value(actual_torque, InOut );
         pdo_set_position_value(actual_position, InOut);
         // FIXME this is one of the analog inputs?
-        pdo_set_analog_input1((1000 * 5 * send_to_master.sensor_torque) / 4096, InOut); /* ticks to (edit:) milli-volt */
+        pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
         pdo_set_tuning_status(tuning_result, InOut);
 
         //xscope_int(USER_TORQUE, (1000 * 5 * send_to_master.sensor_torque) / 4096);

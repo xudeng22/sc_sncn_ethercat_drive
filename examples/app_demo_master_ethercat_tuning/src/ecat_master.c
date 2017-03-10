@@ -36,25 +36,37 @@
 /*
  * Indexes of PDO elements
  */
-#define PDO_INDEX_STATUSWORD       0
-#define PDO_INDEX_OPMODEDISP       1
-#define PDO_INDEX_POSITION_VALUE   2
-#define PDO_INDEX_VELOCITY_VALUE   3
-#define PDO_INDEX_TORQUE_VALUE     4
-#define PDO_INDEX_USER_IN_1        5
-#define PDO_INDEX_USER_IN_2        6
-#define PDO_INDEX_USER_IN_3        7
-#define PDO_INDEX_USER_IN_4        8
+#define PDO_INDEX_STATUSWORD                  0
+#define PDO_INDEX_OPMODEDISP                  1
+#define PDO_INDEX_POSITION_VALUE              2
+#define PDO_INDEX_VELOCITY_VALUE              3
+#define PDO_INDEX_TORQUE_VALUE                4
+#define PDO_INDEX_SECONDARY_POSITION_VALUE    5
+#define PDO_INDEX_SECONDARY_VELOCITY_VALUE    6
+#define PDO_INDEX_ANALOG_INPUT1               7
+#define PDO_INDEX_ANALOG_INPUT2               8
+#define PDO_INDEX_ANALOG_INPUT3               9
+#define PDO_INDEX_ANALOG_INPUT4              10
+#define PDO_INDEX_TUNING_STATUS              11
+#define PDO_INDEX_DIGITAL_INPUT1             12
+#define PDO_INDEX_DIGITAL_INPUT2             14
+#define PDO_INDEX_DIGITAL_INPUT3             16
+#define PDO_INDEX_DIGITAL_INPUT4             18
+#define PDO_INDEX_USER_MISO                  20
 
-#define PDO_INDEX_CONTROLWORD       0
-#define PDO_INDEX_OPMODE            1
-#define PDO_INDEX_TORQUE_REQUEST    2
-#define PDO_INDEX_POSITION_REQUEST  3
-#define PDO_INDEX_VELOCITY_REQUEST  4
-#define PDO_INDEX_USER_OUT_1        5
-#define PDO_INDEX_USER_OUT_2        6
-#define PDO_INDEX_USER_OUT_3        7
-#define PDO_INDEX_USER_OUT_4        8
+/* Index of sending (out) PDOs */
+#define PDO_INDEX_CONTROLWORD                 0
+#define PDO_INDEX_OPMODE                      1
+#define PDO_INDEX_TORQUE_REQUEST              2
+#define PDO_INDEX_POSITION_REQUEST            3
+#define PDO_INDEX_VELOCITY_REQUEST            4
+#define PDO_INDEX_OFFSET_TORQUE               5
+#define PDO_INDEX_TUNING_COMMAND              6
+#define PDO_INDEX_DIGITAL_OUTPUT1             7
+#define PDO_INDEX_DIGITAL_OUTPUT2             9
+#define PDO_INDEX_DIGITAL_OUTPUT3            11
+#define PDO_INDEX_DIGITAL_OUTPUT4            13
+#define PDO_INDEX_USER_MOSI                  15
 
 
 /* Chack the slaves statemachine and generate the correct controlword */
@@ -125,27 +137,6 @@ uint32_t pd_get_torque(Ethercat_Master_t *master, int slaveid)
     return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
 }
 
-uint32_t pd_get_user1_in(Ethercat_Master_t *master, int slaveid)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_1);
-}
-uint32_t pd_get_user2_in(Ethercat_Master_t *master, int slaveid)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_2);
-}
-uint32_t pd_get_user3_in(Ethercat_Master_t *master, int slaveid)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_3);
-}
-uint32_t pd_get_user4_in(Ethercat_Master_t *master, int slaveid)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
-}
-
 int pd_set_controlword(Ethercat_Master_t *master, int slaveid, uint32_t controlword)
 {
     Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
@@ -176,56 +167,47 @@ int pd_set_velocity(Ethercat_Master_t *master, int slaveid, uint32_t velocity)
     return ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
 }
 
-int pd_set_user1_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_1, user_out);
-}
-
-int pd_set_user2_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_2, user_out);
-}
-
-int pd_set_user3_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_3, user_out);
-}
-
-int pd_set_user4_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
-{
-    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
-    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_4, user_out);
-}
-
 void pd_get(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input)
 {
-    (*pdo_input).statusword = pd_get_statusword(master, slaveid);
-    (*pdo_input).opmodedisplay = pd_get_opmodedisplay(master, slaveid);
-    (*pdo_input).actual_position = pd_get_position(master, slaveid);
-//    (*pdo_input).actual_velocity = pd_get_velocity(master, slaveid);
-//    (*pdo_input).actual_torque = pd_get_torque(master, slaveid);
-//    (*pdo_input).user_in_1 = pd_get_user1_in(master, slaveid);
-//    (*pdo_input).user_in_2 = pd_get_user2_in(master, slaveid);
-//    (*pdo_input).user_in_3 = pd_get_user3_in(master, slaveid);
-//    (*pdo_input).user_in_4 = pd_get_user4_in(master, slaveid);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+
+    pdo_input->statusword = (uint16_t)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+    pdo_input->op_mode_display = (int8_t)ecw_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
+    pdo_input->position_value = (int32_t)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
+    pdo_input->velocity_value = (int32_t)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
+    pdo_input->torque_value = (int16_t)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
+    pdo_input->secondary_position_value = (int32_t)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_POSITION_VALUE);
+    pdo_input->secondary_velocity_value = (int32_t)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_VELOCITY_VALUE);
+    pdo_input->analog_input1 = (uint16_t)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT1);
+    pdo_input->analog_input2 = (uint16_t)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT2);
+    pdo_input->analog_input3 = (uint16_t)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT3);
+    pdo_input->analog_input4 = (uint16_t)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
+    pdo_input->tuning_status = (int32_t)ecw_slave_get_in_value(slave, PDO_INDEX_TUNING_STATUS);
+    pdo_input->digital_input1 = (uint8_t)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT1);
+    pdo_input->digital_input2 = (uint8_t)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT2);
+    pdo_input->digital_input3 = (uint8_t)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT3);
+    pdo_input->digital_input4 = (uint8_t)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT4);
+    pdo_input->user_miso = (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
 
     return;
 }
 
 void pd_set(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output)
 {
-    pd_set_controlword(master, slaveid, pdo_output.controlword);
-    pd_set_opmode(master, slaveid, pdo_output.opmode);
-//    pd_set_position(master, slaveid, pdo_output.target_position);
-//    pd_set_velocity(master, slaveid, pdo_output.target_velocity);
-//    pd_set_torque(master, slaveid, pdo_output.target_torque);
-//    pd_set_user1_out(master, slaveid, pdo_output.user_out_1);
-//    pd_set_user2_out(master, slaveid, pdo_output.user_out_2);
-//    pd_set_user3_out(master, slaveid, pdo_output.user_out_3);
-//    pd_set_user4_out(master, slaveid, pdo_output.user_out_4);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+
+    ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, pdo_output.controlword);
+    ecw_slave_set_out_value(slave, PDO_INDEX_OPMODE, pdo_output.op_mode);
+    ecw_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, pdo_output.target_torque);
+    ecw_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, pdo_output.target_position);
+    ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, pdo_output.target_velocity);
+    ecw_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, pdo_output.offset_torque);
+    ecw_slave_set_out_value(slave, PDO_INDEX_TUNING_COMMAND, pdo_output.tuning_command);
+    ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT1, pdo_output.digital_output1);
+    ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT2, pdo_output.digital_output2);
+    ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT3, pdo_output.digital_output3);
+    ecw_slave_set_out_value(slave, PDO_INDEX_DIGITAL_OUTPUT4, pdo_output.digital_output4);
+    ecw_slave_set_out_value(slave, PDO_INDEX_USER_MOSI, pdo_output.user_mosi);
 
     return;
 }

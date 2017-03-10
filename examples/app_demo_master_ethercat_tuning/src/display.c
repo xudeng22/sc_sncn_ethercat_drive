@@ -42,10 +42,10 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     wprintw(wnd, " **");
     //row 1
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position %14d | Velocity            %4d",  pdo_input.actual_position, pdo_input.actual_velocity);
+    wprintw(wnd, "Position %14d | Velocity            %4d",  pdo_input.position_value, pdo_input.velocity_value);
     //row 2
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Torque computed    %4d | Torque sensor       %4d", (int16_t)pdo_input.actual_torque, pdo_input.user_in_1);
+    wprintw(wnd, "Torque computed    %4d | Torque sensor       %4d", (int16_t)pdo_input.torque_value, pdo_input.analog_input1);
     //row 3
     wmoveclr(wnd, &row);
     wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);

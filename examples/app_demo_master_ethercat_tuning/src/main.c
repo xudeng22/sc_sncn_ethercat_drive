@@ -60,7 +60,6 @@
 
 #include "ecat_master.h"
 #include "ecat_debug.h"
-#include "ecat_device.h"
 #include "ecat_sdo_config.h"
 #include "cyclic_task.h"
 #include "display.h"
@@ -324,11 +323,11 @@ int main(int argc, char **argv)
 
     /* Init pdos */
     pdo_output[num_slaves-1].controlword = 0;
-    pdo_output[num_slaves-1].opmode = OPMODE_TUNING;
+    pdo_output[num_slaves-1].op_mode = OPMODE_TUNING;
     pdo_output[num_slaves-1].target_position = 0;
     pdo_output[num_slaves-1].target_torque = 0;
     pdo_output[num_slaves-1].target_velocity = 0;
-    pdo_input[num_slaves-1].opmodedisplay = 0;
+    pdo_input[num_slaves-1].op_mode_display = 0;
 
     //init profiler
     PositionProfileConfig profile_config;
@@ -388,7 +387,7 @@ int main(int argc, char **argv)
             }
 
             if (init_tuning == 0) { //switch the slave to OPMODE_TUNING
-                if (pdo_input[num_slaves-1].opmodedisplay != (OPMODE_TUNING & 0xff)) {
+                if ((pdo_input[num_slaves-1].op_mode_display&0xff) != (OPMODE_TUNING & 0xff)) {
                     if ((statusword & 0x08) == 0x08) {
                         pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
                     } else { //FIXME: fix check status word
@@ -397,7 +396,7 @@ int main(int argc, char **argv)
                 } else {
                     init_tuning = 1;
                 }
-            } else if (pdo_input[num_slaves-1].opmodedisplay == 0) { //quit
+            } else if ((pdo_input[num_slaves-1].op_mode_display&0xff) != (OPMODE_TUNING & 0xff)) { //quit
                 run_flag = 0;
                 break;
             }

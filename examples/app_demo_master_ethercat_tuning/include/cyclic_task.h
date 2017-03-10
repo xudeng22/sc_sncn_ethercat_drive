@@ -11,8 +11,8 @@
 
 #include "ecat_pdo_conf.h"
 #include "ecat_master.h"
-#include <sncn_ethercat.h>
+#include <ethercat_wrapper.h>
 
-int pdo_handler(SNCN_Master_t *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid);
+int pdo_handler(Ethercat_Master_t *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid);
 
 #endif /* CYCLICTASK_H */

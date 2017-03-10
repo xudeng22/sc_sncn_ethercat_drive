@@ -3,8 +3,8 @@
  */
 
 #include "ecat_master.h"
-#include <sncn_ethercat.h>
-#include <sncn_slave.h>
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
 #include <ecrt.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -95,137 +95,137 @@ int master_update_slave_state(int *statusword, int *controlword)
  * PDO access functions
  */
 
-uint32_t pd_get_statusword(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_statusword(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
 }
 
-uint32_t pd_get_opmodedisplay(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_opmodedisplay(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
 }
 
-uint32_t pd_get_position(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_position(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
 }
 
-uint32_t pd_get_velocity(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_velocity(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
 }
 
-uint32_t pd_get_torque(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_torque(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
 }
 
-uint32_t pd_get_user1_in(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_user1_in(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_1);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_1);
 }
-uint32_t pd_get_user2_in(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_user2_in(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_2);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_2);
 }
-uint32_t pd_get_user3_in(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_user3_in(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_3);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_3);
 }
-uint32_t pd_get_user4_in(SNCN_Master_t *master, int slaveid)
+uint32_t pd_get_user4_in(Ethercat_Master_t *master, int slaveid)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return (uint32_t)sncn_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
-}
-
-int pd_set_controlword(SNCN_Master_t *master, int slaveid, uint32_t controlword)
-{
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, controlword);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_IN_4);
 }
 
-int pd_set_opmode(SNCN_Master_t *master, int slaveid, uint32_t opmode)
+int pd_set_controlword(Ethercat_Master_t *master, int slaveid, uint32_t controlword)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_OPMODE, opmode);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_CONTROLWORD, controlword);
 }
 
-int pd_set_position(SNCN_Master_t *master, int slaveid, uint32_t position)
+int pd_set_opmode(Ethercat_Master_t *master, int slaveid, uint32_t opmode)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_OPMODE, opmode);
 }
 
-int pd_set_torque(SNCN_Master_t *master, int slaveid, uint32_t torque)
+int pd_set_position(Ethercat_Master_t *master, int slaveid, uint32_t position)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_POSITION_REQUEST, position);
 }
 
-int pd_set_velocity(SNCN_Master_t *master, int slaveid, uint32_t velocity)
+int pd_set_torque(Ethercat_Master_t *master, int slaveid, uint32_t torque)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_TORQUE_REQUEST, torque);
 }
 
-int pd_set_user1_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
+int pd_set_velocity(Ethercat_Master_t *master, int slaveid, uint32_t velocity)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_1, user_out);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_VELOCITY_REQUEST, velocity);
 }
 
-int pd_set_user2_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
+int pd_set_user1_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_2, user_out);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_1, user_out);
 }
 
-int pd_set_user3_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
+int pd_set_user2_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_3, user_out);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_2, user_out);
 }
 
-int pd_set_user4_out(SNCN_Master_t *master, int slaveid, uint32_t user_out)
+int pd_set_user3_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
 {
-    SNCN_Slave_t *slave = sncn_slave_get(master, slaveid);
-    return sncn_slave_set_out_value(slave, PDO_INDEX_USER_OUT_4, user_out);
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_3, user_out);
 }
 
-void pd_get(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input)
+int pd_set_user4_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out)
+{
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slaveid);
+    return ecw_slave_set_out_value(slave, PDO_INDEX_USER_OUT_4, user_out);
+}
+
+void pd_get(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input)
 {
     (*pdo_input).statusword = pd_get_statusword(master, slaveid);
     (*pdo_input).opmodedisplay = pd_get_opmodedisplay(master, slaveid);
     (*pdo_input).actual_position = pd_get_position(master, slaveid);
-    (*pdo_input).actual_velocity = pd_get_velocity(master, slaveid);
-    (*pdo_input).actual_torque = pd_get_torque(master, slaveid);
-    (*pdo_input).user_in_1 = pd_get_user1_in(master, slaveid);
-    (*pdo_input).user_in_2 = pd_get_user2_in(master, slaveid);
-    (*pdo_input).user_in_3 = pd_get_user3_in(master, slaveid);
-    (*pdo_input).user_in_4 = pd_get_user4_in(master, slaveid);
+//    (*pdo_input).actual_velocity = pd_get_velocity(master, slaveid);
+//    (*pdo_input).actual_torque = pd_get_torque(master, slaveid);
+//    (*pdo_input).user_in_1 = pd_get_user1_in(master, slaveid);
+//    (*pdo_input).user_in_2 = pd_get_user2_in(master, slaveid);
+//    (*pdo_input).user_in_3 = pd_get_user3_in(master, slaveid);
+//    (*pdo_input).user_in_4 = pd_get_user4_in(master, slaveid);
 
     return;
 }
 
-void pd_set(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output)
+void pd_set(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output)
 {
     pd_set_controlword(master, slaveid, pdo_output.controlword);
     pd_set_opmode(master, slaveid, pdo_output.opmode);
-    pd_set_position(master, slaveid, pdo_output.target_position);
-    pd_set_velocity(master, slaveid, pdo_output.target_velocity);
-    pd_set_torque(master, slaveid, pdo_output.target_torque);
-    pd_set_user1_out(master, slaveid, pdo_output.user_out_1);
-    pd_set_user2_out(master, slaveid, pdo_output.user_out_2);
-    pd_set_user3_out(master, slaveid, pdo_output.user_out_3);
-    pd_set_user4_out(master, slaveid, pdo_output.user_out_4);
+//    pd_set_position(master, slaveid, pdo_output.target_position);
+//    pd_set_velocity(master, slaveid, pdo_output.target_velocity);
+//    pd_set_torque(master, slaveid, pdo_output.target_torque);
+//    pd_set_user1_out(master, slaveid, pdo_output.user_out_1);
+//    pd_set_user2_out(master, slaveid, pdo_output.user_out_2);
+//    pd_set_user3_out(master, slaveid, pdo_output.user_out_3);
+//    pd_set_user4_out(master, slaveid, pdo_output.user_out_4);
 
     return;
 }

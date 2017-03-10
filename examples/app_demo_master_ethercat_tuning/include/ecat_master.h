@@ -5,8 +5,8 @@
 #ifndef _ECAT_CONFIG_H
 #define _ECAT_CONFIG_H
 
-#include <sncn_ethercat.h>
-#include <sncn_slave.h>
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -62,27 +62,27 @@ int master_update_slave_state(int *statusword, int *controlword);
  * Access functions for SLAVE_TYPE_CIA402_DRIVE
  * return error if slave is of the wrong type!
  */
-uint32_t pd_get_statusword(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_opmodedisplay(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_position(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_velocity(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_torque(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_user1_in(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_user2_in(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_user3_in(SNCN_Master_t *master, int slaveid);
-uint32_t pd_get_user4_in(SNCN_Master_t *master, int slaveid);
-void pd_get(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input);
+uint32_t pd_get_statusword(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_opmodedisplay(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_position(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_velocity(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_torque(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_user1_in(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_user2_in(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_user3_in(Ethercat_Master_t *master, int slaveid);
+uint32_t pd_get_user4_in(Ethercat_Master_t *master, int slaveid);
+void pd_get(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_input *pdo_input);
 
-int pd_set_controlword(SNCN_Master_t *master, int slaveid, uint32_t controlword);
-int pd_set_opmode(SNCN_Master_t *master, int slaveid, uint32_t opmode);
-int pd_set_position(SNCN_Master_t *master, int slaveid, uint32_t position);
-int pd_set_velocity(SNCN_Master_t *master, int slaveid, uint32_t velocity);
-int pd_set_torque(SNCN_Master_t *master, int slaveid, uint32_t torque);
-int pd_set_user1_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
-int pd_set_user2_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
-int pd_set_user3_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
-int pd_set_user4_out(SNCN_Master_t *master, int slaveid, uint32_t user_out);
-void pd_set(SNCN_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output);
+int pd_set_controlword(Ethercat_Master_t *master, int slaveid, uint32_t controlword);
+int pd_set_opmode(Ethercat_Master_t *master, int slaveid, uint32_t opmode);
+int pd_set_position(Ethercat_Master_t *master, int slaveid, uint32_t position);
+int pd_set_velocity(Ethercat_Master_t *master, int slaveid, uint32_t velocity);
+int pd_set_torque(Ethercat_Master_t *master, int slaveid, uint32_t torque);
+int pd_set_user1_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out);
+int pd_set_user2_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out);
+int pd_set_user3_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out);
+int pd_set_user4_out(Ethercat_Master_t *master, int slaveid, uint32_t user_out);
+void pd_set(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_output pdo_output);
 
 #ifdef __cplusplus
 }

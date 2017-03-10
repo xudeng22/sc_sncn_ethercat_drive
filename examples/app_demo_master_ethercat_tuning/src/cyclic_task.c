@@ -37,7 +37,7 @@ void check_slave_config_states(ec_slave_config_t *sc_data_in)
     sc_data_in_state = s;
 }
 
-int pdo_handler(SNCN_Master_t *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid)
+int pdo_handler(Ethercat_Master_t *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid)
 {
     if (counter > 0) {
         counter--;
@@ -45,7 +45,7 @@ int pdo_handler(SNCN_Master_t *master, struct _pdo_cia402_input *pdo_input, stru
         counter = FREQUENCY;
     }
 
-    size_t number_of_slaves = sncn_master_slave_count(master);
+    size_t number_of_slaves = ecw_master_slave_count(master);
 
     if (slaveid >= 0 && slaveid < number_of_slaves) {
         pd_get(master, slaveid, &pdo_input[slaveid]);

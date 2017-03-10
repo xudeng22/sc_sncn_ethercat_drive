@@ -53,8 +53,8 @@
 
 /****************************************************************************/
 
-#include <sncn_ethercat.h>
-#include <sncn_slave.h>
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
 
 #include "ecrt.h" //IgH lib
 
@@ -271,7 +271,7 @@ int main(int argc, char **argv)
      * The logging output must be redirected into a file, otherwise the output will
      * interfere with the ncurses windowing. */
     FILE *ecatlog = fopen("./ecat.log", "w");
-    SNCN_Master_t *master = sncn_master_init(0 /* master id */, ecatlog);
+    Ethercat_Master_t *master = ecw_master_init(0 /* master id */, ecatlog);
 
     if (master == NULL) {
         fprintf(stderr, "[ERROR %s] Cannot initialize master\n", __func__);
@@ -295,7 +295,7 @@ int main(int argc, char **argv)
     }
 
 
-    if (sncn_master_start(master) != 0) {
+    if (ecw_master_start(master) != 0) {
         fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
         return -1;
     }
@@ -378,7 +378,7 @@ int main(int argc, char **argv)
             user_alarms++;
 
 #ifndef DISABLE_ETHERCAT
-            sncn_master_cyclic_function(master);
+            ecw_master_cyclic_function(master);
             pdo_handler(master, pdo_input, pdo_output, num_slaves-1);
 #endif
 
@@ -422,8 +422,8 @@ int main(int argc, char **argv)
     }
 
     //free
-    sncn_master_stop(master);
-    sncn_master_release(master);
+    ecw_master_stop(master);
+    ecw_master_release(master);
     endwin(); // curses call to restore the original window and leave
     fclose(ecatlog);
     free(pdo_input);

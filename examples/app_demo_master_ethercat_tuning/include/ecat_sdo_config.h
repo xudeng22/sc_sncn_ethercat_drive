@@ -9,7 +9,7 @@
 #ifndef ECATCONFIG_H
 #define ECATCONFIG_H
 
-#include <sncn_ethercat.h>
+#include <ethercat_wrapper.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -34,7 +34,7 @@ struct _ecat_sdo_config {
  * @param *config pointer to SDO configuration object
  * @return 0 on success, != 0 otherwise
  */
-int write_sdo(SNCN_Master_t *master, int slave_number, struct _ecat_sdo_config *conf);
+int write_sdo(Ethercat_Master_t *master, int slave_number, struct _ecat_sdo_config *conf);
 
 /**
  * @brief Write list of configuration SDO objects to slave device
@@ -45,7 +45,7 @@ int write_sdo(SNCN_Master_t *master, int slave_number, struct _ecat_sdo_config *
  * @param max_objects number of objects to transfer
  * @return 0 on success, != 0 otherwise
  */
-int write_sdo_config(SNCN_Master_t *master, int slave, struct _ecat_sdo_config *config, size_t max_objects);
+int write_sdo_config(Ethercat_Master_t *master, int slave, struct _ecat_sdo_config *config, size_t max_objects);
 
 #ifdef __cplusplus
 }

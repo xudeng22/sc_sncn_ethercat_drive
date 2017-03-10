@@ -380,11 +380,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         if (fault != NO_FAULT) {
             update_checklist(checklist, opmode, 1);
-            if (fault == OVER_CURRENT_PHASE_A || fault == OVER_CURRENT_PHASE_B || fault == OVER_CURRENT_PHASE_C) {
+            if (fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (fault == UNDER_VOLTAGE) {
+            } else if (fault == UNDER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-            } else if (fault == OVER_VOLTAGE) {
+            } else if (fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
             } else if (fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);

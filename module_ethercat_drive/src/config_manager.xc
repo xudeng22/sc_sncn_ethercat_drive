@@ -104,7 +104,7 @@ void cm_sync_config_position_feedback(
         /* FIXME add check for valid enum data of clock_port_config */
         config.biss_config.clock_port_config = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG);
 
-        //config.biss_config.data_port_config = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
+        config.biss_config.data_port_number = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
         config.biss_config.filling_bits = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
         config.biss_config.busy = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
         break;
@@ -179,13 +179,14 @@ void cm_sync_config_motor_control(
     motorcontrol_config.v_dc               = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
 
     /* Read recuperation config */
-    motorcontrol_config.recuperation    = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_RECUPERATION_ENABLED);
-    motorcontrol_config.battery_e_max   = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MIN_BATTERY_ENERGY);
-    motorcontrol_config.battery_e_min   = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAX_BATTERY_ENERGY);
-    motorcontrol_config.regen_p_max     = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MIN_RECUPERATION_POWER);
-    motorcontrol_config.regen_p_min     = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAX_RECUPERATION_POWER);
-    motorcontrol_config.regen_speed_max = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED);
-    motorcontrol_config.regen_speed_min = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
+    motorcontrol_config.recuperation    = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED);
+    motorcontrol_config.battery_e_max   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY);
+    motorcontrol_config.battery_e_min   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY);
+    motorcontrol_config.regen_p_max     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER);
+    motorcontrol_config.regen_p_min     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER);
+    motorcontrol_config.regen_speed_min = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED);
+    motorcontrol_config.regen_speed_max = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
+
 
     /* Read protection limits */
     motorcontrol_config.protection_limit_over_current = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
@@ -300,21 +301,100 @@ void cm_default_config_position_feedback(
 {
     config = i_pos_feedback.get_config();
 
-#if 0 /* FIXME rethink of setting the feedback sensor default value */
-    uint16_t feedback_sensor_index = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index);
-    // FIXME the type field will be added soon (2017-02-22) see also FIXME in line 40
-    //i_coe.set_object_value(feedback_sensor_index, DICT_SUB_FEEDBACK_SENSOR_TYPE, config.sensor_type);
-    i_coe.set_object_value(feedback_sensor_index, SUB_RESOLUTION, config.resolution);
-    // @see FIXME in cm_sync_config_position_feedback()!
-    if (config.polarity == -1) {
-        i_coe.set_object_value(DICT_POLARITY, 0, 0xC0);
-    } else {
-        i_coe.set_object_value(DICT_POLARITY, 0, 0x0);
+    uint16_t feedback_sensor_object = 0;
+    switch(config.sensor_type) {
+    case QEI_SENSOR:
+        if (sensor_index == 1)
+            feedback_sensor_object = DICT_INCREMENTAL_ENCODER_1;
+        else
+            feedback_sensor_object = DICT_INCREMENTAL_ENCODER_2;
+        break;
+    case BISS_SENSOR:
+        if (sensor_index == 1)
+            feedback_sensor_object = DICT_BISS_ENCODER_1;
+        else
+            feedback_sensor_object = DICT_BISS_ENCODER_2;
+        break;
+    case HALL_SENSOR:
+        if (sensor_index == 1)
+            feedback_sensor_object = DICT_HALL_SENSOR_1;
+        else
+            feedback_sensor_object = DICT_HALL_SENSOR_2;
+        break;
+    case REM_14_SENSOR:
+        feedback_sensor_object = DICT_REM_14_ENCODER;
+        break;
+    case REM_16MT_SENSOR:
+        feedback_sensor_object = DICT_REM_16MT_ENCODER;
+        break;
     }
+    i_coe.set_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index, feedback_sensor_object);
+
+
+    // FIXME the type field will be added soon (2017-02-22) see also FIXME in line 40
+    i_coe.set_object_value(feedback_sensor_object, 1, config.sensor_type);
+    i_coe.set_object_value(feedback_sensor_object, 3, config.resolution);
+    i_coe.set_object_value(feedback_sensor_object, 5, config.polarity);
 
     if (config.pole_pairs != 0)
         i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, config.pole_pairs);
+
+    i_coe.set_object_value(feedback_sensor_object, 4,config.velocity_compute_period);
+
+    switch (config.sensor_type) {
+    case QEI_SENSOR:
+        i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS, config.qei_config.index_type);
+        i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE,config.qei_config.signal_type);
+        break;
+
+    case BISS_SENSOR:
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION, config.biss_config.multiturn_resolution);
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY, config.biss_config.clock_frequency);
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT, config.biss_config.timeout);
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM, config.biss_config.crc_poly);
+
+        /* FIXME add check for valid enum data of clock_port_config */
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG, config.biss_config.clock_port_config);
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG,config.biss_config.data_port_number);
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS,config.biss_config.filling_bits);
+        i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY,config.biss_config.busy);
+        break;
+
+    case HALL_SENSOR:
+        /* FIXME see cm_sync_config_hall_states() */
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
+        //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
+        break;
+
+    case REM_14_SENSOR:
+#if 0
+        config.rem_14_config.hysteresis      = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
+        config.rem_14_config.noise_setting   = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
+        config.rem_14_config.dyn_angle_comp  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
+        config.rem_14_config.abi_resolution  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
 #endif
+        break;
+
+    case REM_16MT_SENSOR:
+#if 0
+        config.rem_16mt_config.filter = i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER);
+#endif
+        break;
+
+    case 0: /* FIXME need error handling here, or in position feedback service */
+        break;
+
+    default:
+        break;
+    }
+
+    /* FIXME what is with this pole pairs? Necessary here? */
+//    config.pole_pairs = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
+
 }
 
 void cm_default_config_motor_control(
@@ -346,13 +426,13 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.v_dc);
 
     /* Write recuperation config */
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_RECUPERATION_ENABLED, motorcontrol_config.recuperation);
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MIN_BATTERY_ENERGY, motorcontrol_config.battery_e_max);
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAX_BATTERY_ENERGY, motorcontrol_config.battery_e_min);
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MIN_RECUPERATION_POWER, motorcontrol_config.regen_p_max);
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAX_RECUPERATION_POWER, motorcontrol_config.regen_p_min);
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_max);
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_min);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED, motorcontrol_config.recuperation);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY, motorcontrol_config.battery_e_max);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY, motorcontrol_config.battery_e_min);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER, motorcontrol_config.regen_p_max);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER, motorcontrol_config.regen_p_min);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_min);
+    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_max);
 
     /* Write protection limits */
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);

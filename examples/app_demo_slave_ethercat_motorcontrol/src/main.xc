@@ -151,7 +151,7 @@ int main(void)
                     pos_velocity_ctrl_config.time_pull_brake =                      TIME_PULL_BRAKE;
                     pos_velocity_ctrl_config.voltage_hold_brake =                   VOLTAGE_HOLD_BRAKE;
 
-                    position_velocity_control_service(IFM_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
+                    position_velocity_control_service(USEC_STD, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
 
                 }
             }
@@ -211,6 +211,7 @@ int main(void)
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
                     motorcontrol_config.torque_constant =  PERCENT_TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
+                    motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
                     motorcontrol_config.rated_current =  RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  PERCENT_OFFSET_TORQUE;

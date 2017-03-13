@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <IFM_DC1K-rev-c3.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -197,7 +197,7 @@ int main(void)
                     motorcontrol_config.current_D_gain =  TORQUE_Kd;
                     motorcontrol_config.pole_pair =  POLE_PAIRS;
                     motorcontrol_config.commutation_sensor= SENSOR_1_TYPE;
-                    motorcontrol_config.commutation_angle_offset=COMMUTATION_OFFSET_CLK;
+                    motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
                     motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
                     motorcontrol_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
                     motorcontrol_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;

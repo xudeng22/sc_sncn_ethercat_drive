@@ -207,7 +207,7 @@ int main(void)
                     motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
-                    motorcontrol_config.torque_constant =  PERCENT_TORQUE_CONSTANT;
+                    motorcontrol_config.torque_constant =  TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
                     motorcontrol_config.rated_current =  RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;

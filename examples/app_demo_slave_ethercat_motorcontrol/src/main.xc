@@ -195,7 +195,7 @@ int main(void)
                     motorcontrol_config.current_P_gain =  TORQUE_Kp;
                     motorcontrol_config.current_I_gain =  TORQUE_Ki;
                     motorcontrol_config.current_D_gain =  TORQUE_Kd;
-                    motorcontrol_config.pole_pair =  POLE_PAIRS;
+                    motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
                     motorcontrol_config.commutation_sensor= SENSOR_1_TYPE;
                     motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
                     motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
@@ -207,11 +207,11 @@ int main(void)
                     motorcontrol_config.max_torque =  MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  PHASE_INDUCTANCE;
-                    motorcontrol_config.torque_constant =  TORQUE_CONSTANT;
+                    motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
                     motorcontrol_config.rated_current =  RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  RATED_TORQUE;
-                    motorcontrol_config.percent_offset_torque =  PERCENT_OFFSET_TORQUE;
+                    motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
                     motorcontrol_config.protection_limit_over_current =  I_MAX;
                     motorcontrol_config.protection_limit_over_voltage =  V_DC_MAX;
                     motorcontrol_config.protection_limit_under_voltage = V_DC_MIN;
@@ -230,7 +230,7 @@ int main(void)
                     position_feedback_config.resolution  = SENSOR_1_RESOLUTION;
                     position_feedback_config.polarity    = SENSOR_1_POLARITY;
                     position_feedback_config.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
-                    position_feedback_config.pole_pairs  = POLE_PAIRS;
+                    position_feedback_config.pole_pairs  = MOTOR_POLE_PAIRS;
                     position_feedback_config.ifm_usec    = IFM_TILE_USEC;
                     position_feedback_config.max_ticks   = SENSOR_MAX_TICKS;
                     position_feedback_config.offset      = 0;

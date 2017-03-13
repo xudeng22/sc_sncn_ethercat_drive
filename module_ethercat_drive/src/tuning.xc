@@ -72,7 +72,7 @@ int tuning_handler_ethercat(
         tuning_result = motorcontrol_config.commutation_angle_offset;
         break;
     case 2: //pole pairs
-        tuning_result = motorcontrol_config.pole_pair;
+        tuning_result = motorcontrol_config.pole_pairs;
         break;
     case 3: //target
         switch(tuning_status.motorctrl_status) {
@@ -421,7 +421,7 @@ void tuning_command(
     //pole pairs
     case 'P':
         if (!isnull(i_position_feedback)) {
-            motorcontrol_config.pole_pair = tuning_status.value;
+            motorcontrol_config.pole_pairs = tuning_status.value;
             pos_feedback_config.pole_pairs = tuning_status.value;
             tuning_status.brake_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
@@ -447,11 +447,11 @@ void tuning_command(
             switch(tuning_status.mode_2) {
             case 's':
                 //FIXME: don't use pole pairs to store sensor status
-                motorcontrol_config.pole_pair = 0;
+                motorcontrol_config.pole_pairs = 0;
                 for (int i=0; i<100; i++) {
                     int status;
                     { void , void, status } = i_position_feedback.get_position();
-                    motorcontrol_config.pole_pair += status;
+                    motorcontrol_config.pole_pairs += status;
                     delay_milliseconds(1);
                 }
                 break;

@@ -59,7 +59,7 @@ void cm_sync_config_motor_control(
 
     //motorcontrol_config.bldc_winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); /* FIXME check if the object contains values that respect BLDCWindingType */
 
-    motorcontrol_config.pole_pair          = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
+    motorcontrol_config.pole_pairs         = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 3);
     motorcontrol_config.max_torque         = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 6);
     //motorcontrol_config.max_current        = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);
     //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
@@ -184,7 +184,7 @@ void cm_default_config_motor_control(
 
     //motorcontrol_config.bldc_winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); /* FIXME check if the object contains values that respect BLDCWindingType */
 
-    i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, motorcontrol_config.pole_pair);
+    i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, motorcontrol_config.pole_pairs);
     i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 6, motorcontrol_config.max_torque);
     i_coe.set_object_value(CIA402_POLARITY, 0, motorcontrol_config.terminal_connection);
     //motorcontrol_config.max_current        = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);

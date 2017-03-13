@@ -488,7 +488,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    i_position_control.enable_position_ctrl(position_velocity_config.control_mode);
+                    i_position_control.enable_position_ctrl(position_velocity_config.position_control_strategy);
                 }
                 break;
 
@@ -605,9 +605,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
 
         /*
-        motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
-        motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
-        motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+        motorcontrol_config.torque_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
+        motorcontrol_config.torque_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
+        motorcontrol_config.torque_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
          */
 #endif
 

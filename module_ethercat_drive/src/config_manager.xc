@@ -65,9 +65,9 @@ void cm_sync_config_motor_control(
     //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
     //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
     motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(COMMUTATION_OFFSET_CLKWISE, 0);
-    motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
-    motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
-    motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+    motorcontrol_config.torque_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
+    motorcontrol_config.torque_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
+    motorcontrol_config.torque_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
 
     /* These are motor specific maybe we introduce a new object */
     motorcontrol_config.phase_resistance   = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 2);
@@ -103,8 +103,8 @@ void cm_sync_config_pos_velocity_control(
 {
     i_position_control.get_position_velocity_control_config();
 
-    position_config.min_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
-    position_config.max_pos = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
+    position_config.min_pos_range_limit = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
+    position_config.max_pos_range_limit = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
     position_config.polarity       = i_coe.get_object_value(CIA402_POLARITY, 0);
     position_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
     position_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
@@ -124,15 +124,15 @@ void cm_sync_config_pos_velocity_control(
     //set integral limits depending on the mode
     {
     case POS_PID_CONTROLLER:
-        position_config.control_mode = POS_PID_CONTROLLER;
+        position_config.position_control_strategy = POS_PID_CONTROLLER;
         position_config.integral_limit_pos = position_config.max_torque; //set pos integral limit = max torque
         break;
     case POS_PID_VELOCITY_CASCADED_CONTROLLER:
-        position_config.control_mode = POS_PID_VELOCITY_CASCADED_CONTROLLER;
+        position_config.position_control_strategy = POS_PID_VELOCITY_CASCADED_CONTROLLER;
         position_config.integral_limit_pos = position_config.max_speed; //set pos integral limit = max speed
         break;
     default:
-        position_config.control_mode = NL_POSITION_CONTROLLER;
+        position_config.position_control_strategy = NL_POSITION_CONTROLLER;
         position_config.integral_limit_pos = 1000; //set pos integral limit = max torque
         break;
     }
@@ -186,14 +186,14 @@ void cm_default_config_motor_control(
 
     i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 3, motorcontrol_config.pole_pairs);
     i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 6, motorcontrol_config.max_torque);
-    i_coe.set_object_value(CIA402_POLARITY, 0, motorcontrol_config.terminal_connection);
+    i_coe.set_object_value(CIA402_POLARITY, 0, motorcontrol_config.phases_inverted);
     //motorcontrol_config.max_current        = i_coe.get_object_value(CIA402_MAX_CURRENT, 0);
     //motorcontrol_config.rated_current      = i_coe.get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
     //motorcontrol_config.rated_torque       = i_coe.get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);
     i_coe.set_object_value(COMMUTATION_OFFSET_CLKWISE, 0, motorcontrol_config.commutation_angle_offset);
-    i_coe.set_object_value(CIA402_CURRENT_GAIN, 1, motorcontrol_config.current_P_gain);
-    i_coe.set_object_value(CIA402_CURRENT_GAIN, 2, motorcontrol_config.current_I_gain);
-    i_coe.set_object_value(CIA402_CURRENT_GAIN, 3, motorcontrol_config.current_D_gain);
+    i_coe.set_object_value(CIA402_CURRENT_GAIN, 1, motorcontrol_config.torque_P_gain);
+    i_coe.set_object_value(CIA402_CURRENT_GAIN, 2, motorcontrol_config.torque_I_gain);
+    i_coe.set_object_value(CIA402_CURRENT_GAIN, 3, motorcontrol_config.torque_D_gain);
 
     /* These are motor specific maybe we introduce a new object */
     i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 2, motorcontrol_config.phase_resistance);
@@ -228,8 +228,8 @@ void cm_default_config_pos_velocity_control(
 {
     PosVelocityControlConfig position_config = i_position_control.get_position_velocity_control_config();
 
-    i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  1, position_config.min_pos);  /* -8000; */
-    i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  2, position_config.max_pos);  /* 8000; */
+    i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  1, position_config.min_pos_range_limit);  /* -8000; */
+    i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  2, position_config.max_pos_range_limit);  /* 8000; */
     i_coe.set_object_value(CIA402_POLARITY, 0, position_config.polarity);
     i_coe.set_object_value(CIA402_POSITION_GAIN, 1, position_config.P_pos); /* POSITION_Kp; */
     i_coe.set_object_value(CIA402_POSITION_GAIN, 2, position_config.I_pos); /* POSITION_Ki; */
@@ -245,7 +245,7 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(CIA402_VELOCITY_GAIN, 3, position_config.D_velocity); /* 25; */
 
     //FIXME use a proper object to set the control mode
-    i_coe.set_object_value(COMMUTATION_OFFSET_CCLKWISE, 0, position_config.control_mode);
+    i_coe.set_object_value(COMMUTATION_OFFSET_CCLKWISE, 0, position_config.position_control_strategy);
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
     //position_config.control_loop_period = CONTROL_LOOP_PERIOD; //us

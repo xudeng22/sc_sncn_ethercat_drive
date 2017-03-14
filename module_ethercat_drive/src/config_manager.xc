@@ -106,18 +106,18 @@ void cm_sync_config_pos_velocity_control(
     position_config.min_pos_range_limit = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);  /* -8000; */
     position_config.max_pos_range_limit = i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);  /* 8000; */
     position_config.polarity       = i_coe.get_object_value(CIA402_POLARITY, 0);
-    position_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-    position_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-    position_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+    position_config.position_kp          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+    position_config.position_ki          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+    position_config.position_kd          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
     //position_config.int32_cmd_limit_position     = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);/* 15000; */
     //position_config.int32_cmd_limit_position_min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);/* 15000; */
 
-    position_config.max_speed           = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4); /* 15000; */
+    position_config.max_motor_speed           = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4); /* 15000; */
     // FIXME use this in the future ESI: position_config.max_speed           = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
     position_config.max_torque          = i_coe.get_object_value(CIA402_MAX_TORQUE, 0);
-    position_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-    position_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-    position_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+    position_config.velocity_kp          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+    position_config.velocity_ki          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+    position_config.velocity_kd          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
     //FIXME use a proper object to set the control mode
     switch(i_coe.get_object_value(COMMUTATION_OFFSET_CCLKWISE, 0))
@@ -125,18 +125,18 @@ void cm_sync_config_pos_velocity_control(
     {
     case POS_PID_CONTROLLER:
         position_config.position_control_strategy = POS_PID_CONTROLLER;
-        position_config.integral_limit_pos = position_config.max_torque; //set pos integral limit = max torque
+        position_config.position_integral_limit = position_config.max_torque; //set pos integral limit = max torque
         break;
     case POS_PID_VELOCITY_CASCADED_CONTROLLER:
         position_config.position_control_strategy = POS_PID_VELOCITY_CASCADED_CONTROLLER;
-        position_config.integral_limit_pos = position_config.max_speed; //set pos integral limit = max speed
+        position_config.position_integral_limit = position_config.max_motor_speed; //set pos integral limit = max speed
         break;
     default:
         position_config.position_control_strategy = NL_POSITION_CONTROLLER;
-        position_config.integral_limit_pos = 1000; //set pos integral limit = max torque
+        position_config.position_integral_limit = 1000; //set pos integral limit = max torque
         break;
     }
-    position_config.integral_limit_velocity = position_config.max_torque; //set vel integral limit = max torque
+    position_config.velocity_integral_limit = position_config.max_torque; //set vel integral limit = max torque
 
 
     /* FIXME check if these parameters are somehow mappable to OD objects */
@@ -231,18 +231,18 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  1, position_config.min_pos_range_limit);  /* -8000; */
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  2, position_config.max_pos_range_limit);  /* 8000; */
     i_coe.set_object_value(CIA402_POLARITY, 0, position_config.polarity);
-    i_coe.set_object_value(CIA402_POSITION_GAIN, 1, position_config.P_pos); /* POSITION_Kp; */
-    i_coe.set_object_value(CIA402_POSITION_GAIN, 2, position_config.I_pos); /* POSITION_Ki; */
-    i_coe.set_object_value(CIA402_POSITION_GAIN, 3, position_config.D_pos); /* POSITION_Kd; */
+    i_coe.set_object_value(CIA402_POSITION_GAIN, 1, position_config.position_kp); /* POSITION_Kp; */
+    i_coe.set_object_value(CIA402_POSITION_GAIN, 2, position_config.position_ki); /* POSITION_Ki; */
+    i_coe.set_object_value(CIA402_POSITION_GAIN, 3, position_config.position_kd); /* POSITION_Kd; */
     //position_config._cmd_limit_position     = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 2);/* 15000; */
     //position_config._cmd_limit_position_min = i_coe.get_object_value(CIA402_SOFTWARE_POSITION_LIMIT, 1);/* 15000; */
 
-    i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 4, position_config.max_speed); /* 15000; */
+    i_coe.set_object_value(CIA402_MOTOR_SPECIFIC, 4, position_config.max_motor_speed); /* 15000; */
     // FIXME use this in the future ESI: position_config._max_speed           = i_coe.get_object_value(CIA402_MAX_MOTOR_SPEED, 0); /* 15000; */
     i_coe.set_object_value(CIA402_MAX_TORQUE, 0,    position_config.max_torque);
-    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 1, position_config.P_velocity); /* 18; */
-    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 2, position_config.I_velocity); /* 22; */
-    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 3, position_config.D_velocity); /* 25; */
+    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 1, position_config.velocity_kp); /* 18; */
+    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 2, position_config.velocity_ki); /* 22; */
+    i_coe.set_object_value(CIA402_VELOCITY_GAIN, 3, position_config.velocity_kd); /* 25; */
 
     //FIXME use a proper object to set the control mode
     i_coe.set_object_value(COMMUTATION_OFFSET_CCLKWISE, 0, position_config.position_control_strategy);

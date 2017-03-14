@@ -73,7 +73,7 @@ int tuning_handler_ethercat(
         tuning_result = motorcontrol_config.commutation_angle_offset;
         break;
     case 2: //pole pairs
-        tuning_result = motorcontrol_config.pole_pair;
+        tuning_result = motorcontrol_config.pole_pairs;
         break;
     case 3: //target
         switch(tuning_status.motorctrl_status) {
@@ -90,10 +90,10 @@ int tuning_handler_ethercat(
         }
         break;
     case 4: //position limit min
-        tuning_result = pos_velocity_ctrl_config.min_pos;
+        tuning_result = pos_velocity_ctrl_config.min_pos_range_limit;
         break;
     case 5: //position limit max
-        tuning_result = pos_velocity_ctrl_config.max_pos;
+        tuning_result = pos_velocity_ctrl_config.max_pos_range_limit;
         break;
     case 6: //max speed
         tuning_result = pos_velocity_ctrl_config.max_speed;
@@ -339,14 +339,14 @@ void tuning_command(
             case 'p':
                 switch(tuning_status.mode_3) {
                 case 'u':
-                    pos_velocity_ctrl_config.max_pos = tuning_status.value;
+                    pos_velocity_ctrl_config.max_pos_range_limit = tuning_status.value;
                     break;
                 case 'l':
-                    pos_velocity_ctrl_config.min_pos = tuning_status.value;
+                    pos_velocity_ctrl_config.min_pos_range_limit = tuning_status.value;
                     break;
                 default:
-                    pos_velocity_ctrl_config.max_pos = tuning_status.value;
-                    pos_velocity_ctrl_config.min_pos = -tuning_status.value;
+                    pos_velocity_ctrl_config.max_pos_range_limit = tuning_status.value;
+                    pos_velocity_ctrl_config.min_pos_range_limit = -tuning_status.value;
                     break;
                 }
                 break;
@@ -391,8 +391,8 @@ void tuning_command(
                     printf("Nonlinear pos ctrl enabled\n");
                     break;
                 default:
-                    i_position_control.enable_position_ctrl(pos_velocity_ctrl_config.control_mode);
-                    printf("%d pos ctrl enabled\n", pos_velocity_ctrl_config.control_mode);
+                    i_position_control.enable_position_ctrl(pos_velocity_ctrl_config.position_control_strategy);
+                    printf("%d pos ctrl enabled\n", pos_velocity_ctrl_config.position_control_strategy);
                     break;
                 }
                 break;
@@ -421,7 +421,7 @@ void tuning_command(
     //pole pairs
     case 'P':
         if (!isnull(i_position_feedback)) {
-            motorcontrol_config.pole_pair = tuning_status.value;
+            motorcontrol_config.pole_pairs = tuning_status.value;
             pos_feedback_config.pole_pairs = tuning_status.value;
             tuning_status.brake_flag = 0;
             tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
@@ -447,11 +447,11 @@ void tuning_command(
             switch(tuning_status.mode_2) {
             case 's':
                 //FIXME: don't use pole pairs to store sensor status
-                motorcontrol_config.pole_pair = 0;
+                motorcontrol_config.pole_pairs = 0;
                 for (int i=0; i<100; i++) {
                     int status;
                     { void , void, status } = i_position_feedback.get_position();
-                    motorcontrol_config.pole_pair += status;
+                    motorcontrol_config.pole_pairs += status;
                     delay_milliseconds(1);
                 }
                 break;

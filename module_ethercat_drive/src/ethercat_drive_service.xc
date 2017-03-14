@@ -45,19 +45,13 @@ static int get_cia402_error_code(FaultCode fault)
     int error_code = 0;
 
     switch (fault) {
-    case OVER_CURRENT_PHASE_A:
+    case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
         error_code = ERROR_CODE_PHASE_FAILURE_L1;
         break;
-    case OVER_CURRENT_PHASE_B:
-        error_code = ERROR_CODE_PHASE_FAILURE_L2;
-        break;
-    case OVER_CURRENT_PHASE_C:
-        error_code = ERROR_CODE_PHASE_FAILURE_L3;
-        break;
-    case UNDER_VOLTAGE:
+    case UNDER_VOLTAGE_NO_1:
         error_code = ERROR_CODE_DC_LINK_UNDER_VOLTAGE;
         break;
-    case OVER_VOLTAGE:
+    case OVER_VOLTAGE_NO_1:
         error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
         break;
 #if 0 /* FIXME undefined symbol */
@@ -430,11 +424,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         if (fault != NO_FAULT) {
             update_checklist(checklist, opmode, 1);
-            if (fault == OVER_CURRENT_PHASE_A || fault == OVER_CURRENT_PHASE_B || fault == OVER_CURRENT_PHASE_C) {
+            if (fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (fault == UNDER_VOLTAGE) {
+            } else if (fault == UNDER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-            } else if (fault == OVER_VOLTAGE) {
+            } else if (fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
             } else if (fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
@@ -543,7 +537,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    i_position_control.enable_position_ctrl(position_velocity_config.control_mode);
+                    i_position_control.enable_position_ctrl(position_velocity_config.position_control_strategy);
                 }
                 break;
 
@@ -660,9 +654,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
 
         /*
-        motorcontrol_config.current_P_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 1);
-        motorcontrol_config.current_I_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 2);
-        motorcontrol_config.current_D_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 3);
+        motorcontrol_config.torque_P_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 1);
+        motorcontrol_config.torque_I_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 2);
+        motorcontrol_config.torque_D_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 3);
          */
 #endif
 
@@ -701,7 +695,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
     unsigned time;
 
     printstr("Motorconfig\n");
-    printstr("pole pair: "); printintln(motorcontrol_config.pole_pair);
+    printstr("pole pair: "); printintln(motorcontrol_config.pole_pairs);
     printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
 
     printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);

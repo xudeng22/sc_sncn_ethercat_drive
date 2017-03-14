@@ -160,7 +160,7 @@ void cm_sync_config_motor_control(
 
     //motorcontrol_config.bldc_winding_type = i_coe.get_object_value(MOTOR_WINDING_TYPE, 0); /* FIXME check if the object contains values that respect BLDCWindingType */
 
-    motorcontrol_config.pole_pair                = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
+    motorcontrol_config.pole_pairs                = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
     motorcontrol_config.max_torque               = i_coe.get_object_value(DICT_MAX_TORQUE, 0);
     motorcontrol_config.max_current              = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
     motorcontrol_config.rated_current            = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
@@ -168,9 +168,9 @@ void cm_sync_config_motor_control(
     motorcontrol_config.percent_offset_torque    = i_coe.get_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0);
     motorcontrol_config.torque_constant          =  i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
     motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
-    motorcontrol_config.current_P_gain           = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
-    motorcontrol_config.current_I_gain           = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
-    motorcontrol_config.current_D_gain           = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
+    motorcontrol_config.torque_P_gain           = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
+    motorcontrol_config.torque_I_gain           = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
+    motorcontrol_config.torque_D_gain           = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
 
     /* These are motor specific maybe we introduce a new object */
     motorcontrol_config.phase_resistance   = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE);
@@ -179,13 +179,14 @@ void cm_sync_config_motor_control(
     motorcontrol_config.v_dc               = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
 
     /* Read recuperation config */
-    motorcontrol_config.recuperation    = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED);
-    motorcontrol_config.battery_e_max   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY);
-    motorcontrol_config.battery_e_min   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY);
-    motorcontrol_config.regen_p_max     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER);
-    motorcontrol_config.regen_p_min     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER);
-    motorcontrol_config.regen_speed_min = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED);
-    motorcontrol_config.regen_speed_max = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
+    //FIXME: do we set recuperation settings
+//    motorcontrol_config.recuperation    = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED);
+//    motorcontrol_config.battery_e_max   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY);
+//    motorcontrol_config.battery_e_min   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY);
+//    motorcontrol_config.regen_p_max     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER);
+//    motorcontrol_config.regen_p_min     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER);
+//    motorcontrol_config.regen_speed_min = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED);
+//    motorcontrol_config.regen_speed_max = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
 
 
     /* Read protection limits */
@@ -240,22 +241,22 @@ void cm_sync_config_pos_velocity_control(
     //set integral limits depending on the mode
     {
     case POS_PID_CONTROLLER:
-        position_config.control_mode = POS_PID_CONTROLLER;
+        position_config.position_control_strategy = POS_PID_CONTROLLER;
         position_config.integral_limit_pos = position_config.max_torque; //set pos integral limit = max torque
         break;
     case POS_PID_VELOCITY_CASCADED_CONTROLLER:
-        position_config.control_mode = POS_PID_VELOCITY_CASCADED_CONTROLLER;
+        position_config.position_control_strategy = POS_PID_VELOCITY_CASCADED_CONTROLLER;
         position_config.integral_limit_pos = position_config.max_speed; //set pos integral limit = max speed
         break;
     default:
-        position_config.control_mode = NL_POSITION_CONTROLLER;
+        position_config.position_control_strategy = NL_POSITION_CONTROLLER;
         position_config.integral_limit_pos = 1000; //set pos integral limit = max torque
         break;
     }
     position_config.integral_limit_velocity = position_config.max_torque; //set vel integral limit = max torque
 
-    position_config.min_pos     = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 1);
-    position_config.max_pos     = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 2);
+    position_config.min_pos_range_limit     = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 1);
+    position_config.max_pos_range_limit     = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, 2);
     position_config.max_speed   = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0); /* 15000; */
 
     /* Copy the raw value from the object to the parameter */
@@ -408,7 +409,7 @@ void cm_default_config_motor_control(
 
     motorcontrol_config = i_motorcontrol.get_config();
 
-    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, motorcontrol_config.pole_pair);
+    i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, motorcontrol_config.pole_pairs);
     i_coe.set_object_value(DICT_MAX_TORQUE, 0, motorcontrol_config.max_torque);
     i_coe.set_object_value(DICT_MAX_CURRENT, 0, motorcontrol_config.max_current);
     i_coe.set_object_value(DICT_MOTOR_RATED_CURRENT, 0, motorcontrol_config.rated_current);
@@ -416,9 +417,9 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0, motorcontrol_config.percent_offset_torque);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT, motorcontrol_config.torque_constant);
     i_coe.set_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0, motorcontrol_config.commutation_angle_offset);
-    i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP, motorcontrol_config.current_P_gain);
-    i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI, motorcontrol_config.current_I_gain);
-    i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD, motorcontrol_config.current_D_gain);
+    i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP, motorcontrol_config.torque_P_gain);
+    i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI, motorcontrol_config.torque_I_gain);
+    i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD, motorcontrol_config.torque_D_gain);
 
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE, motorcontrol_config.phase_resistance);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE, motorcontrol_config.phase_inductance);
@@ -426,13 +427,14 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.v_dc);
 
     /* Write recuperation config */
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED, motorcontrol_config.recuperation);
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY, motorcontrol_config.battery_e_max);
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY, motorcontrol_config.battery_e_min);
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER, motorcontrol_config.regen_p_max);
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER, motorcontrol_config.regen_p_min);
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_min);
-    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_max);
+    //FIXME: do we set recuperation settings
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED, motorcontrol_config.recuperation);
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY, motorcontrol_config.battery_e_max);
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY, motorcontrol_config.battery_e_min);
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER, motorcontrol_config.regen_p_max);
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER, motorcontrol_config.regen_p_min);
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_min);
+//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_max);
 
     /* Write protection limits */
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);
@@ -462,10 +464,10 @@ void cm_default_config_pos_velocity_control(
 {
     PosVelocityControlConfig position_config = i_position_control.get_position_velocity_control_config();
 
-    i_coe.set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.control_mode);
+    i_coe.set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.position_control_strategy);
 
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, 1, position_config.min_pos);
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, 2, position_config.max_pos);
+    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, 1, position_config.min_pos_range_limit);
+    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, 2, position_config.max_pos_range_limit);
     i_coe.set_object_value(DICT_MAX_MOTOR_SPEED, 0, position_config.max_speed); /* 15000; */
 
     i_coe.set_object_value(DICT_POLARITY, 0, position_config.polarity);

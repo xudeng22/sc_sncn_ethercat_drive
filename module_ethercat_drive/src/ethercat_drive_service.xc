@@ -588,17 +588,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+            position_velocity_config.position_kp          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
+            position_velocity_config.position_ki          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
+            position_velocity_config.position_kd          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            position_velocity_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-            position_velocity_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-            position_velocity_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+            position_velocity_config.velocity_kp          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
+            position_velocity_config.velocity_ki          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
+            position_velocity_config.velocity_kd          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }

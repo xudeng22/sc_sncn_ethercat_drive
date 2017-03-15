@@ -30,12 +30,11 @@ struct _ecat_sdo_config {
 /**
  * @brief Write specific SDO to slave device
  *
- * @param master  pointer to the master device
- * @param slave   slave number
+ * @param slave  pointer to the slave device
  * @param *config pointer to SDO configuration object
  * @return 0 on success, != 0 otherwise
  */
-int write_sdo(Ethercat_Master_t *master, int slave_number, SdoParam_t *conf);
+int write_sdo(Ethercat_Slave_t *slave, SdoParam_t *conf);
 
 /**
  * @brief Write list of configuration SDO objects to slave device
@@ -46,7 +45,7 @@ int write_sdo(Ethercat_Master_t *master, int slave_number, SdoParam_t *conf);
  * @param max_objects number of objects to transfer
  * @return 0 on success, != 0 otherwise
  */
-int write_sdo_config(Ethercat_Master_t *master, int slave, SdoParam_t *config, size_t max_objects);
+int write_sdo_config(Ethercat_Master_t *master, int slave_number, SdoParam_t *config, size_t max_objects);
 
 #ifdef __cplusplus
 }

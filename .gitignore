@@ -49,3 +49,9 @@ bin/
 
 # ignore profiler files
 *.gprof
+*.inc
+*.sh
+*.log
+record.csv
+config_motor
+

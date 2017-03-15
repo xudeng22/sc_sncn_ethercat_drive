@@ -151,9 +151,11 @@ static void inline update_configuration(
         client interface i_coe_communication           i_coe,
         client interface MotorcontrolInterface         i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
-        client interface PositionFeedbackInterface i_pos_feedback,
+        client interface PositionFeedbackInterface i_pos_feedback_1,
+        client interface PositionFeedbackInterface ?i_pos_feedback_2,
         PosVelocityControlConfig  &position_config,
-        PositionFeedbackConfig    &position_feedback_config,
+        PositionFeedbackConfig    &position_feedback_config_1,
+        PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &motorcontrol_config,
         ProfilerConfig            &profiler_config,
         int &sensor_select,
@@ -164,41 +166,75 @@ static void inline update_configuration(
         int &homing_method,
         int &opmode)
 {
-    /* update structures */
-    //position_feedback_config;
-    //position_config;
 
-    /* FIXME add support for more than one feedback sensor! */
-    cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config, 1);
+    // set position feedback services parameters
+    int restart = 0; //we need to restart position feedback service(s) when sensor type is changed
+    restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1);
+    if (!isnull(i_pos_feedback_2)) {
+        restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2);
+        if (restart)
+            i_pos_feedback_2.exit();
+    }
+    if (restart) {
+        i_pos_feedback_1.exit();
+    }
+
+    // detect which sensor service (1 or 2) is used for commutation or motion control
+    int sensor_commutation = 0;
+    int sensor_motion_control = 0;
+    if (position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
+        sensor_commutation = 1;
+    } else if (position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_1.sensor_function == SENSOR_FUNCTION_MOTION_CONTROL) {
+        sensor_motion_control = 1;
+    }
+    if (!isnull(i_pos_feedback_2)) {
+        if (position_feedback_config_2.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_2.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
+            sensor_commutation = 2;
+        } else if (position_feedback_config_2.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_2.sensor_function == SENSOR_FUNCTION_MOTION_CONTROL) {
+            sensor_motion_control = 2;
+        }
+    }
+
+    // set sensor resolution from the resolution of the sensor used for motion control
+    if (sensor_motion_control == 2) {
+        sensor_resolution = position_feedback_config_2.resolution;
+    } else {
+        sensor_resolution = position_feedback_config_1.resolution;
+    }
+
+    // set commution sensor type (used by motorcontrol service to detect if hall is used)
+    int sensor_commutation_type = 0;
+    if (sensor_commutation == 2) {
+        sensor_commutation_type = position_feedback_config_2.sensor_type;
+    } else {
+        sensor_commutation_type = position_feedback_config_1.sensor_type;
+    }
+
     cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
-    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
-    cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
+    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config, sensor_commutation_type);
+    cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config, sensor_resolution);
 
-    cm_sync_config_hall_states(i_coe, i_pos_feedback, i_motorcontrol,
-                                position_feedback_config, motorcontrol_config, 1);
+//    cm_sync_config_hall_states(i_coe, i_pos_feedback_1, i_motorcontrol, position_feedback_config_1, motorcontrol_config, 1);
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
-    profiler_config.ticks_per_turn = position_feedback_config.resolution;
+    profiler_config.ticks_per_turn = sensor_resolution;
     polarity = profiler_config.polarity;
 
     nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
 
-    /* FIXME assumption: this sensor selection code is for the commutation sensor... */
+    /* FIXME assumption: this sensor selection code is for the commutation sensor...
+     * the sensor_select is currently not used anywhere */
     int number_of_feedbacks = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
     for (int i = 1; i <= number_of_feedbacks; i++) {
         uint16_t sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, i);
-        int usage = i_coe.get_object_value(sensor_object, SUB_FEEDBACK_SENSOR_FUNCTION);
-        if (usage == 1) { /* FIXME introduce define or enum for Commutation or Feedback usage */
+        int sensor_function = i_coe.get_object_value(sensor_object, SUB_FEEDBACK_SENSOR_FUNCTION);
+        if (sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
             sensor_select = i;
         }
     }
-
-    sensor_resolution = position_feedback_config.resolution;
-
-    //opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
 }
 
 static void debug_print_state(DriveState_t state)
@@ -260,7 +296,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
-                            client interface PositionFeedbackInterface i_position_feedback)
+                            client interface PositionFeedbackInterface i_position_feedback_1,
+                            client interface PositionFeedbackInterface ?i_position_feedback_2)
 {
     int quick_stop_steps = 0;
     int quick_stop_steps_left = 0;
@@ -328,7 +365,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     int sensor_resolution = 0;
 
-    PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
+    PositionFeedbackConfig position_feedback_config_1 = i_position_feedback_1.get_config();
+    PositionFeedbackConfig position_feedback_config_2;
 
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
     UpstreamControlData   send_to_master = { 0 };
@@ -339,7 +377,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
      */
 
     /* FIXME add support for more than one feedback sensor */
-    cm_default_config_position_feedback(i_coe, i_position_feedback, position_feedback_config, 1);
+    cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
+    if (!isnull(i_position_feedback_2)) {
+        cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
+    }
     cm_default_config_profiler(i_coe, profiler_config);
     cm_default_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_coe, i_position_control);
@@ -370,8 +411,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
-            update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback,
-                    position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
+            update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback_1, i_position_feedback_2,
+                    position_velocity_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
                     sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
                     opmode
                     );
@@ -618,12 +659,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
 
+            //FIXME update tuning for 2 position feedback
             tuning_handler_ethercat(controlword, tuning_control,
                     statusword, tuning_result,
                     tuning_status,
-                    motorcontrol_config, position_velocity_config, position_feedback_config,
+                    motorcontrol_config, position_velocity_config, position_feedback_config_1,
                     send_to_master, send_to_control,
-                    i_position_control, i_position_feedback);
+                    i_position_control, i_position_feedback_1);
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.

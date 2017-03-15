@@ -269,13 +269,11 @@ int main(int argc, char **argv)
     struct sigaction sa;
     struct itimerval tv;
 
-    free(sdo_config_file); /* filename and path to the SDO config parameters is no longer needed */
-
 #ifndef DISABLE_ETHERCAT
 /********* ethercat init **************/
 
     /* use master id 0 for the first ehtercat master interface (defined by the
-     * libetehrcat).
+     * libethercat).
      * The logging output must be redirected into a file, otherwise the output will
      * interfere with the ncurses windowing. */
     FILE *ecatlog = fopen("./ecat.log", "w");
@@ -286,21 +284,19 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    /*
-     * Activate master and start operation
-     */
 
-
+    SdoConfigParameter_t sdo_config_parameter;
+    SdoParam_t **slave_config = 0;
     if (sdo_enable) {
-        /* SDO configuration of the slave */
-        SdoConfigParameter_t sdo_config_parameter;
+        //read sdo parameters from file
         if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
             fprintf(stderr, "Error, could not read SDO configuration file.\n");
             return -1;
         }
-        SdoParam_t **slave_config = sdo_config_parameter.parameter;
+        free(sdo_config_file); /* filename and path to the SDO config parameters is no longer needed */
+        slave_config = sdo_config_parameter.parameter;
 
-        /* FIXME set per slave SDO configuration */
+        /* SDO configuration of the slave */
         for (int i = 0; i < num_slaves; i++) {
             int ret = write_sdo_config(master, i, slave_config[i], sdo_config_parameter.param_count);
             if (ret != 0) {
@@ -310,9 +306,7 @@ int main(int argc, char **argv)
         }
     }
 
-    return 0;
-
-
+    // Activate master and start operation
     if (ecw_master_start(master) != 0) {
         fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
         return -1;
@@ -357,12 +351,16 @@ int main(int argc, char **argv)
     profile_config.max_position = 0x7fffffff;
     profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
-//    for (int i=0 ; i<sdo_config_parameter.param_count; i++) {
-//        if (slave_config[0][i].index == 0x308f) {
-//            profile_config.ticks_per_turn = slave_config[0][i].value;
-//            break;
-//        }
-//    }
+    if (sdo_enable) {
+        for (int i=0 ; i<sdo_config_parameter.param_count; i++) {
+            if (slave_config[num_slaves-1][i].index == 0x308f) { //0x308f is sensor resolution (ticks per turn)
+                profile_config.ticks_per_turn = slave_config[num_slaves-1][i].value;
+                break;
+            }
+        }
+    } else {
+        profile_config.ticks_per_turn = 65536; //default ticks per turn
+    }
     init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
 
     //init recorder

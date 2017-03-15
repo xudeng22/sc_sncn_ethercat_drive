@@ -28,7 +28,7 @@ enum eProfileType {
  * by the EtherCAT master.
  */
 
-void cm_sync_config_position_feedback(
+int  cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
         PositionFeedbackConfig &config,
@@ -37,7 +37,8 @@ void cm_sync_config_position_feedback(
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
         client interface MotorcontrolInterface ?i_commutation,
-        MotorcontrolConfig &commutation_params);
+        MotorcontrolConfig &commutation_params,
+        int sensor_commutation_type);
 
 void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
@@ -47,7 +48,8 @@ void cm_sync_config_profiler(
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface PositionVelocityCtrlInterface i_position_control,
-        PosVelocityControlConfig &position_config);
+        PosVelocityControlConfig &position_config,
+        int sensor_resolution);
 
 /* This function is a workaround until the hall and motorconfig is reorganized. */
 void cm_sync_config_hall_states(

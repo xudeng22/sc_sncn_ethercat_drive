@@ -101,7 +101,7 @@ int main(void)
             ethercat_drive_service( profiler_config,
                                     i_pdo, i_coe,
                                     i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback_1[0]);
+                                    i_position_control[0], i_position_feedback_1[0], null);
 #endif
         }
 

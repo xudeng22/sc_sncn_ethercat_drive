@@ -76,12 +76,12 @@ interface i_co_communication
     /**
      * @brief Transfers PDOs from slave to master
      */
-    void pdo_in_com(unsigned int size, pdo_size_t data_out[]);
+    void pdo_in_buffer(unsigned int size, pdo_size_t data_out[]);
 
     /**
      * @brief Receives PDOs from master to slave
      */
-    unsigned int pdo_out_com(pdo_size_t data_in[]);
+    unsigned int pdo_out_buffer(pdo_size_t data_in[]);
 
     {pdo_values_t, unsigned int} pdo_exchange_app(pdo_values_t pdo_out);
 
@@ -136,7 +136,7 @@ interface i_co_communication
 
     uint32_t od_get_data_length(uint16_t index_);
 
-    int od_find_index(uint16_t address, uint8_t subindex);
+    {unsigned, unsigned} od_find_index(uint16_t address, uint8_t subindex);
 
     uint8_t od_get_access(uint16_t index_);
 
@@ -164,6 +164,8 @@ interface i_co_communication
      * @return Flag status.
      */
     int configuration_get(void);
+
+    void inactive_communication(void);
 
 };
 

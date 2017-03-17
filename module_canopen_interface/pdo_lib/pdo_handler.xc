@@ -50,7 +50,8 @@ pdo_values_t pdo_init_data(void)
 char pdo_read_write_data_od(int address, char data_buffer[], char write)
 {
     int index = 0,
-        temp_index = 0;
+        temp_index = 0,
+        error;
     char count = 0,
         no_of_entries = 0,
         sub_index = 0,
@@ -60,7 +61,7 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
             entries = 0,
             value;
 
-    index = canod_find_index(address, 0);
+    {index, error} = canod_find_index(address, 0);
     canod_get_entry(index, entries, bitlength);
     no_of_entries = entries & 0xff;
 
@@ -72,17 +73,17 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
         data_length = (entries & 0xff)/8;
         count++;
 
-        temp_index = canod_find_index(address, sub_index);
+        {temp_index, error} = canod_find_index(address, sub_index);
 
         if (temp_index != -1) {
             if (write) {
-                for (int i = 0; i < data_length; i++) {
+                for (unsigned i = 0; i < data_length; i++) {
                     value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
                 }
-                canod_set_entry(temp_index, value);
+                canod_set_entry(temp_index, value, 1);
             } else {
                 canod_get_entry(temp_index, value, bitlength);
-                for (int i = 0; i < data_length; i++) {
+                for (unsigned i = 0; i < data_length; i++) {
                     data_buffer[data_counter + i] = (value >> (8*i) ) & 0xff;
                 }
             }
@@ -149,34 +150,34 @@ void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_i
 
 void pdo_decode_buffer(pdo_size_t buffer[], pdo_values_t &InOut)
 {
-//    InOut.control_word    = (buffer[0]) & 0xffff;
-//    InOut.operation_mode  = buffer[1] & 0xff;
-//    InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
-//    InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
-//    InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-//    InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
-//    InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
-//    InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
-//    InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
+    InOut.control_word    = (buffer[0]) & 0xffff;
+    InOut.operation_mode  = buffer[1] & 0xff;
+    InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
+    InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
+    InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
+    InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
+    InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
+    InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
+    InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
 }
 
 void pdo_encode_buffer(pdo_size_t buffer[], pdo_values_t InOut)
 {
-//    buffer[0]  = InOut.status_word ;
-//    buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.actual_position&0xff)<<8) ;
-//    buffer[2]  = (InOut.actual_position>> 8)& 0xffff;
-//    buffer[3]  = ((InOut.actual_position>>24) & 0xff) | ((InOut.actual_velocity&0xff)<<8);
-//    buffer[4]  = (InOut.actual_velocity>> 8)& 0xffff;
-//    buffer[5]  = ((InOut.actual_velocity>>24) & 0xff) | ((InOut.actual_torque&0xff)<<8) ;
-//    buffer[6]  = ((InOut.user1_out<<8)&0xff00) | ((InOut.actual_torque >> 8)&0xff);
-//    buffer[7]  = ((InOut.user1_out>>8)&0xffff);
-//    buffer[8]  = ((InOut.user2_out<<8)&0xff00) | ((InOut.user1_out>>24)&0xff);
-//    buffer[9]  = ((InOut.user2_out>>8)&0xffff);
-//    buffer[10] = ((InOut.user3_out<<8)&0xff00) | ((InOut.user2_out>>24)&0xff);
-//    buffer[11] = ((InOut.user3_out>>8)&0xffff);
-//    buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
-//    buffer[13] = ((InOut.user4_out>>8)&0xffff);
-//    buffer[14] = ((InOut.user4_out>>24)&0xff);
+    buffer[0]  = InOut.status_word ;
+    buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.actual_position&0xff)<<8) ;
+    buffer[2]  = (InOut.actual_position>> 8)& 0xffff;
+    buffer[3]  = ((InOut.actual_position>>24) & 0xff) | ((InOut.actual_velocity&0xff)<<8);
+    buffer[4]  = (InOut.actual_velocity>> 8)& 0xffff;
+    buffer[5]  = ((InOut.actual_velocity>>24) & 0xff) | ((InOut.actual_torque&0xff)<<8) ;
+    buffer[6]  = ((InOut.user1_out<<8)&0xff00) | ((InOut.actual_torque >> 8)&0xff);
+    buffer[7]  = ((InOut.user1_out>>8)&0xffff);
+    buffer[8]  = ((InOut.user2_out<<8)&0xff00) | ((InOut.user1_out>>24)&0xff);
+    buffer[9]  = ((InOut.user2_out>>8)&0xffff);
+    buffer[10] = ((InOut.user3_out<<8)&0xff00) | ((InOut.user2_out>>24)&0xff);
+    buffer[11] = ((InOut.user3_out>>8)&0xffff);
+    buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
+    buffer[13] = ((InOut.user4_out>>8)&0xffff);
+    buffer[14] = ((InOut.user4_out>>24)&0xff);
 }
 
 

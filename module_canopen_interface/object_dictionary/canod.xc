@@ -98,7 +98,7 @@ unsigned canod_get_no_of_si_entries(unsigned index)
     return count - index;
 }
 
-int canod_find_index(unsigned address, unsigned subindex)
+{unsigned, unsigned} canod_find_index(unsigned address, unsigned subindex)
 {
 //    for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
 //        if (SDO_Info_Entries[i].index == address
@@ -108,10 +108,10 @@ int canod_find_index(unsigned address, unsigned subindex)
 //
 //    return -1;
 
-    int i,
+    unsigned i,
     j = -1,
     k = -1;
-    for(i = 0; i < SDO_Info_Entries[i].index != 0x0; i++)
+    for(i = 0; SDO_Info_Entries[i].index != 0x0; i++)
     {
       if(SDO_Info_Entries[i].index == address)
       {
@@ -119,8 +119,8 @@ int canod_find_index(unsigned address, unsigned subindex)
         break;
       }
     }
-    if(j == -1) return -1;
-    for(i = j; i < SDO_Info_Entries[i].index != 0x0; i++)
+    if(j == -1) return {0, 2};
+    for(i = j; SDO_Info_Entries[i].index != 0x0; i++)
     {
       if((SDO_Info_Entries[i].index == address) && (SDO_Info_Entries[i].subindex == subindex))
       {
@@ -128,8 +128,8 @@ int canod_find_index(unsigned address, unsigned subindex)
         break;
       }
     }
-    if(k == -1) return -2;
-    return k;
+    if(k == -1) return {0, 3};
+    return {k, 0};
 }
 
 unsigned char canod_get_access(unsigned index)
@@ -347,13 +347,13 @@ int canod_get_entry(unsigned index, unsigned &value, unsigned &bitlength)
     return 0;
 }
 
-int canod_set_entry(unsigned index, unsigned value)
+int canod_set_entry(unsigned index, unsigned value, unsigned intern)
 {
 	unsigned mask = 0xffffffff;
 
 	// TODO Find solution for access from application side
-//    if ((SDO_Info_Entries[index].objectAccess & 0x38) == 0) /* object not writeable, FIXME should be distinguished according to the current state */
-//        return 1;
+    if ((SDO_Info_Entries[index].objectAccess & 0x38) == 0 && !intern) /* object not writeable, FIXME should be distinguished according to the current state */
+        return 1;
 
     SDO_Info_Entries[index].value = value & (mask >> (32 - SDO_Info_Entries[index].bitLength) );
 

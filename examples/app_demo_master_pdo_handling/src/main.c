@@ -126,16 +126,20 @@ static void printhelp(const char *prog)
     printf("  -w             enable graphical output (attention slow!\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves, int *curses, int *debuginfo)
+static void cmdline(int argc, char **argv, int *num_slaves, int *masterid, int *curses, int *debuginfo)
 {
     int  opt;
 
-    const char *options = "hn:wd";
+    const char *options = "hn:m:wd";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
         case 'n':
             *num_slaves = atoi(optarg);
+            break;
+
+        case 'm':
+            *masterid = atoi(optarg);
             break;
 
         case 'd':
@@ -447,6 +451,7 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
 int main(int argc, char *argv[])
 {
     WINDOW *wnd = NULL;
+    int masterid = 0;
 	int slaveid = 0;
     int curses  = 0;
     int debuginfo = 0;
@@ -455,12 +460,12 @@ int main(int argc, char *argv[])
     struct itimerval tv;
 
     /* FIXME use getopt(1) with -h, -v etc. */
-    cmdline(argc, argv, &slaveid, &curses, &debuginfo);
+    cmdline(argc, argv, &slaveid, &masterid, &curses, &debuginfo);
 
     FILE *ecatlog = fopen("./ecat.log", "w");
 
 	/* Initialize EtherCAT Master */
-    Ethercat_Master_t *master = ecw_master_init(0, ecatlog);
+    Ethercat_Master_t *master = ecw_master_init(masterid, ecatlog);
     if (master == NULL) {
         fprintf(stderr, "Error, could not initialize master\n");
         return -1;

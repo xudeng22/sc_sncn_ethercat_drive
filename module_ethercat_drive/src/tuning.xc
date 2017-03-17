@@ -96,34 +96,34 @@ int tuning_handler_ethercat(
         tuning_result = pos_velocity_ctrl_config.max_pos_range_limit;
         break;
     case 6: //max speed
-        tuning_result = pos_velocity_ctrl_config.max_speed;
+        tuning_result = pos_velocity_ctrl_config.max_motor_speed;
         break;
     case 7: //max torque
         tuning_result = pos_velocity_ctrl_config.max_torque;
         break;
     case 8: //P_pos
-        tuning_result = pos_velocity_ctrl_config.P_pos;
+        tuning_result = pos_velocity_ctrl_config.position_kp;
         break;
     case 9: //I_pos
-        tuning_result = pos_velocity_ctrl_config.I_pos;
+        tuning_result = pos_velocity_ctrl_config.position_ki;
         break;
     case 10: //D_pos
-        tuning_result = pos_velocity_ctrl_config.D_pos;
+        tuning_result = pos_velocity_ctrl_config.position_kd;
         break;
     case 11: //integral_limit_pos
-        tuning_result = pos_velocity_ctrl_config.integral_limit_pos;
+        tuning_result = pos_velocity_ctrl_config.position_integral_limit;
         break;
     case 12: //
-        tuning_result = pos_velocity_ctrl_config.P_velocity;
+        tuning_result = pos_velocity_ctrl_config.velocity_kp;
         break;
     case 13: //
-        tuning_result = pos_velocity_ctrl_config.I_velocity;
+        tuning_result = pos_velocity_ctrl_config.velocity_ki;
         break;
     case 14: //
-        tuning_result = pos_velocity_ctrl_config.D_velocity;
+        tuning_result = pos_velocity_ctrl_config.velocity_kd;
         break;
     case 15: //
-        tuning_result = pos_velocity_ctrl_config.integral_limit_velocity;
+        tuning_result = pos_velocity_ctrl_config.velocity_integral_limit;
         break;
     case 16: //fault code
         tuning_result = upstream_control_data.error_status;
@@ -275,42 +275,42 @@ void tuning_command(
         case 'p': //position
             switch(tuning_status.mode_3) {
             case 'p':
-                pos_velocity_ctrl_config.P_pos = tuning_status.value;
+                pos_velocity_ctrl_config.position_kp = tuning_status.value;
                 break;
             case 'i':
-                pos_velocity_ctrl_config.I_pos = tuning_status.value;
+                pos_velocity_ctrl_config.position_ki = tuning_status.value;
                 break;
             case 'd':
-                pos_velocity_ctrl_config.D_pos = tuning_status.value;
+                pos_velocity_ctrl_config.position_kd = tuning_status.value;
                 break;
             case 'l':
-                pos_velocity_ctrl_config.integral_limit_pos = tuning_status.value;
+                pos_velocity_ctrl_config.position_integral_limit = tuning_status.value;
                 break;
             case 'j':
-                pos_velocity_ctrl_config.j = tuning_status.value;
+                pos_velocity_ctrl_config.moment_of_inertia = tuning_status.value;
                 break;
             default:
-                printf("Pp:%d Pi:%d Pd:%d Pi lim:%d j:%d\n", pos_velocity_ctrl_config.P_pos, pos_velocity_ctrl_config.I_pos, pos_velocity_ctrl_config.D_pos,
-                        pos_velocity_ctrl_config.integral_limit_pos, pos_velocity_ctrl_config.j);
+                printf("Pp:%d Pi:%d Pd:%d Pi lim:%d j:%d\n", pos_velocity_ctrl_config.position_kp, pos_velocity_ctrl_config.position_ki, pos_velocity_ctrl_config.position_kd,
+                        pos_velocity_ctrl_config.position_integral_limit, pos_velocity_ctrl_config.moment_of_inertia);
                 break;
             }
             break;
             case 'v': //velocity
                 switch(tuning_status.mode_3) {
                 case 'p':
-                    pos_velocity_ctrl_config.P_velocity = tuning_status.value;
+                    pos_velocity_ctrl_config.velocity_kp = tuning_status.value;
                     break;
                 case 'i':
-                    pos_velocity_ctrl_config.I_velocity = tuning_status.value;
+                    pos_velocity_ctrl_config.velocity_ki = tuning_status.value;
                     break;
                 case 'd':
-                    pos_velocity_ctrl_config.D_velocity = tuning_status.value;
+                    pos_velocity_ctrl_config.velocity_kd = tuning_status.value;
                     break;
                 case 'l':
-                    pos_velocity_ctrl_config.integral_limit_velocity = tuning_status.value;
+                    pos_velocity_ctrl_config.velocity_integral_limit = tuning_status.value;
                     break;
                 default:
-                    printf("Kp:%d Ki:%d Kd:%d\n", pos_velocity_ctrl_config.P_velocity, pos_velocity_ctrl_config.I_velocity, pos_velocity_ctrl_config.D_velocity);
+                    printf("Kp:%d Ki:%d Kd:%d\n", pos_velocity_ctrl_config.velocity_kp, pos_velocity_ctrl_config.velocity_ki, pos_velocity_ctrl_config.velocity_kd);
                     break;
                 }
                 break;
@@ -333,7 +333,7 @@ void tuning_command(
             //max speed
             case 's':
             case 'v':
-                pos_velocity_ctrl_config.max_speed = tuning_status.value;
+                pos_velocity_ctrl_config.max_motor_speed = tuning_status.value;
                 break;
             //max position
             case 'p':

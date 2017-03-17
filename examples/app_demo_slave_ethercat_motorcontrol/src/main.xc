@@ -88,7 +88,7 @@ int main(void)
             profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
             profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
 
-            profiler_config.max_velocity = MAX_SPEED;
+            profiler_config.max_velocity = MAX_MOTOR_SPEED;
             profiler_config.max_acceleration = MAX_ACCELERATION;
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
@@ -115,7 +115,7 @@ int main(void)
 
                     pos_velocity_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
                     pos_velocity_ctrl_config.max_pos_range_limit =                  MAX_POSITION_RANGE_LIMIT;
-                    pos_velocity_ctrl_config.max_speed =                            MAX_SPEED;
+                    pos_velocity_ctrl_config.max_motor_speed =                      MAX_MOTOR_SPEED;
                     pos_velocity_ctrl_config.max_torque =                           TORQUE_CONTROL_LIMIT;
                     pos_velocity_ctrl_config.polarity =                             POLARITY;
 
@@ -125,25 +125,25 @@ int main(void)
 
                     pos_velocity_ctrl_config.position_control_strategy =            NL_POSITION_CONTROLLER;
 
-                    pos_velocity_ctrl_config.P_pos =                                POSITION_Kp;
-                    pos_velocity_ctrl_config.I_pos =                                POSITION_Ki;
-                    pos_velocity_ctrl_config.D_pos =                                POSITION_Kd;
-                    pos_velocity_ctrl_config.integral_limit_pos =                   POSITION_INTEGRAL_LIMIT;
-                    pos_velocity_ctrl_config.j =                                    MOMENT_OF_INERTIA;
+                    pos_velocity_ctrl_config.position_kp =                          POSITION_Kp;
+                    pos_velocity_ctrl_config.position_ki =                          POSITION_Ki;
+                    pos_velocity_ctrl_config.position_kd =                          POSITION_Kd;
+                    pos_velocity_ctrl_config.position_integral_limit =              POSITION_INTEGRAL_LIMIT;
+                    pos_velocity_ctrl_config.moment_of_inertia =                    MOMENT_OF_INERTIA;
 
-                    pos_velocity_ctrl_config.P_velocity =                           VELOCITY_Kp;
-                    pos_velocity_ctrl_config.I_velocity =                           VELOCITY_Ki;
-                    pos_velocity_ctrl_config.D_velocity =                           VELOCITY_Kd;
-                    pos_velocity_ctrl_config.integral_limit_velocity =              VELOCITY_INTEGRAL_LIMIT;
+                    pos_velocity_ctrl_config.velocity_kp =                          VELOCITY_Kp;
+                    pos_velocity_ctrl_config.velocity_ki =                          VELOCITY_Ki;
+                    pos_velocity_ctrl_config.velocity_kd =                          VELOCITY_Kd;
+                    pos_velocity_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
 
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
                     pos_velocity_ctrl_config.resolution  =                          SENSOR_1_RESOLUTION;
 
-                    pos_velocity_ctrl_config.nominal_v_dc=                          VDC;
-                    pos_velocity_ctrl_config.voltage_pull_brake=                    VOLTAGE_PULL_BRAKE;
-                    pos_velocity_ctrl_config.time_pull_brake =                      TIME_PULL_BRAKE;
-                    pos_velocity_ctrl_config.voltage_hold_brake =                   VOLTAGE_HOLD_BRAKE;
+                    pos_velocity_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
+                    pos_velocity_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;
+                    pos_velocity_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
+                    pos_velocity_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
                     position_velocity_control_service(APP_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
 
@@ -185,7 +185,7 @@ int main(void)
                 {
                     MotorcontrolConfig motorcontrol_config;
 
-                    motorcontrol_config.v_dc =  VDC;
+                    motorcontrol_config.v_dc =  DC_BUS_VOLTAGE;
                     motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
                     motorcontrol_config.torque_P_gain =  TORQUE_P_VALUE;
                     motorcontrol_config.torque_I_gain =  TORQUE_I_VALUE;

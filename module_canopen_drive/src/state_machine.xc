@@ -10,6 +10,8 @@
 #include <position_ctrl_service.h>
 #include <mc_internal_constants.h>
 
+#include "print.h"
+
 int read_controlword_switch_on(int control_word) {
     return (control_word & SWITCH_ON_CONTROL);
 }
@@ -236,9 +238,9 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_OPERATION_ENABLE:
             ctrl_input = read_controlword_quick_stop(controlword); //quick stop
-            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol))
+            if ( (checklist.fault != NO_FAULT) || ctrl_communication_timeout(localcontrol)) {
                 out_state = S_FAULT_REACTION_ACTIVE;
-            else if (ctrl_disable_op(controlword))
+            } else if (ctrl_disable_op(controlword))
                 out_state = S_SWITCH_ON;
             else if (ctrl_shutdown(controlword))
                 out_state = S_READY_TO_SWITCH_ON;

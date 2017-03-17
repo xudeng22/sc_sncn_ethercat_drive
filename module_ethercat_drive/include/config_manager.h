@@ -38,6 +38,7 @@ void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
         client interface MotorcontrolInterface ?i_commutation,
         MotorcontrolConfig &commutation_params,
+        int sensor_commutation,
         int sensor_commutation_type);
 
 void cm_sync_config_profiler(

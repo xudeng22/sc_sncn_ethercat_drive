@@ -211,9 +211,10 @@ static void inline update_configuration(
     }
 
     cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
-    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config, sensor_commutation_type);
+    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config, sensor_commutation, sensor_commutation_type);
     cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config, sensor_resolution);
 
+    //FIXME: as the hall_states params are still in the motorcontrol config they are set in cm_sync_config_motor_control
 //    cm_sync_config_hall_states(i_coe, i_pos_feedback_1, i_motorcontrol, position_feedback_config_1, motorcontrol_config, 1);
 
     /* Update values with current configuration */

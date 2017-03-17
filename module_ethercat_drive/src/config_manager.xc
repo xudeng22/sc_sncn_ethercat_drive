@@ -157,6 +157,7 @@ void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
         interface MotorcontrolInterface client ?i_motorcontrol,
         MotorcontrolConfig &motorcontrol_config,
+        int sensor_commutation,
         int sensor_commutation_type)
 
 {
@@ -184,6 +185,18 @@ void cm_sync_config_motor_control(
     motorcontrol_config.protection_limit_over_current  = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
     motorcontrol_config.protection_limit_under_voltage = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE);
     motorcontrol_config.protection_limit_over_voltage  = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
+
+    uint16_t feedback_sensor_object = 0;
+    feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_commutation); //select which hall config to read
+    if (feedback_sensor_object == DICT_HALL_SENSOR_1 || feedback_sensor_object == DICT_HALL_SENSOR_2) {
+        motorcontrol_config.hall_state_angle[0] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
+        motorcontrol_config.hall_state_angle[1] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
+        motorcontrol_config.hall_state_angle[2] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
+        motorcontrol_config.hall_state_angle[3] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
+        motorcontrol_config.hall_state_angle[4] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
+        motorcontrol_config.hall_state_angle[5] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
+    }
+
 
     //not in main.xc
     /* Read recuperation config */
@@ -413,6 +426,21 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE, motorcontrol_config.protection_limit_under_voltage);
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE, motorcontrol_config.protection_limit_over_voltage);
+
+
+    i_coe.set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_0, motorcontrol_config.hall_state_angle[0]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_1, motorcontrol_config.hall_state_angle[1]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_2, motorcontrol_config.hall_state_angle[2]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_3, motorcontrol_config.hall_state_angle[3]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_4, motorcontrol_config.hall_state_angle[4]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_5, motorcontrol_config.hall_state_angle[5]);
+
+    i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_0, motorcontrol_config.hall_state_angle[0]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_1, motorcontrol_config.hall_state_angle[1]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_2, motorcontrol_config.hall_state_angle[2]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_3, motorcontrol_config.hall_state_angle[3]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_4, motorcontrol_config.hall_state_angle[4]);
+    i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_5, motorcontrol_config.hall_state_angle[5]);
 
     // The following are not set in the main.xc
     /* Write recuperation config */

@@ -11,7 +11,7 @@
 #include <hall_service.h>
 #include <qei_service.h>
 #include <gpio_service.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <profile_control.h>
 
 /*
@@ -36,7 +36,7 @@ void cm_sync_config_profiler(
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface PositionVelocityCtrlInterface i_position_control,
-        PosVelocityControlConfig &position_config);
+        MotionControlConfig &position_config);
 
 /*
  * Set default configuration of the modules in the object dictionary. If nothing

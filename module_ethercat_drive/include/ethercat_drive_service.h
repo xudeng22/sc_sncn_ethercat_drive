@@ -9,7 +9,7 @@
 #include <motor_control_interfaces.h>
 #include <ethercat_service.h>
 
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <position_feedback_service.h>
 
 #include <profile_control.h>

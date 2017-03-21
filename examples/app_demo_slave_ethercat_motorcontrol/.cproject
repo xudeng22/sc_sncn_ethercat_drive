@@ -17,9 +17,15 @@
 						<toolChain id="com.xmos.cdt.toolchain.1047336409" name="com.xmos.cdt.toolchain" superClass="com.xmos.cdt.toolchain">
 							<targetPlatform archList="all" binaryParser="com.xmos.cdt.core.XEBinaryParser;org.eclipse.cdt.core.GNU_ELF" id="com.xmos.cdt.core.platform.437730889" isAbstract="false" osList="linux,win32,macosx" superClass="com.xmos.cdt.core.platform"/>
 							<builder id="com.xmos.cdt.builder.base.1101355326" managedBuildOn="false" name="null.Default" superClass="com.xmos.cdt.builder.base"/>
-							<tool id="com.xmos.cdt.xc.compiler.358346732" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler"/>
-							<tool id="com.xmos.cdt.c.compiler.678310717" name="com.xmos.cdt.c.compiler" superClass="com.xmos.cdt.c.compiler"/>
-							<tool id="com.xmos.cdt.cxx.compiler.1218317664" name="com.xmos.cdt.cxx.compiler" superClass="com.xmos.cdt.cxx.compiler"/>
+							<tool id="com.xmos.cdt.xc.compiler.358346732" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler">
+								<inputType id="com.xmos.cdt.xc.compiler.input.678597501" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
+							</tool>
+							<tool id="com.xmos.cdt.c.compiler.678310717" name="com.xmos.cdt.c.compiler" superClass="com.xmos.cdt.c.compiler">
+								<inputType id="com.xmos.cdt.c.compiler.input.c.1914815982" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
+							</tool>
+							<tool id="com.xmos.cdt.cxx.compiler.1218317664" name="com.xmos.cdt.cxx.compiler" superClass="com.xmos.cdt.cxx.compiler">
+								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.1777363879" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
+							</tool>
 						</toolChain>
 					</folderInfo>
 				</configuration>
@@ -34,4 +40,5 @@
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

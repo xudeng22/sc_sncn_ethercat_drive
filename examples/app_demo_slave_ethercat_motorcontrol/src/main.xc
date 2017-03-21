@@ -1,8 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
-#include <COM_SERIAL-rev-a.bsp>
+#include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
 #include <IFM_DC100-rev-b.bsp>
-
 
 /**
  * @file test_ethercat-mode.xc
@@ -14,12 +13,14 @@
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 #include <user_config.h>
 
-#include <canopen_drive_service.h>
+#include <network_drive_service.h>
+#include <reboot.h>
+
+#include <co_interface.h>
 #include <canopen_service.h>
 
 #include <ethercat_service.h>
 #include <shared_memory.h>
-
 
 //BLDC Motor drive libs
 #include <position_feedback_service.h>
@@ -30,12 +31,10 @@
 #include <advanced_motor_control.h>
 
 //Position control + profile libs
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <profile_control.h>
 
-CANPorts can_ports = SOMANET_COM_CAN_PORTS;
-CANClock can_clock = SOMANET_COM_CAN_CLOCK;
-on tile[0]: port shutdown = SOMANET_COM_CAN_RESET;
+EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
 ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
@@ -43,7 +42,6 @@ FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
 QEIHallPort qei_hall_port_1 = SOMANET_IFM_HALL_PORTS;
 QEIHallPort qei_hall_port_2 = SOMANET_IFM_QEI_PORTS;
 HallEncSelectPort hall_enc_select_port = SOMANET_IFM_QEI_PORT_INPUT_MODE_SELECTION;
-
 SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
 port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
 port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
@@ -62,8 +60,10 @@ int main(void)
     interface PositionVelocityCtrlInterface i_position_control[3];
     interface PositionFeedbackInterface i_position_feedback_1[3];
 
-    /* CAN Open Communication channels */
+    /* EtherCat Communication channels */
     interface i_co_communication i_co[3];
+    interface i_foe_communication i_foe;
+    interface EtherCATRebootInterface i_ecat_reboot;
 
     par
     {
@@ -75,16 +75,9 @@ int main(void)
         on tile[COM_TILE] :
         {
             par {
-
-                {
-                    shutdown <: 0;
-                    canopen(i_co[0], can_ports, can_clock, 16);
-                }
-
-                {
-                    canopen_service(i_co, 3);
-                }
-
+                ethercat_service(i_ecat_reboot, i_co, null,
+                                    i_foe, ethercat_ports);
+                reboot_service_ethercat(i_ecat_reboot);
             }
         }
 
@@ -102,13 +95,12 @@ int main(void)
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
 #if 0
-
-            canopen_drive_service_debug( profiler_config,
-                                    i_co[1],
+            network_drive_service_debug( profiler_config,
+                                    i_co,
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #else
-            canopen_drive_service( profiler_config,
+            network_drive_service( profiler_config,
                                     i_co[1],
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback_1[0]);
@@ -121,13 +113,11 @@ int main(void)
             {
                 /* Position Control Loop */
                 {
-                    PosVelocityControlConfig pos_velocity_ctrl_config;
-
+                    MotionControlConfig pos_velocity_ctrl_config;
 
                     pos_velocity_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
                     pos_velocity_ctrl_config.max_pos_range_limit =                  MAX_POSITION_RANGE_LIMIT;
                     pos_velocity_ctrl_config.max_motor_speed =                      MAX_MOTOR_SPEED;
-
                     pos_velocity_ctrl_config.max_torque =                           TORQUE_CONTROL_LIMIT;
                     pos_velocity_ctrl_config.polarity =                             POLARITY;
 
@@ -152,14 +142,12 @@ int main(void)
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
                     pos_velocity_ctrl_config.resolution  =                          SENSOR_1_RESOLUTION;
 
-
                     pos_velocity_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
                     pos_velocity_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;
                     pos_velocity_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                     pos_velocity_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
-
-                    position_velocity_control_service(IFM_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
+                    motion_control_service(IFM_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
 
                 }
             }
@@ -199,7 +187,6 @@ int main(void)
                 {
                     MotorcontrolConfig motorcontrol_config;
 
-
                     motorcontrol_config.v_dc =  DC_BUS_VOLTAGE;
                     motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
                     motorcontrol_config.torque_P_gain =  TORQUE_P_VALUE;
@@ -208,20 +195,18 @@ int main(void)
                     motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
                     motorcontrol_config.commutation_sensor= SENSOR_1_TYPE;
                     motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-
                     motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
                     motorcontrol_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
                     motorcontrol_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
                     motorcontrol_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
                     motorcontrol_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
                     motorcontrol_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
-
                     motorcontrol_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
                     motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
-
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
+                    motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
                     motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
@@ -239,7 +224,6 @@ int main(void)
                 /* Position feedback service */
                 {
                     PositionFeedbackConfig position_feedback_config;
-
                     position_feedback_config.sensor_type = SENSOR_1_TYPE;
                     position_feedback_config.resolution  = SENSOR_1_RESOLUTION;
                     position_feedback_config.polarity    = SENSOR_1_POLARITY;
@@ -247,7 +231,6 @@ int main(void)
                     position_feedback_config.pole_pairs  = MOTOR_POLE_PAIRS;
                     position_feedback_config.ifm_usec    = IFM_TILE_USEC;
                     position_feedback_config.max_ticks   = SENSOR_MAX_TICKS;
-
                     position_feedback_config.offset      = 0;
                     position_feedback_config.sensor_function = SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL;
 
@@ -258,7 +241,6 @@ int main(void)
                     position_feedback_config.biss_config.timeout = BISS_TIMEOUT;
                     position_feedback_config.biss_config.busy = BISS_BUSY;
                     position_feedback_config.biss_config.clock_port_config = BISS_CLOCK_PORT;
-
                     position_feedback_config.biss_config.data_port_number = BISS_DATA_PORT_NUMBER;
 
                     position_feedback_config.rem_16mt_config.filter = REM_16MT_FILTER;
@@ -276,7 +258,6 @@ int main(void)
 
                     position_feedback_service(qei_hall_port_1, qei_hall_port_2, hall_enc_select_port, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
                             position_feedback_config, i_shared_memory[0], i_position_feedback_1,
-
                             null, null, null);
                 }
             }

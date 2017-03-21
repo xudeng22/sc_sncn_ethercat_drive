@@ -1,10 +1,10 @@
 /**
- * @file canopen_drive_service.xc
+ * @file network_drive_service.xc
  * @brief CANopen Motor Drive Service
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <canopen_drive_service.h>
+#include <network_drive_service.h>
 #include <refclk.h>
 #include <cia402_wrapper.h>
 #include <pdo_handler.h>
@@ -225,7 +225,7 @@ static void debug_print_state(DriveState_t state)
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
-void canopen_drive_service(ProfilerConfig &profiler_config,
+void network_drive_service(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,
@@ -661,7 +661,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
  * super simple test function for debugging without actual ethercat communication to just
  * test if the motor will move.
  */
-void canopen_drive_service_debug(ProfilerConfig &profiler_config,
+void network_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,

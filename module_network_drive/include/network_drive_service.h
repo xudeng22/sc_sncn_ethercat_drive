@@ -1,5 +1,5 @@
 /**
- * @file canopen_drive_service.h
+ * @file network_drive_service.h
  * @brief CANopen Motor Drive Service
  * @author Synapticon GmbH <support@synapticon.com>
  */
@@ -25,13 +25,13 @@
  * @param i_position_velocity_control Interface to Position-Velocity Control Loop Service.
  * @param i_position_feedback Inteface to Position Feedback Service.
  */
-void canopen_drive_service(ProfilerConfig &profiler_config,
+void network_drive_service(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,
                             client interface PositionFeedbackInterface i_position_feedback);
 
-void canopen_drive_service_debug(ProfilerConfig &profiler_config,
+void network_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_velocity_control,

@@ -47,6 +47,19 @@ int write_sdo(Ethercat_Slave_t *slave, SdoParam_t *conf);
  */
 int write_sdo_config(Ethercat_Master_t *master, int slave_number, SdoParam_t *config, size_t max_objects);
 
+/**
+ * @brief Read a sdo object from a saved sdo list
+ *
+ * @param slave   slave number
+ * @param *config pointer to list of configuration objects
+ * @param max_objects number of objects to transfer
+ * @param index of the object
+ * @param subindex of the object
+ *
+ * @return value of the object, 0 or if not found
+ */
+int read_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex);
+
 #ifdef __cplusplus
 }
 #endif

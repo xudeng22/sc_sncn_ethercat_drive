@@ -269,6 +269,18 @@ int main(int argc, char **argv)
     struct sigaction sa;
     struct itimerval tv;
 
+    //read sdo parameters from file
+    SdoConfigParameter_t sdo_config_parameter;
+    SdoParam_t **slave_config = 0;
+    if (sdo_enable) {
+        if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
+            fprintf(stderr, "Error, could not read SDO configuration file.\n");
+            return -1;
+        }
+        free(sdo_config_file); /* filename and path to the SDO config parameters is no longer needed */
+        slave_config = sdo_config_parameter.parameter;
+    }
+
 #ifndef DISABLE_ETHERCAT
 /********* ethercat init **************/
 
@@ -284,18 +296,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-
-    SdoConfigParameter_t sdo_config_parameter;
-    SdoParam_t **slave_config = 0;
     if (sdo_enable) {
-        //read sdo parameters from file
-        if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
-            fprintf(stderr, "Error, could not read SDO configuration file.\n");
-            return -1;
-        }
-        free(sdo_config_file); /* filename and path to the SDO config parameters is no longer needed */
-        slave_config = sdo_config_parameter.parameter;
-
         /* SDO configuration of the slave */
         for (int i = 0; i < num_slaves; i++) {
             int ret = write_sdo_config(master, i, slave_config[i], sdo_config_parameter.param_count);
@@ -351,15 +352,16 @@ int main(int argc, char **argv)
     profile_config.max_position = 0x7fffffff;
     profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
+    profile_config.ticks_per_turn = 65536;
     if (sdo_enable) {
-        for (int i=0 ; i<sdo_config_parameter.param_count; i++) {
-            if (slave_config[num_slaves-1][i].index == 0x308f) { //0x308f is sensor resolution (ticks per turn)
-                profile_config.ticks_per_turn = slave_config[num_slaves-1][i].value;
+        for (int sensor_port=1; sensor_port<=3; sensor_port++) {
+            int sensor_config = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
+            int sensor_function = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
+            if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
+                profile_config.ticks_per_turn = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
                 break;
             }
         }
-    } else {
-        profile_config.ticks_per_turn = 65536; //default ticks per turn
     }
     init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
 
@@ -438,10 +440,12 @@ int main(int argc, char **argv)
     }
 
     //free
+#ifndef DISABLE_ETHERCAT
     ecw_master_stop(master);
     ecw_master_release(master);
-    endwin(); // curses call to restore the original window and leave
     fclose(ecatlog);
+#endif
+    endwin(); // curses call to restore the original window and leave
     free(pdo_input);
     free(pdo_output);
 

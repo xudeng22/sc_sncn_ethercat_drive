@@ -60,12 +60,62 @@ static int get_maxvalue(unsigned datatype)
 	return 0;
 }
 
+{unsigned, unsigned} canod_find_index(uint16_t index, uint8_t subindex)
+{
+    static unsigned old_index, old_subindex, old_od_index;
+    unsigned od_index,
+    j = -1,
+    k = -1;
+
+    // Return previously searched OD index, if entry is the same.
+    if ( (index == old_index) && (subindex == old_subindex) )
+        return {old_od_index, 0};
+
+    old_index = index;
+    old_subindex = subindex;
+
+    // search for index
+    for(od_index = 0; SDO_Info_Entries[od_index].index != 0x0; od_index++)
+    {
+        if(SDO_Info_Entries[od_index].index == index)
+        {
+            j = od_index;
+            break;
+        }
+    }
+
+    // Index not found
+    if(j == -1) {
+        return {0, 2};
+    }
+
+    // search for subindex
+    for(od_index = j; SDO_Info_Entries[od_index].index != 0x0; od_index++)
+    {
+        if((SDO_Info_Entries[od_index].index == index) && (SDO_Info_Entries[od_index].subindex == subindex))
+        {
+            k = od_index;
+            break;
+        }
+    }
+
+    // subindex not found
+    if(k == -1) {
+        return {0, 3};
+    }
+
+    old_od_index = k;
+    return {k, 0};
+}
+
 /*---------------------------------------------------------------------------
  Find data length od the object based on index and subindex
  ---------------------------------------------------------------------------*/
-int canod_find_data_length(uint16_t index)
+{int, unsigned} canod_find_data_length(uint16_t index, uint8_t subindex)
 {
-    return SDO_Info_Entries[index].bitLength / 8;
+    unsigned od_index, error = 0;
+    {od_index, error} = canod_find_index(index, subindex);
+    return {SDO_Info_Entries[od_index].bitLength / 8, error};
 }
 
 
@@ -85,56 +135,12 @@ static unsigned get_object_count(void)
 
 /* API implementation */
 
-unsigned canod_get_no_of_si_entries(unsigned index)
+{unsigned char, unsigned} canod_get_access(uint16_t index, uint8_t subindex)
 {
-    unsigned od_index = SDO_Info_Entries[index].index;
-    unsigned count = index;
+    unsigned od_index, error;
+    {od_index, error} = canod_find_index(index, subindex);
 
-    while (SDO_Info_Entries[count].index == od_index)
-    {
-        count++;
-    }
-
-    return count - index;
-}
-
-{unsigned, unsigned} canod_find_index(unsigned address, unsigned subindex)
-{
-//    for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
-//        if (SDO_Info_Entries[i].index == address
-//         && SDO_Info_Entries[i].subindex == subindex)
-//            return i;
-//    }
-//
-//    return -1;
-
-    unsigned i,
-    j = -1,
-    k = -1;
-    for(i = 0; SDO_Info_Entries[i].index != 0x0; i++)
-    {
-      if(SDO_Info_Entries[i].index == address)
-      {
-        j = i;
-        break;
-      }
-    }
-    if(j == -1) return {0, 2};
-    for(i = j; SDO_Info_Entries[i].index != 0x0; i++)
-    {
-      if((SDO_Info_Entries[i].index == address) && (SDO_Info_Entries[i].subindex == subindex))
-      {
-        k = i;
-        break;
-      }
-    }
-    if(k == -1) return {0, 3};
-    return {k, 0};
-}
-
-unsigned char canod_get_access(unsigned index)
-{
-    return SDO_Info_Entries[index].objectAccess;
+    return {SDO_Info_Entries[od_index].objectAccess, error};
 }
 
 int canod_get_all_list_length(unsigned length[])
@@ -212,27 +218,29 @@ int canod_get_list(unsigned list[], unsigned size, unsigned listtype)
 	return count;
 }
 
-int canod_get_object_description(struct _sdoinfo_entry_description &obj, unsigned index)
+int canod_get_object_description(struct _sdoinfo_entry_description &obj, uint16_t index, uint8_t subindex)
 {
 	int k;
+    unsigned od_index, error = 0;
+    {od_index, error} = canod_find_index(index, subindex);
 
-    obj.index = SDO_Info_Entries[index].index;
-    obj.subindex = SDO_Info_Entries[index].subindex;
-    obj.objectDataType = SDO_Info_Entries[index].objectDataType;
-    obj.dataType = SDO_Info_Entries[index].dataType;
-    obj.objectCode = SDO_Info_Entries[index].objectCode;
+    obj.index = SDO_Info_Entries[od_index].index;
+    obj.subindex = SDO_Info_Entries[od_index].subindex;
+    obj.objectDataType = SDO_Info_Entries[od_index].objectDataType;
+    obj.dataType = SDO_Info_Entries[od_index].dataType;
+    obj.objectCode = SDO_Info_Entries[od_index].objectCode;
     if (obj.subindex == 0 && obj.objectCode != CANOD_TYPE_VAR)
-        obj.value = SDO_Info_Entries[index].value;
+        obj.value = SDO_Info_Entries[od_index].value;
     else
         obj.value = 0;
     for (k=0; k<50; k++) { /* FIXME set a define for max string length */
-        obj.name[k] = SDO_Info_Entries[index].name[k];
+        obj.name[k] = SDO_Info_Entries[od_index].name[k];
     }
 
-	return 0;
+	return error;
 }
 
-static int canod_get_entry_description_lowerindex(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
+static int canod_get_entry_description_lowerindex(uint16_t index, uint8_t subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
 {
     desc.index = index;
     desc.subindex = subindex;
@@ -245,28 +253,31 @@ static int canod_get_entry_description_lowerindex(unsigned index, unsigned subin
     return 0;
 }
 
-int canod_get_entry_description(unsigned index, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
+int canod_get_entry_description(uint16_t index, uint8_t subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
 {
 	struct _sdoinfo_entry_description entry;
 	int i,k;
+    unsigned od_index, error = 0;
+    {od_index, error} = canod_find_index(index, subindex);
+
 
 	if (index < 0x1000) {
-	    return canod_get_entry_description_lowerindex(SDO_Info_Entries[index].index, SDO_Info_Entries[index].subindex, valueinfo, desc);
+	    return canod_get_entry_description_lowerindex(SDO_Info_Entries[od_index].index, SDO_Info_Entries[od_index].subindex, valueinfo, desc);
 	}
 
-	if (SDO_Info_Entries[index].index == 0x0)
+	if (SDO_Info_Entries[od_index].index == 0x0)
 		return -1; /* Entry object not found */
 
 	/* FIXME implement entry_description */
-	desc.index = SDO_Info_Entries[index].index;
-	desc.subindex = SDO_Info_Entries[index].subindex;
+	desc.index = SDO_Info_Entries[od_index].index;
+	desc.subindex = SDO_Info_Entries[od_index].subindex;
 
-	desc.dataType = SDO_Info_Entries[index].dataType;
-	desc.bitLength = SDO_Info_Entries[index].bitLength;
-	desc.objectAccess = SDO_Info_Entries[index].objectAccess;
+	desc.dataType = SDO_Info_Entries[od_index].dataType;
+	desc.bitLength = SDO_Info_Entries[od_index].bitLength;
+	desc.objectAccess = SDO_Info_Entries[od_index].objectAccess;
 
 #if 1
-	desc.value = SDO_Info_Entries[index].value;
+	desc.value = SDO_Info_Entries[od_index].value;
 #else /* wrong assumption of packet content? */
 	switch (valueinfo) {
 	case CANOD_VALUEINFO_UNIT:
@@ -291,15 +302,15 @@ int canod_get_entry_description(unsigned index, unsigned valueinfo, struct _sdoi
 #endif
 
 	/* copy name */
-	for (k=0; k<50 && SDO_Info_Entries[index].name[k] != '\0'; k++) {
-		desc.name[k] = SDO_Info_Entries[index].name[k];
+	for (k=0; k<50 && SDO_Info_Entries[od_index].name[k] != '\0'; k++) {
+		desc.name[k] = SDO_Info_Entries[od_index].name[k];
 	}
 	desc.name[k] = '\0';
 
-    return 0;
+    return error;
 }
 
-int canod_get_lowerentry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
+int canod_get_lowerentry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &bitlength)
 {
     unsigned indexes[] = {
         0, /* unused */
@@ -329,33 +340,37 @@ int canod_get_lowerentry(unsigned index, unsigned subindex, unsigned &value, uns
    return 0;
 }
 
-int canod_get_entry(unsigned index, unsigned &value, unsigned &bitlength)
+int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &bitlength)
 {
 	unsigned mask = 0xffffffff;
+    unsigned od_index, error = 0;
+    {od_index, error} = canod_find_index(index, subindex);
 
 	/* FIXME handle special subindex 0xff to request object type -> see also CiA 301 */
 
 	/* special file handling for object requests of index < 0x1000 */
-    if (SDO_Info_Entries[index].index < 0x1000) {
-        return canod_get_lowerentry(SDO_Info_Entries[index].index,
-                SDO_Info_Entries[index].subindex, value, bitlength);
+    if (SDO_Info_Entries[od_index].index < 0x1000) {
+        return canod_get_lowerentry(SDO_Info_Entries[od_index].index,
+                SDO_Info_Entries[od_index].subindex, value, bitlength);
     }
 
-    value = SDO_Info_Entries[index].value & (mask >> (32 - SDO_Info_Entries[index].bitLength) );
-    bitlength = SDO_Info_Entries[index].bitLength; /* alternative bitLength */
+    value = SDO_Info_Entries[od_index].value & (mask >> (32 - SDO_Info_Entries[od_index].bitLength) );
+    bitlength = SDO_Info_Entries[od_index].bitLength; /* alternative bitLength */
 
-    return 0;
+    return error;
 }
 
-int canod_set_entry(unsigned index, unsigned value, unsigned intern)
+int canod_set_entry(uint16_t index, uint8_t subindex, unsigned value, unsigned intern)
 {
 	unsigned mask = 0xffffffff;
+    unsigned od_index, error = 0;
+    {od_index, error} = canod_find_index(index, subindex);
 
 	// TODO Find solution for access from application side
-    if ((SDO_Info_Entries[index].objectAccess & 0x38) == 0 && !intern) /* object not writeable, FIXME should be distinguished according to the current state */
+    if ((SDO_Info_Entries[od_index].objectAccess & 0x38) == 0 && !intern) /* object not writeable, FIXME should be distinguished according to the current state */
         return 1;
 
-    SDO_Info_Entries[index].value = value & (mask >> (32 - SDO_Info_Entries[index].bitLength) );
+    SDO_Info_Entries[od_index].value = value & (mask >> (32 - SDO_Info_Entries[od_index].bitLength) );
 
-    return 0;
+    return error;
 }

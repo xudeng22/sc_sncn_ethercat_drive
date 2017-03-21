@@ -67,53 +67,56 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
 
             /* SDO */
 
-            case i_co[int j].od_find_index(uint16_t address, uint8_t subindex) -> {unsigned index_out, unsigned error_out}:
-                    unsigned index, error;
-                    {index, error} = canod_find_index(address, subindex);
-                    index_out = index;
-                    error_out = error;
+            case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { uint8_t access, uint8_t error }:
+                    {access, error}  = canod_get_access(index_, subindex);
                     break;
 
-            case i_co[int j].od_get_access(uint16_t index_) -> { uint8_t access }:
-                    access = canod_get_access(index_);
-                    break;
-
-            case i_co[int j].od_get_object_value(uint16_t index_) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
+            case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
                     unsigned bitlength = 0;
                     unsigned value = 0;
-                    error_out = canod_get_entry(index_, value, bitlength);
+                    error_out = canod_get_entry(index_, subindex, value, bitlength);
                     bitlength_out = bitlength;
                     value_out = value;
                     break;
 
-            case i_co[int j].od_set_object_value(uint16_t index_, uint32_t value) -> { uint8_t error_out }:
-                    error_out = canod_set_entry(index_, value, 0);
+            case i_co[int j].od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value) -> { uint8_t error_out }:
+                    error_out = canod_set_entry(index_, subindex, value, 0);
                     break;
 
-            case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
+            case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
                     unsigned bitlength = 0;
                     unsigned value = 0;
-                    error_out = canod_get_entry(index_, value, bitlength);
+                    error_out = canod_get_entry(index_, subindex, value, bitlength);
                     bitlength_out = bitlength;
                     for (unsigned i = 0; i < (bitlength/8); i++) {
                         data_buffer[i] = (value >> (i*8)) & 0xff;
                     }
                     break;
 
-            case i_co[int j].od_set_object_value_buffer(uint16_t index_, uint8_t data_buffer[]) -> { uint8_t error_out }:
-                    unsigned byte_len = canod_find_data_length(index_);
+            case i_co[int j].od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint8_t error_out }:
+                    unsigned byte_len, error;
                     unsigned value = 0;
-                    for (unsigned i = 0; i < byte_len; i++) {
-                        value |= (unsigned) data_buffer[i] << (i*8);
+
+                    {byte_len, error} = canod_find_data_length(index_, subindex);
+
+                    if (error)
+                    {
+                        error_out = error;
                     }
-                    //value = (data_buffer, unsigned);
-                    error_out = canod_set_entry(index_, value, 0);
+                    else
+                    {
+                        for (unsigned i = 0; i < byte_len; i++) {
+                            value |= (unsigned) data_buffer[i] << (i*8);
+                        }
+                        //value = (data_buffer, unsigned);
+                        error_out = canod_set_entry(index_, subindex, value, 1);
+                    }
                     break;
 
 
-            case i_co[int j].od_get_entry_description(uint16_t index_, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
+            case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
-                    error_out = canod_get_entry_description(index_, valueinfo, desc);
+                    error_out = canod_get_entry_description(index_, subindex, valueinfo, desc);
                     desc_out = desc;
                     break;
 
@@ -129,14 +132,14 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                     memcpy(list_out, list, size_out * sizeof(unsigned));
                     break;
 
-            case i_co[int j].od_get_object_description(struct _sdoinfo_entry_description &obj_out, unsigned index_) -> { int error }:
+            case i_co[int j].od_get_object_description(struct _sdoinfo_entry_description &obj_out, uint16_t index_, uint8_t subindex) -> { int error }:
                     struct _sdoinfo_entry_description obj;
-                    error = canod_get_object_description(obj, index_);
+                    error = canod_get_object_description(obj, index_, subindex);
                     obj_out = obj;
                     break;
 
-            case i_co[int j].od_get_data_length(uint16_t index_) -> {uint32_t len}:
-                    len = canod_find_data_length(index_); // return value: count of byte
+            case i_co[int j].od_get_data_length(uint16_t index_, uint8_t subindex) -> {uint32_t len, uint8_t error}:
+                    {len, error} = canod_find_data_length(index_, subindex); // return value: count of byte
                     break;
 
             case i_co[int j].inactive_communication(void):

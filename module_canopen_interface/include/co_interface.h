@@ -97,24 +97,24 @@ interface i_co_communication
      * @brief Returns an object value from dictionary.
      * @return Object value, bitlength, error
      */
-    {uint32_t, uint32_t, uint8_t} od_get_object_value(uint16_t index_);
+    {uint32_t, uint32_t, uint8_t} od_get_object_value(uint16_t index_, uint8_t subindex);
 
     /**
      * @brief Set an object value in dictionary.
      * @return Error
      */
-    uint8_t od_set_object_value(uint16_t index_, uint32_t value);
+    uint8_t od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value);
 
 
-    uint8_t od_set_object_value_buffer(uint16_t index_, uint8_t data_buffer[]);
+    uint8_t od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]);
 
-    {uint32_t, uint8_t} od_get_object_value_buffer(uint16_t index_, uint8_t data_buffer[]);
+    {uint32_t, uint8_t} od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]);
 
     /**
      * @brief Get whole entry description of object.
      * @return entry description, error
      */
-    {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint32_t valueinfo);
+    {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo);
 
     /**
      * @brief Returns an array with five length entrys (Currently just one entry).
@@ -131,14 +131,13 @@ interface i_co_communication
      * @brief Get single entry description.
      * @return 0 if found else 1
      */
-    int od_get_object_description(struct _sdoinfo_entry_description &obj, unsigned index_);
+    int od_get_object_description(struct _sdoinfo_entry_description &obj, uint16_t index_, uint8_t subindex);
 
 
-    uint32_t od_get_data_length(uint16_t index_);
+    {uint32_t, uint8_t} od_get_data_length(uint16_t index_, uint8_t subindex);
 
-    {unsigned, unsigned} od_find_index(uint16_t address, uint8_t subindex);
 
-    uint8_t od_get_access(uint16_t index_);
+    {uint8_t, uint8_t} od_get_access(uint16_t index_, uint8_t subindex);
 
 
 //    // PDO Notification

@@ -47,11 +47,9 @@ pdo_values_t pdo_init_data(void)
 	return InOut;
 }
 
-char pdo_read_write_data_od(int address, char data_buffer[], char write)
+char pdo_read_write_data_od(int index, char data_buffer[], char write)
 {
-    int index = 0,
-        temp_index = 0,
-        error;
+    int address = 0;
     char count = 0,
         no_of_entries = 0,
         sub_index = 0,
@@ -61,31 +59,26 @@ char pdo_read_write_data_od(int address, char data_buffer[], char write)
             entries = 0,
             value;
 
-    {index, error} = canod_find_index(address, 0);
-    canod_get_entry(index, entries, bitlength);
+    canod_get_entry(index, 0, entries, bitlength);
     no_of_entries = entries & 0xff;
 
     while(count != no_of_entries)
     {
-        canod_get_entry(index + count + 1, entries, bitlength);
+        canod_get_entry(index, count + 1, entries, bitlength);
         address = (entries >> 16) & 0xffff;
         sub_index = (entries >> 8) & 0xff;
         data_length = (entries & 0xff)/8;
         count++;
 
-        {temp_index, error} = canod_find_index(address, sub_index);
-
-        if (temp_index != -1) {
-            if (write) {
-                for (unsigned i = 0; i < data_length; i++) {
-                    value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
-                }
-                canod_set_entry(temp_index, value, 1);
-            } else {
-                canod_get_entry(temp_index, value, bitlength);
-                for (unsigned i = 0; i < data_length; i++) {
-                    data_buffer[data_counter + i] = (value >> (8*i) ) & 0xff;
-                }
+        if (write) {
+            for (unsigned i = 0; i < data_length; i++) {
+                value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
+            }
+            canod_set_entry(address, sub_index, value, 1);
+        } else {
+            canod_get_entry(address, sub_index, value, bitlength);
+            for (unsigned i = 0; i < data_length; i++) {
+                data_buffer[data_counter + i] = (value >> (8*i) ) & 0xff;
             }
         }
         data_counter += data_length;

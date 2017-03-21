@@ -62,7 +62,7 @@ struct _sdoinfo_service {
  * bit 16-32: index of the mapped object
  */
 
-int canod_find_data_length(uint16_t index);
+{int, unsigned} canod_find_data_length(uint16_t index, uint8_t subindex);
 /**
  * Return the length of all five cathegories
  */
@@ -81,12 +81,12 @@ int canod_get_list(unsigned list[], unsigned size, unsigned listtype);
 /**
  * Get description of object at index and subindex.
  */
-int canod_get_object_description(struct _sdoinfo_entry_description &obj, unsigned index);
+int canod_get_object_description(struct _sdoinfo_entry_description &obj, uint16_t index, uint8_t subindex);
 
 /**
  * Get description of specified entry
  */
-int canod_get_entry_description(unsigned index, unsigned valueinfo, struct _sdoinfo_entry_description &desc);
+int canod_get_entry_description(uint16_t index, uint8_t subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc);
 
 /**
  * Get OD entry values
@@ -97,7 +97,7 @@ int canod_get_entry_description(unsigned index, unsigned valueinfo, struct _sdoi
  * @param &type      the type of &value
  * @return 0 on success
  */
-int canod_get_entry(unsigned index, unsigned &value, unsigned &type);
+int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &type);
 
 /**
  * Set OD entry values
@@ -110,12 +110,8 @@ int canod_get_entry(unsigned index, unsigned &value, unsigned &type);
  * @param type      the type of &value
  * @return 0 on success
  */
-int canod_set_entry(unsigned index, unsigned value, unsigned intern);
+int canod_set_entry(uint16_t index, uint8_t subindex, unsigned value, unsigned intern);
 
-unsigned char canod_get_access(unsigned index);
-
-{unsigned, unsigned} canod_find_index(unsigned address, unsigned subindex);
-
-unsigned canod_get_no_of_si_entries(unsigned index);
+{unsigned char, unsigned} canod_get_access(uint16_t index, uint8_t subindex);
 
 #endif /* CANOD_H */

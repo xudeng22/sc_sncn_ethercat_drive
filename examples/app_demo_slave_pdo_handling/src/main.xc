@@ -89,7 +89,10 @@ static void pdo_service(client interface i_co_communication i_co)
 #endif
 
 #if 0
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
 		if(InOutOld.control_word != InOut.control_word)
 		{
 			printstr("\nControl word: ");
@@ -120,7 +123,10 @@ static void pdo_service(client interface i_co_communication i_co)
 			printintln(InOut.target_torque);
 		}
 #endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
 	   InOutOld.control_word 	= InOut.control_word;
 	   InOutOld.target_position = InOut.target_position;
 	   InOutOld.target_velocity = InOut.target_velocity;

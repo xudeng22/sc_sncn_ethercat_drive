@@ -400,11 +400,11 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
          */
         if (fault != NO_FAULT) {
             update_checklist(checklist, opmode, 1);
-            if (fault == OVER_CURRENT_PHASE_A || fault == OVER_CURRENT_PHASE_B || fault == OVER_CURRENT_PHASE_C) {
+            if (fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (fault == UNDER_VOLTAGE) {
+            } else if (fault == UNDER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-            } else if (fault == OVER_VOLTAGE) {
+            } else if (fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
             } else if (fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
@@ -423,7 +423,7 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
         pdo_set_actual_velocity(actual_velocity, InOut);
         pdo_set_actual_torque(actual_torque, InOut );
         pdo_set_actual_position(actual_position, InOut);
-        InOut.user1_out = (1000 * 5 * send_to_master.sensor_torque) / 4096;  /* ticks to (edit:) milli-volt */
+        InOut.user1_out = (1000 * 5 * (send_to_master.analogue_input_a_1-send_to_master.analogue_input_b_1)) / 4096;  /* ticks to (edit:) milli-volt */
         InOut.user4_out = tuning_result;
 
         //xscope_int(USER_TORQUE, InOut.user1_out);
@@ -509,18 +509,8 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    if (opmode == OPMODE_CSP) {
-                        printstrln("enable position ctrl");
-                        i_position_velocity_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
-                    } else if (opmode == OPMODE_CSV) {
-                        printstrln("enable velocity ctrl");
-                        i_position_velocity_control.enable_velocity_ctrl();
 
-                    } else if (opmode == OPMODE_CST) {
-                        printstrln("enable torque ctrl");
-                        i_position_velocity_control.enable_torque_ctrl();
-
-                    }
+                    i_position_control.enable_position_ctrl(position_velocity_config.position_control_strategy);
                 }
                 break;
 
@@ -663,14 +653,10 @@ void canopen_drive_service(ProfilerConfig &profiler_config,
             {position_velocity_config.D_velocity, void, void} = i_co.od_get_object_value(index); /* 25; */
 
             i_position_velocity_control.set_position_velocity_control_config(position_velocity_config);
+
         }
 
 
-        /*
-        motorcontrol_config.current_P_gain     = i_co.od_get_object_value(CIA402_CURRENT_GAIN, 1);
-        motorcontrol_config.current_I_gain     = i_co.od_get_object_value(CIA402_CURRENT_GAIN, 2);
-        motorcontrol_config.current_D_gain     = i_co.od_get_object_value(CIA402_CURRENT_GAIN, 3);
-         */
 #endif
 
         /* wait 1 ms to respect timing */
@@ -707,7 +693,7 @@ void canopen_drive_service_debug(ProfilerConfig &profiler_config,
     unsigned time;
 
     printstr("Motorconfig\n");
-    printstr("pole pair: "); printintln(motorcontrol_config.pole_pair);
+    printstr("pole pair: "); printintln(motorcontrol_config.pole_pairs);
     printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
 
     printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);

@@ -204,6 +204,7 @@ int main(void)
                     motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
                     motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
+                    motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
                     motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;

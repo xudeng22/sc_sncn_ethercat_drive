@@ -28,6 +28,7 @@ typedef struct {
     int brake_release_strategy;
     int brake_flag;
     int error_status;
+    int sensor_error;
     int max_position;
     int min_position;
     int max_speed;

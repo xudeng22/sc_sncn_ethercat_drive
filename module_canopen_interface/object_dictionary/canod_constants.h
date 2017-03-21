@@ -133,6 +133,11 @@
 
 #define CIA402_SUPPORTED_DRIVE_MODES  0x6502 /* recommended */
 
+#define ODSNCN_ADDITIONAL_ENCODER         0x2100   /* Record:
+                                                      Sub 01 = Type of Sensor
+                                                      Sub 02 = Sensor Polarity
+                                                      Sub 03 = Encoder Resolution */
+
 /* Operating modes for use in objects CIA402_OP_MODES and CIA402_OP_MODES_DISPLAY */
 #define CIA402_OP_MODE_CSP    8
 #define CIA402_OP_MODE_CSV    9

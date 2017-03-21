@@ -53,9 +53,10 @@ int main(void)
     interface MotorcontrolInterface i_motorcontrol[2];
     interface update_pwm i_update_pwm;
     interface update_brake i_update_brake;
-    interface shared_memory_interface i_shared_memory[2];
+    interface shared_memory_interface i_shared_memory[3];
     interface PositionVelocityCtrlInterface i_position_control[3];
     interface PositionFeedbackInterface i_position_feedback_1[3];
+    interface PositionFeedbackInterface i_position_feedback_2[3];
 
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
@@ -101,7 +102,7 @@ int main(void)
             ethercat_drive_service( profiler_config,
                                     i_pdo, i_coe,
                                     i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback_1[0], null);
+                                    i_position_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
 #endif
         }
 
@@ -122,6 +123,12 @@ int main(void)
                     pos_velocity_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
                     pos_velocity_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
                     pos_velocity_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
+                    //select resolution of sensor used for motion control
+                    if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {
+                        pos_velocity_ctrl_config.resolution  =                      SENSOR_2_RESOLUTION;
+                    } else {
+                        pos_velocity_ctrl_config.resolution  =                      SENSOR_1_RESOLUTION;
+                    }
 
                     pos_velocity_ctrl_config.position_control_strategy =            NL_POSITION_CONTROLLER;
 
@@ -138,7 +145,6 @@ int main(void)
 
                     pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
                     pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
-                    pos_velocity_ctrl_config.resolution  =                          SENSOR_1_RESOLUTION;
 
                     pos_velocity_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
                     pos_velocity_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;
@@ -212,51 +218,63 @@ int main(void)
                     motorcontrol_config.protection_limit_over_voltage =  PRORECTION_MAXIMUM_VOLTAGE;
                     motorcontrol_config.protection_limit_under_voltage = PRORECTION_MINIMUM_VOLTAGE;
 
-                    motor_control_service(motorcontrol_config, i_adc[0], i_shared_memory[1],
+                    motor_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
                             i_watchdog[0], i_motorcontrol, i_update_pwm, IFM_TILE_USEC);
                 }
 
                 /* Shared memory Service */
-                [[distribute]] shared_memory_service(i_shared_memory, 2);
+                [[distribute]] shared_memory_service(i_shared_memory, 3);
 
                 /* Position feedback service */
                 {
-                    PositionFeedbackConfig position_feedback_config;
-                    position_feedback_config.sensor_type = SENSOR_1_TYPE;
-                    position_feedback_config.resolution  = SENSOR_1_RESOLUTION;
-                    position_feedback_config.polarity    = SENSOR_1_POLARITY;
-                    position_feedback_config.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
-                    position_feedback_config.pole_pairs  = MOTOR_POLE_PAIRS;
-                    position_feedback_config.ifm_usec    = IFM_TILE_USEC;
-                    position_feedback_config.max_ticks   = SENSOR_MAX_TICKS;
-                    position_feedback_config.offset      = 0;
-                    position_feedback_config.sensor_function = SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL;
+                    PositionFeedbackConfig position_feedback_config_1;
+                    position_feedback_config_1.sensor_type = SENSOR_1_TYPE;
+                    position_feedback_config_1.resolution  = SENSOR_1_RESOLUTION;
+                    position_feedback_config_1.polarity    = SENSOR_1_POLARITY;
+                    position_feedback_config_1.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
+                    position_feedback_config_1.pole_pairs  = MOTOR_POLE_PAIRS;
+                    position_feedback_config_1.ifm_usec    = IFM_TILE_USEC;
+                    position_feedback_config_1.max_ticks   = SENSOR_MAX_TICKS;
+                    position_feedback_config_1.offset      = 0;
+                    position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;
 
-                    position_feedback_config.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
-                    position_feedback_config.biss_config.filling_bits = BISS_FILLING_BITS;
-                    position_feedback_config.biss_config.crc_poly = BISS_CRC_POLY;
-                    position_feedback_config.biss_config.clock_frequency = BISS_CLOCK_FREQUENCY;
-                    position_feedback_config.biss_config.timeout = BISS_TIMEOUT;
-                    position_feedback_config.biss_config.busy = BISS_BUSY;
-                    position_feedback_config.biss_config.clock_port_config = BISS_CLOCK_PORT;
-                    position_feedback_config.biss_config.data_port_number = BISS_DATA_PORT_NUMBER;
+                    position_feedback_config_1.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
+                    position_feedback_config_1.biss_config.filling_bits = BISS_FILLING_BITS;
+                    position_feedback_config_1.biss_config.crc_poly = BISS_CRC_POLY;
+                    position_feedback_config_1.biss_config.clock_frequency = BISS_CLOCK_FREQUENCY;
+                    position_feedback_config_1.biss_config.timeout = BISS_TIMEOUT;
+                    position_feedback_config_1.biss_config.busy = BISS_BUSY;
+                    position_feedback_config_1.biss_config.clock_port_config = BISS_CLOCK_PORT;
+                    position_feedback_config_1.biss_config.data_port_number = BISS_DATA_PORT_NUMBER;
 
-                    position_feedback_config.rem_16mt_config.filter = REM_16MT_FILTER;
+                    position_feedback_config_1.rem_16mt_config.filter = REM_16MT_FILTER;
 
-                    position_feedback_config.rem_14_config.hysteresis     = REM_14_SENSOR_HYSTERESIS ;
-                    position_feedback_config.rem_14_config.noise_setting  = REM_14_SENSOR_NOISE;
-                    position_feedback_config.rem_14_config.dyn_angle_comp = REM_14_SENSOR_DAE;
-                    position_feedback_config.rem_14_config.abi_resolution = REM_14_SENSOR_ABI_RES;
+                    position_feedback_config_1.rem_14_config.hysteresis     = REM_14_SENSOR_HYSTERESIS ;
+                    position_feedback_config_1.rem_14_config.noise_setting  = REM_14_SENSOR_NOISE;
+                    position_feedback_config_1.rem_14_config.dyn_angle_comp = REM_14_SENSOR_DAE;
+                    position_feedback_config_1.rem_14_config.abi_resolution = REM_14_SENSOR_ABI_RES;
 
-                    position_feedback_config.qei_config.index_type  = QEI_SENSOR_INDEX_TYPE;
-                    position_feedback_config.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
-                    position_feedback_config.qei_config.port_number = QEI_SENSOR_PORT_NUMBER;
+                    position_feedback_config_1.qei_config.index_type  = QEI_SENSOR_INDEX_TYPE;
+                    position_feedback_config_1.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
+                    position_feedback_config_1.qei_config.port_number = QEI_SENSOR_PORT_NUMBER;
 
-                    position_feedback_config.hall_config.port_number = HALL_SENSOR_PORT_NUMBER;
+                    position_feedback_config_1.hall_config.port_number = HALL_SENSOR_PORT_NUMBER;
+
+                    //setting second sensor
+                    PositionFeedbackConfig position_feedback_config_2 = position_feedback_config_1;
+                    position_feedback_config_2.sensor_type = 0;
+                    if (SENSOR_2_FUNCTION != SENSOR_FUNCTION_DISABLED) //enable second sensor
+                    {
+                        position_feedback_config_2.sensor_type = SENSOR_2_TYPE;
+                        position_feedback_config_2.polarity    = SENSOR_2_POLARITY;
+                        position_feedback_config_2.resolution  = SENSOR_2_RESOLUTION;
+                        position_feedback_config_2.velocity_compute_period = SENSOR_2_VELOCITY_COMPUTE_PERIOD;
+                        position_feedback_config_2.sensor_function = SENSOR_2_FUNCTION;
+                    }
 
                     position_feedback_service(qei_hall_port_1, qei_hall_port_2, hall_enc_select_port, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
-                            position_feedback_config, i_shared_memory[0], i_position_feedback_1,
-                            null, null, null);
+                            position_feedback_config_1, i_shared_memory[0], i_position_feedback_1,
+                            position_feedback_config_2, i_shared_memory[1], i_position_feedback_2);
                 }
             }
         }

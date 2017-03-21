@@ -12,7 +12,7 @@
 #include <motor_control_interfaces.h>
 #include <refclk.h>
 #include <adc_service.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <profile_control.h>
 #include <position_feedback_service.h>
 #include <stdint.h>
@@ -49,7 +49,7 @@ int tuning_handler(
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig      &pos_velocity_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
@@ -60,7 +60,7 @@ int tuning_handler(
 void tuning_command(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig      &pos_velocity_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,

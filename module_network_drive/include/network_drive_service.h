@@ -10,7 +10,7 @@
 #include <co_interface.h>
 #include <pdo_handler.h>
 
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <position_feedback_service.h>
 
 #include <profile_control.h>

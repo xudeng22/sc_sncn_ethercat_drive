@@ -7,7 +7,7 @@
 #include <statemachine.h>
 #include <state_modes.h>
 #include <motor_control_structures.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <mc_internal_constants.h>
 
 #include "print.h"

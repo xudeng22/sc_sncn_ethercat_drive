@@ -158,7 +158,7 @@ static void inline update_configuration(
         PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &motorcontrol_config,
         ProfilerConfig            &profiler_config,
-        int &sensor_select,
+        int &sensor_commutation, int &sensor_motion_control,
         int &limit_switch_type,
         int &polarity,
         int &sensor_resolution,
@@ -180,8 +180,6 @@ static void inline update_configuration(
     }
 
     // detect which sensor service (1 or 2) is used for commutation or motion control
-    int sensor_commutation = 0;
-    int sensor_motion_control = 0;
     if (position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
         sensor_commutation = 1;
     } else if (position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_1.sensor_function == SENSOR_FUNCTION_MOTION_CONTROL) {
@@ -209,6 +207,8 @@ static void inline update_configuration(
     } else {
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
+    printintln(sensor_commutation);
+    printintln(sensor_motion_control);
 
     cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
     cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config, sensor_commutation, sensor_commutation_type);
@@ -225,17 +225,6 @@ static void inline update_configuration(
     nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
-
-    /* FIXME assumption: this sensor selection code is for the commutation sensor...
-     * the sensor_select is currently not used anywhere */
-    int number_of_feedbacks = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
-    for (int i = 1; i <= number_of_feedbacks; i++) {
-        uint16_t sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, i);
-        int sensor_function = i_coe.get_object_value(sensor_object, SUB_FEEDBACK_SENSOR_FUNCTION);
-        if (sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
-            sensor_select = i;
-        }
-    }
 }
 
 static void debug_print_state(DriveState_t state)
@@ -334,7 +323,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     int ack = 0;
     int shutdown_ack = 0;
-    int sensor_select = 1;
+    int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
+    int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
 
     int communication_active = 0;
     unsigned int c_time;
@@ -414,7 +404,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         if (read_configuration) {
             update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback_1, i_position_feedback_2,
                     position_velocity_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
-                    sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
+                    sensor_commutation, sensor_motion_control, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
                     opmode
                     );
 
@@ -664,9 +654,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             tuning_handler_ethercat(controlword, tuning_control,
                     statusword, tuning_result,
                     tuning_status,
-                    motorcontrol_config, position_velocity_config, position_feedback_config_1,
+                    motorcontrol_config, position_velocity_config, position_feedback_config_1, position_feedback_config_2,
+                    sensor_commutation, sensor_motion_control,
                     send_to_master, send_to_control,
-                    i_position_control, i_position_feedback_1);
+                    i_position_control, i_position_feedback_1, i_position_feedback_2);
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.

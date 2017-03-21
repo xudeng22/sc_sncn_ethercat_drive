@@ -38,11 +38,15 @@ int tuning_handler_ethercat(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
         PosVelocityControlConfig &pos_velocity_ctrl_config,
-        PositionFeedbackConfig   &pos_feedback_config,
+        PositionFeedbackConfig   &pos_feedback_config_1,
+        PositionFeedbackConfig   &pos_feedback_config_2,
+        int sensor_commutation,
+        int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
         client interface PositionVelocityCtrlInterface i_position_control,
-        client interface PositionFeedbackInterface ?i_position_feedback
+        client interface PositionFeedbackInterface ?i_position_feedback_1,
+        client interface PositionFeedbackInterface ?i_position_feedback_2
     )
 {
     uint8_t status_mux     = statusword & 0xff;
@@ -59,11 +63,16 @@ int tuning_handler_ethercat(
         if (pos_velocity_ctrl_config.polarity == INVERTED_POLARITY) {
             motion_polarity = 1;
         }
-        int sensor_polarity = 0;
-        if (pos_feedback_config.polarity == INVERTED_POLARITY) {
-            sensor_polarity = 1;
+        int sensor_polarity = (int)pos_feedback_config_1.polarity;
+        if (sensor_commutation == 2) {
+            sensor_polarity = (int)pos_feedback_config_2.polarity;
         }
-        int  brake_release_strategy = 0;
+        if (sensor_polarity == INVERTED_POLARITY) {
+            sensor_polarity = 1;
+        } else {
+            sensor_polarity = 0;
+        }
+        int brake_release_strategy = 0;
         if (pos_velocity_ctrl_config.special_brake_release == 1) {
             brake_release_strategy = 1;
         }
@@ -164,9 +173,10 @@ int tuning_handler_ethercat(
 
         //execute command
         tuning_command(tuning_status,
-                motorcontrol_config, pos_velocity_ctrl_config, pos_feedback_config,
+                motorcontrol_config, pos_velocity_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
+                sensor_commutation, sensor_motion_control,
                 upstream_control_data, downstream_control_data,
-                i_position_control, i_position_feedback);
+                i_position_control, i_position_feedback_1, i_position_feedback_2);
     }
 
     //put status display and status mux in statusword
@@ -181,11 +191,15 @@ void tuning_command(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
         PosVelocityControlConfig &pos_velocity_ctrl_config,
-        PositionFeedbackConfig   &pos_feedback_config,
+        PositionFeedbackConfig   &pos_feedback_config_1,
+        PositionFeedbackConfig   &pos_feedback_config_2,
+        int sensor_commutation,
+        int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
         client interface PositionVelocityCtrlInterface i_position_control,
-        client interface PositionFeedbackInterface ?i_position_feedback
+        client interface PositionFeedbackInterface ?i_position_feedback_1,
+        client interface PositionFeedbackInterface ?i_position_feedback_2
     )
 {
 
@@ -420,14 +434,21 @@ void tuning_command(
 
     //pole pairs
     case 'P':
-        if (!isnull(i_position_feedback)) {
-            motorcontrol_config.pole_pairs = tuning_status.value;
-            pos_feedback_config.pole_pairs = tuning_status.value;
-            tuning_status.brake_flag = 0;
-            tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            i_position_feedback.set_config(pos_feedback_config);
-            i_position_control.set_motorcontrol_config(motorcontrol_config);
+        if (sensor_commutation == 2) {
+            if (!isnull(i_position_feedback_2)) {
+                pos_feedback_config_2.pole_pairs = tuning_status.value;
+                i_position_feedback_2.set_config(pos_feedback_config_2);
+            }
+        } else {
+            if (!isnull(i_position_feedback_1)) {
+                pos_feedback_config_1.pole_pairs = tuning_status.value;
+                i_position_feedback_1.set_config(pos_feedback_config_1);
+            }
         }
+        motorcontrol_config.pole_pairs = tuning_status.value;
+        tuning_status.brake_flag = 0;
+        tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
+        i_position_control.set_motorcontrol_config(motorcontrol_config);
         break;
 
     //direction
@@ -443,27 +464,40 @@ void tuning_command(
 
     //sensor polarity
     case 's':
-        if (!isnull(i_position_feedback)) {
-            switch(tuning_status.mode_2) {
-            case 's':
-                //FIXME: don't use pole pairs to store sensor status
+        switch(tuning_status.mode_2) {
+        case 's':
+            //FIXME: don't use pole pairs to store sensor status
+            if (!isnull(i_position_feedback_1)) {
                 motorcontrol_config.pole_pairs = 0;
                 for (int i=0; i<100; i++) {
                     int status;
-                    { void , void, status } = i_position_feedback.get_position();
+                    { void , void, status } = i_position_feedback_1.get_position();
                     motorcontrol_config.pole_pairs += status;
                     delay_milliseconds(1);
                 }
-                break;
-            default:
-                if (pos_feedback_config.polarity == NORMAL_POLARITY) {
-                    pos_feedback_config.polarity = INVERTED_POLARITY;
-                } else {
-                    pos_feedback_config.polarity = NORMAL_POLARITY;
-                }
-                i_position_feedback.set_config(pos_feedback_config);
-                break;
             }
+            break;
+        default:
+            if (sensor_commutation == 2) {
+                if (!isnull(i_position_feedback_2)) {
+                    if (pos_feedback_config_2.polarity == NORMAL_POLARITY) {
+                        pos_feedback_config_2.polarity = INVERTED_POLARITY;
+                    } else {
+                        pos_feedback_config_2.polarity = NORMAL_POLARITY;
+                    }
+                    i_position_feedback_2.set_config(pos_feedback_config_2);
+                }
+            } else {
+                if (!isnull(i_position_feedback_1)) {
+                    if (pos_feedback_config_1.polarity == NORMAL_POLARITY) {
+                        pos_feedback_config_1.polarity = INVERTED_POLARITY;
+                    } else {
+                        pos_feedback_config_1.polarity = NORMAL_POLARITY;
+                    }
+                    i_position_feedback_1.set_config(pos_feedback_config_1);
+                }
+            }
+            break;
         }
         break;
 
@@ -506,17 +540,32 @@ void tuning_command(
 
     //set zero position
     case 'z':
-        if (!isnull(i_position_feedback)) {
-            switch(tuning_status.mode_2) {
-            case 'z':
-                i_position_feedback.send_command(REM_16MT_CONF_NULL, 0, 0);
-                break;
-            default:
-                i_position_feedback.send_command(REM_16MT_CONF_MTPRESET, tuning_status.value, 16);
-                break;
+        if (sensor_motion_control == 2) {
+            if (!isnull(i_position_feedback_2)) {
+                switch(tuning_status.mode_2) {
+                case 'z':
+                    i_position_feedback_2.send_command(REM_16MT_CONF_NULL, 0, 0);
+                    break;
+                default:
+                    i_position_feedback_2.send_command(REM_16MT_CONF_MTPRESET, tuning_status.value, 16);
+                    break;
+                }
+                i_position_feedback_2.send_command(REM_16MT_CTRL_SAVE, 0, 0);
+                i_position_feedback_2.send_command(REM_16MT_CTRL_RESET, 0, 0);
             }
-            i_position_feedback.send_command(REM_16MT_CTRL_SAVE, 0, 0);
-            i_position_feedback.send_command(REM_16MT_CTRL_RESET, 0, 0);
+        } else {
+            if (!isnull(i_position_feedback_1)) {
+                switch(tuning_status.mode_2) {
+                case 'z':
+                    i_position_feedback_1.send_command(REM_16MT_CONF_NULL, 0, 0);
+                    break;
+                default:
+                    i_position_feedback_1.send_command(REM_16MT_CONF_MTPRESET, tuning_status.value, 16);
+                    break;
+                }
+                i_position_feedback_1.send_command(REM_16MT_CTRL_SAVE, 0, 0);
+                i_position_feedback_1.send_command(REM_16MT_CTRL_RESET, 0, 0);
+            }
         }
         break;
 

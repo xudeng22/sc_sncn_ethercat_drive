@@ -54,7 +54,7 @@ int tuning_handler_ethercat(
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
-    if (status_mux > 17)
+    if (status_mux > 18)
         status_mux = 0;
     switch(status_mux) {
     case 0: //send flags
@@ -137,8 +137,11 @@ int tuning_handler_ethercat(
     case 16: //fault code
         tuning_result = upstream_control_data.error_status;
         break;
-    default: //special_brake_release
+    case 17: //special_brake_release
         tuning_result = pos_velocity_ctrl_config.special_brake_release;
+        break;
+    default: //sensor error
+        tuning_result = upstream_control_data.sensor_error;
         break;
     }
 
@@ -464,40 +467,24 @@ void tuning_command(
 
     //sensor polarity
     case 's':
-        switch(tuning_status.mode_2) {
-        case 's':
-            //FIXME: don't use pole pairs to store sensor status
+        if (sensor_commutation == 2) {
+            if (!isnull(i_position_feedback_2)) {
+                if (pos_feedback_config_2.polarity == NORMAL_POLARITY) {
+                    pos_feedback_config_2.polarity = INVERTED_POLARITY;
+                } else {
+                    pos_feedback_config_2.polarity = NORMAL_POLARITY;
+                }
+                i_position_feedback_2.set_config(pos_feedback_config_2);
+            }
+        } else {
             if (!isnull(i_position_feedback_1)) {
-                motorcontrol_config.pole_pairs = 0;
-                for (int i=0; i<100; i++) {
-                    int status;
-                    { void , void, status } = i_position_feedback_1.get_position();
-                    motorcontrol_config.pole_pairs += status;
-                    delay_milliseconds(1);
+                if (pos_feedback_config_1.polarity == NORMAL_POLARITY) {
+                    pos_feedback_config_1.polarity = INVERTED_POLARITY;
+                } else {
+                    pos_feedback_config_1.polarity = NORMAL_POLARITY;
                 }
+                i_position_feedback_1.set_config(pos_feedback_config_1);
             }
-            break;
-        default:
-            if (sensor_commutation == 2) {
-                if (!isnull(i_position_feedback_2)) {
-                    if (pos_feedback_config_2.polarity == NORMAL_POLARITY) {
-                        pos_feedback_config_2.polarity = INVERTED_POLARITY;
-                    } else {
-                        pos_feedback_config_2.polarity = NORMAL_POLARITY;
-                    }
-                    i_position_feedback_2.set_config(pos_feedback_config_2);
-                }
-            } else {
-                if (!isnull(i_position_feedback_1)) {
-                    if (pos_feedback_config_1.polarity == NORMAL_POLARITY) {
-                        pos_feedback_config_1.polarity = INVERTED_POLARITY;
-                    } else {
-                        pos_feedback_config_1.polarity = NORMAL_POLARITY;
-                    }
-                    i_position_feedback_1.set_config(pos_feedback_config_1);
-                }
-            }
-            break;
         }
         break;
 

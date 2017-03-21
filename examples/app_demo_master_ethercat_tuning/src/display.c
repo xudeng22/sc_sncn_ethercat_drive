@@ -93,8 +93,10 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 12
     wmoveclr(wnd, &row);
-    if (input.error_status != 0xFF00)
+    if (input.error_status != 0)
         wprintw(wnd, "* Error Status %d * ", input.error_status);
+    if (input.sensor_error != 0)
+        wprintw(wnd, "* Sensor Error %d * ", input.sensor_error);
     if (record_config.state == RECORD_ON)
         wprintw(wnd, "* Record ON *");
     return row;

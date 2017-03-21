@@ -124,7 +124,7 @@ static void inline update_configuration(
         client interface MotorcontrolInterface         i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PosVelocityControlConfig  &position_config,
+        MotionControlConfig  &position_config,
         PositionFeedbackConfig    &position_feedback_config,
         MotorcontrolConfig        &motorcontrol_config,
         ProfilerConfig            &profiler_config,
@@ -247,7 +247,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
 
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
 
     pdo_handler_values_t InOut = pdo_handler_init();
 
@@ -629,7 +629,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback)
 {
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
 

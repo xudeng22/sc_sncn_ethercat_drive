@@ -99,7 +99,7 @@ void cm_sync_config_profiler(
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface PositionVelocityCtrlInterface i_position_control,
-        PosVelocityControlConfig &position_config)
+        MotionControlConfig &position_config)
 {
     i_position_control.get_position_velocity_control_config();
 
@@ -226,7 +226,7 @@ void cm_default_config_pos_velocity_control(
         client interface PositionVelocityCtrlInterface i_position_control
         )
 {
-    PosVelocityControlConfig position_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_config = i_position_control.get_position_velocity_control_config();
 
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  1, position_config.min_pos_range_limit);  /* -8000; */
     i_coe.set_object_value(CIA402_POSITION_RANGELIMIT,  2, position_config.max_pos_range_limit);  /* 8000; */

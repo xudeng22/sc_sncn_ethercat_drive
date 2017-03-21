@@ -51,7 +51,7 @@ int tuning_handler_ethercat(
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig &pos_velocity_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
@@ -62,7 +62,7 @@ int tuning_handler_ethercat(
 void tuning_command(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig &pos_velocity_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,

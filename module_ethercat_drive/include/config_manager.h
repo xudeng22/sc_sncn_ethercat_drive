@@ -36,7 +36,7 @@ void cm_sync_config_profiler(
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface PositionVelocityCtrlInterface i_position_control,
-        PosVelocityControlConfig &position_config);
+        MotionControlConfig &position_config);
 
 /*
  * Set default configuration of the modules in the object dictionary. If nothing

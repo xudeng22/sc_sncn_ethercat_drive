@@ -99,8 +99,6 @@ void print_object_dictionary(client interface i_co_communication i_co)
 	int profile_deceleration;
 	int quick_stop_deceleration;
 	int polarity;
-	int index;
-	int error;
 
     {max_profile_velocity, void, void} = i_co.od_get_object_value(CIA402_MAX_PROFILE_VELOCITY, 0);
     {profile_acceleration, void, void} = i_co.od_get_object_value(CIA402_PROFILE_ACCELERATION, 0);
@@ -115,8 +113,6 @@ void print_object_dictionary(client interface i_co_communication i_co)
 {
 	int torque_slope;
 	int polarity;
-	int index;
-	int error;
 
     {torque_slope, void, void} = i_co.od_get_object_value(CIA402_TORQUE_SLOPE, 0);
     {polarity, void, void} = i_co.od_get_object_value(CIA402_POLARITY, 0);
@@ -129,8 +125,6 @@ void print_object_dictionary(client interface i_co_communication i_co)
 	int max_motor_speed;
 	int polarity;
 	int max_torque;
-	int index;
-	int error;
 
     {max_motor_speed, void, void} = i_co.od_get_object_value(CIA402_MOTOR_SPECIFIC, 4);
     {polarity, void, void} = i_co.od_get_object_value(CIA402_POLARITY, 0);
@@ -144,8 +138,6 @@ void print_object_dictionary(client interface i_co_communication i_co)
 	int max_motor_speed;
 	int polarity;
 	int max_acceleration;
-	int index;
-	int error;
 
     {max_motor_speed, void, void} = i_co.od_get_object_value(CIA402_MOTOR_SPECIFIC, 4);
     {polarity, void, void} = i_co.od_get_object_value(CIA402_POLARITY, 0);
@@ -161,9 +153,7 @@ void print_object_dictionary(client interface i_co_communication i_co)
 	int polarity;
 	int min;
 	int max;
-	int max_acc;
-	int index;
-	int error;
+	int max_acc;;
 
     {max_motor_speed, void, void} = i_co.od_get_object_value(CIA402_MOTOR_SPECIFIC, 4);
     {polarity, void, void} = i_co.od_get_object_value(CIA402_POLARITY, 0);

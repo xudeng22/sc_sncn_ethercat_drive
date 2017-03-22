@@ -207,8 +207,6 @@ static void inline update_configuration(
     } else {
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
-    printintln(sensor_commutation);
-    printintln(sensor_motion_control);
 
     cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
     cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config, sensor_commutation, sensor_commutation_type);

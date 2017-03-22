@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_DC100-rev-b.bsp>
+#include <IFM_DC1K-rev-c2.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -16,7 +16,6 @@
 #include <network_drive_service.h>
 #include <reboot.h>
 
-#include <co_interface.h>
 #include <canopen_service.h>
 
 #include <ethercat_service.h>
@@ -96,7 +95,7 @@ int main(void)
 
 #if 0
             network_drive_service_debug( profiler_config,
-                                    i_co,
+                                    i_co[1],
                                     i_motorcontrol[1],
                                     i_position_control[0], i_position_feedback[0]);
 #else

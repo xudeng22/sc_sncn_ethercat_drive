@@ -13,7 +13,7 @@
 #include <state_modes.h>
 #include <profile.h>
 #include <config_manager.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <position_feedback_service.h>
 #include <profile_control.h>
 #include <xscope.h>
@@ -153,7 +153,7 @@ static void inline update_configuration(
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface i_pos_feedback_1,
         client interface PositionFeedbackInterface ?i_pos_feedback_2,
-        PosVelocityControlConfig  &position_config,
+        MotionControlConfig  &position_config,
         PositionFeedbackConfig    &position_feedback_config_1,
         PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &motorcontrol_config,
@@ -313,7 +313,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
 
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
 
     pdo_handler_values_t InOut = { 0 };
 
@@ -710,7 +710,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback)
 {
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
 

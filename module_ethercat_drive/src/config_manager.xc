@@ -247,7 +247,7 @@ void cm_sync_config_profiler(
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface PositionVelocityCtrlInterface i_position_control,
-        PosVelocityControlConfig &position_config,
+        MotionControlConfig &position_config,
         int sensor_resolution)
 {
     i_position_control.get_position_velocity_control_config();
@@ -481,7 +481,7 @@ void cm_default_config_pos_velocity_control(
         client interface PositionVelocityCtrlInterface i_position_control
         )
 {
-    PosVelocityControlConfig position_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_config = i_position_control.get_position_velocity_control_config();
 
     //limits
     i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);

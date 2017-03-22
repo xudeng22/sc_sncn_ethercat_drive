@@ -12,7 +12,7 @@
 #include <motor_control_interfaces.h>
 #include <refclk.h>
 #include <adc_service.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <profile_control.h>
 #include <ethercat_service.h>
 #include <pdo_handler.h>
@@ -51,7 +51,7 @@ int tuning_handler_ethercat(
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig &pos_velocity_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,
@@ -66,7 +66,7 @@ int tuning_handler_ethercat(
 void tuning_command(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        PosVelocityControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig &pos_velocity_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,

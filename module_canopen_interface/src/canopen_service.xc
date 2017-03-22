@@ -24,7 +24,7 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
 
     int configuration_done = 0;
 
-    printstrln("Start CANopen Service");
+    printstrln("SOMANET CANOPEN SERVICE STARTING...");
 
     while (1)
     {

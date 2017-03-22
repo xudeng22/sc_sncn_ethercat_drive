@@ -66,89 +66,81 @@ int cm_sync_config_position_feedback(
     uint16_t feedback_sensor_object = 0;
     feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index);
 
-    if (feedback_sensor_object != 0) {
 
-        /* Get common settings for sensors */
-        int old_sensor_type = config.sensor_type; //too check if we need to restart the service
+    /* Get common settings for sensors */
+    int old_sensor_type = config.sensor_type; //too check if we need to restart the service
 
-        //FIXME: do we set sensor type using (feedback_sensor_object subindex 1) or
-        // using the value of feedback_sensor_object ??
-//        config.sensor_type = i_coe.get_object_value(feedback_sensor_object, 1);
-        if (feedback_sensor_object == DICT_BISS_ENCODER_1 || feedback_sensor_object == DICT_BISS_ENCODER_2) {
-            config.sensor_type = BISS_SENSOR;
-        } else if (feedback_sensor_object == DICT_REM_16MT_ENCODER) {
-            config.sensor_type = REM_16MT_SENSOR;
-        } else if (feedback_sensor_object == DICT_REM_14_ENCODER) {
-            config.sensor_type = REM_14_SENSOR;
-        } else if (feedback_sensor_object == DICT_HALL_SENSOR_1 || feedback_sensor_object == DICT_HALL_SENSOR_2) {
-            config.sensor_type = HALL_SENSOR;
-        } else if (feedback_sensor_object == DICT_INCREMENTAL_ENCODER_1 || feedback_sensor_object == DICT_INCREMENTAL_ENCODER_2) {
-            /* FIXME the QEI is now known as incremental encoder to the EtherCAT world. Needs to be fixed here too. */
-            config.sensor_type = QEI_SENSOR;
-        } else {
-            config.sensor_type = 0;
-        }
-        //restart the service if the sensor type is changed
-        if (old_sensor_type != config.sensor_type) {
-            restart = 1;
-        }
-
-        config.sensor_function         = i_coe.get_object_value(feedback_sensor_object, 2);
-        config.resolution              = i_coe.get_object_value(feedback_sensor_object, 3);
-        config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, 4);
-        config.polarity                = sext(i_coe.get_object_value(feedback_sensor_object, 5), 8);
-        config.pole_pairs              = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
-
-        // sensor specific parameters
-        switch (config.sensor_type) {
-        case QEI_SENSOR:
-            config.qei_config.index_type  = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
-            config.qei_config.signal_type = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
-            //FIXME: missing port number
-            break;
-
-        case BISS_SENSOR:
-            config.biss_config.multiturn_resolution = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
-            config.biss_config.clock_frequency      = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
-            config.biss_config.timeout              = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT);
-            config.biss_config.crc_poly             = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM);
-            config.biss_config.clock_port_config    = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
-            config.biss_config.data_port_number     = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
-            config.biss_config.filling_bits         = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
-            config.biss_config.busy                 = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
-            break;
-
-        case HALL_SENSOR:
-            /* FIXME see cm_sync_config_hall_states() */
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
-            //FIXME: missing port number
-            break;
-
-        case REM_14_SENSOR:
-            config.rem_14_config.hysteresis      = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
-            config.rem_14_config.noise_setting   = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
-            config.rem_14_config.dyn_angle_comp  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
-            config.rem_14_config.abi_resolution  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
-            break;
-
-        case REM_16MT_SENSOR:
-            config.rem_16mt_config.filter = i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER);
-            break;
-
-        case 0: /* FIXME need error handling here, or in position feedback service */
-            break;
-
-        default:
-            break;
-        }
-
-        i_pos_feedback.set_config(config);
+    switch (feedback_sensor_object) {
+    case DICT_BISS_ENCODER_1:
+    case DICT_BISS_ENCODER_2:
+        config.sensor_type = BISS_SENSOR;
+        break;
+    case DICT_HALL_SENSOR_1:
+    case DICT_HALL_SENSOR_2:
+        config.sensor_type = HALL_SENSOR;
+        break;
+    case DICT_INCREMENTAL_ENCODER_1:
+    case DICT_INCREMENTAL_ENCODER_2:
+        /* FIXME the QEI is now known as incremental encoder to the EtherCAT world. Needs to be fixed here too. */
+        config.sensor_type = QEI_SENSOR;
+        break;
+    case DICT_REM_16MT_ENCODER:
+        config.sensor_type = REM_16MT_SENSOR;
+        break;
+    case DICT_REM_14_ENCODER:
+        config.sensor_type = REM_14_SENSOR;
+        break;
+    default:
+        return 0; // feedback_sensor_object address is unknown, do not change anything
+        break;
     }
+    //restart the service if the sensor type is changed
+    if (old_sensor_type != config.sensor_type) {
+        restart = 1;
+    }
+
+    config.sensor_function         = i_coe.get_object_value(feedback_sensor_object, 2);
+    config.resolution              = i_coe.get_object_value(feedback_sensor_object, 3);
+    config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, 4);
+    config.polarity                = sext(i_coe.get_object_value(feedback_sensor_object, 5), 8);
+    config.pole_pairs              = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
+
+    // sensor specific parameters
+    switch (config.sensor_type) {
+    case QEI_SENSOR:
+        config.qei_config.index_type  = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
+        config.qei_config.signal_type = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
+        //FIXME: missing port number
+        break;
+
+    case BISS_SENSOR:
+        config.biss_config.multiturn_resolution = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
+        config.biss_config.clock_frequency      = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
+        config.biss_config.timeout              = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT);
+        config.biss_config.crc_poly             = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM);
+        config.biss_config.clock_port_config    = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
+        config.biss_config.data_port_number     = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
+        config.biss_config.filling_bits         = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
+        config.biss_config.busy                 = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
+        break;
+
+    case HALL_SENSOR:
+        //FIXME: missing port number
+        break;
+
+    case REM_14_SENSOR:
+        config.rem_14_config.hysteresis      = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
+        config.rem_14_config.noise_setting   = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
+        config.rem_14_config.dyn_angle_comp  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
+        config.rem_14_config.abi_resolution  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
+        break;
+
+    case REM_16MT_SENSOR:
+        config.rem_16mt_config.filter = i_coe.get_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER);
+        break;
+    }
+
+    i_pos_feedback.set_config(config);
 
     return restart;
 }
@@ -278,10 +270,9 @@ void cm_sync_config_pos_velocity_control(
     position_config.velocity_integral_limit = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
 
     /* Brake control settings */
-    /* FIXME PosVelocityControlConfig does not contain parameter for dc_bus_voltage */
     position_config.special_brake_release = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY);
     position_config.brake_shutdown_delay  = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY);
-    position_config.dc_bus_voltage          = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
+    position_config.dc_bus_voltage        = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     position_config.pull_brake_voltage    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE);
     position_config.pull_brake_time       = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME);
     position_config.hold_brake_voltage    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE);
@@ -368,13 +359,6 @@ void cm_default_config_position_feedback(
 
         case HALL_SENSOR:
             //FIXME: missing hall_config.port_number
-            /* FIXME see cm_sync_config_hall_states() */
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
-            //i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
             break;
 
         case REM_14_SENSOR:
@@ -386,12 +370,6 @@ void cm_default_config_position_feedback(
 
         case REM_16MT_SENSOR:
             i_coe.set_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER, config.rem_16mt_config.filter);
-            break;
-
-        case 0: /* FIXME need error handling here, or in position feedback service */
-            break;
-
-        default:
             break;
         }
     }

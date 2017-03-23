@@ -116,7 +116,6 @@ int main(void)
                     pos_velocity_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
                     pos_velocity_ctrl_config.max_pos_range_limit =                  MAX_POSITION_RANGE_LIMIT;
                     pos_velocity_ctrl_config.max_motor_speed =                      MAX_MOTOR_SPEED;
-                    pos_velocity_ctrl_config.max_torque =                           TORQUE_CONTROL_LIMIT;
                     pos_velocity_ctrl_config.polarity =                             POLARITY;
 
                     pos_velocity_ctrl_config.enable_profiler =                      ENABLE_PROFILER;

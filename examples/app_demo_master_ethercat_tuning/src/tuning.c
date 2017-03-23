@@ -365,6 +365,7 @@ void cs_command(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_outp
         pdo_output[output->select].op_mode = 0;
     } else if (c == 'p') { // CSP
         pdo_output[output->select].op_mode = 8;
+        pdo_output[output->select].target_position = pdo_input[output->select].position_value;
     } else if (c == KEY_BACKSPACE || c == KEY_DC || c == 127) {//discard
         wmove(wnd, (*cursor).row, 0);
         wclrtoeol(wnd);

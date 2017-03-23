@@ -33,6 +33,11 @@
 #define CONTROL_ENABLE_OP            0x0f   /* masq 0x0f */
 #define CONTROL_FAULT_RESET          0x80   /* masq 0x80 */
 
+#define CONTROL_BIT_ENABLE_OP        0x08
+#define CONTROL_BIT_QUICK_STOP       0x04
+#define CONTROL_BIT_ENABLE_VOLTAGE   0x02
+#define CONTROL_BIT_SWITCH_ON        0x01
+
 /*
  * Indexes of PDO elements
  */
@@ -70,37 +75,91 @@
 
 
 /* Chack the slaves statemachine and generate the correct controlword */
-int master_update_slave_state(int *statusword, int *controlword)
+enum eCIAState read_state(uint16_t statusword)
 {
-    static int my_super_flag = 0;
-    enum eCIAState slavestate = CONTROL_FAULT_RESET;
+    enum eCIAState slavestate = CIASTATE_NOT_READY;
 
-    if ((*statusword & STATUS_WORD_MASQ_A) == STATUS_FAULT) {         /* fault active */
-        *controlword = CONTROL_FAULT_RESET;  /* Fault reset */
-        slavestate = CIASTATE_FAULT;
-    } else if ((*statusword & STATUS_WORD_MASQ_B) == STATUS_SWITCH_ON_DISABLED) {  /* slave ready to switch on */
-        if (my_super_flag == 1) {
-            *controlword = CONTROL_DISABLE_VOLTAGE;  /* stay in this state */
-        } else {
-            *controlword = CONTROL_SHUTDOWN;
-        }
+    uint16_t status_test = statusword & STATUS_WORD_MASQ_B;
+    switch(status_test) {
+    case STATUS_NOT_READY:
+        slavestate = CIASTATE_NOT_READY;
+        break;
+    case STATUS_SWITCH_ON_DISABLED:
         slavestate = CIASTATE_SWITCH_ON_DISABLED;
-    } else if ((*statusword & STATUS_WORD_MASQ_A) == STATUS_READY_SWITCH_ON) {  /* slave ready to switch on */
-        *controlword = CONTROL_DISABLE_OP;
-        slavestate = CIASTATE_READY_SWITCH_ON;
-    } else if ((*statusword & STATUS_WORD_MASQ_A) == STATUS_SWITCHED_ON) {
-        *controlword = CONTROL_ENABLE_OP;
-        slavestate = CIASTATE_SWITCHED_ON;
-    } else if ((*statusword & STATUS_WORD_MASQ_A) == STATUS_OP_ENABLED) {
-        *controlword = CONTROL_ENABLE_OP;
-        slavestate = CIASTATE_OP_ENABLED;
-    } else if ((*statusword & STATUS_WORD_MASQ_A) == STATUS_QUICK_STOP) { /* Quick Stop */
-        *controlword = CONTROL_QUICK_STOP;
-        my_super_flag = 1;
-        slavestate = CIASTATE_QUICK_STOP;
+        break;
+    case STATUS_FAULT_REACTION_ACTIVE:
+        slavestate = CIASTATE_FAULT_REACTION_ACTIVE;
+        break;
+    case STATUS_FAULT:
+        slavestate = CIASTATE_FAULT;
+        break;
+    default:
+        status_test = statusword & STATUS_WORD_MASQ_A;
+        switch(status_test) {
+        case STATUS_READY_SWITCH_ON:
+            slavestate = CIASTATE_READY_SWITCH_ON;
+            break;
+        case STATUS_SWITCHED_ON:
+            slavestate = CIASTATE_SWITCHED_ON;
+            break;
+        case STATUS_OP_ENABLED:
+            slavestate = CIASTATE_OP_ENABLED;
+            break;
+        case STATUS_QUICK_STOP:
+            slavestate = CIASTATE_QUICK_STOP;
+            break;
+        }
+        break;
     }
 
     return slavestate;
+}
+
+uint16_t go_to_state(enum eCIAState current_state, enum eCIAState state, uint16_t controlword)
+{
+    if (current_state != state) {
+        if (state == CIASTATE_SWITCH_ON_DISABLED) { //enabde -> disable transitions
+            switch(current_state) {
+            case CIASTATE_FAULT:
+                controlword |= CONTROL_FAULT_RESET;
+                break;
+            case CIASTATE_OP_ENABLED:
+            case CIASTATE_SWITCHED_ON:
+            case CIASTATE_READY_SWITCH_ON: //quick stop
+                controlword = (controlword
+                        & ~CONTROL_FAULT_RESET & ~CONTROL_BIT_QUICK_STOP)
+                        | CONTROL_BIT_ENABLE_VOLTAGE;
+                break;
+            default:
+                break;
+            }
+        } else if (state == CIASTATE_OP_ENABLED) { // disabled -> enabled transitions
+            switch(current_state) {
+            case CIASTATE_FAULT:
+                controlword |= CONTROL_FAULT_RESET;
+                break;
+            case CIASTATE_SWITCH_ON_DISABLED: //shutdown command
+                controlword = (controlword
+                        & ~CONTROL_FAULT_RESET & ~CONTROL_BIT_SWITCH_ON)
+                        | CONTROL_BIT_QUICK_STOP | CONTROL_BIT_ENABLE_VOLTAGE;
+                break;
+            case CIASTATE_READY_SWITCH_ON: //switch on
+                controlword = (controlword
+                        & ~CONTROL_FAULT_RESET & ~CONTROL_BIT_ENABLE_OP)
+                        | CONTROL_BIT_QUICK_STOP | CONTROL_BIT_ENABLE_VOLTAGE | CONTROL_BIT_SWITCH_ON;
+                break;
+            case CIASTATE_SWITCHED_ON: //enable
+                controlword = (controlword
+                        & ~CONTROL_FAULT_RESET)
+                        | CONTROL_BIT_ENABLE_OP | CONTROL_BIT_QUICK_STOP | CONTROL_BIT_ENABLE_VOLTAGE | CONTROL_BIT_SWITCH_ON;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    return controlword;
 }
 
 /*

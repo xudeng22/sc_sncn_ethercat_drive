@@ -67,7 +67,9 @@ struct _pdo_cia402_output {
 };
 
 
-int master_update_slave_state(int *statusword, int *controlword);
+enum eCIAState read_state(uint16_t statusword);
+
+uint16_t go_to_state(enum eCIAState current_state, enum eCIAState state, uint16_t controlword);
 
 /*
  * Access functions for SLAVE_TYPE_CIA402_DRIVE

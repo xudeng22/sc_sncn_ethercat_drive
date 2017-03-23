@@ -330,6 +330,7 @@ int main(int argc, char **argv)
     //init tuning structure
     InputValues input = {0};
     OutputValues output = {0};
+    output.app_mode = TUNING_MODE;
     output.mode_1 = '@';
     output.mode_2 = '@';
     output.mode_3 = '@';
@@ -337,7 +338,7 @@ int main(int argc, char **argv)
 
     /* Init pdos */
     pdo_output[num_slaves-1].controlword = 0;
-    pdo_output[num_slaves-1].op_mode = OPMODE_TUNING;
+    pdo_output[num_slaves-1].op_mode = 0;
     pdo_output[num_slaves-1].target_position = 0;
     pdo_output[num_slaves-1].target_torque = 0;
     pdo_output[num_slaves-1].target_velocity = 0;
@@ -379,15 +380,9 @@ int main(int argc, char **argv)
     clear(); // curses call to clear screen, send cursor to position (0,0)
     refresh(); // curses call to implement all changes since last refresh
     nodelay(stdscr, TRUE); //no delay
-
-    //init prompt
-    Cursor cursor = { DISPLAY_LINE, 2 };
-    display_tuning_help(wnd, DISPLAY_LINE-HELP_ROW_COUNT);
-    move(cursor.row, 0);
-    printw("> ");
+    Cursor cursor;
     
     int run_flag = 1;
-    int init_tuning = 0;
     while (run_flag) {
         pause();
 
@@ -400,40 +395,20 @@ int main(int argc, char **argv)
             pdo_handler(master, pdo_input, pdo_output, num_slaves-1);
 #endif
 
-            uint16_t statusword = ((pdo_input[num_slaves-1].statusword >> 8) & 0xff);
-            if (statusword == (pdo_output[num_slaves-1].controlword & 0xff)) { //control word received by slave
-                pdo_output[num_slaves-1].controlword = 0; //reset control word
-            }
-
-            if (init_tuning == 0) { //switch the slave to OPMODE_TUNING
-                if ((pdo_input[num_slaves-1].op_mode_display&0xff) != (OPMODE_TUNING & 0xff)) {
-                    if ((statusword & 0x08) == 0x08) {
-                        pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
-                    } else { //FIXME: fix check status word
-                        pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
-                    }
-                } else {
-                    init_tuning = 1;
+            if (output.app_mode == QUIT_MODE) {
+                if (pdo_input[num_slaves-1].op_mode_display == 0) {
+                    run_flag = 0;
+                    break;
                 }
-            } else if ((pdo_input[num_slaves-1].op_mode_display&0xff) != (OPMODE_TUNING & 0xff)) { //quit
-                run_flag = 0;
-                break;
+            } else if (output.app_mode == TUNING_MODE) {
+                tuning(wnd, &cursor,
+                        &pdo_output[num_slaves-1], &pdo_input[num_slaves-1],
+                        &output, &input,
+                        &profile_config,
+                        &record_config, record_filename);
+            } else if (output.app_mode == CS_MODE){
+                cs_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output);
             }
-
-            //demux received data
-            tuning_input(pdo_input[num_slaves-1], &input);
-
-            //print
-            display_tuning(wnd, pdo_input[num_slaves-1], input, record_config, 0);
-
-            //recorder
-            tuning_record(&record_config, pdo_input[num_slaves-1], pdo_output[num_slaves-1], record_filename);
-
-            //position profile
-            tuning_position(&profile_config, &pdo_output[num_slaves-1], pdo_input[num_slaves-1]);
-
-            //read user input
-            tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &record_config, &cursor);
 
             wrefresh(wnd); //refresh ncurses window
         }

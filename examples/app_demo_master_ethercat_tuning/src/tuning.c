@@ -89,6 +89,12 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         (*pdo_output).controlword = 'e';
         (*pdo_output).user_mosi = 0;
         (*pdo_output).op_mode = 0;
+        output->app_mode = QUIT_MODE;
+    } else if (c == 'y') { //switch to cs mode
+        output->init = 0;
+        (*pdo_output).op_mode = 0;
+        (*pdo_output).controlword = 0;
+        output->app_mode = CS_MODE;
     } else if (c == '.') { //record
         if (record_config->state == RECORD_OFF) {
             record_config->state = RECORD_ON;
@@ -186,6 +192,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             (*cursor).col = 2;
         }
     }
+    return;
 }
 
 void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input)
@@ -273,5 +280,166 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
             config->count = 0;
             config->state = RECORD_OFF;
         }
+    }
+}
+
+
+
+
+void tuning(WINDOW *wnd, Cursor *cursor,
+            struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input,
+            OutputValues *output, InputValues *input,
+            PositionProfileConfig *profile_config,
+            RecordConfig *record_config, char *record_filename)
+{
+    if (output->init == 0) { //switch the slave to OPMODE_TUNING
+        if (((*pdo_input).op_mode_display&0xff) != (OPMODE_TUNING & 0xff)) {
+            (*pdo_output).op_mode = OPMODE_TUNING;
+            enum eCIAState state = read_state((*pdo_input).statusword);
+            (*pdo_output).controlword = go_to_state(state, CIASTATE_SWITCH_ON_DISABLED, (*pdo_output).controlword); // this state allow opmode change
+        } else {
+            output->init = 1;
+            display_tuning_help(wnd, DISPLAY_LINE-HELP_ROW_COUNT);
+            cursor->row = DISPLAY_LINE;
+            cursor->col = 2;
+            move(cursor->row, 0);
+            printw("> ");
+        }
+    } else { // check if command is received by slave
+        uint8_t statusword = (*pdo_input).statusword >> 8;
+        if (statusword == ((*pdo_output).controlword & 0xff)) { //control word received by slave
+            (*pdo_output).controlword = 0; //reset control word
+        }
+    }
+
+    //demux received data
+    tuning_input(*pdo_input, input);
+
+    //print
+    display_tuning(wnd, *pdo_input, *input, *record_config, 0);
+
+    //recorder
+    tuning_record(record_config, *pdo_input, (*pdo_output), record_filename);
+
+    //position profile
+    tuning_position(profile_config, pdo_output, *pdo_input);
+
+    //read user input
+    tuning_command(wnd, pdo_output, *pdo_input, output, profile_config, record_config, cursor);
+}
+
+
+
+void cs_command(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input, size_t number_slaves, OutputValues *output)
+{
+    pdo_output[1].user_mosi = output->select;
+
+    //read user input
+    wmove(wnd, (*cursor).row, (*cursor).col);
+    int c = wgetch(wnd); // curses call to input from keyboard
+    if (c == 'q') { //quit
+        pdo_output[output->select].op_mode = 0;
+        output->app_mode = QUIT_MODE;
+    } else if (c == 'y') { //switch to tuning mode
+        pdo_output[output->select].op_mode = OPMODE_TUNING;
+        output->init = 0;
+        output->app_mode = TUNING_MODE;
+    } else if (c == 'd') { //debug
+        output->debug ^= 1;
+    } else if (c == 27) { //arrow
+        c = wgetch(wnd);
+        if (c == '[') {
+            c = wgetch(wnd);
+            if (c == 'A') { // up arrow
+                output->select -= 1;
+            } else if (c == 'B') { //down arrow
+                output->select += 1;
+            }
+            if (output->select > number_slaves-1) {
+                output->select = 0;
+            } else if (output->select < 0) {
+                output->select = number_slaves-1;
+            }
+        }
+    } else if (c == 's') { //stop
+        pdo_output[output->select].op_mode = 0;
+    } else if (c == 'p') { // CSP
+        pdo_output[output->select].op_mode = 8;
+    } else if (c == KEY_BACKSPACE || c == KEY_DC || c == 127) {//discard
+        wmove(wnd, (*cursor).row, 0);
+        wclrtoeol(wnd);
+        wprintw(wnd, "> ");
+        (*cursor).col = 2;
+    } else if (c != ERR) {
+        (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
+        //parse input
+        if(isdigit(c)>0) {
+            (*output).value *= 10;
+            (*output).value += c - '0';
+        } else if (c == '-') {
+            (*output).sign = -1;
+        } else if (c != ' ' && c != '\n') {
+            if ((*output).mode_1 == '@') {
+                (*output).mode_1 = c;
+            } else if ((*output).mode_2 == '@') {
+                (*output).mode_2 = c;
+            } else {
+                (*output).mode_3 = c;
+            }
+        }
+
+        //set command
+        if (c == '\n') {
+            (*output).value *= (*output).sign;
+            if ((*output).mode_1 == 'o') {
+                pdo_output[output->select].op_mode = (*output).value;
+            } else if ((*output).mode_1 == 'c') {
+                pdo_output[output->select].controlword = (*output).value;
+            } else {
+                pdo_output[output->select].target_position = (*output).value;
+            }
+
+            //debug: print command on last line
+            int nrows,ncols;
+            if (ncols == 0);
+            getmaxyx(wnd,nrows,ncols); // curses call to find size of window
+            wmove(wnd, nrows-1, 0);
+            wclrtoeol(wnd);
+            wprintw(wnd, "value %d, mode %c (%X), mode_2 %c, mode_3 %c", (*output).value, (*output).mode_1, (*output).mode_1, (*output).mode_2, (*output).mode_3);
+
+            //reset
+            (*output).mode_1 = '@';
+            (*output).mode_2 = '@';
+            (*output).mode_3 = '@';
+            (*output).value = 0;
+            (*output).sign = 1;
+
+            //reset prompt
+            wmove(wnd, (*cursor).row, 0);
+            wclrtoeol(wnd);
+            wprintw(wnd, "> ");
+            (*cursor).col = 2;
+        }
+    }
+    return;
+}
+
+void cs_mode(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input, size_t number_slaves, OutputValues *output)
+{
+    if (output->init == 0) {
+        output->init = 1;
+        clear();
+        cursor->row = number_slaves*3 + 2;
+        cursor->col = 2;
+        move(cursor->row, 0);
+        printw("> ");
+    }
+    display_slaves(wnd, 0, pdo_output, pdo_input, number_slaves, *output);
+    cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output);
+
+    if (pdo_output[output->select].op_mode == 8) { //CSP
+        pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_OP_ENABLED, pdo_output[output->select].controlword);
+    } else if (pdo_output[output->select].op_mode == 0) {//no opmode
+        pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_SWITCH_ON_DISABLED, pdo_output[output->select].controlword);
     }
 }

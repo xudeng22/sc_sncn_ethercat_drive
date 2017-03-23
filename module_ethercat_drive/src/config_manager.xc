@@ -140,6 +140,12 @@ int cm_sync_config_position_feedback(
         break;
     }
 
+    //gpio settings (only for the first position feedback service)
+    if (sensor_index == 1)
+    for (int i=0; i<4; i++) {
+        config.gpio_config[i] = i_coe.get_object_value(DICT_GPIO, i+1);
+    }
+
     i_pos_feedback.set_config(config);
 
     return restart;
@@ -336,8 +342,6 @@ void cm_default_config_position_feedback(
         i_coe.set_object_value(feedback_sensor_object, 4, config.velocity_compute_period);
         i_coe.set_object_value(feedback_sensor_object, 5, config.polarity);
 
-        //FIXME: missing gpio settings
-
         // sensor specific parameters
         switch (config.sensor_type) {
         case QEI_SENSOR:
@@ -372,6 +376,13 @@ void cm_default_config_position_feedback(
             i_coe.set_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER, config.rem_16mt_config.filter);
             break;
         }
+    }
+
+
+    //gpio settings (only for the first position feedback service)
+    if (sensor_index == 1)
+    for (int i=0; i<4; i++) {
+        i_coe.set_object_value(DICT_GPIO, i+1, config.gpio_config[i]);
     }
 }
 

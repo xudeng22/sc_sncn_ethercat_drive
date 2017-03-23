@@ -515,6 +515,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         //debug_print_state(state);
 
         if (opmode == OPMODE_NONE) {
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
             /* for safety considerations, if no opmode choosen, the brake should blocking. */
             i_motorcontrol.set_brake_status(0);
             if (opmode_request != OPMODE_NONE)
@@ -639,16 +640,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         } else if (opmode == OPMODE_SNCN_TUNING) {
             /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
-            if (opmode_request != opmode) {
-                opmode = opmode_request; /* stop tuning and switch to new opmode */
-                i_position_control.disable();
-                state = S_FAULT;
-                //reset tuning status
-                tuning_status.brake_flag = 0;
-                tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            }
-
-            //FIXME update tuning for 2 position feedback
             tuning_handler_ethercat(controlword, tuning_control,
                     statusword, tuning_result,
                     tuning_status,
@@ -656,12 +647,24 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     sensor_commutation, sensor_motion_control,
                     send_to_master, send_to_control,
                     i_position_control, i_position_feedback_1, i_position_feedback_2);
+
+            //exit tuning mode
+            if (opmode_request != opmode) {
+                opmode = opmode_request; /* stop tuning and switch to new opmode */
+                i_position_control.disable();
+                state = S_SWITCH_ON_DISABLED;
+                statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+                //reset tuning status
+                tuning_status.brake_flag = 0;
+                tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
+            }
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.
              * For safety reasons, if no opmode is selected the brake is closed! */
             i_motorcontrol.set_brake_status(0);
             opmode = OPMODE_NONE;
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
         }
 
 #if 1 /* Draft to get PID updates on the fly */

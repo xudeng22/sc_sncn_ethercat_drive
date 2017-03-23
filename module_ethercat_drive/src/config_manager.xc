@@ -48,7 +48,7 @@ void cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
-        interface MotorcontrolInterface client ?i_motorcontrol,
+        interface MotorControlInterface client ?i_motorcontrol,
         MotorcontrolConfig &motorcontrol_config)
 
 {
@@ -173,7 +173,7 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,
-        interface MotorcontrolInterface client ?i_motorcontrol,
+        interface MotorControlInterface client ?i_motorcontrol,
         MotorcontrolConfig &motorcontrol_config)
 
 {

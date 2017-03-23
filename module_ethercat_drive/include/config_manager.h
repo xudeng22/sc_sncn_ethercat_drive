@@ -26,7 +26,7 @@ void cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
-        client interface MotorcontrolInterface ?i_commutation,
+        client interface MotorControlInterface ?i_commutation,
         MotorcontrolConfig &commutation_params);
 
 void cm_sync_config_profiler(
@@ -50,7 +50,7 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,
-        client interface MotorcontrolInterface ?i_commutation,
+        client interface MotorControlInterface ?i_commutation,
         MotorcontrolConfig &commutation_params);
 
 void cm_default_config_profiler(

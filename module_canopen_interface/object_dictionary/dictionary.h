@@ -283,9 +283,9 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
     { CIA402_TARGET_TORQUE, 0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 16, RW, 0, "Target Torque"}, /* cst */
     { CIA402_TORQUE_VALUE, 0, 0, DEFTYPE_INTEGER16, CANOD_TYPE_VAR, 16, RW, 0, "Torque Value"}, /* csv, cst */
     { CIA402_TARGET_POSITION, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, RW, 0, "Target Position" }, /* csp */
-    { CIA402_POSITION_RANGELIMIT, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, RO, 2, "Postition Range Limits"}, /* csp */
-    { CIA402_POSITION_RANGELIMIT, 1, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, RW, 0, "Min Postition Range Limit"},
-    { CIA402_POSITION_RANGELIMIT, 2, 0, DEFTYPE_INTEGER32, CANOD_TYPE_VAR, 32, RW, 0, "Max Postition Range Limit"},
+    { CIA402_POSITION_RANGELIMIT, 0, 0, DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY,  8, RO, 2, "Postition Range Limits"}, /* csp */
+    { CIA402_POSITION_RANGELIMIT, 1, 0, DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, RW, 0, "Min Postition Range Limit"},
+    { CIA402_POSITION_RANGELIMIT, 2, 0, DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, RW, 0, "Max Postition Range Limit"},
     { CIA402_SOFTWARE_POSITION_LIMIT, 0, 0,  DEFTYPE_UNSIGNED8, CANOD_TYPE_ARRAY,  8, RO, 2, "Software Postition Range Limits"}, /* csp */
     { CIA402_SOFTWARE_POSITION_LIMIT, 1, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, RW, 0, "Min Software Postition Range Limit"},
     { CIA402_SOFTWARE_POSITION_LIMIT, 2, 0,  DEFTYPE_INTEGER32, CANOD_TYPE_ARRAY, 32, RW, 0, "Max Software Postition Range Limit"},

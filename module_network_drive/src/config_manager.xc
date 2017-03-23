@@ -144,12 +144,6 @@ void cm_default_config_position_feedback(
 {
     config = i_pos_feedback.get_config();
 
-//    int tick_resolution = i_co.od_get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
-//    int bit_resolution = tick2bits(tick_resolution);
-    //config.biss_config.singleturn_resolution = bit_resolution;
-    //config.contelec_config.resolution_bits   = bit_resolution;
-//    int tick_resolution = i_co.od_get_object_value(CIA402_POSITION_ENC_RESOLUTION, 0);
-
     i_co.od_set_object_value(CIA402_SENSOR_SELECTION_CODE, 0,  config.sensor_type);
     i_co.od_set_object_value(CIA402_POSITION_ENC_RESOLUTION, 0,  config.resolution);
     i_co.od_set_object_value(SNCN_SENSOR_POLARITY, 0,  config.polarity);
@@ -173,6 +167,7 @@ void cm_default_config_motor_control(
 
     i_co.od_set_object_value(CIA402_MOTOR_SPECIFIC, 3,  motorcontrol_config.pole_pairs);
     i_co.od_set_object_value(CIA402_MOTOR_SPECIFIC, 6,  motorcontrol_config.max_torque);
+    i_co.od_set_object_value(CIA402_POLARITY, 0, motorcontrol_config.phases_inverted);
     //{motorcontrol_config.max_current, void, void}        = i_co.od_get_object_value(CIA402_MAX_CURRENT, 0);
     //{motorcontrol_config.rated_current, void, void}      = i_co.od_get_object_value(CIA402_MOTOR_RATED_CURRENT, 0);
     //{motorcontrol_config.rated_torque, void, void}       = i_co.od_get_object_value(CIA402_MOTOR_RATED_TORQUE, 0);

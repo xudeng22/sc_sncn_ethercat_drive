@@ -48,6 +48,7 @@ static void sdo_wait_first_config(client interface i_co_communication i_co)
     //read_od_config(i_co);
     printstrln("start cyclic operation");
 
+    //print_object_dictionary(i_co);
     /* clear the notification before proceeding the operation */
     i_co.configuration_done();
 }
@@ -146,7 +147,6 @@ static void inline update_configuration(
         int &homing_method,
         int &opmode)
 {
-    int index = 0;
     /* update structures */
     //position_feedback_config;
     //position_config;
@@ -171,12 +171,14 @@ static void inline update_configuration(
     //opmode = i_co.od_get_object_value(CIA402_OP_MODES, 0);
 }
 
-static void debug_print_state(DriveState_t state)
+static void debug_print_state(DriveState_t state, int fault)
 {
     static DriveState_t oldstate = 0;
 
     if (state == oldstate)
         return;
+
+    //printstr("Fault: "); printintln(fault);
 
     switch (state) {
     case S_NOT_READY_TO_SWITCH_ON:
@@ -322,10 +324,12 @@ void network_drive_service(ProfilerConfig &profiler_config,
 //#pragma xta endpoint "ecatloop"
         /* FIXME reduce code duplication with above init sequence */
         /* Check if we reenter the operation mode. If so, update the configuration please. */
-        read_configuration = i_co.configuration_get();
+        if (!read_configuration)
+            read_configuration = i_co.configuration_get();
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
+            print_object_dictionary(i_co);
             update_configuration(i_co, i_motorcontrol, i_position_velocity_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
                     sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
@@ -451,7 +455,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         /*
          * new, perform actions according to state
          */
-        debug_print_state(state);
+        debug_print_state(state, fault);
 
         if (opmode == OPMODE_NONE) {
             /* for safety considerations, if no opmode choosen, the brake should blocking. */

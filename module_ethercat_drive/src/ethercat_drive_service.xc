@@ -348,9 +348,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int nominal_speed;
     timer t;
 
-    int init = 0;
-    int op_set_flag = 0;
-
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
 
@@ -358,10 +355,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     pdo_handler_values_t InOut = { 0 };
 
-    int setup_loop_flag = 0;
-
-    int ack = 0;
-    int shutdown_ack = 0;
     int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
     int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
 
@@ -388,7 +381,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
 
-    int ctrl_state;
     int limit_switch_type;
     int homing_method;
 
@@ -474,7 +466,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         if (opmode != OPMODE_SNCN_TUNING) {
             send_to_control.position_cmd = target_position;
             send_to_control.velocity_cmd = target_velocity;
-            send_to_control.torque_cmd   = target_velocity;
+            send_to_control.torque_cmd   = target_torque;
         }
 
         if (quick_stop_steps != 0) {
@@ -695,6 +687,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         break;
                     case OPMODE_CST:
                         qs_target = 0;
+                        break;
                     }
 
                     i_position_control.disable();

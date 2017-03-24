@@ -28,11 +28,12 @@ enum eProfileType {
  * by the EtherCAT master.
  */
 
-int  cm_sync_config_position_feedback(
+int cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PositionFeedbackConfig &config,
-        int sensor_index);
+        PositionFeedbackConfig &config, int feedback_service_index,
+        int &sensor_commutation, int &sensor_motion_control,
+        int number_of_ports, int &port_index);
 
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
@@ -70,7 +71,7 @@ void cm_default_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
         PositionFeedbackConfig &config,
-        int sensor_index);
+        int feedback_service_index);
 
 void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,

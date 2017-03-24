@@ -88,7 +88,7 @@ int main(void)
             profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
             profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
 
-            profiler_config.max_velocity = MAX_MOTOR_SPEED;
+            profiler_config.max_velocity = MOTOR_MAX_SPEED;
             profiler_config.max_acceleration = MAX_ACCELERATION;
             profiler_config.max_deceleration = MAX_ACCELERATION;
 
@@ -115,7 +115,7 @@ int main(void)
 
                     motion_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
                     motion_ctrl_config.max_pos_range_limit =                  MAX_POSITION_RANGE_LIMIT;
-                    motion_ctrl_config.max_motor_speed =                      MAX_MOTOR_SPEED;
+                    motion_ctrl_config.max_motor_speed =                      MOTOR_MAX_SPEED;
                     motion_ctrl_config.polarity =                             POLARITY;
 
                     motion_ctrl_config.enable_profiler =                      ENABLE_PROFILER;

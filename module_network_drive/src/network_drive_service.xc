@@ -329,12 +329,11 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
-            print_object_dictionary(i_co);
+//            print_object_dictionary(i_co);
             update_configuration(i_co, i_motorcontrol, i_position_velocity_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
                     sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
-                    opmode
-                    );
+                    opmode);
 
             read_configuration = 0;
             i_co.configuration_done();
@@ -510,9 +509,19 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
+                    if (opmode == OPMODE_CSP) {
+                        printstrln("enable position ctrl");
+                        i_position_velocity_control.enable_position_ctrl(position_velocity_config.position_control_strategy);
+                    } else if (opmode == OPMODE_CSV) {
+                        printstrln("enable velocity ctrl");
+                        i_position_velocity_control.enable_velocity_ctrl();
 
-                    i_position_velocity_control.enable_position_ctrl(position_velocity_config.position_control_strategy);
+                    } else if (opmode == OPMODE_CST) {
+                        printstrln("enable torque ctrl");
+                        i_position_velocity_control.enable_torque_ctrl();
+                    }
                 }
+
                 break;
 
             case S_OPERATION_ENABLE:

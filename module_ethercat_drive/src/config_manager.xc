@@ -57,17 +57,46 @@ void cm_sync_config_hall_states(
 int cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        PositionFeedbackConfig &config,
-        int sensor_index)
+        PositionFeedbackConfig &config, int feedback_service_index,
+        int &sensor_commutation, int &sensor_motion_control,
+        int number_of_ports, int &port_index)
 {
     config = i_pos_feedback.get_config();
     int restart = 0;
 
     uint16_t feedback_sensor_object = 0;
-    feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index);
+    SensorFunction sensor_function = 0;
+
+    //go through all ports until we found one in use
+    for (int i=port_index; i<=number_of_ports; i++) {
+        feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, i);
+        if (feedback_sensor_object != 0) {
+            sensor_function = i_coe.get_object_value(feedback_sensor_object, 2);
+            if (sensor_function != SENSOR_FUNCTION_DISABLED) {
+                // detect which position feedback service (1 or 2) is used for commutation or motion control
+                // this is used later for multiple things like: sensor resolution (for profiler), tuning (for setting the pole pairs)
+                switch(sensor_function) {
+                case SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL:
+                    sensor_commutation = feedback_service_index;
+                    sensor_motion_control = feedback_service_index;
+                    break;
+                case SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY:
+                    sensor_commutation = feedback_service_index;
+                    break;
+                case SENSOR_FUNCTION_MOTION_CONTROL:
+                    sensor_motion_control = feedback_service_index;
+                    break;
+                }
+                port_index = i; //the port we will configure now
+                break;
+            } else {
+                feedback_sensor_object = 0;
+            }
+        }
+    }
 
 
-    /* Get common settings for sensors */
+    /* use the feedback_sensor_object to detect sensor type */
     int old_sensor_type = config.sensor_type; //too check if we need to restart the service
 
     switch (feedback_sensor_object) {
@@ -99,18 +128,25 @@ int cm_sync_config_position_feedback(
         restart = 1;
     }
 
-    config.sensor_function         = i_coe.get_object_value(feedback_sensor_object, 2);
+    /* at this point either feedback_sensor_object contains a valid address or we quit */
+
+    config.sensor_function         = sensor_function;
     config.resolution              = i_coe.get_object_value(feedback_sensor_object, 3);
     config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, 4);
     config.polarity                = sext(i_coe.get_object_value(feedback_sensor_object, 5), 8);
     config.pole_pairs              = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
 
     // sensor specific parameters
+    // use port_index to select the port number used for hall, qei or biss
+    EncoderPortNumber encoder_port_number = ENCODER_PORT_1;
+    if (port_index != 1) {
+        encoder_port_number = ENCODER_PORT_2;
+    }
     switch (config.sensor_type) {
     case QEI_SENSOR:
         config.qei_config.index_type  = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
         config.qei_config.signal_type = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
-        //FIXME: missing port number
+        config.qei_config.port_number = encoder_port_number;
         break;
 
     case BISS_SENSOR:
@@ -119,13 +155,13 @@ int cm_sync_config_position_feedback(
         config.biss_config.timeout              = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT);
         config.biss_config.crc_poly             = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM);
         config.biss_config.clock_port_config    = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
-        config.biss_config.data_port_number     = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
+        config.biss_config.data_port_number     = encoder_port_number;
         config.biss_config.filling_bits         = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
         config.biss_config.busy                 = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
         break;
 
     case HALL_SENSOR:
-        //FIXME: missing port number
+        config.hall_config.port_number = encoder_port_number;
         break;
 
     case REM_14_SENSOR:
@@ -140,13 +176,15 @@ int cm_sync_config_position_feedback(
         break;
     }
 
-    //gpio settings (only for the first position feedback service)
-    if (sensor_index == 1)
+    //gpio settings (gpio are always on the first position feedback service)
+    if (feedback_service_index == 1)
     for (int i=0; i<4; i++) {
         config.gpio_config[i] = i_coe.get_object_value(DICT_GPIO, i+1);
     }
 
     i_pos_feedback.set_config(config);
+
+    port_index++; //the next port to check
 
     return restart;
 }
@@ -284,45 +322,54 @@ void cm_default_config_position_feedback(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
         PositionFeedbackConfig &config,
-        int sensor_index)
+        int feedback_service_index)
 {
     config = i_pos_feedback.get_config();
 
-    // select where to store the parameters
+    int port_index = 1;
     uint16_t feedback_sensor_object = 0;
+
+    // select where to store the parameters
     switch(config.sensor_type) {
     case QEI_SENSOR:
-        if (sensor_index == 1)
+        if (config.qei_config.port_number == ENCODER_PORT_1) {
             feedback_sensor_object = DICT_INCREMENTAL_ENCODER_1;
-        else
+        } else {
+            port_index = 2;
             feedback_sensor_object = DICT_INCREMENTAL_ENCODER_2;
+        }
         break;
     case BISS_SENSOR:
-        if (sensor_index == 1)
+        if (config.biss_config.data_port_number == ENCODER_PORT_1) {
             feedback_sensor_object = DICT_BISS_ENCODER_1;
-        else
+        } else {
+            port_index = 2;
             feedback_sensor_object = DICT_BISS_ENCODER_2;
+        }
         break;
     case HALL_SENSOR:
-        if (sensor_index == 1)
+        if (config.hall_config.port_number == ENCODER_PORT_1) {
             feedback_sensor_object = DICT_HALL_SENSOR_1;
-        else
+        } else {
+            port_index = 2;
             feedback_sensor_object = DICT_HALL_SENSOR_2;
+        }
         break;
     case REM_14_SENSOR:
         feedback_sensor_object = DICT_REM_14_ENCODER;
+        port_index = 3;
         break;
     case REM_16MT_SENSOR:
         feedback_sensor_object = DICT_REM_16MT_ENCODER;
+        port_index = 3;
         break;
     }
 
     if (feedback_sensor_object != 0) {
-        i_coe.set_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index, feedback_sensor_object);
+        i_coe.set_object_value(DICT_FEEDBACK_SENSOR_PORTS, port_index, feedback_sensor_object);
 
 
         // generic sensor parameters
-        i_coe.set_object_value(feedback_sensor_object, 1, config.sensor_type);
         i_coe.set_object_value(feedback_sensor_object, 2, config.sensor_function);
         i_coe.set_object_value(feedback_sensor_object, 3, config.resolution);
         i_coe.set_object_value(feedback_sensor_object, 4, config.velocity_compute_period);
@@ -333,7 +380,6 @@ void cm_default_config_position_feedback(
         case QEI_SENSOR:
             i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS, config.qei_config.index_type);
             i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE,config.qei_config.signal_type);
-            //FIXME: missing qei_config.port_number
             break;
 
         case BISS_SENSOR:
@@ -342,13 +388,11 @@ void cm_default_config_position_feedback(
             i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT, config.biss_config.timeout);
             i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM, config.biss_config.crc_poly);
             i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG, config.biss_config.clock_port_config); /* FIXME add check for valid enum data of clock_port_config */
-            i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG,config.biss_config.data_port_number);
             i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS,config.biss_config.filling_bits);
             i_coe.set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY,config.biss_config.busy);
             break;
 
         case HALL_SENSOR:
-            //FIXME: missing hall_config.port_number
             break;
 
         case REM_14_SENSOR:
@@ -366,7 +410,7 @@ void cm_default_config_position_feedback(
 
 
     //gpio settings (only for the first position feedback service)
-    if (sensor_index == 1)
+    if (feedback_service_index == 1)
     for (int i=0; i<4; i++) {
         i_coe.set_object_value(DICT_GPIO, i+1, config.gpio_config[i]);
     }

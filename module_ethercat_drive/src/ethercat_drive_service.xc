@@ -168,9 +168,15 @@ static void inline update_configuration(
 
     // set position feedback services parameters
     int restart = 0; //we need to restart position feedback service(s) when sensor type is changed
-    restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1);
+    int number_of_feedbacks_ports = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
+    int feedback_port_index = 1;
+    restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1,
+            sensor_commutation, sensor_motion_control,
+            number_of_feedbacks_ports, feedback_port_index);
     if (!isnull(i_pos_feedback_2)) {
-        restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2);
+        restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2,
+                sensor_commutation, sensor_motion_control,
+                number_of_feedbacks_ports, feedback_port_index);
         if (restart)
             i_pos_feedback_2.exit();
     }
@@ -178,28 +184,14 @@ static void inline update_configuration(
         i_pos_feedback_1.exit();
     }
 
-    // detect which sensor service (1 or 2) is used for commutation or motion control
-    if (position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
-        sensor_commutation = 1;
-    } else if (position_feedback_config_1.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_1.sensor_function == SENSOR_FUNCTION_MOTION_CONTROL) {
-        sensor_motion_control = 1;
-    }
-    if (!isnull(i_pos_feedback_2)) {
-        if (position_feedback_config_2.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_2.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY) {
-            sensor_commutation = 2;
-        } else if (position_feedback_config_2.sensor_function == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || position_feedback_config_2.sensor_function == SENSOR_FUNCTION_MOTION_CONTROL) {
-            sensor_motion_control = 2;
-        }
-    }
-
-    // set sensor resolution from the resolution of the sensor used for motion control
+    // set sensor resolution from the resolution of the sensor used for motion control (used by profiler)
     if (sensor_motion_control == 2) {
         sensor_resolution = position_feedback_config_2.resolution;
     } else {
         sensor_resolution = position_feedback_config_1.resolution;
     }
 
-    // set commution sensor type (used by motorcontrol service to detect if hall is used)
+    // set commutation sensor type (used by motorcontrol service to detect if hall is used)
     int sensor_commutation_type = 0;
     if (sensor_commutation == 2) {
         sensor_commutation_type = position_feedback_config_2.sensor_type;
@@ -361,8 +353,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
-
-    /* FIXME add support for more than one feedback sensor */
     cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);

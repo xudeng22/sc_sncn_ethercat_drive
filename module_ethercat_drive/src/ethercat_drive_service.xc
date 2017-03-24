@@ -4,6 +4,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <cia402_error_codes.h>
 #include <ethercat_drive_service.h>
 #include <refclk.h>
 #include <cia402_wrapper.h>
@@ -12,7 +13,7 @@
 #include <state_modes.h>
 #include <profile.h>
 #include <config_manager.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <position_feedback_service.h>
 #include <profile_control.h>
 #include <xscope.h>
@@ -37,26 +38,34 @@ enum eDirection {
     ,DIRECTION_CCLK   = -1
 };
 
-static int get_sensor_resolution(int sensor_select, PositionFeedbackConfig position_feedback_config)
-{
-    int sensor_resolution = 0;
+#define MAX_TIME_TO_WAIT_SDO      100000
 
-    if (sensor_select == HALL_SENSOR) {
-        sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
-    } else if (sensor_select == QEI_SENSOR) {
-        sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
-    } else if (sensor_select == BISS_SENSOR) {
-        sensor_resolution = 1<<position_feedback_config.biss_config.singleturn_resolution; /* bits -> ticks */
-    } else if (sensor_select == AMS_SENSOR) {
-        sensor_resolution = 0; /* FIXME the resolution has to be provided in PositionFeedbackConfig structure */
-    } else if (sensor_select == CONTELEC_SENSOR) {
-        sensor_resolution = 1<<position_feedback_config.contelec_config.resolution_bits; /* bits -> ticks */
+static int get_cia402_error_code(FaultCode fault)
+{
+    int error_code = 0;
+
+    switch (fault) {
+    case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
+        error_code = ERROR_CODE_PHASE_FAILURE_L1;
+        break;
+    case UNDER_VOLTAGE_NO_1:
+        error_code = ERROR_CODE_DC_LINK_UNDER_VOLTAGE;
+        break;
+    case OVER_VOLTAGE_NO_1:
+        error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
+        break;
+#if 0 /* FIXME undefined symbol */
+    case OVER_TEMPERATURE:
+        error_code = ERROR_CODE_EXCESS_TEMPEATUR_DEVICE;
+        break;
+#endif
+    default: /* a fault occured but could not be specified further */
+        error_code = ERROR_CODE_CONTROL;
+        break;
     }
 
-    return sensor_resolution;
+    return error_code;
 }
-
-#define MAX_TIME_TO_WAIT_SDO      100000
 
 static void sdo_wait_first_config(client interface i_coe_communication i_coe)
 {
@@ -114,7 +123,9 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
         break;
 
     case OPMODE_CST:
-        target = quick_stop_torque_profile_generate(step);
+        //FIXME: add quick_stop_torque_profile_generate
+//        target = quick_stop_torque_profile_generate(step);
+        target = 1;
         break;
     }
 
@@ -168,53 +179,80 @@ static void inline update_configuration(
         client interface i_coe_communication           i_coe,
         client interface MotorcontrolInterface         i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
-        client interface PositionFeedbackInterface i_pos_feedback,
-        PosVelocityControlConfig  &position_config,
-        PositionFeedbackConfig    &position_feedback_config,
+        client interface PositionFeedbackInterface i_pos_feedback_1,
+        client interface PositionFeedbackInterface ?i_pos_feedback_2,
+        MotionControlConfig  &position_config,
+        PositionFeedbackConfig    &position_feedback_config_1,
+        PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &motorcontrol_config,
         ProfilerConfig            &profiler_config,
-        int &sensor_select,
+        int &sensor_commutation, int &sensor_motion_control,
         int &limit_switch_type,
-        int &polarity,
         int &sensor_resolution,
         int &nominal_speed,
         int &homing_method,
         int &opmode)
 {
-    /* update structures */
-    //position_feedback_config;
-    //position_config;
 
-    cm_sync_config_position_feedback(i_coe, i_pos_feedback, position_feedback_config);
-    cm_sync_config_profiler(i_coe, profiler_config);
-    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
-    cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config);
+    // set position feedback services parameters
+    int restart = 0; //we need to restart position feedback service(s) when sensor type is changed
+    int number_of_feedbacks_ports = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
+    int feedback_port_index = 1;
+    restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1,
+            sensor_commutation, sensor_motion_control,
+            number_of_feedbacks_ports, feedback_port_index);
+    if (!isnull(i_pos_feedback_2)) {
+        restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2,
+                sensor_commutation, sensor_motion_control,
+                number_of_feedbacks_ports, feedback_port_index);
+        if (restart)
+            i_pos_feedback_2.exit();
+    }
+    if (restart) {
+        i_pos_feedback_1.exit();
+    }
+
+    // set sensor resolution from the resolution of the sensor used for motion control (used by profiler)
+    if (sensor_motion_control == 2) {
+        sensor_resolution = position_feedback_config_2.resolution;
+    } else {
+        sensor_resolution = position_feedback_config_1.resolution;
+    }
+
+    // set commutation sensor type (used by motorcontrol service to detect if hall is used)
+    int sensor_commutation_type = 0;
+    if (sensor_commutation == 2) {
+        sensor_commutation_type = position_feedback_config_2.sensor_type;
+    } else {
+        sensor_commutation_type = position_feedback_config_1.sensor_type;
+    }
+
+    cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
+    cm_sync_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config, sensor_commutation, sensor_commutation_type);
+    cm_sync_config_pos_velocity_control(i_coe, i_position_control, position_config, sensor_resolution);
+
+    //FIXME: as the hall_states params are still in the motorcontrol config they are set in cm_sync_config_motor_control
+//    cm_sync_config_hall_states(i_coe, i_pos_feedback_1, i_motorcontrol, position_feedback_config_1, motorcontrol_config, 1);
 
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
-    profiler_config.ticks_per_turn = i_pos_feedback.get_ticks_per_turn();
-    polarity = profiler_config.polarity;
+    profiler_config.ticks_per_turn = sensor_resolution;
 
-    nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
+    nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
-    sensor_select     = i_coe.get_object_value(CIA402_SENSOR_SELECTION_CODE, 0);
-
-    sensor_resolution = get_sensor_resolution(sensor_select, position_feedback_config);
-
-    //opmode = i_coe.get_object_value(CIA402_OP_MODES, 0);
 }
 
-static void motioncontrol_enable(int opmode,
+static void motioncontrol_enable(int opmode, int position_control_strategy,
                                  client interface PositionVelocityCtrlInterface i_position_control)
 {
     switch (opmode) {
     case OPMODE_CSP:
-        i_position_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+        i_position_control.enable_position_ctrl(position_control_strategy);
         break;
 
     case OPMODE_CSV:
-        i_position_control.enable_velocity_ctrl(0);
+        i_position_control.enable_velocity_ctrl();
         break;
 
     case OPMODE_CST:
@@ -281,11 +319,12 @@ static void debug_print_state(DriveState_t state)
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
+                            client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
-                            client interface PositionFeedbackInterface i_position_feedback)
+                            client interface PositionFeedbackInterface i_position_feedback_1,
+                            client interface PositionFeedbackInterface ?i_position_feedback_2)
 {
     int quick_stop_steps = 0;
     int quick_stop_steps_left = 0;
@@ -315,15 +354,16 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
 
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
 
-    ctrl_proto_values_t InOut = init_ctrl_proto();
+    pdo_handler_values_t InOut = { 0 };
 
     int setup_loop_flag = 0;
 
     int ack = 0;
     int shutdown_ack = 0;
-    int sensor_select = 1;
+    int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
+    int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
 
     int communication_active = 0;
     unsigned int c_time;
@@ -351,11 +391,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int ctrl_state;
     int limit_switch_type;
     int homing_method;
-    int polarity = 1;
 
     int sensor_resolution = 0;
 
-    PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
+    PositionFeedbackConfig position_feedback_config_1 = i_position_feedback_1.get_config();
+    PositionFeedbackConfig position_feedback_config_2;
 
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
     UpstreamControlData   send_to_master = { 0 };
@@ -364,8 +404,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
-
-    cm_default_config_position_feedback(i_coe, i_position_feedback, position_feedback_config);
+    cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
+    if (!isnull(i_position_feedback_2)) {
+        cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
+    }
     cm_default_config_profiler(i_coe, profiler_config);
     cm_default_config_motor_control(i_coe, i_motorcontrol, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_coe, i_position_control);
@@ -396,9 +438,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
-            update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback,
-                    position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
-                    sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
+            update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback_1, i_position_feedback_2,
+                    position_velocity_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
+                    sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, nominal_speed, homing_method,
                     opmode
                     );
 
@@ -414,12 +456,14 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         target_position = pdo_get_target_position(InOut);
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = pdo_get_target_torque(InOut);
-        send_to_control.offset_torque = InOut.user1_in; /* FIXME send this to the controll */
-        update_position_velocity = InOut.user2_in; /* Update trigger which PID setting should be updated now */
+        send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
+        /* FIXME removed! what is the next way to do it?
+        update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
+         */
 
         /* tuning pdos */
-        tuning_control = InOut.user4_in;
-        tuning_status.value = InOut.user3_in;
+        tuning_control = pdo_get_tuning_command(InOut); // mode 3 for tuning (mode 1 and 2 are in controlword)
+        tuning_status.value = pdo_get_user_mosi(InOut); // value of tuning command
 
         /*
         printint(state);
@@ -468,15 +512,19 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         if (fault != NO_FAULT) {
             update_checklist(checklist, opmode, 1);
-            if (fault == OVER_CURRENT_PHASE_A || fault == OVER_CURRENT_PHASE_B || fault == OVER_CURRENT_PHASE_C) {
+            if (fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (fault == UNDER_VOLTAGE) {
+            } else if (fault == UNDER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-            } else if (fault == OVER_VOLTAGE) {
+            } else if (fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
             } else if (fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
             }
+
+            /* Write error code to object dictionary */
+            int error_code = get_cia402_error_code(fault);
+            i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
         }
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
@@ -488,16 +536,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         pdo_set_statusword(statusword, InOut);
         pdo_set_opmode_display(opmode, InOut);
-        pdo_set_actual_velocity(actual_velocity, InOut);
-        pdo_set_actual_torque(actual_torque, InOut );
-        pdo_set_actual_position(actual_position, InOut);
-        InOut.user1_out = (1000 * 5 * send_to_master.sensor_torque) / 4096;  /* ticks to (edit:) milli-volt */
-        InOut.user4_out = tuning_result;
+        pdo_set_velocity_value(actual_velocity, InOut);
+        pdo_set_torque_value(actual_torque, InOut );
+        pdo_set_position_value(actual_position, InOut);
+        // FIXME this is one of the analog inputs?
+        pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
+        pdo_set_tuning_status(tuning_result, InOut);
 
-        //xscope_int(USER_TORQUE, InOut.user1_out);
+        //xscope_int(USER_TORQUE, (1000 * 5 * send_to_master.sensor_torque) / 4096);
 
         /* Read/Write packets to ethercat Master application */
-        communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
+        communication_active = pdo_handler(i_pdo, InOut);
 
         if (communication_active == 0) {
             if (comm_inactive_flag == 0) {
@@ -524,6 +573,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         //debug_print_state(state);
 
         if (opmode == OPMODE_NONE) {
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
             /* for safety considerations, if no opmode choosen, the brake should blocking. */
             i_motorcontrol.set_brake_status(0);
             if (opmode_request != OPMODE_NONE)
@@ -576,7 +626,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    motioncontrol_enable(opmode, i_position_control);
+                    motioncontrol_enable(opmode, position_velocity_config.position_control_strategy, i_position_control);
                 }
                 break;
 
@@ -671,27 +721,31 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         } else if (opmode == OPMODE_SNCN_TUNING) {
             /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
+            tuning_handler_ethercat(controlword, tuning_control,
+                    statusword, tuning_result,
+                    tuning_status,
+                    motorcontrol_config, position_velocity_config, position_feedback_config_1, position_feedback_config_2,
+                    sensor_commutation, sensor_motion_control,
+                    send_to_master, send_to_control,
+                    i_position_control, i_position_feedback_1, i_position_feedback_2);
+
+            //exit tuning mode
             if (opmode_request != opmode) {
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
                 i_position_control.disable();
-                state = S_FAULT;
+                state = S_SWITCH_ON_DISABLED;
+                statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
                 //reset tuning status
                 tuning_status.brake_flag = 0;
                 tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
-
-            tuning_handler_ethercat(controlword, tuning_control,
-                    statusword, tuning_result,
-                    tuning_status,
-                    motorcontrol_config, position_velocity_config, position_feedback_config,
-                    send_to_master, send_to_control,
-                    i_position_control, i_position_feedback);
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
              * no opmode and don't allow any operation.
              * For safety reasons, if no opmode is selected the brake is closed! */
             i_motorcontrol.set_brake_status(0);
             opmode = OPMODE_NONE;
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
         }
 
 #if 1 /* Draft to get PID updates on the fly */
@@ -699,26 +753,26 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            position_velocity_config.P_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 1); /* POSITION_Kp; */
-            position_velocity_config.I_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 2); /* POSITION_Ki; */
-            position_velocity_config.D_pos          = i_coe.get_object_value(CIA402_POSITION_GAIN, 3); /* POSITION_Kd; */
+            position_velocity_config.position_kp          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 1); /* POSITION_P_VALUE; */
+            position_velocity_config.position_ki          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 2); /* POSITION_I_VALUE; */
+            position_velocity_config.position_kd          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 3); /* POSITION_D_VALUE; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
         if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            position_velocity_config.P_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 1); /* 18; */
-            position_velocity_config.I_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 22; */
-            position_velocity_config.D_velocity          = i_coe.get_object_value(CIA402_VELOCITY_GAIN, 2); /* 25; */
+            position_velocity_config.velocity_kp          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 1); /* 18; */
+            position_velocity_config.velocity_ki          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 22; */
+            position_velocity_config.velocity_kd          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 25; */
 
             i_position_control.set_position_velocity_control_config(position_velocity_config);
         }
 
 
         /*
-        motorcontrol_config.current_P_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 1);
-        motorcontrol_config.current_I_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 2);
-        motorcontrol_config.current_D_gain     = i_coe.get_object_value(CIA402_CURRENT_GAIN, 3);
+        motorcontrol_config.torque_P_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 1);
+        motorcontrol_config.torque_I_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 2);
+        motorcontrol_config.torque_D_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 3);
          */
 #endif
 
@@ -734,13 +788,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
  * test if the motor will move.
  */
 void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
+                            client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback)
 {
-    PosVelocityControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_velocity_config = i_position_control.get_position_velocity_control_config();
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
     MotorcontrolConfig motorcontrol_config = i_motorcontrol.get_config();
 
@@ -757,7 +811,7 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
     unsigned time;
 
     printstr("Motorconfig\n");
-    printstr("pole pair: "); printintln(motorcontrol_config.pole_pair);
+    printstr("pole pair: "); printintln(motorcontrol_config.pole_pairs);
     printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
 
     printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);

@@ -6,7 +6,7 @@
 
 #include <statemachine.h>
 #include <state_modes.h>
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <mc_internal_constants.h>
 
 int read_controlword_switch_on(int control_word) {
@@ -119,49 +119,64 @@ int init_state(void) {
 int16_t update_statusword(int current_status, DriveState_t state_reached, int ack, int q_active, int shutdown_ack) {
     int16_t status_word;
 
+    /* set/clear the corresponding bits in the statusword using this pattern:
+     * status_word = (current_status
+     *                & ~bit_to_clear & ~bit_to_clear & ... )
+     *                | bit_to_set | bit_to_set | ... ;
+     */
     switch (state_reached) {
         case S_NOT_READY_TO_SWITCH_ON:
-            //printstrln("Warning reaching state which is not supposed to be reached!\n");
-            /* FIXME double check if this makes sense */
-            status_word = current_status & ~READY_TO_SWITCH_ON_STATE
-                & ~SWITCHED_ON_STATE & ~OPERATION_ENABLED_STATE
-                & ~VOLTAGE_ENABLED_STATE;
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE
+                           & ~FAULT_STATE & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE & ~READY_TO_SWITCH_ON_STATE);
             break;
 
         case S_SWITCH_ON_DISABLED:
-            status_word = (current_status & ~READY_TO_SWITCH_ON_STATE
-                           & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE
-                           & ~VOLTAGE_ENABLED_STATE & ~FAULT_STATE) | SWITCH_ON_DISABLED_STATE;
+            status_word = (current_status
+                           & ~FAULT_STATE & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE & ~READY_TO_SWITCH_ON_STATE)
+                           | SWITCH_ON_DISABLED_STATE;
             break;
 
         case S_READY_TO_SWITCH_ON:
-            status_word = (current_status & ~OPERATION_ENABLED_STATE
-                           & ~SWITCHED_ON_STATE & ~VOLTAGE_ENABLED_STATE
-                           & ~SWITCH_ON_DISABLED_STATE) | QUICK_STOP_STATE | READY_TO_SWITCH_ON_STATE;
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE & ~FAULT_STATE & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE)
+                           | QUICK_STOP_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
         case S_SWITCH_ON:
-            status_word = (current_status & ~SWITCH_ON_DISABLED_STATE
-                           & ~OPERATION_ENABLED_STATE) | QUICK_STOP_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE
-                           | VOLTAGE_ENABLED_STATE;
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE & ~FAULT_STATE & ~OPERATION_ENABLED_STATE)
+                           | QUICK_STOP_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
         case S_OPERATION_ENABLE:
-            status_word = current_status | QUICK_STOP_STATE | OPERATION_ENABLED_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE;
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE & ~FAULT_STATE)
+                           | QUICK_STOP_STATE | OPERATION_ENABLED_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
         case S_FAULT_REACTION_ACTIVE:
-            status_word = (current_status & ~FAULT_REACTION_ACTIVE_MASQ) | FAULT_REACTION_ACTIVE_STATE; /* Note: guarantee bits which has to be '0' are '0' */
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE)
+                           | FAULT_STATE | OPERATION_ENABLED_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
         case S_FAULT:
-            status_word = (current_status & ~FAULT_MASQ) | FAULT_STATE; /* Note: guarantee bits which has to be '0' are '0' */
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE
+                           & ~OPERATION_ENABLED_STATE & ~SWITCHED_ON_STATE & ~READY_TO_SWITCH_ON_STATE)
+                           | FAULT_STATE;
             break;
 
         case S_QUICK_STOP_ACTIVE:
-            status_word = current_status | QUICK_STOP_STATE;
+            status_word = (current_status
+                           & ~SWITCH_ON_DISABLED_STATE & ~QUICK_STOP_STATE & ~FAULT_STATE)
+                           | OPERATION_ENABLED_STATE | SWITCHED_ON_STATE | READY_TO_SWITCH_ON_STATE;
             break;
 
+        default:
+            status_word = current_status;
+            break;
     }
 
     if (q_active == 1)

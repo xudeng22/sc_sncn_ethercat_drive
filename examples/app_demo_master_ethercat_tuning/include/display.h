@@ -26,4 +26,6 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
 
 int display_tuning_help(WINDOW *wnd, int row);
 
+int display_slaves(WINDOW *wnd, int row, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input, size_t num_slaves, OutputValues output);
+
 #endif /* DISPLAY_H */

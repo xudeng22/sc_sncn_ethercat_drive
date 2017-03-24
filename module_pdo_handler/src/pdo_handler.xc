@@ -6,151 +6,240 @@
 
 #include <ethercat_service.h>
 #include <pdo_handler.h>
-#include <foefs.h>
 
-#define MAX_PDO_SIZE    15
+#define MAX_PDO_SIZE    64
 
-ctrl_proto_values_t init_ctrl_proto(void)
-{
-	ctrl_proto_values_t InOut;
-
-	InOut.control_word    = 0x00;    		// shutdown
-	InOut.operation_mode  = 0x00;  			// undefined
-
-	InOut.target_torque   = 0x0;
-	InOut.target_velocity = 0x0;
-	InOut.target_position = 0x0;
-
-	InOut.user1_in        = 0x0;
-	InOut.user2_in        = 0x0;
-	InOut.user3_in        = 0x0;
-	InOut.user4_in        = 0x0;
-
-	InOut.status_word     = 0x0000;  		// not set
-	InOut.operation_mode_display = 0x00; 	/* no operation mode selected */
-
-	InOut.torque_actual   = 0x0;
-	InOut.velocity_actual = 0x0;
-	InOut.position_actual = 0x0;
-
-	InOut.user1_out       = 0x0;
-	InOut.user2_out       = 0x0;
-	InOut.user3_out       = 0x0;
-	InOut.user4_out       = 0x0;
-
-	return InOut;
-}
-
-int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
+int pdo_handler(client interface i_pdo_communication i_pdo, pdo_handler_values_t &inout)
 {
 
-	int buffer[64];
+	unsigned char buffer[MAX_PDO_SIZE];
 	unsigned int count = 0;
-	int i = 0;
 
-
-	pdo_in <: DATA_REQUEST;
-	pdo_in :> count;
-//	printstr("count  "); printintln(count);
-	if (count == 0)
-	    return 0;
-
-	for (i = 0; i < count; i++) {
-		pdo_in :> buffer[i];
-		//printhexln(buffer[i]);
-	}
+	count = i_pdo.get_pdos_value(buffer);
 
 	//Test for matching number of words
 	if(count > 0)
 	{
-		InOut.control_word    = (buffer[0]) & 0xffff;
-		InOut.operation_mode  = buffer[1] & 0xff;
-		InOut.target_torque   = ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
-		InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
-		InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-		InOut.user1_in        = ((buffer[8]&0xff)<<24)  | ((buffer[7]&0xffff)<<8)  | ((buffer[6]>>8)&0xff);
-		InOut.user2_in        = ((buffer[10]&0xff)<<24) | ((buffer[9]&0xffff)<<8)  | ((buffer[8]>>8)&0xff);
-		InOut.user3_in        = ((buffer[12]&0xff)<<24) | ((buffer[11]&0xffff)<<8) | ((buffer[10]>>8)&0xff);
-		InOut.user4_in        = ((buffer[14]&0xff)<<24) | ((buffer[13]&0xffff)<<8) | ((buffer[12]>>8)&0xff);
-//		printhexln(InOut.control_word);
-//		printhexln(InOut.operation_mode);
-//		printhexln(InOut.target_torque);
-//		printhexln(InOut.target_position);
-//		printhexln(InOut.target_velocity);
+		inout.controlword = buffer[1] << 8 | buffer[0];
+		inout.op_mode = buffer[2];
+		inout.target_torque = buffer[4] << 8 | buffer[3];
+		inout.target_position = buffer[8] << 24 | buffer[7] << 16 | buffer[6] << 8 | buffer[5];
+		inout.target_velocity = buffer[12] << 24 | buffer[11] << 16 | buffer[10] << 8 | buffer[9];
+		inout.offset_torque = buffer[16] << 24 | buffer[15] << 16 | buffer[14] << 8 | buffer[13];
+		inout.tuning_command = buffer[20] << 24 | buffer[19] << 16 | buffer[18] << 8 | buffer[17];
+		inout.digital_output1 = buffer[21];
+		inout.digital_output2 = buffer[22];
+		inout.digital_output3 = buffer[23];
+		inout.digital_output4 = buffer[24];
+		inout.user_mosi = buffer[28] << 24 | buffer[27] << 16 | buffer[26] << 8 | buffer[25];
 	}
 
+	size_t pdo_count = 0;
 	if(count > 0)
 	{
-		pdo_out <: MAX_PDO_SIZE;
-		buffer[0]  = InOut.status_word ;
-		buffer[1]  = ((InOut.operation_mode_display&0xff) | (InOut.position_actual&0xff)<<8) ;
-		buffer[2]  = (InOut.position_actual>> 8)& 0xffff;
-		buffer[3]  = ((InOut.position_actual>>24) & 0xff) | ((InOut.velocity_actual&0xff)<<8);
-		buffer[4]  = (InOut.velocity_actual>> 8)& 0xffff;
-		buffer[5]  = ((InOut.velocity_actual>>24) & 0xff) | ((InOut.torque_actual&0xff)<<8) ;
-		buffer[6]  = ((InOut.user1_out<<8)&0xff00) | ((InOut.torque_actual >> 8)&0xff);
-		buffer[7]  = ((InOut.user1_out>>8)&0xffff);
-		buffer[8]  = ((InOut.user2_out<<8)&0xff00) | ((InOut.user1_out>>24)&0xff);
-		buffer[9]  = ((InOut.user2_out>>8)&0xffff);
-		buffer[10] = ((InOut.user3_out<<8)&0xff00) | ((InOut.user2_out>>24)&0xff);
-		buffer[11] = ((InOut.user3_out>>8)&0xffff);
-		buffer[12] = ((InOut.user4_out<<8)&0xff00) | ((InOut.user3_out>>24)&0xff);
-		buffer[13] = ((InOut.user4_out>>8)&0xffff);
-		buffer[14] = ((InOut.user4_out>>24)&0xff);
-		for (i = 0; i < MAX_PDO_SIZE; i++)
-		{
-			pdo_out <: (unsigned) buffer[i];
-		}
+		buffer[0] = inout.statusword;
+		buffer[1] = inout.statusword >> 8;
+		buffer[2] = inout.op_mode_display;
+		buffer[3] = inout.position_value;
+		buffer[4] = inout.position_value >> 8;
+		buffer[5] = inout.position_value >> 16;
+		buffer[6] = inout.position_value >> 24;
+		buffer[7] = inout.velocity_value;
+		buffer[8] = inout.velocity_value >> 8;
+		buffer[9] = inout.velocity_value >> 16;
+		buffer[10] = inout.velocity_value >> 24;
+		buffer[11] = inout.torque_value;
+		buffer[12] = inout.torque_value >> 8;
+		buffer[13] = inout.secondary_position_value;
+		buffer[14] = inout.secondary_position_value >> 8;
+		buffer[15] = inout.secondary_position_value >> 16;
+		buffer[16] = inout.secondary_position_value >> 24;
+		buffer[17] = inout.secondary_velocity_value;
+		buffer[18] = inout.secondary_velocity_value >> 8;
+		buffer[19] = inout.secondary_velocity_value >> 16;
+		buffer[20] = inout.secondary_velocity_value >> 24;
+		buffer[21] = inout.analog_input1;
+		buffer[22] = inout.analog_input1 >> 8;
+		buffer[23] = inout.analog_input2;
+		buffer[24] = inout.analog_input2 >> 8;
+		buffer[25] = inout.analog_input3;
+		buffer[26] = inout.analog_input3 >> 8;
+		buffer[27] = inout.analog_input4;
+		buffer[28] = inout.analog_input4 >> 8;
+		buffer[29] = inout.tuning_status;
+		buffer[30] = inout.tuning_status >> 8;
+		buffer[31] = inout.tuning_status >> 16;
+		buffer[32] = inout.tuning_status >> 24;
+		buffer[33] = inout.digital_input1;
+		buffer[34] = inout.digital_input2;
+		buffer[35] = inout.digital_input3;
+		buffer[36] = inout.digital_input4;
+		buffer[37] = inout.user_miso;
+		buffer[38] = inout.user_miso >> 8;
+		buffer[39] = inout.user_miso >> 16;
+		buffer[40] = inout.user_miso >> 24;
+
+		pdo_count = 41;
+		i_pdo.set_pdos_value(buffer, pdo_count);
 	}
 	return count;
 }
 
-int pdo_get_target_torque(ctrl_proto_values_t InOut)
+int pdo_get_target_torque(pdo_handler_values_t InOut)
 {
     return InOut.target_torque;
 }
 
-int pdo_get_target_velocity(ctrl_proto_values_t InOut)
+int pdo_get_target_velocity(pdo_handler_values_t InOut)
 {
     return InOut.target_velocity;
 }
 
-int pdo_get_target_position(ctrl_proto_values_t InOut)
+int pdo_get_target_position(pdo_handler_values_t InOut)
 {
     return InOut.target_position;
 }
 
-int pdo_get_controlword(ctrl_proto_values_t InOut)
+int pdo_get_controlword(pdo_handler_values_t InOut)
 {
-    return InOut.control_word;
+    return InOut.controlword;
 }
 
-int pdo_get_opmode(ctrl_proto_values_t InOut)
+int pdo_get_opmode(pdo_handler_values_t InOut)
 {
-    return InOut.operation_mode;
+    return InOut.op_mode;
 }
 
-void pdo_set_actual_torque(int actual_torque, ctrl_proto_values_t &InOut)
+void pdo_set_torque_value(int actual_torque, pdo_handler_values_t &InOut)
 {
-    InOut.torque_actual = actual_torque;
+    InOut.torque_value = actual_torque;
 }
 
-void pdo_set_actual_velocity(int actual_velocity, ctrl_proto_values_t &InOut)
+void pdo_set_velocity_value(int actual_velocity, pdo_handler_values_t &InOut)
 {
-    InOut.velocity_actual = actual_velocity;
+    InOut.velocity_value = actual_velocity;
 }
 
-void pdo_set_actual_position(int actual_position, ctrl_proto_values_t &InOut)
+void pdo_set_position_value(int actual_position, pdo_handler_values_t &InOut)
 {
-    InOut.position_actual = actual_position;
+    InOut.position_value = actual_position;
 }
 
-void pdo_set_statusword(int statusword, ctrl_proto_values_t &InOut)
+void pdo_set_statusword(int statusword, pdo_handler_values_t &InOut)
 {
-    InOut.status_word = statusword & 0xffff;
+    InOut.statusword = statusword & 0xffff;
 }
 
-void pdo_set_opmode_display(int opmode, ctrl_proto_values_t &InOut)
+void pdo_set_opmode_display(int opmode, pdo_handler_values_t &InOut)
 {
-    InOut.operation_mode_display = opmode & 0xff;
+    InOut.op_mode_display = opmode & 0xff;
 }
+
+int pdo_get_offset_torque(pdo_handler_values_t &InOut)
+{
+    return InOut.offset_torque;
+}
+
+int pdo_get_tuning_command(pdo_handler_values_t &InOut)
+{
+    return InOut.tuning_command;
+}
+
+int pdo_get_dgitial_output1(pdo_handler_values_t &InOut)
+{
+    return InOut.digital_output1;
+}
+
+int pdo_get_dgitial_output2(pdo_handler_values_t &InOut)
+{
+    return InOut.digital_output2;
+}
+
+int pdo_get_dgitial_output3(pdo_handler_values_t &InOut)
+{
+    return InOut.digital_output3;
+}
+
+int pdo_get_dgitial_output4(pdo_handler_values_t &InOut)
+{
+    return InOut.digital_output4;
+}
+
+int pdo_get_user_mosi(pdo_handler_values_t &InOut)
+{
+    return InOut.user_mosi;
+}
+
+void pdo_set_secondary_position_value(int value, pdo_handler_values_t &InOut)
+{
+    InOut.secondary_position_value = value;
+}
+
+void pdo_set_secondary_velocity_value(int value, pdo_handler_values_t &InOut)
+{
+    InOut.secondary_velocity_value = value;
+}
+
+void pdo_set_analog_input1(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input1 = value;
+}
+
+void pdo_set_analog_input2(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input2 = value;
+}
+
+void pdo_set_analog_input3(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input3 = value;
+}
+
+void pdo_set_analog_input4(int value, pdo_handler_values_t &InOut)
+{
+    InOut.analog_input4 = value;
+}
+
+void pdo_set_tuning_status(int value, pdo_handler_values_t &InOut)
+{
+    InOut.tuning_status = value;
+}
+
+void pdo_set_digital_input1(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input1 = value;
+}
+
+void pdo_set_digital_input2(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input2 = value;
+}
+
+void pdo_set_digital_input3(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input3 = value;
+}
+
+void pdo_set_digital_input4(int value, pdo_handler_values_t &InOut)
+{
+    InOut.digital_input4 = value;
+}
+
+void pdo_set_user_miso(int value, pdo_handler_values_t &InOut)
+{
+    InOut.user_miso = value;
+}
+
+
+#if 0 /* DON'T COMMIT */
+/* template for getter and setter functions to access PDOs */
+int pdo_get_NAME(pdo_handler_values_t &InOut)
+{
+    return InOut.NAME;
+}
+
+void pdo_set_NAME(int value, pdo_handler_values &InOut)
+{
+    InOut.NAME = value;
+}
+#endif

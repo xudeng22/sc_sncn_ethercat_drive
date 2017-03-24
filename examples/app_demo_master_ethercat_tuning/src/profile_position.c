@@ -8,23 +8,20 @@
 
 #include "profile.h"
 
-//#define MAX_TICKS_PER_TURN 262144
-#define MAX_TICKS_PER_TURN 65536
-
 int rpm_to_ticks_sensor(int rpm, int max_ticks_per_turn) {
     return (rpm * max_ticks_per_turn)/60;
 }
 
-void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position) {
+void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn) {
 
     motion_profile->max_position =  max_position;
     motion_profile->min_position = min_position;
-	motion_profile->max_acceleration =  rpm_to_ticks_sensor(max_acceleration, MAX_TICKS_PER_TURN);
-	motion_profile->max_velocity = rpm_to_ticks_sensor(max_velocity, MAX_TICKS_PER_TURN);
+	motion_profile->max_acceleration =  rpm_to_ticks_sensor(max_acceleration, ticks_per_turn);
+	motion_profile->max_velocity = rpm_to_ticks_sensor(max_velocity, ticks_per_turn);
     motion_profile->limit_factor = 10;
 }
 
-int init_position_profile(motion_profile_t *motion_profile, int target_position, int actual_position, int velocity, int acceleration, int deceleration) {
+int init_position_profile(motion_profile_t *motion_profile, int target_position, int actual_position, int velocity, int acceleration, int deceleration, int ticks_per_turn) {
 
     motion_profile->qf = (float) target_position;
     motion_profile->qi = (float) actual_position;
@@ -35,9 +32,9 @@ int init_position_profile(motion_profile_t *motion_profile, int target_position,
         motion_profile->qf = motion_profile->min_position;
     }
 
-	motion_profile->vi = rpm_to_ticks_sensor(velocity, MAX_TICKS_PER_TURN);
-	motion_profile->acc =  rpm_to_ticks_sensor(acceleration, MAX_TICKS_PER_TURN);
-	motion_profile->dec =  rpm_to_ticks_sensor(deceleration, MAX_TICKS_PER_TURN);
+	motion_profile->vi = rpm_to_ticks_sensor(velocity, ticks_per_turn);
+	motion_profile->acc =  rpm_to_ticks_sensor(acceleration, ticks_per_turn);
+	motion_profile->dec =  rpm_to_ticks_sensor(deceleration, ticks_per_turn);
 
     if (motion_profile->vi > motion_profile->max_velocity) {
         motion_profile->vi = motion_profile->max_velocity;

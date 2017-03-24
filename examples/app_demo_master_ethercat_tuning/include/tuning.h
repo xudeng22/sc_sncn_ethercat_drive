@@ -10,6 +10,10 @@
 
 #include <stdint.h>
 
+#define OPMODE_TUNING    (-128)
+#define DISPLAY_LINE 27
+#define HELP_ROW_COUNT 12
+
 typedef enum {
     TUNING_MOTORCTRL_OFF= 0,
     TUNING_MOTORCTRL_TORQUE= 1,
@@ -17,6 +21,13 @@ typedef enum {
     TUNING_MOTORCTRL_VELOCITY= 3,
     TUNING_MOTORCTRL_POSITION_PROFILER= 4
 } TuningMotorCtrlStatus;
+
+typedef enum {
+    NO_MODE,
+    QUIT_MODE,
+    TUNING_MODE,
+    CS_MODE
+} AppMode;
 
 typedef struct {
     TuningMotorCtrlStatus motorctrl_status;
@@ -27,6 +38,8 @@ typedef struct {
     int sensor_polarity;
     int brake_release_strategy;
     int brake_flag;
+    int error_status;
+    int sensor_error;
     int max_position;
     int min_position;
     int max_speed;
@@ -35,6 +48,10 @@ typedef struct {
     int I_pos;
     int D_pos;
     int integral_limit_pos;
+    int P_velocity;
+    int I_velocity;
+    int D_velocity;
+    int integral_limit_velocity;
 } InputValues;
 
 typedef struct {
@@ -45,6 +62,10 @@ typedef struct {
     int sign;
     int last_command;
     int last_value;
+    int init;
+    int select;
+    int debug;
+    AppMode app_mode;
 } OutputValues;
 
 
@@ -53,7 +74,8 @@ typedef struct {
 typedef enum {
     POSITION_DIRECT=0,
     POSITION_PROFILER=1,
-    POSITION_STEP=2
+    POSITION_STEP=2,
+    POSITION_STEP_PROFILER=3
 } PositionCtrlMode;
 
 typedef struct {
@@ -64,6 +86,8 @@ typedef struct {
     int profile_acceleration;
     int max_position;
     int min_position;
+    int target_position;
+    int ticks_per_turn;
     int step;
     int steps;
     PositionCtrlMode mode;
@@ -96,8 +120,19 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input);
 void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input, OutputValues *output,\
         PositionProfileConfig *profile_config, RecordConfig *record_config, Cursor *cursor);
 
-void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output);
+void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input);
 
 void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, struct _pdo_cia402_output pdo_output, char *filename);
+
+void tuning(WINDOW *wnd, Cursor *cursor,
+            struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input,
+            OutputValues *output, InputValues *input,
+            PositionProfileConfig *profile_config,
+            RecordConfig *record_config, char *record_filename);
+
+void cs_command(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input, size_t number_slaves, OutputValues *output);
+
+void cs_mode(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input, size_t number_slaves, OutputValues *output);
+
 
 #endif /* TUNING_H_ */

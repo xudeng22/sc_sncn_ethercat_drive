@@ -9,7 +9,7 @@
 #include <motor_control_interfaces.h>
 #include <ethercat_service.h>
 
-#include <position_ctrl_service.h>
+#include <motion_control_service.h>
 #include <position_feedback_service.h>
 
 #include <profile_control.h>
@@ -31,14 +31,15 @@
  * @param i_position_control Interface to Position Control Loop Service.
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
+                            client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
-                            client interface PositionFeedbackInterface i_position_feedback);
+                            client interface PositionFeedbackInterface i_position_feedback_1,
+                            client interface PositionFeedbackInterface ?i_position_feedback_2);
 
 void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in,
+                            client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface MotorcontrolInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,

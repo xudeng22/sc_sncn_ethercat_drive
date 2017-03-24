@@ -37,37 +37,25 @@ void check_slave_config_states(ec_slave_config_t *sc_data_in)
     sc_data_in_state = s;
 }
 
-int pdo_handler(struct _master_config *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid)
+int pdo_handler(Ethercat_Master_t *master, struct _pdo_cia402_input *pdo_input, struct _pdo_cia402_output *pdo_output, int slaveid)
 {
-    // receive process data
-    ecrt_master_receive(master->master);
-    ecrt_domain_process(master->domain1);
-
-    // check process data state (optional)
-    check_domain1_state(master->domain1);
-
     if (counter > 0) {
         counter--;
     } else { // do this at 1 Hz
         counter = FREQUENCY;
-
-        // check for master state (optional)
-        check_master_state(master->master);
     }
 
-    if (slaveid >= 0 && slaveid < master->number_of_slaves) {
+    size_t number_of_slaves = ecw_master_slave_count(master);
+
+    if (slaveid >= 0 && slaveid < number_of_slaves) {
         pd_get(master, slaveid, &pdo_input[slaveid]);
         pd_set(master, slaveid, pdo_output[slaveid]);
     } else {
-        for (int i = 0; i < master->number_of_slaves; i++) {
+        for (int i = 0; i < number_of_slaves; i++) {
             pd_get(master, i, &pdo_input[i]);
             pd_set(master, i, pdo_output[i]);
         }
     }
-
-    // send process data
-    ecrt_domain_queue(master->domain1);
-    ecrt_master_send(master->master);
 
     return 0;
 }

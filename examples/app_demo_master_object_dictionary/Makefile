@@ -9,7 +9,7 @@ RM = rm -f
 RMDIR = rm -f -d
 
 CFLAGS = -g -Wall -Wextra  -O0 -std=c99 -static
-LDFLAGS = -g -Wall -Wextra
+LDFLAGS = -static
 
 #
 # Include and Library paths
@@ -17,7 +17,7 @@ LDFLAGS = -g -Wall -Wextra
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 
-LIBS += -Wl,-Bstatic -lethercat_wrapper -lethercat -lm -Wl,-Bdynamic  -lncurses
+LIBS += -lethercat_wrapper -lethercat -lm
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 
@@ -41,14 +41,14 @@ OUT_DIR = bin
 ETHERCAT_MASTER_INSTALLDIR := /opt/etherlab
 # Installation directory of the  EtherCAT Master by IgH EtherLAB
 ifeq (,$(wildcard /opt/etherlab))
-  $(error Directory /opt/etherlab does not exist, please check your EtherLAB installation and fix the path)
+   $(error Directory /opt/etherlab does not exist, please check your Etherlab installation and fix the path)
 endif
 
 #
 # Targets and Objects
 #
 
-TARGET = app_demo_master_pdo_handling
+TARGET = app_demo_master_object_dictionary
 OBJECTS = main.o
 
 #

@@ -130,7 +130,6 @@ static void inline update_configuration(
         ProfilerConfig            &profiler_config,
         int &sensor_select,
         int &limit_switch_type,
-        int &polarity,
         int &sensor_resolution,
         int &nominal_speed,
         int &homing_method,
@@ -148,7 +147,6 @@ static void inline update_configuration(
     /* Update values with current configuration */
     /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
     profiler_config.ticks_per_turn = position_feedback_config.resolution;
-    polarity = profiler_config.polarity;
 
     nominal_speed     = i_coe.get_object_value(CIA402_MOTOR_SPECIFIC, 4);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
@@ -283,7 +281,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int ctrl_state;
     int limit_switch_type;
     int homing_method;
-    int polarity = 1;
 
     int sensor_resolution = 0;
 
@@ -330,7 +327,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         if (read_configuration) {
             update_configuration(i_coe, i_motorcontrol, i_position_control, i_position_feedback,
                     position_velocity_config, position_feedback_config, motorcontrol_config, profiler_config,
-                    sensor_select, limit_switch_type, polarity, sensor_resolution, nominal_speed, homing_method,
+                    sensor_select, limit_switch_type, sensor_resolution, nominal_speed, homing_method,
                     opmode
                     );
 

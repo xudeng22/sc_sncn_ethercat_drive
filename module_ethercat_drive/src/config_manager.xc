@@ -92,7 +92,6 @@ void cm_sync_config_profiler(
     //profiler.max_deceleration =  i_coe.get_object_value(CIA402_QUICK_STOP_DECELERATION, 0); /* */
     profiler.min_position     =  i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 1);
     profiler.max_position     =  i_coe.get_object_value(CIA402_POSITION_RANGELIMIT, 2);
-    profiler.polarity         =  i_coe.get_object_value(CIA402_POLARITY, 0);
     //profiler.max_acceleration =  i_coe.get_object_value(CIA402_MAX_ACCELERATION, 0); /* */
 }
 

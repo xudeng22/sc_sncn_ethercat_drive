@@ -1,12 +1,15 @@
-.. _ethercat_drive_module:
+.. _network_drive_module:
 
 =============================
-EtherCAT Drive Module
+Network Drive Module
 =============================
 
-This module provides a Service to perform Motor Control over EtherCAT. It needs to be interfaced to the :ref:`EtherCAT Serve <module_ethercat>` and some Services belonging to the :ref:`Motor Control Library <somanet_motor_control>`.
+This module provides a Service to perform Motor Control over different networks. It needs to be interfaced to the :ref:`CANopen Interface Service <module_canopen_interface>` 
+and some Services belonging to the :ref:`Motor Control Library <somanet_motor_control>`.
 
-It deploys over EtherCAT all the features of the SOMANET Motor Control Library and it responds to a **CiA402**-compliant control scheme. It features a state machine, configuration update from the Master application, different Cyclic and Profile modes for Position, Velocity and Torque as well as homing modes.
+It deploys all the features of the SOMANET Motor Control Library and it responds to a **CiA402**-compliant control scheme. 
+It features a state machine, configuration update from the Master application, different Cyclic and Profile modes for Position, Velocity 
+and Torque as well as homing modes.
 
 .. contents:: In this document
     :backlinks: none

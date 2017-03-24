@@ -26,7 +26,7 @@ ODIR=.obj
 _OBJ = main.o ecat_sdo_config.o cyclic_task.o display.o ecat_master.o ecat_debug.o tuning.o profile_position.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-all: $(TARGET)
+all: libreadsdoconfig $(TARGET)
 
 $(ODIR):
 	mkdir $(ODIR)
@@ -41,7 +41,10 @@ $(ODIR)/%.o: $(SRCDIR)/%.c $(ODIR) bin
 $(TARGET): $(OBJ)
 	$(LD) -o $@ $^ -Wl,-Bstatic $(LDFLAGS) -Wl,-Bdynamic $(LIBS_D)
 
-.PHONY: clean install
+.PHONY: libreadsdoconfig clean install
+
+libreadsdoconfig:
+	make -C ../libreadsdoconfig all
 
 install:
 	install $(TARGET) $(PREFIX)/bin

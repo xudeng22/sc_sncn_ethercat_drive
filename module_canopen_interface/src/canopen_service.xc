@@ -19,7 +19,6 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
 {
     pdo_values_t InOut = pdo_init_data();
     pdo_size_t pdo_buffer[PDO_BUFFER_SIZE];
-    unsigned pdo_size = 0;
     char comm_state = 0;
 
     int configuration_done = 0;
@@ -32,27 +31,27 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
         {
             /* PDO */
 
-            case i_co[int j].pdo_in_buffer(unsigned int size_in, pdo_size_t data_in[]):
-                pdo_size = size_in;
+            case i_co[int j].pdo_in(uint8_t pdo_number, unsigned int size_in, pdo_size_t data_in[]):
+                unsigned pdo_size = size_in;
                 memcpy(pdo_buffer, data_in, pdo_size * sizeof(pdo_size_t));
-                pdo_decode_buffer(pdo_buffer, InOut);
+                pdo_decode(pdo_number, pdo_buffer, InOut);
                 comm_state = 1;
                 break;
 
-            case i_co[int j].pdo_out_buffer(pdo_size_t data_out[]) -> { unsigned int size_out }:
-                pdo_encode_buffer(pdo_buffer, InOut);
+            case i_co[int j].pdo_out(uint8_t pdo_number, pdo_size_t data_out[]) -> { unsigned int size_out }:
+                unsigned pdo_size = pdo_encode(pdo_number, pdo_buffer, InOut);
                 memcpy(data_out, pdo_buffer, pdo_size * sizeof(pdo_size_t));
                 size_out = pdo_size;
                 break;
 
-            case i_co[int j].pdo_in(unsigned char pdo_number, uint64_t value):
-                pdo_decode(pdo_number, value, InOut);
-                comm_state = 1;
-                break;
-
-            case i_co[int j].pdo_out(unsigned char pdo_number) -> {uint64_t value_out, char data_length}:
-                {value_out, data_length} = pdo_encode(pdo_number, InOut);
-                break;
+//            case i_co[int j].pdo_in(unsigned char pdo_number, uint64_t value):
+//                pdo_decode(pdo_number, value, InOut);
+//                comm_state = 1;
+//                break;
+//
+//            case i_co[int j].pdo_out(unsigned char pdo_number) -> {uint64_t value_out, char data_length}:
+//                {value_out, data_length} = pdo_encode(pdo_number, InOut);
+//                break;
 
             case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out }:
                 pdo_exchange(InOut, pdo_out, pdo_in);

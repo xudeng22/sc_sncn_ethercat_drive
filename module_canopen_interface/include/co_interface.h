@@ -26,6 +26,9 @@ struct _sdoinfo_entry_description {
     uint8_t name[50];
 };
 
+/**
+ * @brief Access types
+ */
 enum {
   RO = 0x07,
   WO = 0x38,
@@ -66,7 +69,11 @@ typedef struct
     int32_t user4_out;
 } pdo_values_t;
 
+#if COM_ETHERCAT || COM_ETHERNET
 typedef uint16_t pdo_size_t;
+#elif COM_CAN
+typedef uint8_t pdo_size_t;
+#endif
 
 /**
  * @brief Communication interface for OD service
@@ -74,44 +81,78 @@ typedef uint16_t pdo_size_t;
 interface i_co_communication
 {
     /**
-     * @brief Transfers PDOs from slave to master
+     * @brief Receives PDOs from master to slave
+     * @param[in] pdo_number    PDO number
+     * @param[in] size          PDO buffer size
+     * @param[in] data_in       PDO buffer
      */
-    void pdo_in_buffer(unsigned int size, pdo_size_t data_out[]);
+    void pdo_in(uint8_t pdo_number, unsigned int size, pdo_size_t data_in[]);
 
     /**
-     * @brief Receives PDOs from master to slave
+     * @brief Transfers PDOs from slave to master
+     * @param[in]  pdo_number    PDO number
+     * @param[out] data_in       PDO buffer
+     * @return     PDO buffer size
      */
-    unsigned int pdo_out_buffer(pdo_size_t data_in[]);
+    unsigned int pdo_out(uint8_t pdo_number, pdo_size_t data_out[]);
 
+    /**
+     * @brief Exchange PDOs with CANopen Interface Service and application
+     * @param[in]   pdo_out PDOs, which will sent to the master.
+     * @return  PDOs, which are received from the master.
+     * @return  unsigned int    Communication state
+     */
     {pdo_values_t, unsigned int} pdo_exchange_app(pdo_values_t pdo_out);
 
-    void pdo_in(uint8_t pdo_number, uint64_t value);
 
-    {uint64_t, uint8_t} pdo_out(uint8_t pdo_number);
-
+    /**
+     * @brief Initialized PDO struct
+     * @return Empty PDO struct
+     */
     pdo_values_t pdo_init(void);
 
 
 
     /**
      * @brief Returns an object value from dictionary.
-     * @return Object value, bitlength, error
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @return Object value, bitlength, Error: 0 -> No error, 2 -> Index not found, 3 -> Subindex not found
      */
     {uint32_t, uint32_t, uint8_t} od_get_object_value(uint16_t index_, uint8_t subindex);
 
     /**
      * @brief Set an object value in dictionary.
-     * @return Error
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] value     Value, which will set in OD
+     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found
      */
     uint8_t od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value);
 
-
-    uint8_t od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]);
-
+    /**
+     * @brief Returns an object value from dictionary.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[out] data_buffer  OD value
+     * @return Bitlength, Error: 0 -> No error, 2 -> Index not found, 3 -> Subindex not found
+     */
     {uint32_t, uint8_t} od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]);
 
     /**
+     * @brief Set an object value in dictionary.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] data_buffer     Value, which will set in OD
+     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found
+     */
+    uint8_t od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]);
+
+
+    /**
      * @brief Get whole entry description of object.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
      * @return entry description, error
      */
     {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo);
@@ -129,14 +170,27 @@ interface i_co_communication
 
     /**
      * @brief Get single entry description.
+     * @param[out] obj      SDO info struct
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
      * @return 0 if found else 1
      */
     int od_get_object_description(struct _sdoinfo_entry_description &obj, uint16_t index_, uint8_t subindex);
 
-
+    /**
+     * @brief Get data length of an single OD entry value.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @return Bitlength, Error
+     */
     {uint32_t, uint8_t} od_get_data_length(uint16_t index_, uint8_t subindex);
 
-
+    /**
+     * @brief Get access type of an single OD entry value.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @return Access type, Error
+     */
     {uint8_t, uint8_t} od_get_access(uint16_t index_, uint8_t subindex);
 
 

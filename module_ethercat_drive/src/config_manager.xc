@@ -226,20 +226,6 @@ void cm_sync_config_profiler(
     profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
     profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-
-    /* FIXME does this belong here? */
-    uint8_t polarity = i_coe.get_object_value(DICT_POLARITY, 0);
-    switch (type) {
-    case PROFILE_TYPE_POSITION:
-        profiler.polarity = ((polarity & 0x80) != 0) ? -1 : 1;
-        break;
-    case PROFILE_TYPE_VELOCITY:
-        profiler.polarity = ((polarity & 0x40) != 0) ? -1 : 1;
-        break;
-    default:
-        profiler.polarity = 0;
-        break;
-    }
 }
 
 void cm_sync_config_pos_velocity_control(

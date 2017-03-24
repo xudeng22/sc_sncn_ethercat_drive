@@ -37,7 +37,7 @@ int tuning_handler_ethercat(
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        MotionControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,
@@ -60,7 +60,7 @@ int tuning_handler_ethercat(
     case 0: //send flags
         //convert polarity flag to 0/1
         int motion_polarity = 0;
-        if (pos_velocity_ctrl_config.polarity == INVERTED_POLARITY) {
+        if (motion_ctrl_config.polarity == INVERTED_POLARITY) {
             motion_polarity = 1;
         }
         int sensor_polarity = (int)pos_feedback_config_1.polarity;
@@ -73,7 +73,7 @@ int tuning_handler_ethercat(
             sensor_polarity = 0;
         }
         int brake_release_strategy = 0;
-        if (pos_velocity_ctrl_config.special_brake_release == 1) {
+        if (motion_ctrl_config.special_brake_release == 1) {
             brake_release_strategy = 1;
         }
         tuning_result = (tuning_status.motorctrl_status<<3)+(sensor_polarity<<2)+(motion_polarity<<1)+tuning_status.brake_flag;
@@ -99,46 +99,46 @@ int tuning_handler_ethercat(
         }
         break;
     case 4: //position limit min
-        tuning_result = pos_velocity_ctrl_config.min_pos_range_limit;
+        tuning_result = motion_ctrl_config.min_pos_range_limit;
         break;
     case 5: //position limit max
-        tuning_result = pos_velocity_ctrl_config.max_pos_range_limit;
+        tuning_result = motion_ctrl_config.max_pos_range_limit;
         break;
     case 6: //max speed
-        tuning_result = pos_velocity_ctrl_config.max_motor_speed;
+        tuning_result = motion_ctrl_config.max_motor_speed;
         break;
     case 7: //max torque
-        tuning_result = pos_velocity_ctrl_config.max_torque;
+        tuning_result = motion_ctrl_config.max_torque;
         break;
     case 8: //P_pos
-        tuning_result = pos_velocity_ctrl_config.position_kp;
+        tuning_result = motion_ctrl_config.position_kp;
         break;
     case 9: //I_pos
-        tuning_result = pos_velocity_ctrl_config.position_ki;
+        tuning_result = motion_ctrl_config.position_ki;
         break;
     case 10: //D_pos
-        tuning_result = pos_velocity_ctrl_config.position_kd;
+        tuning_result = motion_ctrl_config.position_kd;
         break;
     case 11: //integral_limit_pos
-        tuning_result = pos_velocity_ctrl_config.position_integral_limit;
+        tuning_result = motion_ctrl_config.position_integral_limit;
         break;
     case 12: //
-        tuning_result = pos_velocity_ctrl_config.velocity_kp;
+        tuning_result = motion_ctrl_config.velocity_kp;
         break;
     case 13: //
-        tuning_result = pos_velocity_ctrl_config.velocity_ki;
+        tuning_result = motion_ctrl_config.velocity_ki;
         break;
     case 14: //
-        tuning_result = pos_velocity_ctrl_config.velocity_kd;
+        tuning_result = motion_ctrl_config.velocity_kd;
         break;
     case 15: //
-        tuning_result = pos_velocity_ctrl_config.velocity_integral_limit;
+        tuning_result = motion_ctrl_config.velocity_integral_limit;
         break;
     case 16: //fault code
         tuning_result = upstream_control_data.error_status;
         break;
     case 17: //special_brake_release
-        tuning_result = pos_velocity_ctrl_config.special_brake_release;
+        tuning_result = motion_ctrl_config.special_brake_release;
         break;
     default: //sensor error
         tuning_result = upstream_control_data.sensor_error;
@@ -176,7 +176,7 @@ int tuning_handler_ethercat(
 
         //execute command
         tuning_command(tuning_status,
-                motorcontrol_config, pos_velocity_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
+                motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
                 sensor_commutation, sensor_motion_control,
                 upstream_control_data, downstream_control_data,
                 i_position_control, i_position_feedback_1, i_position_feedback_2);
@@ -193,7 +193,7 @@ int tuning_handler_ethercat(
 void tuning_command(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        MotionControlConfig &pos_velocity_ctrl_config,
+        MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,
@@ -221,14 +221,14 @@ void tuning_command(
     case 'p':
         downstream_control_data.offset_torque = 0;
         downstream_control_data.position_cmd = tuning_status.value;
-        pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+        motion_ctrl_config = i_position_control.get_position_velocity_control_config();
         switch(tuning_status.mode_2)
         {
         //direct command with profile
         case 'p':
                 //bug: the first time after one p# command p0 doesn't use the profile; only the way back to zero
-                pos_velocity_ctrl_config.enable_profiler = 1;
-                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                motion_ctrl_config.enable_profiler = 1;
+                i_position_control.set_position_velocity_control_config(motion_ctrl_config);
                 printf("Go to %d with profile\n", tuning_status.value);
                 upstream_control_data = i_position_control.update_control_data(downstream_control_data);
                 break;
@@ -238,16 +238,16 @@ void tuning_command(
                 {
                 //with profile
                 case 'p':
-                        pos_velocity_ctrl_config.enable_profiler = 1;
+                        motion_ctrl_config.enable_profiler = 1;
                         printf("position cmd: %d to %d with profile\n", tuning_status.value, -tuning_status.value);
                         break;
                 //without profile
                 default:
-                        pos_velocity_ctrl_config.enable_profiler = 0;
+                        motion_ctrl_config.enable_profiler = 0;
                         printf("position cmd: %d to %d\n", tuning_status.value, -tuning_status.value);
                         break;
                 }
-                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                i_position_control.set_position_velocity_control_config(motion_ctrl_config);
                 downstream_control_data.offset_torque = 0;
                 downstream_control_data.position_cmd = tuning_status.value;
                 upstream_control_data = i_position_control.update_control_data(downstream_control_data);
@@ -260,8 +260,8 @@ void tuning_command(
                 break;
         //direct command
         default:
-                pos_velocity_ctrl_config.enable_profiler = 0;
-                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                motion_ctrl_config.enable_profiler = 0;
+                i_position_control.set_position_velocity_control_config(motion_ctrl_config);
                 printf("Go to %d\n", tuning_status.value);
                 upstream_control_data = i_position_control.update_control_data(downstream_control_data);
                 break;
@@ -287,61 +287,61 @@ void tuning_command(
 
     //change pid coefficients
     case 'k':
-        pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+        motion_ctrl_config = i_position_control.get_position_velocity_control_config();
         switch(tuning_status.mode_2) {
         case 'p': //position
             switch(tuning_status.mode_3) {
             case 'p':
-                pos_velocity_ctrl_config.position_kp = tuning_status.value;
+                motion_ctrl_config.position_kp = tuning_status.value;
                 break;
             case 'i':
-                pos_velocity_ctrl_config.position_ki = tuning_status.value;
+                motion_ctrl_config.position_ki = tuning_status.value;
                 break;
             case 'd':
-                pos_velocity_ctrl_config.position_kd = tuning_status.value;
+                motion_ctrl_config.position_kd = tuning_status.value;
                 break;
             case 'l':
-                pos_velocity_ctrl_config.position_integral_limit = tuning_status.value;
+                motion_ctrl_config.position_integral_limit = tuning_status.value;
                 break;
             case 'j':
-                pos_velocity_ctrl_config.moment_of_inertia = tuning_status.value;
+                motion_ctrl_config.moment_of_inertia = tuning_status.value;
                 break;
             default:
-                printf("Pp:%d Pi:%d Pd:%d Pi lim:%d j:%d\n", pos_velocity_ctrl_config.position_kp, pos_velocity_ctrl_config.position_ki, pos_velocity_ctrl_config.position_kd,
-                        pos_velocity_ctrl_config.position_integral_limit, pos_velocity_ctrl_config.moment_of_inertia);
+                printf("Pp:%d Pi:%d Pd:%d Pi lim:%d j:%d\n", motion_ctrl_config.position_kp, motion_ctrl_config.position_ki, motion_ctrl_config.position_kd,
+                        motion_ctrl_config.position_integral_limit, motion_ctrl_config.moment_of_inertia);
                 break;
             }
             break;
             case 'v': //velocity
                 switch(tuning_status.mode_3) {
                 case 'p':
-                    pos_velocity_ctrl_config.velocity_kp = tuning_status.value;
+                    motion_ctrl_config.velocity_kp = tuning_status.value;
                     break;
                 case 'i':
-                    pos_velocity_ctrl_config.velocity_ki = tuning_status.value;
+                    motion_ctrl_config.velocity_ki = tuning_status.value;
                     break;
                 case 'd':
-                    pos_velocity_ctrl_config.velocity_kd = tuning_status.value;
+                    motion_ctrl_config.velocity_kd = tuning_status.value;
                     break;
                 case 'l':
-                    pos_velocity_ctrl_config.velocity_integral_limit = tuning_status.value;
+                    motion_ctrl_config.velocity_integral_limit = tuning_status.value;
                     break;
                 default:
-                    printf("Kp:%d Ki:%d Kd:%d\n", pos_velocity_ctrl_config.velocity_kp, pos_velocity_ctrl_config.velocity_ki, pos_velocity_ctrl_config.velocity_kd);
+                    printf("Kp:%d Ki:%d Kd:%d\n", motion_ctrl_config.velocity_kp, motion_ctrl_config.velocity_ki, motion_ctrl_config.velocity_kd);
                     break;
                 }
                 break;
         } /* end mode_2 */
-        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+        i_position_control.set_position_velocity_control_config(motion_ctrl_config);
         break;
 
     //limits
     case 'L':
-        pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+        motion_ctrl_config = i_position_control.get_position_velocity_control_config();
         switch(tuning_status.mode_2) {
             //max torque
             case 't':
-                pos_velocity_ctrl_config.max_torque = tuning_status.value;
+                motion_ctrl_config.max_torque = tuning_status.value;
                 motorcontrol_config.max_torque = tuning_status.value;
                 i_position_control.set_motorcontrol_config(motorcontrol_config);
                 tuning_status.brake_flag = 0;
@@ -350,25 +350,25 @@ void tuning_command(
             //max speed
             case 's':
             case 'v':
-                pos_velocity_ctrl_config.max_motor_speed = tuning_status.value;
+                motion_ctrl_config.max_motor_speed = tuning_status.value;
                 break;
             //max position
             case 'p':
                 switch(tuning_status.mode_3) {
                 case 'u':
-                    pos_velocity_ctrl_config.max_pos_range_limit = tuning_status.value;
+                    motion_ctrl_config.max_pos_range_limit = tuning_status.value;
                     break;
                 case 'l':
-                    pos_velocity_ctrl_config.min_pos_range_limit = tuning_status.value;
+                    motion_ctrl_config.min_pos_range_limit = tuning_status.value;
                     break;
                 default:
-                    pos_velocity_ctrl_config.max_pos_range_limit = tuning_status.value;
-                    pos_velocity_ctrl_config.min_pos_range_limit = -tuning_status.value;
+                    motion_ctrl_config.max_pos_range_limit = tuning_status.value;
+                    motion_ctrl_config.min_pos_range_limit = -tuning_status.value;
                     break;
                 }
                 break;
         } /* end mode_2 */
-        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+        i_position_control.set_position_velocity_control_config(motion_ctrl_config);
         break;
 
     //enable position control
@@ -384,14 +384,14 @@ void tuning_command(
                 printf("start position %d\n", downstream_control_data.position_cmd);
 
                 //select profiler
-                pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
+                motion_ctrl_config = i_position_control.get_position_velocity_control_config();
                 if (tuning_status.mode_3 == 'p') {
-                    pos_velocity_ctrl_config.enable_profiler = 1;
+                    motion_ctrl_config.enable_profiler = 1;
                     tuning_status.motorctrl_status = TUNING_MOTORCTRL_POSITION_PROFILER;
                 } else {
-                    pos_velocity_ctrl_config.enable_profiler = 0;
+                    motion_ctrl_config.enable_profiler = 0;
                 }
-                i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+                i_position_control.set_position_velocity_control_config(motion_ctrl_config);
 
                 //select control mode
                 switch(tuning_status.value) {
@@ -408,8 +408,8 @@ void tuning_command(
                     printf("Nonlinear pos ctrl enabled\n");
                     break;
                 default:
-                    i_position_control.enable_position_ctrl(pos_velocity_ctrl_config.position_control_strategy);
-                    printf("%d pos ctrl enabled\n", pos_velocity_ctrl_config.position_control_strategy);
+                    i_position_control.enable_position_ctrl(motion_ctrl_config.position_control_strategy);
+                    printf("%d pos ctrl enabled\n", motion_ctrl_config.position_control_strategy);
                     break;
                 }
                 break;
@@ -456,13 +456,13 @@ void tuning_command(
 
     //direction
     case 'd':
-        pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
-        if (pos_velocity_ctrl_config.polarity == INVERTED_POLARITY) {
-            pos_velocity_ctrl_config.polarity = NORMAL_POLARITY;
+        motion_ctrl_config = i_position_control.get_position_velocity_control_config();
+        if (motion_ctrl_config.polarity == INVERTED_POLARITY) {
+            motion_ctrl_config.polarity = NORMAL_POLARITY;
         } else {
-            pos_velocity_ctrl_config.polarity = INVERTED_POLARITY;
+            motion_ctrl_config.polarity = INVERTED_POLARITY;
         }
-        i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+        i_position_control.set_position_velocity_control_config(motion_ctrl_config);
         break;
 
     //sensor polarity
@@ -508,9 +508,9 @@ void tuning_command(
     case 'b':
         switch(tuning_status.mode_2) {
         case 's': //toggle special brake release
-            pos_velocity_ctrl_config = i_position_control.get_position_velocity_control_config();
-            pos_velocity_ctrl_config.special_brake_release = tuning_status.value;
-            i_position_control.set_position_velocity_control_config(pos_velocity_ctrl_config);
+            motion_ctrl_config = i_position_control.get_position_velocity_control_config();
+            motion_ctrl_config.special_brake_release = tuning_status.value;
+            i_position_control.set_position_velocity_control_config(motion_ctrl_config);
             break;
         default:
             if (tuning_status.brake_flag == 0 || tuning_status.value == 1) {

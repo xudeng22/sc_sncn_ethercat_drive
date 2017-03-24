@@ -111,45 +111,45 @@ int main(void)
             {
                 /* Position Control Loop */
                 {
-                    MotionControlConfig pos_velocity_ctrl_config;
+                    MotionControlConfig motion_ctrl_config;
 
-                    pos_velocity_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
-                    pos_velocity_ctrl_config.max_pos_range_limit =                  MAX_POSITION_RANGE_LIMIT;
-                    pos_velocity_ctrl_config.max_motor_speed =                      MAX_MOTOR_SPEED;
-                    pos_velocity_ctrl_config.polarity =                             POLARITY;
+                    motion_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
+                    motion_ctrl_config.max_pos_range_limit =                  MAX_POSITION_RANGE_LIMIT;
+                    motion_ctrl_config.max_motor_speed =                      MAX_MOTOR_SPEED;
+                    motion_ctrl_config.polarity =                             POLARITY;
 
-                    pos_velocity_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
-                    pos_velocity_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
-                    pos_velocity_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
+                    motion_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
+                    motion_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
+                    motion_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
                     //select resolution of sensor used for motion control
                     if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {
-                        pos_velocity_ctrl_config.resolution  =                      SENSOR_2_RESOLUTION;
+                        motion_ctrl_config.resolution  =                      SENSOR_2_RESOLUTION;
                     } else {
-                        pos_velocity_ctrl_config.resolution  =                      SENSOR_1_RESOLUTION;
+                        motion_ctrl_config.resolution  =                      SENSOR_1_RESOLUTION;
                     }
 
-                    pos_velocity_ctrl_config.position_control_strategy =            NL_POSITION_CONTROLLER;
+                    motion_ctrl_config.position_control_strategy =            NL_POSITION_CONTROLLER;
 
-                    pos_velocity_ctrl_config.position_kp =                          POSITION_Kp;
-                    pos_velocity_ctrl_config.position_ki =                          POSITION_Ki;
-                    pos_velocity_ctrl_config.position_kd =                          POSITION_Kd;
-                    pos_velocity_ctrl_config.position_integral_limit =              POSITION_INTEGRAL_LIMIT;
-                    pos_velocity_ctrl_config.moment_of_inertia =                    MOMENT_OF_INERTIA;
+                    motion_ctrl_config.position_kp =                          POSITION_Kp;
+                    motion_ctrl_config.position_ki =                          POSITION_Ki;
+                    motion_ctrl_config.position_kd =                          POSITION_Kd;
+                    motion_ctrl_config.position_integral_limit =              POSITION_INTEGRAL_LIMIT;
+                    motion_ctrl_config.moment_of_inertia =                    MOMENT_OF_INERTIA;
 
-                    pos_velocity_ctrl_config.velocity_kp =                          VELOCITY_Kp;
-                    pos_velocity_ctrl_config.velocity_ki =                          VELOCITY_Ki;
-                    pos_velocity_ctrl_config.velocity_kd =                          VELOCITY_Kd;
-                    pos_velocity_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
+                    motion_ctrl_config.velocity_kp =                          VELOCITY_Kp;
+                    motion_ctrl_config.velocity_ki =                          VELOCITY_Ki;
+                    motion_ctrl_config.velocity_kd =                          VELOCITY_Kd;
+                    motion_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
 
-                    pos_velocity_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
-                    pos_velocity_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
+                    motion_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
+                    motion_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
 
-                    pos_velocity_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
-                    pos_velocity_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;
-                    pos_velocity_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
-                    pos_velocity_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
+                    motion_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
+                    motion_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;
+                    motion_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
+                    motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
-                    motion_control_service(IFM_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
+                    motion_control_service(IFM_TILE_USEC, motion_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
                 }
             }
         }

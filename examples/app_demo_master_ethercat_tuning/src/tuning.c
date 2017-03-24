@@ -366,6 +366,12 @@ void cs_command(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_outp
     } else if (c == 'p') { // CSP
         pdo_output[output->select].op_mode = 8;
         pdo_output[output->select].target_position = pdo_input[output->select].position_value;
+    } else if (c == 'v') { // CSV
+        pdo_output[output->select].op_mode = 9;
+        pdo_output[output->select].target_velocity = 0;
+    } else if (c == 't') { // CST
+        pdo_output[output->select].op_mode = 10;
+        pdo_output[output->select].target_torque = 0;
     } else if (c == KEY_BACKSPACE || c == KEY_DC || c == 127) {//discard
         wmove(wnd, (*cursor).row, 0);
         wclrtoeol(wnd);
@@ -398,6 +404,8 @@ void cs_command(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_outp
                 pdo_output[output->select].controlword = (*output).value;
             } else {
                 pdo_output[output->select].target_position = (*output).value;
+                pdo_output[output->select].target_velocity = (*output).value;
+                pdo_output[output->select].target_torque = (*output).value;
             }
 
             //debug: print command on last line
@@ -438,9 +446,20 @@ void cs_mode(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_output,
     display_slaves(wnd, 0, pdo_output, pdo_input, number_slaves, *output);
     cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output);
 
-    if (pdo_output[output->select].op_mode == 8) { //CSP
-        pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_OP_ENABLED, pdo_output[output->select].controlword);
-    } else if (pdo_output[output->select].op_mode == 0) {//no opmode
+    switch(pdo_output[output->select].op_mode) {
+    case 8://CSP
+    case 9://CSV
+    case 10://CST
+        if (pdo_output[output->select].op_mode != pdo_input[output->select].op_mode_display) {
+            // go to SWITCH_ON_DISABLED to change opmode
+            pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_SWITCH_ON_DISABLED, pdo_output[output->select].controlword);
+        } else {
+            // opmode is set, enable operation
+            pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_OP_ENABLED, pdo_output[output->select].controlword);
+        }
+        break;
+    case 0://no opmode
         pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_SWITCH_ON_DISABLED, pdo_output[output->select].controlword);
+        break;
     }
 }

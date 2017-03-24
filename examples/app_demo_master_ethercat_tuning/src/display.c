@@ -201,8 +201,20 @@ int display_slaves(WINDOW *wnd, int row, struct _pdo_cia402_output *pdo_output, 
             wprintw(wnd," Fault!                     ");
             break;
         case CIASTATE_OP_ENABLED:
-            target = pdo_output[i].target_position;
-            wprintw(wnd," Position control %10d", target);
+            switch(pdo_input[i].op_mode_display) {
+            case 8: //CSP
+                target = pdo_output[i].target_position;
+                wprintw(wnd," Position control %10d", target);
+                break;
+            case 9: //CSV
+                target = pdo_output[i].target_velocity;
+                wprintw(wnd," Velocity control %10d", target);
+                break;
+            case 10://CST
+                target = pdo_output[i].target_torque;
+                wprintw(wnd," Torque control   %10d", target);
+                break;
+            }
             break;
         }
 

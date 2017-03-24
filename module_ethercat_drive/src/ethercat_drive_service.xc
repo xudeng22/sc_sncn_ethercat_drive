@@ -87,7 +87,7 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     i_coe.configuration_done();
 }
 
-{int, int} quick_stop_perform(int steps, int velocity)
+{int, int} quick_stop_perform(int opmode, int steps, int velocity)
 {
     static int step = 0;
 
@@ -111,11 +111,27 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     }
 #endif
 
-    int target_position = quick_stop_position_profile_generate(step, velocity);
+    int target = 0;
+
+    switch (opmode) {
+    case OPMODE_CSP:
+        target = quick_stop_position_profile_generate(step, velocity);
+        break;
+
+    case OPMODE_CSV:
+        target = quick_stop_velocity_profile_generate(step);
+        break;
+
+    case OPMODE_CST:
+        //FIXME: add quick_stop_torque_profile_generate
+//        target = quick_stop_torque_profile_generate(step);
+        target = 1;
+        break;
+    }
 
     step++;
 
-    return { target_position, steps-step };
+    return { target, steps-step };
 }
 
 static int quick_stop_init(int opmode,
@@ -125,24 +141,36 @@ static int quick_stop_init(int opmode,
                                 ProfilerConfig &profiler_config)
 {
 
-    if (opmode == OPMODE_CST || opmode == OPMODE_CSV) {
-        /* TODO implement quick stop profile */
-    }
+    int steps = 0;
+    int deceleration = profiler_config.max_deceleration;
 
     /* FIXME avoid to accelerate to perform a quick stop */
     if ((actual_velocity < 200) && (actual_velocity > -200)) {
         return 0;
     }
 
-    if (actual_velocity < 0) {
-        actual_velocity = -actual_velocity;
-    }
+    if (opmode == OPMODE_CSP) {
+        if (actual_velocity < 0) {
+            actual_velocity = -actual_velocity;
+        }
 
-    int deceleration = profiler_config.max_deceleration;
-    int steps = init_quick_stop_position_profile(
+        steps = init_quick_stop_position_profile(
                 (actual_velocity * sensor_resolution) / 60,
                 actual_position,
                 (deceleration * sensor_resolution) / 60);
+
+    } else if (opmode == OPMODE_CSV) {
+        if (actual_velocity < 0) {
+            actual_velocity = -actual_velocity;
+        }
+
+        steps = init_quick_stop_velocity_profile(
+                (actual_velocity * sensor_resolution) / 60,
+                (deceleration * sensor_resolution) / 60);
+
+    } else {
+        steps = 0;
+    }
 
     return steps;
 }
@@ -215,6 +243,27 @@ static void inline update_configuration(
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
 }
 
+static void motioncontrol_enable(int opmode, int position_control_strategy,
+                                 client interface PositionVelocityCtrlInterface i_position_control)
+{
+    switch (opmode) {
+    case OPMODE_CSP:
+        i_position_control.enable_position_ctrl(position_control_strategy);
+        break;
+
+    case OPMODE_CSV:
+        i_position_control.enable_velocity_ctrl();
+        break;
+
+    case OPMODE_CST:
+        i_position_control.enable_torque_ctrl();
+        break;
+
+    default:
+        break;
+    }
+}
+
 static void debug_print_state(DriveState_t state)
 {
     static DriveState_t oldstate = 0;
@@ -284,7 +333,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
     int target_position = 0;
-    int qs_target_position = 0;
+    int target_velocity = 0;
+    int target_torque   = 0;
+    int qs_target = 0;
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
@@ -297,9 +348,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int nominal_speed;
     timer t;
 
-    int init = 0;
-    int op_set_flag = 0;
-
     int opmode = OPMODE_NONE;
     int opmode_request = OPMODE_NONE;
 
@@ -307,10 +355,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     pdo_handler_values_t InOut = { 0 };
 
-    int setup_loop_flag = 0;
-
-    int ack = 0;
-    int shutdown_ack = 0;
     int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
     int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
 
@@ -337,7 +381,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
 
-    int ctrl_state;
     int limit_switch_type;
     int homing_method;
 
@@ -403,6 +446,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         controlword     = pdo_get_controlword(InOut);
         opmode_request  = pdo_get_opmode(InOut);
         target_position = pdo_get_target_position(InOut);
+        target_velocity = pdo_get_target_velocity(InOut);
+        target_torque   = pdo_get_target_torque(InOut);
         send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
         /* FIXME removed! what is the next way to do it?
         update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
@@ -418,10 +463,28 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        if (opmode != OPMODE_SNCN_TUNING)
+        if (opmode != OPMODE_SNCN_TUNING) {
             send_to_control.position_cmd = target_position;
+            send_to_control.velocity_cmd = target_velocity;
+            send_to_control.torque_cmd   = target_torque;
+        }
+
         if (quick_stop_steps != 0) {
-            send_to_control.position_cmd = qs_target_position;
+            switch (opmode) {
+            case OPMODE_CSP:
+                send_to_control.position_cmd = qs_target;
+                break;
+
+            case OPMODE_CSV:
+                send_to_control.velocity_cmd = qs_target;
+                break;
+
+            case OPMODE_CST:
+                send_to_control.torque_cmd = qs_target;
+                break;
+
+            /* FIXME what to do for the default? */
+            }
         }
 
         send_to_master = i_position_control.update_control_data(send_to_control);
@@ -555,7 +618,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* high power shall be switched on  */
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
-                    i_position_control.enable_position_ctrl(position_velocity_config.position_control_strategy);
+                    motioncontrol_enable(opmode, position_velocity_config.position_control_strategy, i_position_control);
                 }
                 break;
 
@@ -576,20 +639,32 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             case S_QUICK_STOP_ACTIVE:
                 /* quick stop function shall be started and running */
-            { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
 
-            if (quick_stop_steps_left == 0 ) {
-                quick_stop_count += 1;
-                qs_target_position = actual_position;
-                i_position_control.disable();
-                if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
-                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                    quick_stop_steps = 0;
-                    quick_stop_count = 0;
+                if (quick_stop_steps_left == 0 ) {
+                    quick_stop_count += 1;
+
+                    switch (opmode) {
+                    case OPMODE_CSP:
+                        qs_target = actual_position;
+                        break;
+                    case OPMODE_CSV:
+                        qs_target = actual_velocity;
+                        break;
+                    case OPMODE_CST:
+                        qs_target = 0;
+                        break;
+                    }
+
+                    i_position_control.disable();
+                    if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
+                        state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                        quick_stop_steps = 0;
+                        quick_stop_count = 0;
+                    }
                 }
-            }
 
-            break;
+                break;
 
             case S_FAULT_REACTION_ACTIVE:
                 /* a fault is detected, perform fault recovery actions like a quick_stop */
@@ -597,12 +672,24 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
                 }
 
-                { qs_target_position, quick_stop_steps_left } = quick_stop_perform(quick_stop_steps, actual_velocity);
+                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
 
                 if (quick_stop_steps_left == 0) {
                     state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                     quick_stop_steps = 0;
-                    qs_target_position = actual_position;
+
+                    switch (opmode) {
+                    case OPMODE_CSP:
+                        qs_target = actual_position;
+                        break;
+                    case OPMODE_CSV:
+                        qs_target = actual_velocity;
+                        break;
+                    case OPMODE_CST:
+                        qs_target = 0;
+                        break;
+                    }
+
                     i_position_control.disable();
                 }
                 break;

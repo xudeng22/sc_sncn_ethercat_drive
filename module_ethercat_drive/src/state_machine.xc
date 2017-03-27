@@ -301,3 +301,17 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
     return out_state;
 }
+
+int8_t update_opmode(int8_t opmode_request)
+{
+    switch(opmode_request) {
+    case OPMODE_NONE:
+    case OPMODE_CSP:
+    case OPMODE_CSV:
+    case OPMODE_CST:
+    case OPMODE_SNCN_TUNING:
+        return opmode_request;
+    default:
+        return OPMODE_NONE;
+    }
+}

@@ -73,6 +73,14 @@ int16_t update_statusword(int current_status, DriveState_t state_reached, int ac
 
 int get_next_state(int in_state, check_list &checklist, int controlword, int localcontrol);
 
+/**
+ * @brief Update opmode if this opmode is supported
+ *
+ * @param opmode_request the new opmode
+ * @return new opmode, OPMODE_NONE if opmode is unsupported
+ */
+int8_t update_opmode(int8_t opmode_request);
+
 int read_controlword_switch_on(int control_word);
 
 int read_controlword_quick_stop(int control_word);

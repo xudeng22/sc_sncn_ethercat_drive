@@ -568,8 +568,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
             /* for safety considerations, if no opmode choosen, the brake should blocking. */
             i_motorcontrol.set_brake_status(0);
-            if (opmode_request != OPMODE_NONE)
-                opmode = opmode_request;
+            opmode = update_opmode(opmode_request); //check and update opmode
 
         } else if (opmode == OPMODE_CSP || opmode == OPMODE_CST || opmode == OPMODE_CSV) {
             /* FIXME Put this into a separate CSP, CST, CSV function! */
@@ -599,11 +598,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 break;
 
             case S_SWITCH_ON_DISABLED:
-                if (opmode_request == OPMODE_CSP) { /* FIXME check for supported opmodes if applicable */
-                    opmode = opmode;
-                } else {
-                    opmode = opmode_request;
-                }
+                /* we allow opmode change in this state */
+                opmode = update_opmode(opmode_request); //check and update opmode
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);
@@ -722,8 +718,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     send_to_master, send_to_control,
                     i_position_control, i_position_feedback_1, i_position_feedback_2);
 
+            opmode = update_opmode(opmode_request); //check and update opmode
+
             //exit tuning mode
-            if (opmode_request != opmode) {
+            if (opmode != OPMODE_SNCN_TUNING) {
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
                 i_position_control.disable();
                 state = S_SWITCH_ON_DISABLED;

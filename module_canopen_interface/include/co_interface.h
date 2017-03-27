@@ -15,13 +15,13 @@
 
 /** entry description structure */
 struct _sdoinfo_entry_description {
-    uint32_t index; ///< 16 bit int should be sufficient
-    uint32_t subindex; ///< 16 bit int should be sufficient
-    uint32_t objectDataType;
-    uint32_t dataType;
+    uint16_t index; ///< 16 bit int should be sufficient
+    uint8_t subindex; ///< 16 bit int should be sufficient
+    uint8_t objectDataType;
+    uint8_t dataType;
     uint8_t objectCode;
-    uint32_t bitLength;
-    uint32_t objectAccess;
+    uint8_t bitLength;
+    uint8_t objectAccess;
     uint32_t value; ///< real data type is defined by .dataType
     uint8_t name[50];
 };

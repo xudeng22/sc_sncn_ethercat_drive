@@ -251,6 +251,22 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters_lib/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_GPIO-A}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers_lib/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_motion_control/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/predriver}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/include}&quot;"/>
 								</option>
 								<option id="com.xmos.xc.compiler.option.defined.symbols.1360019877" name="com.xmos.xc.compiler.option.defined.symbols" superClass="com.xmos.xc.compiler.option.defined.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__SHRT_MAX__=32767"/>
@@ -950,6 +966,22 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters_lib/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_GPIO-A}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers_lib/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_motion_control/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/predriver}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/include}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.19072911" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1469,6 +1501,22 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters_lib/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_GPIO-A}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers_lib/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_motion_control/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_controllers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/predriver}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/include}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.86765864" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

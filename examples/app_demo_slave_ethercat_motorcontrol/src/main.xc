@@ -50,9 +50,9 @@ int main(void)
     /* Motor control channels */
     interface WatchdogInterface i_watchdog[2];
     interface ADCInterface i_adc[2];
-    interface MotorcontrolInterface i_motorcontrol[2];
-    interface update_pwm i_update_pwm;
-    interface update_brake i_update_brake;
+    interface MotorControlInterface i_motorcontrol[2];
+    interface UpdatePWM i_update_pwm;
+    interface UpdateBrake i_update_brake;
     interface shared_memory_interface i_shared_memory[3];
     interface PositionVelocityCtrlInterface i_position_control[3];
     interface PositionFeedbackInterface i_position_feedback_1[3];

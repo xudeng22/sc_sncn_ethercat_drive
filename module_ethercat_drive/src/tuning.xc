@@ -10,7 +10,7 @@
 #include <state_modes.h>
 
 #if 0
-static void brake_shake(interface MotorcontrolInterface client i_motorcontrol, int torque) {
+static void brake_shake(interface MotorControlInterface client i_motorcontrol, int torque) {
     const int period = 50;
     i_motorcontrol.set_brake_status(1);
     for (int i=0 ; i<1 ; i++) {

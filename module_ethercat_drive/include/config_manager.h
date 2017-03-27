@@ -37,10 +37,11 @@ int cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
-        client interface MotorcontrolInterface ?i_commutation,
+        client interface MotorControlInterface ?i_commutation,
         MotorcontrolConfig &commutation_params,
         int sensor_commutation,
         int sensor_commutation_type);
+
 
 void cm_sync_config_profiler(
         client interface i_coe_communication i_coe,
@@ -57,7 +58,7 @@ void cm_sync_config_pos_velocity_control(
 void cm_sync_config_hall_states(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        interface MotorcontrolInterface client ?i_motorcontrol,
+        interface MotorControlInterface client ?i_motorcontrol,
         PositionFeedbackConfig &feedback_config,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_index);
@@ -75,7 +76,7 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,
-        client interface MotorcontrolInterface ?i_commutation,
+        client interface MotorControlInterface ?i_commutation,
         MotorcontrolConfig &commutation_params);
 
 void cm_default_config_profiler(

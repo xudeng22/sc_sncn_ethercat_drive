@@ -202,6 +202,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs1b}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.xc.compiler.input.608892259" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -532,6 +535,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs1b}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.570251168" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -867,6 +873,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs1b}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.2062785157" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

@@ -24,7 +24,7 @@ enum eProfileType {
  * by the master.
  */
 
-void cm_sync_config_position_feedback(
+int cm_sync_config_position_feedback(
         client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
         PositionFeedbackConfig &config, int feedback_service_index,
@@ -33,7 +33,7 @@ void cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_co_communication i_co,
-        client interface MotorControlInterface ?i_commutation,
+        client interface MotorcontrolInterface ?i_commutation,
         MotorcontrolConfig &commutation_params,
         int sensor_commutation,
         int sensor_commutation_type);
@@ -53,7 +53,7 @@ void cm_sync_config_pos_velocity_control(
 void cm_sync_config_hall_states(
         client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
-        interface MotorControlInterface client ?i_motorcontrol,
+        client interface MotorcontrolInterface ?i_motorcontrol,
         PositionFeedbackConfig &feedback_config,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_index);

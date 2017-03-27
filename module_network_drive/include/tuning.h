@@ -49,21 +49,29 @@ int tuning_handler(
         /* output */ uint16_t    &statusword, uint32_t &tuning_result,
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        MotionControlConfig      &pos_velocity_ctrl_config,
-        PositionFeedbackConfig   &pos_feedback_config,
+        MotionControlConfig &motion_ctrl_config,
+        PositionFeedbackConfig   &pos_feedback_config_1,
+        PositionFeedbackConfig   &pos_feedback_config_2,
+        int sensor_commutation,
+        int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
         client interface PositionVelocityCtrlInterface i_position_control,
-        client interface PositionFeedbackInterface ?i_position_feedback
+        client interface PositionFeedbackInterface ?i_position_feedback_1,
+        client interface PositionFeedbackInterface ?i_position_feedback_2
     );
 
 void tuning_command(
         TuningStatus             &tuning_status,
         MotorcontrolConfig       &motorcontrol_config,
-        MotionControlConfig      &pos_velocity_ctrl_config,
-        PositionFeedbackConfig   &pos_feedback_config,
+        MotionControlConfig &motion_ctrl_config,
+        PositionFeedbackConfig   &pos_feedback_config_1,
+        PositionFeedbackConfig   &pos_feedback_config_2,
+        int sensor_commutation,
+        int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
         DownstreamControlData    &downstream_control_data,
         client interface PositionVelocityCtrlInterface i_position_control,
-        client interface PositionFeedbackInterface ?i_position_feedback
+        client interface PositionFeedbackInterface ?i_position_feedback_1,
+        client interface PositionFeedbackInterface ?i_position_feedback_2ck
     );

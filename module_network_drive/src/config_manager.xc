@@ -30,7 +30,7 @@ static int tick2bits(int tick_resolution)
 void cm_sync_config_hall_states(
         client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface MotorcontrolInterface client ?i_motorcontrol,
         PositionFeedbackConfig &feedback_config,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_index)
@@ -193,7 +193,9 @@ int cm_sync_config_position_feedback(
 void cm_sync_config_motor_control(
         client interface i_co_communication i_co,
         interface MotorcontrolInterface client ?i_motorcontrol,
-        MotorcontrolConfig &motorcontrol_config)
+        MotorcontrolConfig &motorcontrol_config,
+        int sensor_commutation,
+        int sensor_commutation_type)
 
 {
     if (isnull(i_motorcontrol))
@@ -418,7 +420,7 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_co_communication i_co,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface MotorcontrolInterface client ?i_motorcontrol,
         MotorcontrolConfig &motorcontrol_config)
 
 {

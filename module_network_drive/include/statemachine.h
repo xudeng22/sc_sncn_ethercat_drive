@@ -55,6 +55,14 @@ int init_state(void);
 check_list init_checklist(void);
 
 /**
+ * @brief Update opmode if this opmode is supported
+ *
+ * @param opmode_request the new opmode
+ * @return new opmode, OPMODE_NONE if opmode is unsupported
+ */
+int8_t update_opmode(int8_t opmode_request);
+
+/**
  * @brief Update Checklist
  *
  * @param check_list_param Check List to be updated

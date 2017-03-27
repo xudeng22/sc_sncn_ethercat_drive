@@ -41,32 +41,35 @@ enum {
  */
 typedef struct
 {
-    int8_t operation_mode;     //      Modes of Operation
-    uint16_t control_word;     //      Control Word
-
+    uint16_t controlword;
+    int8_t op_mode;
     int16_t target_torque;
-    int32_t target_velocity;
     int32_t target_position;
-
-    /* User defined PDOs */
-    int32_t user1_in;
-    int32_t user2_in;
-    int32_t user3_in;
-    int32_t user4_in;
-
-
-    int8_t operation_mode_display; //      Modes of Operation Display
-    uint16_t status_word;                   //  Status Word
-
-    int16_t actual_torque;
-    int32_t actual_velocity;
+    int32_t target_velocity;
+    int32_t offset_torque;
+    uint32_t tuning_command;
+    uint8_t digital_output1;
+    uint8_t digital_output2;
+    uint8_t digital_output3;
+    uint8_t digital_output4;
+    uint32_t user_mosi;
+    uint16_t statusword;
+    int8_t op_mode_display;
     int32_t actual_position;
-
-    /* User defined PDOs */
-    int32_t user1_out;
-    int32_t user2_out;
-    int32_t user3_out;
-    int32_t user4_out;
+    int32_t actual_velocity;
+    int16_t actual_torque;
+    int32_t secondary_position_value;
+    int32_t secondary_velocity_value;
+    uint16_t analog_input1;
+    uint16_t analog_input2;
+    uint16_t analog_input3;
+    uint16_t analog_input4;
+    uint32_t tuning_status;
+    uint8_t digital_input1;
+    uint8_t digital_input2;
+    uint8_t digital_input3;
+    uint8_t digital_input4;
+    uint32_t user_miso;
 } pdo_values_t;
 
 #if COM_ETHERCAT || COM_ETHERNET

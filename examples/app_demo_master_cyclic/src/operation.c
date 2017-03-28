@@ -12,70 +12,25 @@
 #include <string.h>
 
 
-void tuning_position(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input)
+void position_target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input)
 {
-    int max_follow_error = config->ticks_per_turn;
+//    int max_follow_error = config->ticks_per_turn;
 
-    if (config->mode == POSITION_PROFILER) {
         if (config->step <= config->steps) {
-            pdo_output->user_mosi = position_profile_generate(&(config->motion_profile), config->step);
-            pdo_output->controlword = 'p';
+            pdo_output->target_position = position_profile_generate(&(config->motion_profile), config->step);
             (*config).step++;
             //check follow error
-            if (((int)pdo_output->user_mosi - (int)pdo_input.position_value) > max_follow_error || ((int)pdo_output->user_mosi - (int)pdo_input.position_value) < -max_follow_error)
-            {
-                config->mode = POSITION_DIRECT;
-                pdo_output->controlword = 0;
-            }
-        } else {
-            config->mode = POSITION_DIRECT;
-            pdo_output->controlword = 0;
+//            if (((int)pdo_output->user_mosi - (int)pdo_input.position_value) > max_follow_error || ((int)pdo_output->user_mosi - (int)pdo_input.position_value) < -max_follow_error)
+//            {
+//                config->mode = POSITION_DIRECT;
+//                pdo_output->controlword = 0;
+//            }
         }
-    } else if (config->mode == POSITION_STEP) {
-        pdo_output->controlword = 'p';
-        if (config->step == config->steps/3) {
-            pdo_output->user_mosi = -pdo_output->user_mosi;
-        } else if (config->step == (config->steps/3)*2) {
-            pdo_output->user_mosi = 0;
-        } else if (config->step == config->steps) {
-            config->mode = POSITION_DIRECT;
-            pdo_output->controlword = 0;
-        }
-        (*config).step++;
-    }
-    else if (config->mode == POSITION_STEP_PROFILER) {
-        pdo_output->controlword = 'p';
-        if (config->step < config->steps) {
-            pdo_output->user_mosi = position_profile_generate(&(config->motion_profile), config->step);
-        } else if (config->target_position == 0) { //small target pos = we are reached the end
-            config->mode = POSITION_DIRECT;
-            pdo_output->controlword = 0;
-        } else if (config->target_position > 0) { //positive target = end of first step
-            config->step = 0;
-            config->target_position = -config->target_position;
-            config->steps = init_position_profile(&(config->motion_profile), config->target_position, pdo_input.position_value,\
-                    config->profile_speed, config->profile_acceleration, config->profile_acceleration, config->ticks_per_turn);
-            pdo_output->user_mosi = position_profile_generate(&(config->motion_profile), config->step);
-        } else if (config->target_position < 0) { //negative target = end of second step
-            config->step = 0;
-            config->target_position = 0;
-            config->steps = init_position_profile(&(config->motion_profile), config->target_position, pdo_input.position_value,\
-                    config->profile_speed, config->profile_acceleration, config->profile_acceleration, config->ticks_per_turn);
-            pdo_output->user_mosi = position_profile_generate(&(config->motion_profile), config->step);
-        }
-        (*config).step++;
-        //check follow error
-        if (((int)pdo_output->user_mosi - (int)pdo_input.position_value) > max_follow_error || ((int)pdo_output->user_mosi - (int)pdo_input.position_value) < -max_follow_error)
-        {
-            config->mode = POSITION_DIRECT;
-            pdo_output->controlword = 0;
-        }
-    }
 }
 
 
 
-void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output)
+void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config)
 {
     pdo_output[1].user_mosi = output->select;
 
@@ -103,7 +58,12 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
             }
         }
     } else if (c == 'r') { //reverse command
-        pdo_output[output->select].target_position = -pdo_output[output->select].target_position;
+        if (pdo_input[output->select].op_mode_display == OPMODE_CSP) {
+            //init profile
+            profile_config->step = 0;
+            profile_config->steps = init_position_profile(&(profile_config->motion_profile), -pdo_output[output->select].target_position, pdo_input[output->select].position_value,\
+                    profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
+        }
         pdo_output[output->select].target_velocity = -pdo_output[output->select].target_velocity;
         pdo_output[output->select].target_torque = -pdo_output[output->select].target_torque;
     } else if (c == 's') { //stop
@@ -151,9 +111,14 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
             } else if ((*output).mode_1 == 'c') {
                 pdo_output[output->select].controlword = (*output).value;
             } else {
-                pdo_output[output->select].target_position = (*output).value;
                 pdo_output[output->select].target_velocity = (*output).value;
                 pdo_output[output->select].target_torque = (*output).value;
+                if (pdo_input[output->select].op_mode_display == OPMODE_CSP) {
+                    //init profile
+                    profile_config->step = 0;
+                    profile_config->steps = init_position_profile(&(profile_config->motion_profile), (*output).value, pdo_input[output->select].position_value,\
+                            profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
+                }
             }
 
             //debug: print command on last line
@@ -181,7 +146,7 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
     return;
 }
 
-void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output)
+void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config)
 {
     //init display
     if (output->init == 0) {
@@ -197,7 +162,7 @@ void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_i
     display_slaves(wnd, 0, pdo_output, pdo_input, number_slaves, *output);
 
     //manage console commands
-    cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output);
+    cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output, profile_config);
 
     //manage slave state machine and opmode
     CIA402State state = read_state(pdo_input[output->select].statusword);
@@ -221,4 +186,6 @@ void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_i
         pdo_output[output->select].controlword = go_to_state(state, CIASTATE_SWITCH_ON_DISABLED, pdo_output[output->select].controlword);
         break;
     }
+
+    position_target_generate(profile_config, &(pdo_output[output->select]), pdo_input[output->select]);
 }

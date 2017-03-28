@@ -267,7 +267,7 @@ int main(int argc, char **argv)
                     break;
                 }
             } else if (output.app_mode == CS_MODE){
-                cs_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output);
+                cs_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output, &profile_config);
             }
 
             wrefresh(wnd); //refresh ncurses window

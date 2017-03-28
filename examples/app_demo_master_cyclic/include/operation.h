@@ -80,11 +80,11 @@ typedef struct {
 #include "ecat_master.h"
 #include "display.h"
 
-void tuning_position(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input);
+void position_target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input);
 
-void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output);
+void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profiler_config);
 
-void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output);
+void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config);
 
 
 #endif /* OPERATION_H_ */

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <EtherCATInfo Version="1.2">
   <Vendor>
     <Id>#x000022D2</Id>
@@ -127,7 +127,7 @@
               </DataType>
               <DataType>
                 <Name>DT1600</Name>
-                <BitSize>400</BitSize>
+                <BitSize>528</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>SubIndex 000</Name>
@@ -229,7 +229,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>9</SubIdx>
-                  <Name>Digital Output 2</Name>
+                  <Name>padding entry (automatically added)</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>272</BitOffs>
@@ -240,7 +240,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>10</SubIdx>
-                  <Name>Digital Output 3</Name>
+                  <Name>Digital Output 2</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>304</BitOffs>
@@ -251,7 +251,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>11</SubIdx>
-                  <Name>Digital Output 4</Name>
+                  <Name>padding entry (automatically added)</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>336</BitOffs>
@@ -262,10 +262,54 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>12</SubIdx>
-                  <Name>User MOSI</Name>
+                  <Name>Digital Output 3</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>368</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>13</SubIdx>
+                  <Name>padding entry (automatically added)</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>400</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>14</SubIdx>
+                  <Name>Digital Output 4</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>432</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>15</SubIdx>
+                  <Name>padding entry (automatically added)</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>464</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>16</SubIdx>
+                  <Name>User MOSI</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>496</BitOffs>
                   <Flags>
                     <Access>ro</Access>
                     <Category>o</Category>
@@ -2351,12 +2395,12 @@
                 <Index>#x1600</Index>
                 <Name>Rx PDO Mapping</Name>
                 <Type>DT1600</Type>
-                <BitSize>400</BitSize>
+                <BitSize>528</BitSize>
                 <Info>
                   <SubItem>
                     <Name>SubIndex 000</Name>
                     <Info>
-                      <DefaultData>0C</DefaultData>
+                      <DefaultData>10</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2408,9 +2452,21 @@
                     </Info>
                   </SubItem>
                   <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000000</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
                     <Name>Digital Output 2</Name>
                     <Info>
                       <DefaultData>01000226</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2420,9 +2476,21 @@
                     </Info>
                   </SubItem>
                   <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000000</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
                     <Name>Digital Output 4</Name>
                     <Info>
                       <DefaultData>01000426</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4697,7 +4765,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2602</Index>
@@ -4710,7 +4778,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2603</Index>
@@ -4723,7 +4791,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2604</Index>
@@ -4736,7 +4804,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2FFE</Index>

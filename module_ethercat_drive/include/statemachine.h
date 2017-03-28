@@ -76,10 +76,20 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 /**
  * @brief Update opmode if this opmode is supported
  *
+ *  Also set the polarity if the new opmode it CSP or CSV
+ *
+ * @param opmode the current opmode
  * @param opmode_request the new opmode
+ * @param i_motion_control client interface to the motion control
+ * @param motion_control_config config of to the motion control
+ * @param polarity CiA402 object 0x607E DICT_POLARITY
+ *
  * @return new opmode, OPMODE_NONE if opmode is unsupported
  */
-int8_t update_opmode(int8_t opmode_request);
+int8_t update_opmode(int8_t opmode, int8_t opmode_request,
+        client interface PositionVelocityCtrlInterface i_motion_control,
+        MotionControlConfig &motion_control_config,
+        uint8_t polarity);
 
 int read_controlword_switch_on(int control_word);
 

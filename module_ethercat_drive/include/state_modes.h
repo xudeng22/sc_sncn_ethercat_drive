@@ -64,6 +64,10 @@
 /* Profile Velocity Mode */
 #define TARGET_VELOCITY_REACHED 0x0400
 
+/* Motion (position/velocity) polarity DICT_POLARITY 0x607E*/
+#define MOTION_POLARITY_POSITION    0x80
+#define MOTION_POLARITY_VELOCITY    0x40
+
 /*Controlword Bits*/
 #define SWITCH_ON_CONTROL                 0x1
 #define ENABLE_VOLTAGE_CONTROL            0x2

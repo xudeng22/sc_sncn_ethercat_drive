@@ -60,14 +60,14 @@ int tuning_handler_ethercat(
     case 0: //send flags
         //convert polarity flag to 0/1
         int motion_polarity = 0;
-        if (motion_ctrl_config.polarity == INVERTED_POLARITY) {
+        if (motion_ctrl_config.polarity == MOTION_POLARITY_INVERTED) {
             motion_polarity = 1;
         }
         int sensor_polarity = (int)pos_feedback_config_1.polarity;
         if (sensor_commutation == 2) {
             sensor_polarity = (int)pos_feedback_config_2.polarity;
         }
-        if (sensor_polarity == INVERTED_POLARITY) {
+        if (sensor_polarity == SENSOR_POLARITY_INVERTED) {
             sensor_polarity = 1;
         } else {
             sensor_polarity = 0;
@@ -457,10 +457,10 @@ void tuning_command(
     //direction
     case 'd':
         motion_ctrl_config = i_position_control.get_position_velocity_control_config();
-        if (motion_ctrl_config.polarity == INVERTED_POLARITY) {
-            motion_ctrl_config.polarity = NORMAL_POLARITY;
+        if (motion_ctrl_config.polarity == MOTION_POLARITY_INVERTED) {
+            motion_ctrl_config.polarity = MOTION_POLARITY_NORMAL;
         } else {
-            motion_ctrl_config.polarity = INVERTED_POLARITY;
+            motion_ctrl_config.polarity = MOTION_POLARITY_INVERTED;
         }
         i_position_control.set_position_velocity_control_config(motion_ctrl_config);
         break;
@@ -469,19 +469,19 @@ void tuning_command(
     case 's':
         if (sensor_commutation == 2) {
             if (!isnull(i_position_feedback_2)) {
-                if (pos_feedback_config_2.polarity == NORMAL_POLARITY) {
-                    pos_feedback_config_2.polarity = INVERTED_POLARITY;
+                if (pos_feedback_config_2.polarity == SENSOR_POLARITY_INVERTED) {
+                    pos_feedback_config_2.polarity = SENSOR_POLARITY_NORMAL;
                 } else {
-                    pos_feedback_config_2.polarity = NORMAL_POLARITY;
+                    pos_feedback_config_2.polarity = SENSOR_POLARITY_INVERTED;
                 }
                 i_position_feedback_2.set_config(pos_feedback_config_2);
             }
         } else {
             if (!isnull(i_position_feedback_1)) {
-                if (pos_feedback_config_1.polarity == NORMAL_POLARITY) {
-                    pos_feedback_config_1.polarity = INVERTED_POLARITY;
+                if (pos_feedback_config_1.polarity == SENSOR_POLARITY_INVERTED) {
+                    pos_feedback_config_1.polarity = SENSOR_POLARITY_NORMAL;
                 } else {
-                    pos_feedback_config_1.polarity = NORMAL_POLARITY;
+                    pos_feedback_config_1.polarity = SENSOR_POLARITY_INVERTED;
                 }
                 i_position_feedback_1.set_config(pos_feedback_config_1);
             }

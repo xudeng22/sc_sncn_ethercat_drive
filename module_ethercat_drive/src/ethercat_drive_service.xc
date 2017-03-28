@@ -539,8 +539,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_tuning_status(tuning_result, InOut);
         pdo_set_timestamp(time/100, InOut);
 
-        xscope_int(ACTUAL_VELOCITY, actual_velocity);
-        xscope_int(ACTUAL_POSITION, actual_position);
+//        xscope_int(ACTUAL_VELOCITY, actual_velocity);
+//        xscope_int(ACTUAL_POSITION, actual_position);
 
         /* Read/Write packets to ethercat Master application */
         communication_active = pdo_handler(i_pdo, InOut);

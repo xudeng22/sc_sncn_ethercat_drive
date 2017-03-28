@@ -134,7 +134,7 @@ int cm_sync_config_position_feedback(
     config.sensor_function         = sensor_function;
     config.resolution              = i_coe.get_object_value(feedback_sensor_object, 3);
     config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, 4);
-    config.polarity                = sext(i_coe.get_object_value(feedback_sensor_object, 5), 8);
+    config.polarity                = i_coe.get_object_value(feedback_sensor_object, 5);
     config.pole_pairs              = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
 
     // sensor specific parameters

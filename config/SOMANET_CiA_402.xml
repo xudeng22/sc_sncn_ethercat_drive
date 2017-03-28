@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <EtherCATInfo Version="1.2">
   <Vendor>
     <Id>#x000022D2</Id>
@@ -274,7 +274,7 @@
               </DataType>
               <DataType>
                 <Name>DT1A00</Name>
-                <BitSize>560</BitSize>
+                <BitSize>720</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>SubIndex 000</Name>
@@ -431,7 +431,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>14</SubIdx>
-                  <Name>Digital Input 2</Name>
+                  <Name>padding entry (automatically added)</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>432</BitOffs>
@@ -442,7 +442,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>15</SubIdx>
-                  <Name>Digital Input 3</Name>
+                  <Name>Digital Input 2</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>464</BitOffs>
@@ -453,7 +453,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>16</SubIdx>
-                  <Name>Digital Input 4</Name>
+                  <Name>padding entry (automatically added)</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>496</BitOffs>
@@ -464,10 +464,65 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>17</SubIdx>
-                  <Name>User MISO</Name>
+                  <Name>Digital Input 3</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>528</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>18</SubIdx>
+                  <Name>padding entry (automatically added)</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>560</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>19</SubIdx>
+                  <Name>Digital Input 4</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>592</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>20</SubIdx>
+                  <Name>padding entry (automatically added)</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>624</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>21</SubIdx>
+                  <Name>User MISO</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>656</BitOffs>
+                  <Flags>
+                    <Access>ro</Access>
+                    <Category>o</Category>
+                  </Flags>
+                </SubItem>
+                <SubItem>
+                  <SubIdx>22</SubIdx>
+                  <Name>Timestamp</Name>
+                  <Type>UDINT</Type>
+                  <BitSize>32</BitSize>
+                  <BitOffs>688</BitOffs>
                   <Flags>
                     <Access>ro</Access>
                     <Category>o</Category>
@@ -2386,12 +2441,12 @@
                 <Index>#x1A00</Index>
                 <Name>Tx PDO Mapping</Name>
                 <Type>DT1A00</Type>
-                <BitSize>560</BitSize>
+                <BitSize>720</BitSize>
                 <Info>
                   <SubItem>
                     <Name>SubIndex 000</Name>
                     <Info>
-                      <DefaultData>11</DefaultData>
+                      <DefaultData>16</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2473,9 +2528,21 @@
                     </Info>
                   </SubItem>
                   <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000020</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
                     <Name>Digital Input 2</Name>
                     <Info>
                       <DefaultData>01000225</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000020</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2485,15 +2552,33 @@
                     </Info>
                   </SubItem>
                   <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000020</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
                     <Name>Digital Input 4</Name>
                     <Info>
                       <DefaultData>01000425</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
+                    <Name>padding entry (automatically added)</Name>
+                    <Info>
+                      <DefaultData>07000020</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
                     <Name>User MISO</Name>
                     <Info>
                       <DefaultData>2000FF2F</DefaultData>
+                    </Info>
+                  </SubItem>
+                  <SubItem>
+                    <Name>Timestamp</Name>
+                    <Info>
+                      <DefaultData>2000FD2F</DefaultData>
                     </Info>
                   </SubItem>
                 </Info>
@@ -4522,6 +4607,24 @@
                   <PdoMapping>tr</PdoMapping>
                 </Flags>
               </Object>
+              <Object>
+                <Index>#x2FFD</Index>
+                <Name>Timestamp</Name>
+                <Comment></Comment>
+                <Type>UDINT</Type>
+                <BitSize>32</BitSize>
+                <Info>
+                  <MinData>00</MinData>
+                  <MaxData>FFFFFFFF</MaxData>
+                  <DefaultData>00</DefaultData>
+                  <Unit>#xFA030000</Unit>
+                </Info>
+                <Flags>
+                  <Access>ro</Access>
+                  <Category>o</Category>
+                  <PdoMapping>t</PdoMapping>
+                </Flags>
+              </Object>
             </Objects>
           </Dictionary>
         </Profile>
@@ -4741,7 +4844,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2502</Index>
@@ -4754,7 +4857,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2503</Index>
@@ -4767,7 +4870,7 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2504</Index>
@@ -4780,13 +4883,20 @@
             <Index>0</Index>
             <BitLen>7</BitLen>
             <Name>padding entry (automatically added)</Name>
-            <DataType>PAD16</DataType>
+            <DataType></DataType>
           </Entry>
           <Entry>
             <Index>#x2FFF</Index>
             <SubIndex>0</SubIndex>
             <BitLen>32</BitLen>
             <Name>User MISO</Name>
+            <DataType>UDINT</DataType>
+          </Entry>
+          <Entry>
+            <Index>#x2FFD</Index>
+            <SubIndex>0</SubIndex>
+            <BitLen>32</BitLen>
+            <Name>Timestamp</Name>
             <DataType>UDINT</DataType>
           </Entry>
         </TxPdo>

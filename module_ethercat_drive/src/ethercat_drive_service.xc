@@ -444,7 +444,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          *  local state variables
          */
         controlword     = pdo_get_controlword(InOut);
-        opmode_request  = pdo_get_opmode(InOut);
+        opmode_request  = pdo_get_op_mode(InOut);
         target_position = pdo_get_target_position(InOut);
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = pdo_get_target_torque(InOut);
@@ -527,15 +527,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          *  update values to send
          */
         pdo_set_statusword(statusword, InOut);
-        pdo_set_opmode_display(opmode, InOut);
+        pdo_set_op_mode_display(opmode, InOut);
         pdo_set_velocity_value(actual_velocity, InOut);
         pdo_set_torque_value(actual_torque, InOut );
         pdo_set_position_value(actual_position, InOut);
         // FIXME this is one of the analog inputs?
         pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
         pdo_set_tuning_status(tuning_result, InOut);
+        pdo_set_timestamp(time/100, InOut);
 
-        //xscope_int(USER_TORQUE, (1000 * 5 * send_to_master.sensor_torque) / 4096);
+        xscope_int(ACTUAL_VELOCITY, actual_velocity);
+        xscope_int(ACTUAL_POSITION, actual_position);
 
         /* Read/Write packets to ethercat Master application */
         communication_active = pdo_handler(i_pdo, InOut);

@@ -44,7 +44,7 @@
 
 #torque position velocity control
 #main parameters
-0x607E,        0,          1 # DICT_POLARITY
+0x607E,        0,       0x00 # DICT_POLARITY (bit 0x80 invert in CSP mode, bit 0x40 invert in CSV mode)
 0x2012,        1,      16000 # DICT_POSITION_CONTROLLER kp
 0x2012,        2,        280 # DICT_POSITION_CONTROLLER ki
 0x2012,        3,      41000 # DICT_POSITION_CONTROLLER kd

@@ -365,7 +365,6 @@ void cs_command(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_outp
         pdo_output[output->select].op_mode = 0;
     } else if (c == 'p') { // CSP
         pdo_output[output->select].op_mode = 8;
-        pdo_output[output->select].target_position = pdo_input[output->select].position_value;
     } else if (c == 'v') { // CSV
         pdo_output[output->select].op_mode = 9;
         pdo_output[output->select].target_velocity = 0;
@@ -455,7 +454,13 @@ void cs_mode(WINDOW *wnd, Cursor *cursor, struct _pdo_cia402_output *pdo_output,
             pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_SWITCH_ON_DISABLED, pdo_output[output->select].controlword);
         } else {
             // opmode is set, enable operation
-            pdo_output[output->select].controlword = go_to_state(read_state(pdo_input[output->select].statusword), CIASTATE_OP_ENABLED, pdo_output[output->select].controlword);
+            enum eCIAState state = read_state(pdo_input[output->select].statusword);
+            if (state != CIASTATE_OP_ENABLED) {
+                //set the target position to the current position before enabling operation to prevent the motor for moving at start
+                pdo_output[output->select].target_position = pdo_input[output->select].position_value;
+                // go to CIASTATE_OP_ENABLED state
+                pdo_output[output->select].controlword = go_to_state(state, CIASTATE_OP_ENABLED, pdo_output[output->select].controlword);
+            }
         }
         break;
     case 0://no opmode

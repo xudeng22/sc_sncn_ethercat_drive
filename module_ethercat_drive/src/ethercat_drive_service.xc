@@ -366,10 +366,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int inactive_timeout_flag = 0;
 
     /* tuning specific variables */
-    int tuning_control = 0;
-    //int tuningpdo_status = 0;
-    uint32_t tuning_result = 0;
-    TuningStatus tuning_status = {0};
+    uint32_t tuning_command = 0;
+    uint32_t tuning_status = 0;
+    uint32_t user_miso = 0;
+    TuningModeState tuning_mode_state = {0};
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
@@ -457,8 +457,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
 
         /* tuning pdos */
-        tuning_control = pdo_get_tuning_command(InOut); // mode 3 for tuning (mode 1 and 2 are in controlword)
-        tuning_status.value = pdo_get_user_mosi(InOut); // value of tuning command
+        tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
+        tuning_mode_state.value = pdo_get_user_mosi(InOut); // value of tuning command
 
         /*
         printint(state);
@@ -538,7 +538,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_secondary_velocity_value(send_to_master.velocity_additional, InOut);
         // FIXME this is one of the analog inputs?
         pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
-        pdo_set_tuning_status(tuning_result, InOut);
+        pdo_set_tuning_status(tuning_status, InOut);
+        pdo_set_user_miso(user_miso, InOut);
         pdo_set_timestamp(time/100, InOut);
 
 //        xscope_int(ACTUAL_VELOCITY, actual_velocity);
@@ -569,7 +570,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          * new, perform actions according to state
          */
-        //debug_print_state(state);
+        debug_print_state(state);
 
         if (opmode == OPMODE_NONE) {
             statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
@@ -720,9 +721,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         } else if (opmode == OPMODE_SNCN_TUNING) {
             /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
-            tuning_handler_ethercat(controlword, tuning_control,
-                    statusword, tuning_result,
-                    tuning_status,
+            tuning_handler_ethercat(tuning_command,
+                    user_miso, tuning_status,
+                    tuning_mode_state,
                     motorcontrol_config, position_velocity_config, position_feedback_config_1, position_feedback_config_2,
                     sensor_commutation, sensor_motion_control,
                     send_to_master, send_to_control,
@@ -738,8 +739,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 state = S_SWITCH_ON_DISABLED;
                 statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
                 //reset tuning status
-                tuning_status.brake_flag = 0;
-                tuning_status.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                tuning_mode_state.brake_flag = 0;
+                tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
         } else {
             /* if a unknown or unsupported opmode is requested we simply return

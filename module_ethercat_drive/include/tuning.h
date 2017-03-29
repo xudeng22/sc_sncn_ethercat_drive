@@ -43,13 +43,13 @@ typedef struct {
     int brake_flag;
     int repeat_flag;
     TuningMotorCtrlStatus motorctrl_status;
-} TuningStatus;
+} TuningModeState;
 
 
 int tuning_handler_ethercat(
-        /* input */  uint16_t    controlword, uint32_t control_extension,
-        /* output */ uint16_t    &statusword, uint32_t &tuning_result,
-        TuningStatus             &tuning_status,
+        /* input */  uint32_t    tuning_command,
+        /* output */ uint32_t    &statusword, uint32_t &tuning_status,
+        TuningModeState             &tuning_mode_state,
         MotorcontrolConfig       &motorcontrol_config,
         MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
@@ -63,8 +63,8 @@ int tuning_handler_ethercat(
         client interface PositionFeedbackInterface ?i_position_feedback_2
     );
 
-void tuning_command(
-        TuningStatus             &tuning_status,
+void tuning_command_handler(
+        TuningModeState             &tuning_mode_state,
         MotorcontrolConfig       &motorcontrol_config,
         MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,

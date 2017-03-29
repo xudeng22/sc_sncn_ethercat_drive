@@ -42,7 +42,7 @@ CIA402State cia402_read_state(uint16_t statusword);
 
 uint16_t cia402_command(CIA402Command command, uint16_t controlword);
 
-uint16_t cia402_go_to_state(CIA402State target_state, CIA402State current_state , uint16_t controlword, uint16_t force_command);
+uint16_t cia402_go_to_state(CIA402State target_state, CIA402State current_state , uint16_t controlword, int skip_state);
 
 
 #endif /* _CIA402_H */

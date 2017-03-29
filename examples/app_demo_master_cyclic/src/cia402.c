@@ -107,20 +107,27 @@ uint16_t cia402_command(CIA402Command command, uint16_t controlword)
 }
 
 /* Check the slaves statemachine and generate the correct controlword */
-uint16_t cia402_go_to_state(CIA402State target_state, CIA402State current_state , uint16_t controlword, uint16_t force_command)
+uint16_t cia402_go_to_state(CIA402State target_state, CIA402State current_state , uint16_t controlword, int skip_state)
 {
     /* There are only 4 possible states we want to go:
-     * SWITCH_ON_DISABLED -> READY_SWITCH_ON -> CIASTATE_SWITCHED_ON -> OP_ENABLED
-     * with SWITCH_ON_DISABLED the lowest and OP_ENABLED the highest state
-     * The other state transition are automatic, or the fault state
-     * So we have only 4 options:
+     * SWITCH_ON_DISABLED <-> READY_SWITCH_ON <-> CIASTATE_SWITCHED_ON <-> OP_ENABLED
+     * With SWITCH_ON_DISABLED the lowest and OP_ENABLED the highest state.
+     * The other states are the Fault state and states with automatic transitions.
+     *
+     * So we have only 5 options:
      *  - we are in the fault state so we send the reset fault command
      *  - we are one of the 4 states and we want to go to a higher state
      *  - we are one of the 4 states and we want to go to a lower state
      *  - we are in an other state (quick stop, fault reaction, no ready to switch on)
-     *    and we just wait for the automatic transition
+     *     and we just wait for the automatic transition
+     *  - we can also force the transition 12 (QUICK_STOP -> SWITCH_ON_DISABLED) instead of waiting
+     *
+     * This function can command transitions 2,3,4,6,7,11 and 15.
+     * It can also command transitions 5, 8, 9, 10 when skip_state is on.
+     * The transitions 0, 1, 12, 13, 14 are automatic.
+     * The transition 12 can be force when skip_state is on.
+     * The transition 16 is not supported.
      * */
-
 
     if (current_state == CIASTATE_FAULT) {
         /* reset fault */
@@ -131,13 +138,13 @@ uint16_t cia402_go_to_state(CIA402State target_state, CIA402State current_state 
          * SWITCH_ON_DISABLED -> READY_SWITCH_ON -> CIASTATE_SWITCHED_ON -> OP_ENABLED
          * */
         switch(current_state) {
-        case CIASTATE_SWITCH_ON_DISABLED: //transition 2: shutdown command
+        case CIASTATE_SWITCH_ON_DISABLED:                                           //transition 2
             controlword = cia402_command(CIA402_CMD_SHUTDOWN, controlword);
             break;
-        case CIASTATE_READY_SWITCH_ON: //transition 3: switch on command
+        case CIASTATE_READY_SWITCH_ON:                                              //transition 3
             controlword = cia402_command(CIA402_CMD_SWITCH_ON, controlword);
             break;
-        case CIASTATE_SWITCHED_ON: //transition 4: enable operation command
+        case CIASTATE_SWITCHED_ON:                                                  //transition 4
             controlword = cia402_command(CIA402_CMD_ENABLE_OPERATION, controlword);
             break;
         default:
@@ -146,36 +153,42 @@ uint16_t cia402_go_to_state(CIA402State target_state, CIA402State current_state 
     } else if (CIASTATE_SWITCH_ON_DISABLED <= current_state && current_state <= CIASTATE_OP_ENABLED && current_state > target_state) { //enabled -> disabled transitions
         /* Those are the enabled to disabled transitions.
          * There are multiple ways to do it.
-         * We can follow the same path in reverse: OP_ENABLED -> SWITCHED_ON -> READY_SWITCH_ON -> SWITCH_ON_DISABLED
-         * Use the quick stop: OP_ENABLED -> QUICK_STOP -> SWITCH_ON_DISABLED
-         * Skip states by using the disable voltage command: OP_ENABLED/SWITCHED_ON/READY_SWITCH_ON -> SWITCH_ON_DISABLED
-         * Or also OP_ENABLED -> READY_SWITCH_ON (shutdown command)
-         * We select the path using the force_command argument
+         * We can follow the same path in reverse: OP_ENABLED -> SWITCHED_ON -> READY_SWITCH_ON -> SWITCH_ON_DISABLED (transitions 5, 6, 7)
+         * Use the quick stop: OP_ENABLED -> QUICK_STOP -> SWITCH_ON_DISABLED (transitions 11 and 12)
+         * Skip states by using the disable voltage command: OP_ENABLED/SWITCHED_ON -> SWITCH_ON_DISABLED (transitions 9, 10)
+         * Or also OP_ENABLED -> READY_SWITCH_ON (shutdown command) (transition 8)
+         * By default when on OP_ENABLED state we go to QUICK_STOP (transition 11), and in other states we use normal down path (transitions 6, 7)
+         * If the skip_state is enabled we use the skipping state transitions 5, 8, 9, 10
          * */
-        if (force_command == CIA402_CMD_DISABLE_VOLTAGE) {
-            controlword = cia402_command(CIA402_CMD_DISABLE_VOLTAGE, controlword);
-        } else { // normal reverse path
-            switch(current_state) {
-            // in OP_ENABLED state we have three possible transitions
-            case CIASTATE_OP_ENABLED:
-                if (force_command == CIA402_CMD_SHUTDOWN) {
-                    controlword = cia402_command(CIA402_CMD_SHUTDOWN, controlword);
-                } else if (force_command == CIA402_CMD_DISABLE_OPERATION) {
-                    controlword = cia402_command(CIA402_CMD_DISABLE_OPERATION, controlword);
-                } else { // by default we use the quick stop
-                    controlword = cia402_command(CIA402_CMD_QUICK_STOP, controlword);
-                }
-                break;
-            case CIASTATE_SWITCHED_ON:
+        switch(current_state) {
+        case CIASTATE_OP_ENABLED:
+            // in OP_ENABLED state we have 4 possible transitions
+            if (skip_state && target_state == CIASTATE_SWITCHED_ON) {                   //transition 5
+                controlword = cia402_command(CIA402_CMD_DISABLE_OPERATION, controlword);
+            } else if (skip_state && target_state == CIASTATE_READY_SWITCH_ON) {        //transition 8
                 controlword = cia402_command(CIA402_CMD_SHUTDOWN, controlword);
-                break;
-            case CIASTATE_READY_SWITCH_ON:
+            } else if (skip_state && target_state == CIASTATE_SWITCH_ON_DISABLED) {     //transition 9
                 controlword = cia402_command(CIA402_CMD_DISABLE_VOLTAGE, controlword);
-                break;
-            default: //if in any other state just wait
-                break;
+            } else {                                                                    //transition 11
+                controlword = cia402_command(CIA402_CMD_QUICK_STOP, controlword);
             }
+            break;
+        case CIASTATE_SWITCHED_ON:
+            if (skip_state && target_state == CIASTATE_SWITCH_ON_DISABLED) {            //transition 10
+                controlword = cia402_command(CIA402_CMD_DISABLE_VOLTAGE, controlword);
+            } else {                                                                    //transition 6
+                controlword = cia402_command(CIA402_CMD_SHUTDOWN, controlword);
+            }
+            break;
+        case CIASTATE_READY_SWITCH_ON:                                                  //transition 7
+            controlword = cia402_command(CIA402_CMD_DISABLE_VOLTAGE, controlword);
+            break;
+        default:
+            break;
         }
+    } else if (skip_state && current_state == CIASTATE_QUICK_STOP && target_state == CIASTATE_SWITCH_ON_DISABLED) {
+        /* force transition 12 */
+        controlword = cia402_command(CIA402_CMD_DISABLE_VOLTAGE, controlword);          //transition 12
     }
     return controlword;
 }

@@ -24,6 +24,7 @@ void position_target_generate(PositionProfileConfig *config, PDOOutput *pdo_outp
             if (follow_error > max_follow_error || follow_error < -max_follow_error) {
                 config->step = 1;
                 config->steps = 0;
+                pdo_output->target_position = pdo_input.position_value;
             }
         }
 }

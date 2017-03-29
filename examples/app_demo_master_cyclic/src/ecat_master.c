@@ -166,7 +166,7 @@ int write_sdo_config(Ethercat_Master_t *master, int slave_number, SdoParam_t *co
     return ret;
 }
 
-int read_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex)
+int read_local_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex)
 {
     for (int i=0 ; i<max_objects; i++) {
         if (config[slave_number][i].index == index && config[slave_number][i].subindex == subindex) {

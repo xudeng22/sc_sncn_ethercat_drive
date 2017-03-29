@@ -21,7 +21,7 @@ TARGET = bin/app_demo_master_cyclic
 
 SRCDIR=src
 ODIR=.obj
-_OBJ = main.o display.o ecat_master.o profile.o operation.o cia402.o
+_OBJ = main.o display.o ecat_master.o profile.o operation.o cia402.o utils.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 all: libreadsdoconfig $(TARGET)

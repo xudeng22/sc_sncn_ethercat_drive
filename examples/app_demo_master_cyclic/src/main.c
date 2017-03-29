@@ -223,8 +223,10 @@ int main(int argc, char **argv)
     profile_config.ticks_per_turn = 65536;
     if (sdo_enable) {
         for (int sensor_port=1; sensor_port<=3; sensor_port++) {
+            //get sensor config
             int sensor_config = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
             int sensor_function = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
+            //check sensor function
             if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
                 profile_config.ticks_per_turn = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
                 break;

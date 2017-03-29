@@ -70,7 +70,7 @@ int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_in
         wprintw_attr(wnd,"Slave %2d:", i, attr);
 
         //display state
-        CIA402State state = read_state(pdo_input[i].statusword);
+        CIA402State state = cia402_read_state(pdo_input[i].statusword);
         int target = 0;
         switch(state) {
         case CIASTATE_NOT_READY:

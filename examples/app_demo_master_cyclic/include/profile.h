@@ -114,6 +114,13 @@ int init_position_profile(motion_profile_t *motion_profile, int target_position,
  */
 int position_profile_generate(motion_profile_t *motion_profile, int step);
 
+
+int init_velocity_profile(motion_profile_t *motion_profile, int target_velocity, int actual_velocity, int acceleration, int deceleration, int ticks_per_turn);
+
+int velocity_profile_generate_in_steps(motion_profile_t *motion_profile, int step);
+
+
+
 #ifdef __cplusplus
 }
 #endif

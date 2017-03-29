@@ -88,15 +88,15 @@ int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_in
             break;
         case CIASTATE_OP_ENABLED:
             switch(pdo_input[i].op_mode_display) {
-            case 8: //CSP
+            case OPMODE_CSP: //CSP
                 target = pdo_output[i].target_position;
                 wprintw(wnd," Position control %10d", target);
                 break;
-            case 9: //CSV
+            case OPMODE_CSV: //CSV
                 target = pdo_output[i].target_velocity;
                 wprintw(wnd," Velocity control %10d", target);
                 break;
-            case 10://CST
+            case OPMODE_CST://CST
                 target = pdo_output[i].target_torque;
                 wprintw(wnd," Torque control   %10d", target);
                 break;

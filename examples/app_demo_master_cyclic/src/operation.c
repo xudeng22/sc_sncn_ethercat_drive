@@ -12,21 +12,27 @@
 #include <string.h>
 
 
-void position_target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input)
+void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input)
 {
-    int max_follow_error = (3*config->ticks_per_turn)/2;
-
-        if (config->step <= config->steps) {
+    if (config->step <= config->steps) {
+        switch(pdo_input.op_mode_display) {
+        case OPMODE_CSP:
             pdo_output->target_position = position_profile_generate(&(config->motion_profile), config->step);
-            (*config).step++;
             //check follow error
+            int max_follow_error = (3*config->ticks_per_turn)/2;
             int follow_error = pdo_output->target_position - pdo_input.position_value;
             if (follow_error > max_follow_error || follow_error < -max_follow_error) {
                 config->step = 1;
                 config->steps = 0;
                 pdo_output->target_position = pdo_input.position_value;
             }
+            break;
+        case OPMODE_CSV:
+            pdo_output->target_velocity = velocity_profile_generate_in_steps(&(config->motion_profile), config->step);
+            break;
         }
+        config->step++;
+    }
 }
 
 
@@ -78,7 +84,9 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
                     profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
             break;
         case OPMODE_CSV:
-            pdo_output[output->select].target_velocity = -pdo_output[output->select].target_velocity;
+            profile_config->step = 0;
+            profile_config->steps = init_velocity_profile(&(profile_config->motion_profile), -pdo_input[output->select].velocity_value, pdo_input[output->select].velocity_value,
+                    profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
             break;
         case OPMODE_CST:
             pdo_output[output->select].target_torque = -pdo_output[output->select].target_torque;
@@ -93,19 +101,19 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
 
     //CSP opmode
     case  'p':
-        pdo_output[output->select].op_mode = 8;
+        pdo_output[output->select].op_mode = OPMODE_CSP;
         output->target_state = CIASTATE_OP_ENABLED;
         break;
 
     //CSV opmode
     case 'v':
-        pdo_output[output->select].op_mode = 9;
+        pdo_output[output->select].op_mode = OPMODE_CSV;
         output->target_state = CIASTATE_OP_ENABLED;
         break;
 
     //CST opmode
     case 't':
-        pdo_output[output->select].op_mode = 10;
+        pdo_output[output->select].op_mode = OPMODE_CST;
         output->target_state = CIASTATE_OP_ENABLED;
         break;
 
@@ -136,7 +144,9 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
                         profile_config->profile_speed, profile_config->profile_acceleration, profile_config->profile_acceleration, profile_config->ticks_per_turn);
                 break;
             case OPMODE_CSV:
-                pdo_output[output->select].target_velocity = (*output).value;
+                profile_config->step = 0;
+                profile_config->steps = init_velocity_profile(&(profile_config->motion_profile), (*output).value, pdo_input[output->select].velocity_value, profile_config->profile_acceleration,
+                        profile_config->profile_acceleration, profile_config->ticks_per_turn);
                 break;
             case OPMODE_CST:
                 pdo_output[output->select].target_torque = (*output).value;
@@ -237,5 +247,5 @@ void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_i
     }
 
     //position profile
-    position_target_generate(profile_config, &(pdo_output[output->select]), pdo_input[output->select]);
+    target_generate(profile_config, &(pdo_output[output->select]), pdo_input[output->select]);
 }

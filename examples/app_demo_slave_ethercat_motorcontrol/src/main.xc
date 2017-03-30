@@ -89,8 +89,8 @@ int main(void)
             profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
 
             profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION;
-            profiler_config.max_deceleration = MAX_ACCELERATION;
+            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
 #if 0
             ethercat_drive_service_debug( profiler_config,
@@ -120,6 +120,7 @@ int main(void)
 
                     motion_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
                     motion_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
+                    motion_ctrl_config.max_deceleration_profiler =            MAX_DECELERATION_PROFILER;
                     motion_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
                     //select resolution of sensor used for motion control
                     if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {

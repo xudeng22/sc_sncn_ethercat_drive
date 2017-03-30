@@ -120,6 +120,7 @@ int main(void)
 
                     motion_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
                     motion_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
+                    motion_ctrl_config.max_deceleration_profiler =            MAX_DECELERATION_PROFILER;
                     motion_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
                     //select resolution of sensor used for motion control
                     if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {

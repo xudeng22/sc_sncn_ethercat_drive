@@ -18,6 +18,6 @@
  * @param i_od  Interface for setting and getting OD values.
  */
 [[distributable]]
-void canopen_service(server interface i_co_communication i_co[n], unsigned n);
+void canopen_interface_service(server interface i_co_communication i_co[n], unsigned n);
 
 #endif /* CANOPEN_SERVICE_H_ */

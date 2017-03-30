@@ -10,12 +10,12 @@
 #include "canod.h"
 #include "co_interface.h"
 #include "canod_constants.h"
-#include "canopen_service.h"
+#include "canopen_interface_service.h"
 #include "pdo_handler.h"
 #include "print.h"
 
 [[distributable]]
-void canopen_service(server interface i_co_communication i_co[n], unsigned n)
+void canopen_interface_service(server interface i_co_communication i_co[n], unsigned n)
 {
     pdo_values_t InOut = pdo_init_data();
     pdo_size_t pdo_buffer[PDO_BUFFER_SIZE];

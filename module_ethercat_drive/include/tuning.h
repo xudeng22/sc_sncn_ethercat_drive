@@ -77,3 +77,10 @@ void tuning_command_handler(
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2
     );
+
+uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
+        MotorcontrolConfig       &motorcontrol_config,
+        MotionControlConfig      &motion_ctrl_config,
+        PositionFeedbackConfig   &pos_feedback_config_1,
+        PositionFeedbackConfig   &pos_feedback_config_2,
+        int sensor_commutation);

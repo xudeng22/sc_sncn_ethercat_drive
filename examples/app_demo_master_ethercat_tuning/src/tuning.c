@@ -12,13 +12,7 @@
 
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 {
-    switch(pdo_input.tuning_status) {
-    case 0://flags
-        (*input).brake_flag = pdo_input.user_miso & 1;
-        (*input).motion_polarity = (pdo_input.user_miso >> 1) & 1;
-        (*input).sensor_polarity = (pdo_input.user_miso >> 2) & 1;
-        (*input).motorctrl_status = (pdo_input.user_miso >> 3);
-        break;
+    switch((pdo_input.tuning_status >> 16) & 0xff) {
     case 1://offset
         (*input).offset = pdo_input.user_miso;
         break;
@@ -74,6 +68,15 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
         (*input).sensor_error = pdo_input.user_miso;
         break;
     }
+
+    //tuning state
+    (*input).motorctrl_status = pdo_input.tuning_status & 0xff;
+
+    //flags
+    uint8_t flags = (pdo_input.tuning_status >> 8) & 0xff;
+    (*input).brake_flag = flags & 1;
+    (*input).motion_polarity = (flags >> 1) & 1;
+    (*input).sensor_polarity = (flags >> 2) & 1;
     return ;
 }
 
@@ -93,12 +96,8 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         (*pdo_output).op_mode = 0;
         (*pdo_output).tuning_command = 0;
         output->app_mode = CS_MODE;
-    } else if (c == '.') { //record
-        if (record_config->state == RECORD_OFF) {
-            record_config->state = RECORD_ON;
-        } else {
-            record_config->state = RECORD_OFF;
-        }
+    } else if (c == 'a') { //auto offset
+        (*pdo_output).tuning_command = 1;
     } else if (c == KEY_BACKSPACE || c == KEY_DC || c == 127) {//discard
         wmove(wnd, (*cursor).row, 0);
         wclrtoeol(wnd);

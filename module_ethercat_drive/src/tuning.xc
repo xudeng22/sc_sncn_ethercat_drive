@@ -49,34 +49,11 @@ int tuning_handler_ethercat(
         client interface PositionFeedbackInterface ?i_position_feedback_2
     )
 {
-    uint8_t status_mux     = tuning_status & 0xff;
+    uint8_t status_mux     = (tuning_status >> 16) & 0xff;
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
-    if (status_mux > 18)
-        status_mux = 0;
     switch(status_mux) {
-    case 0: //send flags
-        //convert polarity flag to 0/1
-        int motion_polarity = 0;
-        if (motion_ctrl_config.polarity == MOTION_POLARITY_INVERTED) {
-            motion_polarity = 1;
-        }
-        int sensor_polarity = (int)pos_feedback_config_1.polarity;
-        if (sensor_commutation == 2) {
-            sensor_polarity = (int)pos_feedback_config_2.polarity;
-        }
-        if (sensor_polarity == SENSOR_POLARITY_INVERTED) {
-            sensor_polarity = 1;
-        } else {
-            sensor_polarity = 0;
-        }
-        int brake_release_strategy = 0;
-        if (motion_ctrl_config.brake_release_strategy == 1) {
-            brake_release_strategy = 1;
-        }
-        user_miso = (tuning_mode_state.motorctrl_status<<3)+(sensor_polarity<<2)+(motion_polarity<<1)+tuning_mode_state.brake_flag;
-        break;
     case 1: //send offset
         user_miso = motorcontrol_config.commutation_angle_offset;
         break;
@@ -141,6 +118,7 @@ int tuning_handler_ethercat(
         break;
     default: //sensor error
         user_miso = upstream_control_data.sensor_error;
+        status_mux = 0;
         break;
     }
 
@@ -181,8 +159,10 @@ int tuning_handler_ethercat(
                 i_position_control, i_position_feedback_1, i_position_feedback_2);
     }
 
-    //put status mux in tuning status
-    tuning_status = (tuning_status & ~0xff) | (status_mux & 0xff);
+    //put status mux, state flags,  tuning state in tuning status
+    uint8_t flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_ctrl_config,
+            pos_feedback_config_1, pos_feedback_config_2, sensor_commutation);
+    tuning_status = (tuning_status & ~0xffffff) | ((uint32_t)status_mux << 16) | (flags << 8) | tuning_mode_state.motorctrl_status;
 
     return 0;
 }
@@ -488,7 +468,7 @@ void tuning_command_handler(
         break;
 
     //auto offset tuning
-    case 'a':
+    case 1:
         tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
         tuning_mode_state.brake_flag = 0;
         motorcontrol_config = i_position_control.set_offset_detection_enabled();
@@ -588,4 +568,35 @@ void tuning_command_handler(
         upstream_control_data = i_position_control.update_control_data(downstream_control_data);
         break;
     } /* main switch */
+}
+
+uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
+        MotorcontrolConfig       &motorcontrol_config,
+        MotionControlConfig      &motion_ctrl_config,
+        PositionFeedbackConfig   &pos_feedback_config_1,
+        PositionFeedbackConfig   &pos_feedback_config_2,
+        int sensor_commutation)
+{
+    int motion_polarity = 0;
+    if (motion_ctrl_config.polarity == MOTION_POLARITY_INVERTED) {
+        motion_polarity = 1;
+    }
+    int sensor_polarity = (int)pos_feedback_config_1.polarity;
+    if (sensor_commutation == 2) {
+        sensor_polarity = (int)pos_feedback_config_2.polarity;
+    }
+    if (sensor_polarity == SENSOR_POLARITY_INVERTED) {
+        sensor_polarity = 1;
+    } else {
+        sensor_polarity = 0;
+    }
+    int phases_inverted = 0;
+    if (motorcontrol_config.phases_inverted == MOTOR_PHASES_INVERTED) {
+        phases_inverted = 1;
+    }
+    int integrated_profiler = 0;
+    if (motion_ctrl_config.enable_profiler) {
+        integrated_profiler = 1;
+    }
+    return (uint8_t)( (integrated_profiler<<4) | (phases_inverted<<3) | (sensor_polarity<<2) | (motion_polarity<<1) | tuning_mode_state.brake_flag );
 }

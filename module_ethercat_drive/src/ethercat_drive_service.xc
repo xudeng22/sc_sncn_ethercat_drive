@@ -466,11 +466,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        if (opmode != OPMODE_SNCN_TUNING) {
-            send_to_control.position_cmd = target_position;
-            send_to_control.velocity_cmd = target_velocity;
-            send_to_control.torque_cmd   = target_torque;
-        }
+        send_to_control.position_cmd = target_position;
+        send_to_control.velocity_cmd = target_velocity;
+        send_to_control.torque_cmd   = target_torque;
 
         if (quick_stop_steps != 0) {
             switch (opmode) {

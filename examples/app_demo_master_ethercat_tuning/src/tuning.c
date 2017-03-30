@@ -97,7 +97,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         (*pdo_output).tuning_command = 0;
         output->app_mode = CS_MODE;
     } else if (c == 'a') { //auto offset
-        (*pdo_output).tuning_command = 1;
+        (*pdo_output).tuning_command = TUNING_CMD_AUTO_OFFSET;
     } else if (c == KEY_BACKSPACE || c == KEY_DC || c == 127) {//discard
         wmove(wnd, (*cursor).row, 0);
         wclrtoeol(wnd);
@@ -154,13 +154,22 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     (*pdo_output).user_mosi = (*output).value; //put value in user_mosi
                 }
             } else {
-                (*pdo_output).tuning_command = ((output->mode_3 & 0xff) << 16) | ((output->mode_2 & 0xff) << 8) | (output->mode_1 & 0xff); //put mode_3, and mode_2, mode_1 in tuning_command
-                (*pdo_output).user_mosi = (*output).value; //put value in user_mosi
+//                (*pdo_output).tuning_command = ((output->mode_3 & 0xff) << 16) | ((output->mode_2 & 0xff) << 8) | (output->mode_1 & 0xff); //put mode_3, and mode_2, mode_1 in tuning_command
+//                (*pdo_output).user_mosi = (*output).value; //put value in user_mosi
+            }
+
+            if (output->mode_1 == '@' && output->value) {
+                pdo_output->target_torque = output->value;
+            }
+
+            if (output->mode_1 == 'e' && output->mode_2 == 't' && output->value == 1) {
+                pdo_output->tuning_command = TUNING_CMD_CONTROL_TORQUE;
+                pdo_output->target_torque = 0;
             }
 
             //if last command was 0 send emergency stop
             if ((*output).value == 0 && (*output).mode_1 == '@') {
-                (*pdo_output).tuning_command = 'e';
+                (*pdo_output).tuning_command = TUNING_CMD_CONTROL_DISABLE;
                 (*pdo_output).user_mosi = 0;
             }
             (*output).last_command = (*output).mode_1;

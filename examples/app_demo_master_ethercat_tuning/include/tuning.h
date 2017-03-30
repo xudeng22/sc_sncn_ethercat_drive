@@ -15,6 +15,39 @@
 #define HELP_ROW_COUNT 12
 
 typedef enum {
+    TUNING_CMD_AUTO_OFFSET                = 0x01,
+    TUNING_CMD_BRAKE                      = 0x02,
+    TUNING_CMD_SAFE_TORQUE                = 0x03,
+    TUNING_CMD_ZERO_POSITION              = 0x04,
+    TUNING_CMD_SET_MULTITURN              = 0x05,
+    TUNING_CMD_FAULT_RESET                = 0x06,
+    TUNING_CMD_CONTROL_DISABLE            = 0x07,
+    TUNING_CMD_CONTROL_POSITION           = 0x08,
+    TUNING_CMD_CONTROL_VELOCITY           = 0x09,
+    TUNING_CMD_CONTROL_TORQUE             = 0x0A,
+    TUNING_CMD_POSITION_KP                = 0xC0,
+    TUNING_CMD_POSITION_KI                = 0xC1,
+    TUNING_CMD_POSITION_KD                = 0xC2,
+    TUNING_CMD_POSITION_I_LIM             = 0xC3,
+    TUNING_CMD_MOMENT_INERTIA             = 0xC4,
+    TUNING_CMD_POSITION_PROFILER          = 0xC5,
+    TUNING_CMD_VELOCITY_KP                = 0xC6,
+    TUNING_CMD_VELOCITY_KI                = 0xC7,
+    TUNING_CMD_VELOCITY_KD                = 0xC8,
+    TUNING_CMD_VELOCITY_I_LIM             = 0xC9,
+    TUNING_CMD_MAX_SPEED                  = 0xCA,
+    TUNING_CMD_MAX_POSITION               = 0xCB,
+    TUNING_CMD_MIN_POSITION               = 0xCC,
+    TUNING_CMD_BRAKE_RELEASE_STRATEGY     = 0xCD,
+    TUNING_CMD_POLARITY_MOTION            = 0xCE,
+    TUNING_CMD_MAX_TORQUE                 = 0xE0,
+    TUNING_CMD_POLARITY_SENSOR            = 0x90,
+    TUNING_CMD_POLE_PAIRS                 = 0xB0,
+    TUNING_CMD_OFFSET                     = 0xA0,
+    TUNING_CMD_PHASES_INVERTED            = 0xA1
+} TuningCommands;
+
+typedef enum {
     TUNING_MOTORCTRL_OFF= 0,
     TUNING_MOTORCTRL_TORQUE= 1,
     TUNING_MOTORCTRL_POSITION= 2,

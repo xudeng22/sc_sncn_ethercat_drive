@@ -297,7 +297,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.velocity_integral_limit = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
 
     /* Brake control settings */
-    position_config.special_brake_release = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY);
+    position_config.brake_release_strategy = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY);
     position_config.brake_shutdown_delay  = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY);
     position_config.dc_bus_voltage        = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     position_config.pull_brake_voltage    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE);
@@ -527,7 +527,7 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT, position_config.velocity_integral_limit);
 
     /* Brake control settings */
-    i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY, position_config.special_brake_release);
+    i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY, position_config.brake_release_strategy);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY, position_config.brake_shutdown_delay);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, position_config.dc_bus_voltage);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE, position_config.pull_brake_voltage);

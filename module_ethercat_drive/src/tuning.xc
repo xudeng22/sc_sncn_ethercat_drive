@@ -72,7 +72,7 @@ int tuning_handler_ethercat(
             sensor_polarity = 0;
         }
         int brake_release_strategy = 0;
-        if (motion_ctrl_config.special_brake_release == 1) {
+        if (motion_ctrl_config.brake_release_strategy == 1) {
             brake_release_strategy = 1;
         }
         user_miso = (tuning_mode_state.motorctrl_status<<3)+(sensor_polarity<<2)+(motion_polarity<<1)+tuning_mode_state.brake_flag;
@@ -136,8 +136,8 @@ int tuning_handler_ethercat(
     case 16: //fault code
         user_miso = upstream_control_data.error_status;
         break;
-    case 17: //special_brake_release
-        user_miso = motion_ctrl_config.special_brake_release;
+    case 17: //brake_release_strategy
+        user_miso = motion_ctrl_config.brake_release_strategy;
         break;
     default: //sensor error
         user_miso = upstream_control_data.sensor_error;
@@ -508,7 +508,7 @@ void tuning_command_handler(
         switch(tuning_mode_state.mode_2) {
         case 's': //toggle special brake release
             motion_ctrl_config = i_position_control.get_position_velocity_control_config();
-            motion_ctrl_config.special_brake_release = tuning_mode_state.value;
+            motion_ctrl_config.brake_release_strategy = tuning_mode_state.value;
             i_position_control.set_position_velocity_control_config(motion_ctrl_config);
             break;
         default:

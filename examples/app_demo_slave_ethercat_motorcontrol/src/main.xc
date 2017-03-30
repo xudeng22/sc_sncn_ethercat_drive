@@ -141,7 +141,7 @@ int main(void)
                     motion_ctrl_config.velocity_kd =                          VELOCITY_Kd;
                     motion_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
 
-                    motion_ctrl_config.special_brake_release =                ENABLE_SHAKE_BRAKE;
+                    motion_ctrl_config.brake_release_strategy =                BRAKE_RELEASE_STRATEGY;
                     motion_ctrl_config.brake_shutdown_delay =                 BRAKE_SHUTDOWN_DELAY;
 
                     motion_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;

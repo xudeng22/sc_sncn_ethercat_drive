@@ -9,12 +9,58 @@
 #include "canod_constants.h"
 #include "canod.h"
 
-#define MAX_PDO_BUFFER_SIZE    15
+#define CANOPEN_WRITE_PDO_IN_OD
 
 enum {
     READ_FROM_OD = 0,
     WRITE_TO_OD = 1,
 };
+
+typedef struct pdo_mapping_t
+{
+    uint16_t pdo_mapping_index[10];
+    uint8_t pdo_mapping_subindex[10];
+    uint16_t od_struct_index[10];
+    uint8_t pdo_mapping_datalength[10]; // in bit
+
+
+} pdo_mapping_t;
+
+pdo_mapping_t pdo_map_tx[6];
+pdo_mapping_t pdo_map_rx[4];
+
+/**
+ * @brief Save PDO index in struct for fast OD access without search.
+ * @param[in] pdo_mapping_address Either 0x1600 or 0x1A00 for Tx/Rx PDOs
+ * @param[out] pdo_map  Struct for Rx or Tx PDO OD data.
+ */
+void pdo_init_mapping_struct(unsigned pdo_mapping_address, pdo_mapping_t pdo_map[])
+{
+    unsigned error = 0, pdo_num = 0, value = 0, pdo_entries = 0, bitlength = 0, od_index;
+
+    while (!error)
+    {
+        error = canod_get_entry(pdo_mapping_address + pdo_num, 0, value, bitlength);
+        if (error) break;
+
+        pdo_entries = value;
+
+        for (int i = 0; i < pdo_entries; i++)
+        {
+            error = canod_get_entry(pdo_mapping_address + pdo_num, i+1, value, bitlength);
+            if (error) break;
+
+            pdo_map[pdo_num].pdo_mapping_index[i] = (value >> 16) & 0xffff;
+            pdo_map[pdo_num].pdo_mapping_subindex[i] = (value >> 8) & 0xff;
+            pdo_map[pdo_num].pdo_mapping_datalength[i] = (value & 0xff);
+            {od_index, error} = canod_find_index(pdo_map[pdo_num].pdo_mapping_index[i], pdo_map[pdo_num].pdo_mapping_subindex[i]);
+            if (error) break;
+            pdo_map[pdo_num].od_struct_index[i] = od_index;
+        }
+
+        pdo_num++;
+    }
+}
 
 pdo_values_t pdo_init_data(void)
 {
@@ -57,77 +103,11 @@ pdo_values_t pdo_init_data(void)
     inout.digital_input4       = 0x0;
     inout.user_miso         = 0x0;
 
+    pdo_init_mapping_struct(TPDO_MAPPING_PARAMETER, pdo_map_tx);
+    pdo_init_mapping_struct(RPDO_MAPPING_PARAMETER, pdo_map_rx);
+
 	return inout;
 }
-
-char pdo_read_write_data_od(int index, char data_buffer[], char write)
-{
-    int address = 0;
-    char count = 0,
-        no_of_entries = 0,
-        sub_index = 0,
-        data_length = 0,
-        data_counter = 0;
-    unsigned bitlength = 0,
-            entries = 0,
-            value;
-
-    canod_get_entry(index, 0, entries, bitlength);
-    no_of_entries = entries & 0xff;
-
-    while(count != no_of_entries)
-    {
-        canod_get_entry(index, count + 1, entries, bitlength);
-        address = (entries >> 16) & 0xffff;
-        sub_index = (entries >> 8) & 0xff;
-        data_length = (entries & 0xff)/8;
-        count++;
-
-        if (write) {
-            for (unsigned i = 0; i < data_length; i++) {
-                value |= (unsigned) (data_buffer[data_counter + i] << (8*i) );
-            }
-            canod_set_entry(address, sub_index, value, 1);
-        } else {
-            canod_get_entry(address, sub_index, value, bitlength);
-            for (unsigned i = 0; i < data_length; i++) {
-                data_buffer[data_counter + i] = (value >> (8*i) ) & 0xff;
-            }
-        }
-        data_counter += data_length;
-    }
-    return data_counter;
-}
-
-//char pdo_read_data_from_od(unsigned address, char data_buffer[8])
-//{
-//    int index = 0,
-//        temp_index = 0;
-//    char entries[4], count = 0, no_of_entries, sub_index, data_length,
-//    data_counter = 0;
-//    char error = 0, bitlength = 0;
-//
-//    index = canod_find_index(address, 0);
-//    canod_get_entry(index, (entries, unsigned), bitlength);
-//    no_of_entries = entries[0];
-//
-//    while(count != no_of_entries)
-//    {
-//        canod_get_entry(index + count + 1, (entries, unsigned), bitlength);
-//        address = (entries[2]) | (entries[3] << 8);
-//        sub_index = entries[1];
-//        data_length = entries[0];
-//        count++;
-//
-//        temp_index = i_co.od_find_index(mapping_parameter, sub_index);
-//
-//        if (temp_index != -1) {
-//            canod_get_entry(temp_index, &data_buffer[(int)data_counter], bitlength);
-//        }
-//        data_counter += data_length/8;
-//    }
-//    return (data_counter);
-//}
 
 void pdo_exchange(pdo_values_t &inout, pdo_values_t pdo_out, pdo_values_t &pdo_in)
 {
@@ -266,16 +246,27 @@ void pdo_decode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t &ino
             inout.controlword = buffer[1] << 8 | buffer[0];
             inout.op_mode = buffer[2];
             inout.target_torque = buffer[4] << 8 | buffer[3];
-            //pdo_read_write_data_od((RPDO_COMMUNICATION_PARAMETER + pdo_number), (value, char[]), WRITE_TO_OD);
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[0], inout.controlword, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[1], inout.op_mode, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[2], inout.target_torque, 1);
+#endif
             break;
         case 1:
             inout.target_position = buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
             inout.target_velocity = buffer[7] << 24 | buffer[6] << 16 | buffer[5] << 8 | buffer[4];
-            //pdo_read_write_data_od(RPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[0], inout.target_position, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[1], inout.target_velocity, 1);
+#endif
             break;
         case 2:
             inout.offset_torque = buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
             inout.tuning_command = buffer[7] << 24 | buffer[6] << 16 | buffer[5] << 8 | buffer[4];
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[0], inout.offset_torque, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[1], inout.tuning_command, 1);
+#endif
             break;
         case 3:
             inout.digital_output1 = buffer[0];
@@ -283,6 +274,13 @@ void pdo_decode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t &ino
             inout.digital_output3 = buffer[2];
             inout.digital_output4 = buffer[3];
             inout.user_mosi = buffer[7] << 24 | buffer[6] << 16 | buffer[5] << 8 | buffer[4];
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[0], inout.digital_output1, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[1], inout.digital_output2, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[2], inout.digital_output3, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[3], inout.digital_output4, 1);
+            canod_set_entry_fast(pdo_map_rx[pdo_number].od_struct_index[4], inout.user_mosi, 1);
+#endif
             break;
         default:
             break;
@@ -296,15 +294,23 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
     switch (pdo_number)
     {
         case 0:
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[0], inout.statusword, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.op_mode_display, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[2], inout.actual_torque, 1);
+#endif
             buffer[0] = inout.statusword;
             buffer[1] = inout.statusword >> 8;
             buffer[2] = inout.op_mode_display;
             buffer[3] = inout.actual_torque & 0xff;
             buffer[4] = (inout.actual_torque >> 8) & 0xff;
             data_length = 5;
-            //data_length = pdo_read_write_data_od((TPDO_COMMUNICATION_PARAMETER + pdo_number), (value, char[]), WRITE_TO_OD);
             break;
         case 1:
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[0], inout.actual_position, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.actual_velocity, 1);
+#endif
             buffer[0] = inout.actual_position & 0xff;
             buffer[1] = (inout.actual_position >> 8) & 0xff;
             buffer[2] = (inout.actual_position >> 16) & 0xff;
@@ -314,9 +320,12 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
             buffer[6] = (inout.actual_velocity >> 16) & 0xff;
             buffer[7] = (inout.actual_velocity >> 24) & 0xff;
             data_length = 8;
-            //data_length = pdo_read_write_data_od(TPDO_0_COMMUNICATION_PARAMETER + pdo_number, (value, char[]), WRITE_TO_OD);
             break;
         case 2:
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[0], inout.secondary_position_value, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.secondary_velocity_value, 1);
+#endif
             buffer[0] = inout.secondary_position_value;
             buffer[1] = inout.secondary_position_value >> 8;
             buffer[2] = inout.secondary_position_value >> 16;
@@ -328,6 +337,12 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
             data_length = 8;
             break;
         case 3:
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[0], inout.analog_input1, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.analog_input2, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[2], inout.analog_input3, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[3], inout.analog_input4, 1);
+#endif
             buffer[0] = inout.analog_input1;
             buffer[1] = inout.analog_input1 >> 8;
             buffer[2] = inout.analog_input2;
@@ -339,6 +354,10 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
             data_length = 8;
             break;
         case 4:
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[0], inout.tuning_status, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.user_miso, 1);
+#endif
             buffer[0] = inout.tuning_status;
             buffer[1] = inout.tuning_status >> 8;
             buffer[2] = inout.tuning_status >> 16;
@@ -350,6 +369,12 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
             data_length = 8;
             break;
         case 5:
+#ifdef CANOPEN_WRITE_PDO_IN_OD
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[0], inout.digital_input1, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.digital_input2, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[2], inout.digital_input3, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[3], inout.digital_input4, 1);
+#endif
             buffer[0] = inout.digital_input1;
             buffer[1] = inout.digital_input2;
             buffer[2] = inout.digital_input3;

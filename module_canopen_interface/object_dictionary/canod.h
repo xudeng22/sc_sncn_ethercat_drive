@@ -23,19 +23,6 @@ struct _sdoinfo_service {
  * the best matching OD area would be at index 0x200-0x5fff (manufacturer specific profile area
  */
 
-/** entry description structure */
-//struct _sdoinfo_entry_description {
-//	unsigned index; ///< 16 bit int should be sufficient
-//	unsigned subindex; ///< 16 bit int should be sufficient
-//	unsigned objectDataType;
-//	unsigned dataType;
-//	unsigned char objectCode;
-//	unsigned bitLength;
-//	unsigned objectAccess;
-//	unsigned value; ///< real data type is defined by .dataType
-//	unsigned char name[50];
-//};
-
 /* ad valueInfo (BYTE):
  * Bit 0 - 2: reserved
  * Bit 3: unit type
@@ -62,7 +49,22 @@ struct _sdoinfo_service {
  * bit 16-32: index of the mapped object
  */
 
+/**
+ * @brief Get OD struct index of OD entry.
+ * @param[in]   Index   OD Index
+ * @param[in]   Subindex   OD Subindex
+ * @return OD struct index, Error
+ */
+{unsigned, unsigned} canod_find_index(uint16_t index, uint8_t subindex);
+
+/**
+ * @brief Get OD value length in Byte.
+ * @param[in]   Index   OD Index
+ * @param[in]   Subindex   OD Subindex
+ * @return Datalength, Error
+ */
 {int, unsigned} canod_find_data_length(uint16_t index, uint8_t subindex);
+
 /**
  * Return the length of all five cathegories
  */
@@ -89,29 +91,54 @@ int canod_get_object_description(struct _sdoinfo_entry_description &obj, uint16_
 int canod_get_entry_description(uint16_t index, uint8_t subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc);
 
 /**
- * Get OD entry values
+ * @brief Get OD entry values
  *
- * @param index
- * @param subindex
- * @param &value     read the values from this array from the object dictionary.
- * @param &type      the type of &value
+ * @param[in] index
+ * @param[in] subindex
+ * @param[out] &value     read the values from this array from the object dictionary.
+ * @param[out] &bitlength      bitlength of value
  * @return 0 on success
  */
-int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &type);
+int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &bitlength);
 
 /**
- * Set OD entry values
+ * @brief Get OD entry values fast without searching
  *
- * @note This function is currently unused.
+ * @param[in] index     Direct index for OD array (For PDOs)
+ * @param[out] &value     read the values from this array from the object dictionary.
+ * @param[out] &bitlength      bitlength of value
+ * @return 0 on success
+ */
+int canod_get_entry_fast(uint16_t od_index, unsigned &value, unsigned &bitlength);
+
+/**
+ * @brief Set OD entry values
  *
- * @param index
- * @param subindex
- * @param value     write the values from this array to the object dictionary.
- * @param type      the type of &value
+ * @param[in] index
+ * @param[in] subindex
+ * @param[in] value     write the values from this array to the object dictionary.
+ * @param[in] intern    Access flag for intern or extern access
  * @return 0 on success
  */
 int canod_set_entry(uint16_t index, uint8_t subindex, unsigned value, unsigned intern);
 
+/**
+ * @brief Set OD entry values fast without searching
+ *
+ * @param[in] index     Direct index for OD array (For PDOs)
+ * @param[in] value     read the values from this array from the object dictionary.
+ * @param[in] intern    Access flag for intern or extern access
+ * @return 0 on success
+ */
+int canod_set_entry_fast(uint16_t od_index, unsigned value, unsigned intern);
+
+/**
+ * @brief Get Access type for entry.
+ *
+ * @param[in] index     Direct index for OD array (For PDOs)
+ * @param[in] subindex
+ * @return Access type, Error
+ */
 {unsigned char, unsigned} canod_get_access(uint16_t index, uint8_t subindex);
 
 #endif /* CANOD_H */

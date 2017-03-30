@@ -69,7 +69,9 @@ static int get_maxvalue(unsigned datatype)
 
     // Return previously searched OD index, if entry is the same.
     if ( (index == old_index) && (subindex == old_subindex) )
+    {
         return {old_od_index, 0};
+    }
 
     old_index = index;
     old_subindex = subindex;
@@ -256,9 +258,12 @@ static int canod_get_entry_description_lowerindex(uint16_t index, uint8_t subind
 int canod_get_entry_description(uint16_t index, uint8_t subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
 {
 	struct _sdoinfo_entry_description entry;
-	int i,k;
+	int k;
     unsigned od_index, error = 0;
     {od_index, error} = canod_find_index(index, subindex);
+
+    if (error > 0)
+        return error;
 
 
 	if (index < 0x1000) {
@@ -340,15 +345,11 @@ int canod_get_lowerentry(uint16_t index, uint8_t subindex, unsigned &value, unsi
    return 0;
 }
 
-int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &bitlength)
+int canod_get_entry_fast(uint16_t od_index, unsigned &value, unsigned &bitlength)
 {
-	unsigned mask = 0xffffffff;
-    unsigned od_index, error = 0;
-    {od_index, error} = canod_find_index(index, subindex);
+    unsigned mask = 0xffffffff;
 
-	/* FIXME handle special subindex 0xff to request object type -> see also CiA 301 */
-
-	/* special file handling for object requests of index < 0x1000 */
+    /* special file handling for object requests of index < 0x1000 */
     if (SDO_Info_Entries[od_index].index < 0x1000) {
         return canod_get_lowerentry(SDO_Info_Entries[od_index].index,
                 SDO_Info_Entries[od_index].subindex, value, bitlength);
@@ -357,20 +358,40 @@ int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned 
     value = SDO_Info_Entries[od_index].value & (mask >> (32 - SDO_Info_Entries[od_index].bitLength) );
     bitlength = SDO_Info_Entries[od_index].bitLength; /* alternative bitLength */
 
-    return error;
+    return 0;
 }
 
-int canod_set_entry(uint16_t index, uint8_t subindex, unsigned value, unsigned intern)
+int canod_get_entry(uint16_t index, uint8_t subindex, unsigned &value, unsigned &bitlength)
 {
-	unsigned mask = 0xffffffff;
     unsigned od_index, error = 0;
     {od_index, error} = canod_find_index(index, subindex);
 
-	// TODO Find solution for access from application side
+    if (error > 0)
+        return error;
+
+    return canod_get_entry_fast(od_index, value, bitlength);
+}
+
+int canod_set_entry_fast(uint16_t od_index, unsigned value, unsigned intern)
+{
+    unsigned mask = 0xffffffff;
+    // TODO Find solution for access from application side
     if ((SDO_Info_Entries[od_index].objectAccess & 0x38) == 0 && !intern) /* object not writeable, FIXME should be distinguished according to the current state */
         return 1;
 
     SDO_Info_Entries[od_index].value = value & (mask >> (32 - SDO_Info_Entries[od_index].bitLength) );
 
-    return error;
+    return 0;
+}
+
+int canod_set_entry(uint16_t index, uint8_t subindex, unsigned value, unsigned intern)
+{
+
+    unsigned od_index, error = 0;
+    {od_index, error} = canod_find_index(index, subindex);
+
+    if (error > 0)
+        return error;
+
+    return canod_set_entry_fast(od_index, value, intern);
 }

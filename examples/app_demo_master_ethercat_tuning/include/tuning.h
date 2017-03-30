@@ -98,6 +98,8 @@ typedef struct {
     int init;
     int select;
     int debug;
+    int next_command;
+    int next_value;
     AppMode app_mode;
 } OutputValues;
 

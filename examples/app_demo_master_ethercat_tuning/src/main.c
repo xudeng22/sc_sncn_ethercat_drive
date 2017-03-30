@@ -331,9 +331,9 @@ int main(int argc, char **argv)
     InputValues input = {0};
     OutputValues output = {0};
     output.app_mode = TUNING_MODE;
-    output.mode_1 = '@';
-    output.mode_2 = '@';
-    output.mode_3 = '@';
+    output.mode_1 = 1;
+    output.mode_2 = 1;
+    output.mode_3 = 1;
     output.sign = 1;
 
     /* Init pdos */

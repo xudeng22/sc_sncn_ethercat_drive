@@ -128,7 +128,6 @@ int tuning_handler_ethercat(
     tuning_command_handler(tuning_mode_state,
             motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
             sensor_commutation, sensor_motion_control,
-            upstream_control_data, downstream_control_data,
             i_position_control, i_position_feedback_1, i_position_feedback_2);
 
 
@@ -148,8 +147,6 @@ void tuning_command_handler(
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,
         int sensor_motion_control,
-        UpstreamControlData      &upstream_control_data,
-        DownstreamControlData    &downstream_control_data,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
                 client interface PositionFeedbackInterface ?i_position_feedback_2
@@ -223,18 +220,20 @@ void tuning_command_handler(
                 }
                 break;
             case TUNING_CMD_POLE_PAIRS:
-                if (sensor_commutation == 2) {
-                    if (!isnull(i_position_feedback_2)) {
-                        pos_feedback_config_2.pole_pairs = tuning_mode_state.value;
-                        i_position_feedback_2.set_config(pos_feedback_config_2);
+                if (tuning_mode_state.value > 0) {
+                    if (sensor_commutation == 2) {
+                        if (!isnull(i_position_feedback_2)) {
+                            pos_feedback_config_2.pole_pairs = tuning_mode_state.value;
+                            i_position_feedback_2.set_config(pos_feedback_config_2);
+                        }
+                    } else {
+                        if (!isnull(i_position_feedback_1)) {
+                            pos_feedback_config_1.pole_pairs = tuning_mode_state.value;
+                            i_position_feedback_1.set_config(pos_feedback_config_1);
+                        }
                     }
-                } else {
-                    if (!isnull(i_position_feedback_1)) {
-                        pos_feedback_config_1.pole_pairs = tuning_mode_state.value;
-                        i_position_feedback_1.set_config(pos_feedback_config_1);
-                    }
+                    motorcontrol_config.pole_pairs = tuning_mode_state.value;
                 }
-                motorcontrol_config.pole_pairs = tuning_mode_state.value;
                 break;
             case TUNING_CMD_OFFSET:
                 motorcontrol_config.commutation_angle_offset = tuning_mode_state.value;
@@ -304,7 +303,10 @@ void tuning_command_handler(
 
             //set brake
             case TUNING_CMD_BRAKE:
-                i_position_control.set_brake_status(tuning_mode_state.value);
+                if (tuning_mode_state.value == 1 || tuning_mode_state.value == 0) {
+                    i_position_control.set_brake_status(tuning_mode_state.value);
+                    tuning_mode_state.brake_flag = tuning_mode_state.value;
+                }
                 break;
 
             case TUNING_CMD_SAFE_TORQUE:

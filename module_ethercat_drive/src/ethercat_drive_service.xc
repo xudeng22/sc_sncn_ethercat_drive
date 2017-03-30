@@ -438,7 +438,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
                     opmode
                     );
-
+            tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, position_velocity_config,
+                    position_feedback_config_1, position_feedback_config_2, sensor_commutation);
             read_configuration = 0;
             i_coe.configuration_done();
         }
@@ -738,6 +739,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
                 //reset tuning status
                 tuning_mode_state.brake_flag = 0;
+                tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, position_velocity_config,
+                        position_feedback_config_1, position_feedback_config_2, sensor_commutation);
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
         } else {

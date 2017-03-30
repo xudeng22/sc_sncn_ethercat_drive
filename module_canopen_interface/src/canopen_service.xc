@@ -44,19 +44,10 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                 size_out = pdo_size;
                 break;
 
-//            case i_co[int j].pdo_in(unsigned char pdo_number, uint64_t value):
-//                pdo_decode(pdo_number, value, InOut);
-//                comm_state = 1;
-//                break;
-//
-//            case i_co[int j].pdo_out(unsigned char pdo_number) -> {uint64_t value_out, char data_length}:
-//                {value_out, data_length} = pdo_encode(pdo_number, InOut);
-//                break;
-
             case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out }:
                 pdo_exchange(InOut, pdo_out, pdo_in);
                 status_out = comm_state;
-                //pdo_size = 0;
+                comm_state = 0;
                 break;
 
             case i_co[int j].pdo_init(void) -> {pdo_values_t pdo_out}:
@@ -85,10 +76,19 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
                     unsigned bitlength = 0;
                     unsigned value = 0;
-                    error_out = canod_get_entry(index_, subindex, value, bitlength);
-                    bitlength_out = bitlength;
-                    for (unsigned i = 0; i < (bitlength/8); i++) {
-                        data_buffer[i] = (value >> (i*8)) & 0xff;
+                    unsigned error = 0;
+                    error = canod_get_entry(index_, subindex, value, bitlength);
+                    if (error > 0)
+                    {
+                        error_out = error;
+                        bitlength_out = 0;
+                    }
+                    else
+                    {
+                        bitlength_out = bitlength;
+                        for (unsigned i = 0; i < (bitlength/8); i++) {
+                            data_buffer[i] = (value >> (i*8)) & 0xff;
+                        }
                     }
                     break;
 
@@ -107,7 +107,6 @@ void canopen_service(server interface i_co_communication i_co[n], unsigned n)
                         for (unsigned i = 0; i < byte_len; i++) {
                             value |= (unsigned) data_buffer[i] << (i*8);
                         }
-                        //value = (data_buffer, unsigned);
                         error_out = canod_set_entry(index_, subindex, value, 1);
                     }
                     break;

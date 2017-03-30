@@ -89,8 +89,8 @@ int main(void)
             profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
 
             profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION;
-            profiler_config.max_deceleration = MAX_ACCELERATION;
+            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
 #if 0
             ethercat_drive_service_debug( profiler_config,

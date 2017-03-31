@@ -125,6 +125,8 @@ void pdo_set_statusword(uint16_t statusword, pdo_values_t &InOut);
  */
 void pdo_set_opmode_display(int8_t opmode, pdo_values_t &InOut);
 
+int32_t pdo_get_offset_torque(pdo_values_t InOut);
+
 uint32_t pdo_get_tuning_command(pdo_values_t InOut);
 
 uint8_t pdo_get_digital_output1(pdo_values_t InOut);

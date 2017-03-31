@@ -405,6 +405,11 @@ int32_t pdo_get_target_position(pdo_values_t inout)
     return inout.target_position;
 }
 
+int32_t pdo_get_offset_torque(pdo_values_t InOut)
+{
+    return InOut.offset_torque;
+}
+
 uint16_t pdo_get_controlword(pdo_values_t inout)
 {
     return inout.controlword;
@@ -435,7 +440,7 @@ void pdo_set_statusword(uint16_t statusword, pdo_values_t &inout)
     inout.statusword = statusword & 0xffff;
 }
 
-void pdo_set_opmode_display(int8_t opmode, pdo_values_t &inout)
+void pdo_set_op_mode_display(int8_t opmode, pdo_values_t &inout)
 {
     inout.op_mode_display = opmode & 0xff;
 }

@@ -37,6 +37,7 @@ xscope.xmt
 *.xe
 *.o
 bin/
+examples/libreadsdoconfig/testreadconfig
 
 #settings directory
 .settings
@@ -49,4 +50,9 @@ bin/
 
 # ignore profiler files
 *.gprof
-/target.sh
+*.inc
+*.sh
+*.log
+record.csv
+config_motor
+

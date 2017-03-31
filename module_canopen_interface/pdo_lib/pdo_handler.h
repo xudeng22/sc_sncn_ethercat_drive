@@ -1,59 +1,39 @@
-/**
- * @file pdo_handler.h
- * @brief Control Protocol for PDOs
- * @author Synapticon GmbH <support@synapticon.com>
- */
-
 #pragma once
 
 #include <print.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include "co_interface.h"
-//#include <canod.h>
-
-#define PDO_BYTES_SIZE 30
-#define PDO_WORDS_SIZE 15
-
-#define PDO_BUFFER_SIZE    64
 
 /**
-* @brief Control word to request PDO data.
-*/
-#define DATA_REQUEST     1
-
-
-
-/**
- * @brief
- *  This function receives channel communication from the ctrlproto_pdo_handler_thread
- *  It updates the referenced values according to the command and has to be placed
- *  inside the control loop.
- *
- *  This function is not considered as stand alone thread! It's for being executed in
- *  the motor control thread
- *
- * @param pdo_out       Channel for outgoing process data objects
- * @param pdo_in        Channel for incoming process data objects
- * @param InOut         Struct for exchanging data with the motor control functions
- *
- * @return      1 if communication is active else 0
+ * @brief Writes PDOs from struct into sending buffer.
+ * @param[in] pdo_number    PDO number
+ * @param[out] buffer       Sending buffer
+ * @param[in] InOut         PDO struct
+ * @return  Datalength in Byte
  */
-//int pdo_protocol_handler(client interface PDOCommunicationInterface i_pdo, pdo_values_t &InOut);
-void pdo_protocol_handler(pdo_size_t buffer[], pdo_values_t &InOut);
-
-//void pdo_encode_buffer(pdo_size_t buffer[], pdo_values_t InOut);
-//void pdo_decode_buffer(pdo_size_t buffer[], pdo_values_t &InOut);
-
 char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t InOut);
+
+/**
+ * @brief Writes PDOs from sending buffer into struct.
+ * @param[in] pdo_number    PDO number
+ * @param[in] buffer       Sending buffer
+ * @param[out] InOut         PDO struct
+ */
 void pdo_decode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t &InOut);
 
-void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_in);
 /**
- *  @brief
- *       This function initializes a struct from the type of pdo_values_t
+ * @brief Writes out going PDOs from pdo_out in InOut; reads in going PDOs from InOut into pdo_in
+ * @param[in,out] InOut     PDO struct from CANopen Interface Service.
+ * @param[in] pdo_out       PDO struct, which contains new updated values from app to master
+ * @param[out] pdo_in       PDO struct, which contains new updated values from master to app
+ */
+void pdo_exchange(pdo_values_t &InOut, pdo_values_t pdo_out, pdo_values_t &pdo_in);
+
+/**
+ *  @brief This function initializes a struct from the type of pdo_values_t
  *
- *      \return pdo_values_t with values initialized
+ * @return pdo_values_t with values initialized
  */
 pdo_values_t pdo_init_data(void);
 
@@ -64,7 +44,7 @@ pdo_values_t pdo_init_data(void);
  *
  * @return target torque from EtherCAT in range [0 - mNm * Current Resolution]
  */
-int pdo_get_target_torque(pdo_values_t InOut);
+int16_t pdo_get_target_torque(pdo_values_t InOut);
 
 /**
  * @brief Get target velocity from EtherCAT
@@ -73,7 +53,7 @@ int pdo_get_target_torque(pdo_values_t InOut);
  *
  * @return target velocity from EtherCAT in rpm
  */
-int pdo_get_target_velocity(pdo_values_t InOut);
+int32_t pdo_get_target_velocity(pdo_values_t InOut);
 
 /**
  * @brief Get target position from EtherCAT
@@ -82,7 +62,7 @@ int pdo_get_target_velocity(pdo_values_t InOut);
  *
  * @return target position from EtherCAT in ticks
  */
-int pdo_get_target_position(pdo_values_t InOut);
+int32_t pdo_get_target_position(pdo_values_t InOut);
 
 /**
  * @brief Get the current controlword
@@ -90,7 +70,7 @@ int pdo_get_target_position(pdo_values_t InOut);
  * @param PDO object
  * @return current controlword
  */
-int pdo_get_controlword(pdo_values_t InOut);
+uint16_t pdo_get_controlword(pdo_values_t InOut);
 
 /**
  * @brief Get current operation mode request
@@ -103,7 +83,7 @@ int pdo_get_controlword(pdo_values_t InOut);
  * @param PDO object
  * @return current operation mode request
  */
-int pdo_get_opmode(pdo_values_t InOut);
+int8_t pdo_get_op_mode(pdo_values_t InOut);
 
 /**
  * @brief Send actual torque to EtherCAT
@@ -111,7 +91,7 @@ int pdo_get_opmode(pdo_values_t InOut);
  * @param[in] actual_torque sent to EtherCAT in range [0 - mNm * Current Resolution]
  * @param InOut Structure containing all PDO data
  */
-void pdo_set_torque_value(int actual_torque, pdo_values_t &InOut);
+void pdo_set_torque_value(int16_t actual_torque, pdo_values_t &InOut);
 
 /**
  * @brief Send actual velocity to EtherCAT
@@ -119,7 +99,7 @@ void pdo_set_torque_value(int actual_torque, pdo_values_t &InOut);
  * @param[in] actual_velocity sent to EtherCAT in rpm
  * @param InOut Structure containing all PDO data
  */
-void pdo_set_velocity_value(int actual_velocity, pdo_values_t &InOut);
+void pdo_set_velocity_value(int32_t actual_velocity, pdo_values_t &InOut);
 
 /**
  * @brief Send actual position to EtherCAT
@@ -127,7 +107,7 @@ void pdo_set_velocity_value(int actual_velocity, pdo_values_t &InOut);
  * @param[in] actual_position sent to EtherCAT in ticks
  * @param InOut Structure containing all PDO data
  */
-void pdo_set_position_value(int actual_position, pdo_values_t &InOut);
+void pdo_set_position_value(int32_t actual_position, pdo_values_t &InOut);
 
 /**
  * @brief Send the current status
@@ -135,7 +115,7 @@ void pdo_set_position_value(int actual_position, pdo_values_t &InOut);
  * @param statusword  the current statusword
  * @param InOut PDO object
  */
-void pdo_set_statusword(int statusword, pdo_values_t &InOut);
+void pdo_set_statusword(uint16_t statusword, pdo_values_t &InOut);
 
 /**
  * @brief Send to currently active operation mode
@@ -143,25 +123,46 @@ void pdo_set_statusword(int statusword, pdo_values_t &InOut);
  * @param opmode the currently active operation mode
  * @param InOut PDO object
  */
-void pdo_set_opmode_display(int opmode, pdo_values_t &InOut);
+void pdo_set_opmode_display(int8_t opmode, pdo_values_t &InOut);
 
-int pdo_get_offset_torque(pdo_values_t &InOut);
-int pdo_get_tuning_command(pdo_values_t &InOut);
-int pdo_get_dgitial_output1(pdo_values_t &InOut);
-int pdo_get_dgitial_output2(pdo_values_t &InOut);
-int pdo_get_dgitial_output3(pdo_values_t &InOut);
-int pdo_get_dgitial_output4(pdo_values_t &InOut);
-int pdo_get_user_mosi(pdo_values_t &InOut);
+uint32_t pdo_get_tuning_command(pdo_values_t InOut);
 
-void pdo_set_secondary_position_value(int value, pdo_values_t &InOut);
-void pdo_set_secondary_velocity_value(int value, pdo_values_t &InOut);
-void pdo_set_analog_input1(int value, pdo_values_t &InOut);
-void pdo_set_analog_input2(int value, pdo_values_t &InOut);
-void pdo_set_analog_input3(int value, pdo_values_t &InOut);
-void pdo_set_analog_input4(int value, pdo_values_t &InOut);
-void pdo_set_tuning_status(int value, pdo_values_t &InOut);
-void pdo_set_digital_input1(int value, pdo_values_t &InOut);
-void pdo_set_digital_input2(int value, pdo_values_t &InOut);
-void pdo_set_digital_input3(int value, pdo_values_t &InOut);
-void pdo_set_digital_input4(int value, pdo_values_t &InOut);
-void pdo_set_user_miso(int value, pdo_values_t &InOut);
+uint8_t pdo_get_digital_output1(pdo_values_t InOut);
+
+uint8_t pdo_get_digital_output2(pdo_values_t InOut);
+
+uint8_t pdo_get_digital_output3(pdo_values_t InOut);
+
+uint8_t pdo_get_digital_output4(pdo_values_t InOut);
+
+uint32_t pdo_get_user_mosi(pdo_values_t InOut);
+
+void pdo_set_statusword(uint16_t value, pdo_values_t &InOut);
+
+void pdo_set_op_mode_display(int8_t value, pdo_values_t &InOut);
+
+void pdo_set_secondary_position_value(int32_t value, pdo_values_t &InOut);
+
+void pdo_set_secondary_velocity_value(int32_t value, pdo_values_t &InOut);
+
+void pdo_set_analog_input1(uint16_t value, pdo_values_t &InOut);
+
+void pdo_set_analog_input2(uint16_t value, pdo_values_t &InOut);
+
+void pdo_set_analog_input3(uint16_t value, pdo_values_t &InOut);
+
+void pdo_set_analog_input4(uint16_t value, pdo_values_t &InOut);
+
+void pdo_set_tuning_status(uint32_t value, pdo_values_t &InOut);
+
+void pdo_set_digital_input1(uint8_t value, pdo_values_t &InOut);
+
+void pdo_set_digital_input2(uint8_t value, pdo_values_t &InOut);
+
+void pdo_set_digital_input3(uint8_t value, pdo_values_t &InOut);
+
+void pdo_set_digital_input4(uint8_t value, pdo_values_t &InOut);
+
+void pdo_set_user_miso(uint32_t value, pdo_values_t &InOut);
+
+void pdo_set_timestamp(uint32_t value, pdo_values_t &InOut);

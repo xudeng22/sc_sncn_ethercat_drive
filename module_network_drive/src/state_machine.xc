@@ -6,7 +6,6 @@
 
 #include <statemachine.h>
 #include <state_modes.h>
-#include <motor_control_structures.h>
 #include <motion_control_service.h>
 #include <mc_internal_constants.h>
 
@@ -305,16 +304,37 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
     return out_state;
 }
 
-int8_t update_opmode(int8_t opmode_request)
+
+int8_t update_opmode(int8_t opmode, int8_t opmode_request,
+        client interface PositionVelocityCtrlInterface i_motion_control,
+        MotionControlConfig &motion_control_config,
+        uint8_t polarity)
 {
-    switch(opmode_request) {
-    case OPMODE_NONE:
-    case OPMODE_CSP:
-    case OPMODE_CSV:
-    case OPMODE_CST:
-    case OPMODE_SNCN_TUNING:
+    if (opmode != opmode_request) {
+        motion_control_config = i_motion_control.get_position_velocity_control_config();
+        motion_control_config.polarity = MOTION_POLARITY_NORMAL;
+        switch(opmode_request) {
+        case OPMODE_NONE:
+        case OPMODE_CST:
+        case OPMODE_SNCN_TUNING:
+            break;
+        //for CSP and CSV we also check the polarity object DICT_POLARITY (0x607E)
+        case OPMODE_CSP:
+            if (polarity & MOTION_POLARITY_POSITION) {
+                motion_control_config.polarity = MOTION_POLARITY_INVERTED;
+            }
+            break;
+        case OPMODE_CSV:
+            if (polarity & MOTION_POLARITY_VELOCITY) {
+                motion_control_config.polarity = MOTION_POLARITY_INVERTED;
+            }
+            break;
+        default:
+            opmode_request = OPMODE_NONE;
+            break;
+        }
+        i_motion_control.set_position_velocity_control_config(motion_control_config);
         return opmode_request;
-    default:
-        return OPMODE_NONE;
     }
+    return opmode;
 }

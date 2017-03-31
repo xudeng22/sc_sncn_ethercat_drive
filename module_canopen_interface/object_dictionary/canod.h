@@ -4,7 +4,7 @@
  * @brief Functions to handle CAN object dictionary
  */
 
-#include "canod_constants.h"
+#include "dictionary_symbols.h"
 #include "co_interface.h"
 
 #ifndef CANOD_H

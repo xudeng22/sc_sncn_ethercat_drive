@@ -55,9 +55,9 @@ typedef struct
     uint32_t user_mosi;
     uint16_t statusword;
     int8_t op_mode_display;
-    int32_t actual_position;
-    int32_t actual_velocity;
-    int16_t actual_torque;
+    int32_t position_value;
+    int32_t velocity_value;
+    int16_t torque_value;
     int32_t secondary_position_value;
     int32_t secondary_velocity_value;
     uint16_t analog_input1;
@@ -70,10 +70,11 @@ typedef struct
     uint8_t digital_input3;
     uint8_t digital_input4;
     uint32_t user_miso;
+    uint32_t timestamp;
 } pdo_values_t;
 
 #if COM_ETHERCAT || COM_ETHERNET
-typedef uint16_t pdo_size_t;
+typedef uint8_t pdo_size_t;
 #elif COM_CAN
 typedef uint8_t pdo_size_t;
 #endif

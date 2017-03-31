@@ -9,7 +9,7 @@ RM = rm -f
 RMDIR = rm -f -d
 
 CFLAGS = -g -Wall -Wextra  -O0 -std=c99 -static
-LDFLAGS = -static
+LDFLAGS = -g -Wall -Wextra
 
 #
 # Include and Library paths
@@ -17,7 +17,7 @@ LDFLAGS = -static
 
 LIB_DIRS += -L $(ETHERCAT_MASTER_INSTALLDIR)/lib
 
-LIBS += -lsncnecat -lethercat -lm
+LIBS += -Wl,-Bstatic -lethercat_wrapper -lethercat -lm -Wl,-Bdynamic  -lncurses
 
 INCLUDE_DIRS += -I $(ETHERCAT_MASTER_INSTALLDIR)/include
 

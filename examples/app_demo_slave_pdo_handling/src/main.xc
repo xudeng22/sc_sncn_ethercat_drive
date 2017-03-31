@@ -13,6 +13,7 @@
 
 #include <reboot.h>
 
+#define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
@@ -50,6 +51,7 @@ static void sdo_configuration(client interface i_co_communication i_co)
 /* Test application handling pdos from EtherCat */
 static void pdo_service(client interface i_co_communication i_co)
 {
+<<<<<<< HEAD
 	timer t;
 
 	unsigned int delay = 100000;
@@ -158,17 +160,80 @@ static void pdo_service(client interface i_co_communication i_co)
 	       printintln(InOut.user4_in);
 	   }
 #endif
+=======
+    timer t;
 
-	   InOutOld.user1_in        = InOut.user1_in;
-	   InOutOld.user2_in        = InOut.user2_in;
-	   InOutOld.user3_in        = InOut.user3_in;
-	   InOutOld.user4_in        = InOut.user4_in;
+    unsigned int delay = 100000;
+    unsigned int time = 0;
+    unsigned int analog_value = 0;
 
-	   t when timerafter(time+delay) :> time;
-	}
+    pdo_handler_values_t InOut = {0};
+    pdo_handler_values_t InOutOld = {0};
+    t :> time;
 
-}
+    sdo_configuration(i_coe);
 
+    printstrln("Starting PDO protocol");
+    while(1)
+    {
+        pdo_handler(i_pdo, InOut);
+
+        /* Mirror incomimng value to the output */
+        InOut.position_value  = InOut.target_position;
+        InOut.torque_value    = InOut.target_torque;
+        InOut.velocity_value  = InOut.target_velocity;
+        InOut.statusword      = InOut.controlword;
+        InOut.op_mode_display = InOut.op_mode;
+
+        InOut.tuning_status            = InOut.tuning_command;
+        InOut.user_miso                = InOut.user_mosi;
+        InOut.secondary_position_value = InOut.offset_torque;
+        InOut.secondary_velocity_value = ~InOut.offset_torque;
+
+        /* mirror digital inputs */
+        InOut.digital_input1 = InOut.digital_output1;
+        InOut.digital_input2 = InOut.digital_output2;
+        InOut.digital_input3 = InOut.digital_output3;
+        InOut.digital_input4 = InOut.digital_output4;
+
+        /* increment analog values */
+        InOut.analog_input1 = analog_value + 1000;
+        InOut.analog_input2 = analog_value + 2000;
+        InOut.analog_input3 = analog_value + 3000;
+        InOut.analog_input4 = analog_value + 4000;
+
+        analog_value = analog_value >= 1000 ? 0 : analog_value + 1;
+
+#if DEBUG_CONSOLE_PRINT == 1
+        /*
+         * Print updated values to the console
+         */
+        if(InOutOld.controlword != InOut.controlword)
+        {
+            printstr("\nMotor: ");
+            printintln(InOut.controlword);
+        }
+>>>>>>> develop
+
+        if(InOutOld.op_mode != InOut.op_mode )
+        {
+            printstr("\nOperation mode: ");
+            printintln(InOut.op_mode);
+        }
+
+        if(InOutOld.target_position != InOut.target_position)
+        {
+            printstr("\nPosition: ");
+            printintln(InOut.target_position);
+        }
+
+        if(InOutOld.target_velocity != InOut.target_velocity)
+        {
+            printstr("\nSpeed: ");
+            printintln(InOut.target_velocity);
+        }
+
+<<<<<<< HEAD
 /* DEBUG output to check the values of the objects in the object dictionary */
 
 /* list of OD objects, excluding PDO mapped and device specific objects */
@@ -244,34 +309,91 @@ static void read_od_config(client interface i_co_communication i_co)
     /* Read the values of hand picked objects */
     uint32_t value    = 0;
     uint8_t error = 0;
+=======
+        if(InOutOld.target_torque != InOut.target_torque )
+        {
+            printstr("\nTorque: ");
+            printintln(InOut.target_torque);
+        }
+>>>>>>> develop
 
-    size_t object_list_size = sizeof(g_listobjects) / sizeof(g_listobjects[0]);
+        if (InOutOld.tuning_command != InOut.tuning_command)
+        {
+            printstr("Tuning Status Data: ");
+            printhexln(InOut.tuning_status);
+        }
 
+<<<<<<< HEAD
     for (size_t i = 0; i < object_list_size; i++) {
         {value, void, error} = i_co.get_object_value(g_listobjects[i], 0);
         printstr("Object 0x"); printhex(g_listobjects[i]); printstr(" = "); printintln(value);
     }
+=======
+        if (InOutOld.digital_output1 != InOut.digital_output1) {
+            printstr("Digital output 1 = ");
+            printintln(InOut.digital_output1);
+        }
 
-    object_list_size = sizeof(g_listarrayobjects) / sizeof(g_listarrayobjects[0]);
+        if (InOutOld.digital_output2 != InOut.digital_output2) {
+            printstr("Digital output 2 = ");
+            printintln(InOut.digital_output2);
+        }
 
+        if (InOutOld.digital_output3 != InOut.digital_output3) {
+            printstr("Digital output 3 = ");
+            printintln(InOut.digital_output3);
+        }
+
+        if (InOutOld.digital_output4 != InOut.digital_output4) {
+            printstr("Digital output 4 = ");
+            printintln(InOut.digital_output4);
+        }
+#endif
+>>>>>>> develop
+
+        /*
+         *  Update the local stored structure to recognize value changes
+         */
+        InOutOld.controlword     = InOut.controlword;
+        InOutOld.target_position = InOut.target_position;
+        InOutOld.target_velocity = InOut.target_velocity;
+        InOutOld.target_torque   = InOut.target_torque;
+        InOutOld.op_mode         = InOut.op_mode;
+        InOutOld.tuning_command  = InOut.tuning_command;
+        InOutOld.user_mosi       = InOut.user_mosi;
+        InOutOld.offset_torque   = InOut.offset_torque;
+        InOutOld.digital_output1 = InOut.digital_output1;
+        InOutOld.digital_output2 = InOut.digital_output2;
+        InOutOld.digital_output3 = InOut.digital_output3;
+        InOutOld.digital_output4 = InOut.digital_output4;
+
+<<<<<<< HEAD
     for (size_t i = 0; i < object_list_size; i+=2) {
         {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
         printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
         printstr(" = "); printintln(value);
+=======
+        t when timerafter(time+delay) :> time;
+>>>>>>> develop
     }
 
-    return;
 }
-/*/DEBUG */
 
+<<<<<<< HEAD
 
 int main(void)
 {
 	/* EtherCat Communication channels */
+=======
+int main(void) {
+    /* EtherCat Communication channels */
+    interface i_coe_communication i_coe;
+>>>>>>> develop
     interface i_foe_communication i_foe;
     interface i_co_communication i_co[3];
     interface EtherCATRebootInterface i_ecat_reboot;
 
+<<<<<<< HEAD
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
@@ -291,7 +413,27 @@ int main(void)
              pdo_service(i_co[1]);
 		}
 	}
+=======
+    par
+    {
+        /* EtherCAT Communication Handler Loop */
+        on tile[COM_TILE] :
+        {
+            par {
+                ethercat_service(i_ecat_reboot, i_coe, null,
+                        i_foe, i_pdo, ethercat_ports);
+                reboot_service_ethercat(i_ecat_reboot);
+            }
+        }
 
-	return 0;
+        /* Test application handling pdos from EtherCat */
+        on tile[APP_TILE] :
+        {
+            pdo_service(i_coe, i_pdo);
+        }
+    }
+>>>>>>> develop
+
+    return 0;
 }
 

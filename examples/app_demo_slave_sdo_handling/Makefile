@@ -11,6 +11,7 @@ APP_NAME = app_demo_slave_sdo_handling
 # The USED_MODULES variable lists other module used by the application.
 USED_MODULES = module_board-support module_canopen_interface module_ethercat module_reboot
 
+
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
 # XCC_XC_FLAGS, XCC_C_FLAGS, XCC_ASM_FLAGS, XCC_CPP_FLAGS

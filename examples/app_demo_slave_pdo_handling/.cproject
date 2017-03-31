@@ -10,10 +10,10 @@
 >>>>>>> develop
 				<externalSettings/>
 				<extensions>
-					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="com.xmos.cdt.core.XdeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -255,6 +255,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.xc.compiler.input.608892259" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -620,6 +626,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.570251168" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -988,6 +1000,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.2062785157" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 >>>>>>> develop
@@ -1010,10 +1028,10 @@
 >>>>>>> develop
 				<externalSettings/>
 				<extensions>
-					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="com.xmos.cdt.core.XdeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">

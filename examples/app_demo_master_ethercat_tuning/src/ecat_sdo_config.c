@@ -8,23 +8,17 @@
 
 #include "ecat_sdo_config.h"
 
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
 #include <stdio.h>
-#include <ecrt.h>
+#include <readsdoconfig.h>
 
-int write_sdo(ec_master_t *master, int slave_number, struct _ecat_sdo_config *conf)
+int write_sdo(Ethercat_Slave_t *slave, SdoParam_t *conf)
 {
-    uint32_t abortcode;
-
-    uint8_t *value = (uint8_t *)&(conf->value);
-    int ret = ecrt_master_sdo_download(master, slave_number, conf->index, conf->subindex, value, conf->bytesize, &abortcode);
-//    int ret = 0;
-//    printf("DEBUG: slave %d write 0x%04x:%d = %d (%d bytes)\n",
-//            slave_number, conf->index, conf->subindex, conf->value, conf->bytesize);
-
+    int ret = ecw_slave_set_sdo_value(slave, conf->index, conf->subindex, conf->value);
     if (ret < 0) {
-        /* TODO figure out what the abort codes are */
-        fprintf(stderr, "Error, could not download object 0x%04x:%d cause: %d\n",
-                conf->index, conf->subindex, abortcode);
+        fprintf(stderr, "Error Slave %d, could not download object 0x%04x:%d, value: %d\n",
+                ecw_slave_get_slaveid(slave), conf->index, conf->subindex, conf->value);
         return -1;
     }
 
@@ -32,17 +26,32 @@ int write_sdo(ec_master_t *master, int slave_number, struct _ecat_sdo_config *co
 }
 
 
-int write_sdo_config(ec_master_t *master, int slave, struct _ecat_sdo_config *config, size_t max_objects)
+int write_sdo_config(Ethercat_Master_t *master, int slave_number, SdoParam_t *config, size_t max_objects)
 { 
-    //struct _ecat_config *config_objects;
     int ret = -1;
+    Ethercat_Slave_t *slave = ecw_slave_get(master, slave_number);
+    if (slave == NULL) {
+        fprintf(stderr, "Error could not get slave with id %d\n", slave_number);
+        return -1;
+    }
 
+    /* FIXME add bytesize from SDO entry info into parameter list */
     for (size_t i = 0; i < max_objects; i++) {
-        ret = write_sdo(master, slave, config+i);
+        ret = write_sdo(slave, config+i);
 
         if (ret != 0)
             break;
     }
 
     return ret;
+}
+
+int read_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex)
+{
+    for (int i=0 ; i<max_objects; i++) {
+        if (config[slave_number][i].index == index && config[slave_number][i].subindex == subindex) {
+            return config[slave_number][i].value;
+        }
+    }
+    return 0;
 }

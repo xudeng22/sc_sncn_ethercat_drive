@@ -9,7 +9,7 @@
 #define CANOPEN_SERVICE_H_
 
 #include "co_interface.h"
-#include "canod_constants.h"
+#include "dictionary_symbols.h"
 #include "canod_datatypes.h"
 
 

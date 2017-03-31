@@ -50,14 +50,18 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <curses.h> // required
+#include <linux/limits.h>
 
 /****************************************************************************/
+
+#include <ethercat_wrapper.h>
+#include <ethercat_wrapper_slave.h>
+#include <readsdoconfig.h>
 
 #include "ecrt.h" //IgH lib
 
 #include "ecat_master.h"
 #include "ecat_debug.h"
-#include "ecat_device.h"
 #include "ecat_sdo_config.h"
 #include "cyclic_task.h"
 #include "display.h"
@@ -66,12 +70,6 @@
 
 /****************************************************************************/
 
-/* ----------- OD setup -------------- */
-
-#include "sdo_config.inc"
-
-/* ----------- /OD setup -------------- */
-
 // Application parameters
 #define FREQUENCY 1000
 #define PRIORITY 1
@@ -79,7 +77,7 @@
 #define DISPLAY_LINE 27
 #define HELP_ROW_COUNT 12
 #define MAX_RECORD_MSEC 120000
-#define MAX_RECORD_FILENAME 20
+#define MAX_RECORD_FILENAME 1024
 
 #define VERSION    "v0.1-dev"
 #define MAXDBGLVL  3
@@ -92,6 +90,8 @@ static int g_dbglvl = 1;
 // Timer
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
+
+static const char *default_sdo_config_file = "sdo_config/sdo_config.csv";
 
 /****************************************************************************/
 
@@ -192,14 +192,16 @@ static void printhelp(const char *prog)
     //printf("  -l <level>     set log level (0..3)\n");
     printf("  -n <slave number>  first slave is 0\n");
     printf("  -s <profile velocity>\n");
-    printf("  -f <record filename>\n");
+    printf("  -f <SDO config filename>\n");
+    printf("  -F <record filename>\n");
 }
 
-static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int *profile_speed, char **record_filename)
+static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable,
+                    int *profile_speed, char **record_filename, char **sdo_config)
 {
     int  opt;
 
-    const char *options = "hvlos:n:f:";
+    const char *options = "hvlos:n:f:F:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -233,7 +235,11 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable, int
             break;
 
         case 'f':
-            strncpy(*record_filename, optarg, MAX_RECORD_FILENAME);
+            strncpy(*sdo_config, optarg, PATH_MAX);
+            break;
+
+        case 'F':
+            strncpy(*record_filename, optarg, PATH_MAX);
             break;
 
         case 'h':
@@ -251,40 +257,49 @@ int main(int argc, char **argv)
     int sdo_enable = 0;
     int num_slaves = 1;
     int profile_speed = 50;
-    char *record_filename = malloc(MAX_RECORD_FILENAME);
-    strncpy(record_filename, "record.csv", MAX_RECORD_FILENAME);
+    char *record_filename = malloc(PATH_MAX);
+    strncpy(record_filename, "record.csv", PATH_MAX);
+
+    char *sdo_config_file = malloc(PATH_MAX);
+    strncpy(sdo_config_file, default_sdo_config_file, PATH_MAX);
 
     //get parameters from cmdline
-    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed, &record_filename);
+    cmdline(argc, argv, &num_slaves, &sdo_enable, &profile_speed, &record_filename, &sdo_config_file);
 
     struct sigaction sa;
     struct itimerval tv;
-    
+
+    //read sdo parameters from file
+    SdoConfigParameter_t sdo_config_parameter;
+    SdoParam_t **slave_config = 0;
+    if (sdo_enable) {
+        if (read_sdo_config(sdo_config_file, &sdo_config_parameter) != 0) {
+            fprintf(stderr, "Error, could not read SDO configuration file.\n");
+            return -1;
+        }
+        free(sdo_config_file); /* filename and path to the SDO config parameters is no longer needed */
+        slave_config = sdo_config_parameter.parameter;
+    }
+
 #ifndef DISABLE_ETHERCAT
 /********* ethercat init **************/
 
-    struct _master_config *master = master_config(num_slaves);
+    /* use master id 0 for the first ehtercat master interface (defined by the
+     * libethercat).
+     * The logging output must be redirected into a file, otherwise the output will
+     * interfere with the ncurses windowing. */
+    FILE *ecatlog = fopen("./ecat.log", "w");
+    Ethercat_Master_t *master = ecw_master_init(0 /* master id */, ecatlog);
 
     if (master == NULL) {
         fprintf(stderr, "[ERROR %s] Cannot initialize master\n", __func__);
         return 1;
     }
 
-    /* Debug information */
-    get_master_information(master->master);
-    for (int i = 0; i < num_slaves; i++) {
-        get_slave_information(master->master, i);
-    }
-    /* /Debug */
-
-    /*
-     * Activate master and start operation
-     */
     if (sdo_enable) {
         /* SDO configuration of the slave */
-        /* FIXME set per slave SDO configuration */
         for (int i = 0; i < num_slaves; i++) {
-            int ret = write_sdo_config(master->master, i, slave_config[i], sizeof(slave_config[0])/sizeof(slave_config[0][0]));
+            int ret = write_sdo_config(master, i, slave_config[i], sdo_config_parameter.param_count);
             if (ret != 0) {
                 fprintf(stderr, "Error configuring SDOs\n");
                 return -1;
@@ -292,23 +307,11 @@ int main(int argc, char **argv)
         }
     }
 
-
-#if 0
-    /* Start the Master and set readiness for cyclic opertation */
-    logmsg(1, "Activating master...\n");
-    if (ecrt_master_activate(master)) {
-        logmsg(0, "Error, master activation failed.\n");
+    // Activate master and start operation
+    if (ecw_master_start(master) != 0) {
+        fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
         return -1;
     }
-
-    if (!(domain1_pd = ecrt_domain_data(domain1))) {
-        return -1;
-    }
-
-    logmsg(4, "Pointer of the domain_pd: 0x%x\n", domain1_pd);
-#endif
-
-    master_start(master);
 /****************************************************/
 #endif
 
@@ -327,18 +330,19 @@ int main(int argc, char **argv)
     //init tuning structure
     InputValues input = {0};
     OutputValues output = {0};
-    output.mode_1 = '@';
-    output.mode_2 = '@';
-    output.mode_3 = '@';
+    output.app_mode = TUNING_MODE;
+    output.mode_1 = 1;
+    output.mode_2 = 1;
+    output.mode_3 = 1;
     output.sign = 1;
 
     /* Init pdos */
     pdo_output[num_slaves-1].controlword = 0;
-    pdo_output[num_slaves-1].opmode = OPMODE_TUNING;
+    pdo_output[num_slaves-1].op_mode = 0;
     pdo_output[num_slaves-1].target_position = 0;
     pdo_output[num_slaves-1].target_torque = 0;
     pdo_output[num_slaves-1].target_velocity = 0;
-    pdo_input[num_slaves-1].opmodedisplay = 0;
+    pdo_input[num_slaves-1].op_mode_display = 0;
 
     //init profiler
     PositionProfileConfig profile_config;
@@ -349,10 +353,15 @@ int main(int argc, char **argv)
     profile_config.max_position = 0x7fffffff;
     profile_config.min_position = -0x7fffffff;
     profile_config.mode = POSITION_DIRECT;
-    for (int i=0 ; i<sizeof(slave_config[0])/sizeof(slave_config[0][0]) ; i++) {
-        if (slave_config[0][i].index == 0x308f) {
-            profile_config.ticks_per_turn = slave_config[0][i].value;
-            break;
+    profile_config.ticks_per_turn = 65536;
+    if (sdo_enable) {
+        for (int sensor_port=1; sensor_port<=3; sensor_port++) {
+            int sensor_config = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
+            int sensor_function = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
+            if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
+                profile_config.ticks_per_turn = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
+                break;
+            }
         }
     }
     init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
@@ -371,15 +380,9 @@ int main(int argc, char **argv)
     clear(); // curses call to clear screen, send cursor to position (0,0)
     refresh(); // curses call to implement all changes since last refresh
     nodelay(stdscr, TRUE); //no delay
-
-    //init prompt
-    Cursor cursor = { DISPLAY_LINE, 2 };
-    display_tuning_help(wnd, DISPLAY_LINE-HELP_ROW_COUNT);
-    move(cursor.row, 0);
-    printw("> ");
+    Cursor cursor;
     
     int run_flag = 1;
-    int init_tuning = 0;
     while (run_flag) {
         pause();
 
@@ -388,49 +391,35 @@ int main(int argc, char **argv)
             user_alarms++;
 
 #ifndef DISABLE_ETHERCAT
+            ecw_master_cyclic_function(master);
             pdo_handler(master, pdo_input, pdo_output, num_slaves-1);
 #endif
 
-            uint16_t statusword = ((pdo_input[num_slaves-1].statusword >> 8) & 0xff);
-            if (statusword == (pdo_output[num_slaves-1].controlword & 0xff)) { //control word received by slave
-                pdo_output[num_slaves-1].controlword = 0; //reset control word
-            }
-
-            if (init_tuning == 0) { //switch the slave to OPMODE_TUNING
-                if (pdo_input[num_slaves-1].opmodedisplay != (OPMODE_TUNING & 0xff)) {
-                    if ((statusword & 0x08) == 0x08) {
-                        pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
-                    } else { //FIXME: fix check status word
-                        pdo_output[num_slaves-1].controlword = 0x0080;  /* Fault reset */
-                    }
-                } else {
-                    init_tuning = 1;
+            if (output.app_mode == QUIT_MODE) {
+                if (pdo_input[num_slaves-1].op_mode_display == 0) {
+                    run_flag = 0;
+                    break;
                 }
-            } else if (pdo_input[num_slaves-1].opmodedisplay == 0) { //quit
-                run_flag = 0;
-                break;
+            } else if (output.app_mode == TUNING_MODE) {
+                tuning(wnd, &cursor,
+                        &pdo_output[num_slaves-1], &pdo_input[num_slaves-1],
+                        &output, &input,
+                        &profile_config,
+                        &record_config, record_filename);
+            } else if (output.app_mode == CS_MODE){
+                cs_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output);
             }
-
-            //demux received data
-            tuning_input(pdo_input[num_slaves-1], &input);
-
-            //print
-            display_tuning(wnd, pdo_input[num_slaves-1], input, record_config, 0);
-
-            //recorder
-            tuning_record(&record_config, pdo_input[num_slaves-1], pdo_output[num_slaves-1], record_filename);
-
-            //position profile
-            tuning_position(&profile_config, &pdo_output[num_slaves-1], pdo_input[num_slaves-1]);
-
-            //read user input
-            tuning_command(wnd, &pdo_output[num_slaves-1], pdo_input[num_slaves-1], &output, &profile_config, &record_config, &cursor);
 
             wrefresh(wnd); //refresh ncurses window
         }
     }
 
     //free
+#ifndef DISABLE_ETHERCAT
+    ecw_master_stop(master);
+    ecw_master_release(master);
+    fclose(ecatlog);
+#endif
     endwin(); // curses call to restore the original window and leave
     free(pdo_input);
     free(pdo_output);

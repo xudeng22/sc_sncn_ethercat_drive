@@ -85,7 +85,6 @@ static void sdo_wait_first_config(client interface i_co_communication i_co)
 {int, int} quick_stop_perform(int opmode, int steps, int velocity)
 {
     static int step = 0;
-    int target = 0;
 
     if (step >= steps) {
         step = 0;
@@ -174,7 +173,7 @@ static int quick_stop_init(int opmode,
 
 static void inline update_configuration(
         client interface i_co_communication           i_co,
-        client interface MotorcontrolInterface         i_motorcontrol,
+        client interface MotorControlInterface         i_motorcontrol,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface i_pos_feedback_1,
         client interface PositionFeedbackInterface ?i_pos_feedback_2,
@@ -324,7 +323,7 @@ static void debug_print_state(DriveState_t state, int fault)
  */
 void network_drive_service(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
-                            client interface MotorcontrolInterface i_motorcontrol,
+                            client interface MotorControlInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2)
@@ -573,7 +572,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
          * new, perform actions according to state
          */
 
-        debug_print_state(state);
+        debug_print_state(state, fault);
 
         if (opmode == OPMODE_NONE) {
             statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
@@ -808,7 +807,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
  */
 void network_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
-                            client interface MotorcontrolInterface i_motorcontrol,
+                            client interface MotorControlInterface i_motorcontrol,
                             client interface PositionVelocityCtrlInterface i_position_control,
                             client interface PositionFeedbackInterface i_position_feedback)
 {

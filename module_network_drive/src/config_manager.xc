@@ -30,7 +30,7 @@ static int tick2bits(int tick_resolution)
 void cm_sync_config_hall_states(
         client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
-        interface MotorcontrolInterface client ?i_motorcontrol,
+        interface MotorControlInterface client ?i_motorcontrol,
         PositionFeedbackConfig &feedback_config,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_index)
@@ -192,7 +192,7 @@ int cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_co_communication i_co,
-        interface MotorcontrolInterface client ?i_motorcontrol,
+        interface MotorControlInterface client ?i_motorcontrol,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_commutation,
         int sensor_commutation_type)
@@ -203,7 +203,7 @@ void cm_sync_config_motor_control(
 
     motorcontrol_config = i_motorcontrol.get_config();
 
-    {motorcontrol_config.v_dc, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
+    {motorcontrol_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     {motorcontrol_config.phases_inverted, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
     motorcontrol_config.phases_inverted          = sext(motorcontrol_config.phases_inverted, 8);
     {motorcontrol_config.torque_P_gain, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
@@ -302,8 +302,8 @@ void cm_sync_config_pos_velocity_control(
     {position_config.velocity_integral_limit, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
 
     /* Brake control settings */
-    {position_config.special_brake_release, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY);
-    {position_config.brake_shutdown_delay, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY);
+    {position_config.brake_release_strategy, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY);
+    {position_config.brake_release_delay, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY);
     {position_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     {position_config.pull_brake_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE);
     {position_config.pull_brake_time, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME);
@@ -420,7 +420,7 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_co_communication i_co,
-        interface MotorcontrolInterface client ?i_motorcontrol,
+        interface MotorControlInterface client ?i_motorcontrol,
         MotorcontrolConfig &motorcontrol_config)
 
 {
@@ -429,7 +429,7 @@ void cm_default_config_motor_control(
 
     motorcontrol_config = i_motorcontrol.get_config();
 
-    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.v_dc);
+    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.dc_bus_voltage);
     i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED, motorcontrol_config.phases_inverted);
     i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP, motorcontrol_config.torque_P_gain);
     i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI, motorcontrol_config.torque_I_gain);
@@ -529,8 +529,8 @@ void cm_default_config_pos_velocity_control(
     i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT, position_config.velocity_integral_limit);
 
     /* Brake control settings */
-    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY, position_config.special_brake_release);
-    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY, position_config.brake_shutdown_delay);
+    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY, position_config.brake_release_strategy);
+    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_DELAY, position_config.brake_release_delay);
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, position_config.dc_bus_voltage);
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE, position_config.pull_brake_voltage);
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME, position_config.pull_brake_time);

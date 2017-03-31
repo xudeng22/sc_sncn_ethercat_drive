@@ -102,6 +102,7 @@ pdo_values_t pdo_init_data(void)
     inout.digital_input3       = 0x0;
     inout.digital_input4       = 0x0;
     inout.user_miso         = 0x0;
+    inout.timestamp         = 0x0;
 
     pdo_init_mapping_struct(TPDO_MAPPING_PARAMETER, pdo_map_tx);
     pdo_init_mapping_struct(RPDO_MAPPING_PARAMETER, pdo_map_rx);
@@ -114,9 +115,9 @@ void pdo_exchange(pdo_values_t &inout, pdo_values_t pdo_out, pdo_values_t &pdo_i
 
     inout.statusword        = pdo_out.statusword;
     inout.op_mode_display   = pdo_out.op_mode_display;
-    inout.torque_value     = pdo_out.torque_value;
-    inout.position_value   = pdo_out.position_value;
-    inout.velocity_value   = pdo_out.velocity_value;
+    inout.torque_value      = pdo_out.torque_value;
+    inout.position_value    = pdo_out.position_value;
+    inout.velocity_value    = pdo_out.velocity_value;
     inout.secondary_position_value       = pdo_out.secondary_position_value;
     inout.secondary_velocity_value       = pdo_out.secondary_velocity_value;
     inout.analog_input1     = pdo_out.analog_input1;
@@ -129,6 +130,7 @@ void pdo_exchange(pdo_values_t &inout, pdo_values_t pdo_out, pdo_values_t &pdo_i
     inout.digital_input3    = pdo_out.digital_input3;
     inout.digital_input4    = pdo_out.digital_input4;
     inout.user_miso         = pdo_out.user_miso;
+    inout.timestamp         = pdo_out.timestamp;
 
     pdo_in.controlword      = inout.controlword;
     pdo_in.op_mode          = inout.op_mode;
@@ -228,7 +230,12 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
             buffer[38] = inout.user_miso >> 8;
             buffer[39] = inout.user_miso >> 16;
             buffer[40] = inout.user_miso >> 24;
-            data_length = 41;
+            buffer[41] = inout.timestamp;
+            buffer[42] = inout.timestamp >> 8;
+            buffer[43] = inout.timestamp >> 16;
+            buffer[44] = inout.timestamp >> 24;
+
+            data_length = 45;
             break;
         default:
             break;
@@ -374,12 +381,17 @@ char pdo_encode(unsigned char pdo_number, pdo_size_t buffer[], pdo_values_t inou
             canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[1], inout.digital_input2, 1);
             canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[2], inout.digital_input3, 1);
             canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[3], inout.digital_input4, 1);
+            canod_set_entry_fast(pdo_map_tx[pdo_number].od_struct_index[4], inout.timestamp, 1);
 #endif
             buffer[0] = inout.digital_input1;
             buffer[1] = inout.digital_input2;
             buffer[2] = inout.digital_input3;
             buffer[3] = inout.digital_input4;
-            data_length = 4;
+            buffer[4] = inout.timestamp;
+            buffer[5] = inout.timestamp >> 8;
+            buffer[6] = inout.timestamp >> 16;
+            buffer[7] = inout.timestamp >> 24;
+            data_length = 8;
             break;
         default:
             break;

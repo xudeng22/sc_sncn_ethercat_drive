@@ -76,9 +76,11 @@ int main(void)
         /* EtherCAT Communication Handler Loop */
         on tile[COM_TILE] :
         {
-            par {
+            par
+            {
                 ethercat_service(i_ecat_reboot, i_co, null,
                                     i_foe, ethercat_ports);
+
                 reboot_service_ethercat(i_ecat_reboot);
             }
         }
@@ -99,7 +101,7 @@ int main(void)
             network_drive_service_debug( profiler_config,
                                     i_co[1],
                                     i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback[0]);
+                                    i_position_control[0], i_position_feedback_1[0]);
 #else
             network_drive_service( profiler_config,
                                     i_co[1],

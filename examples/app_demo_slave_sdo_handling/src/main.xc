@@ -353,7 +353,6 @@ static void read_od_config(client interface i_co_communication i_co)
 {
     /* Read and print the values of all known objects */
     uint32_t value    = 0;
-    uint8_t error = 0;
 
     size_t object_list_size = sizeof(request_list) / sizeof(request_list[0]);
 
@@ -454,7 +453,8 @@ int main(void)
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
-            par {
+            par
+            {
                 /* Start trivial PDO exchange service */
                 pdo_service(i_co[1], i_cmd);
 

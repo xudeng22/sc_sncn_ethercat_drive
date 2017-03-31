@@ -29,7 +29,7 @@ How to use CANopen Interface Service
     ::
 
         USED_MODULES = config_motor lib_bldc_torque_control lib_can lib_canopen module_adc module_biss module_board-support module_canopen_interface module_controllers module_filters module_flash_service module_gpio module_hall module_misc module_motion_control module_network_drive module_position_feedback module_profile module_pwm module_qei module_reboot module_rem_14 module_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog
-og
+
 
     .. note:: Not all modules will be required, but when using a library it is recommended to include always all the contained modules. 
               This will help solving internal dependency issues.
@@ -39,7 +39,7 @@ og
 
     .. code-block:: c
 
-        #include <COM_SERIAL-rev-a.bsp>>   //Board Support file for SOMANET COM SERIAL device 
+        #include <COM_ECAT-rev-a.bsp>   //Board Support file for SOMANET COM EtherCAT device 
         #include <CORE_C22-rev-a.bsp>   //Board Support file for SOMANET Core C22 device 
         #include <IFM_DC100-rev-b.bsp>  //Board Support file for SOMANET IFM DC100 device 
                                         //(select your board support files according to your device)
@@ -48,8 +48,7 @@ og
         
         #include <network_drive_service.h>
         #include <canopen_service.h>
-        #include <can.h>
-        #include <canopen.h>
+
         
         //BLDC Motor drive libs
         #include <position_feedback_service.h>
@@ -349,22 +348,22 @@ API
 ===
 
 
-.. doxygenfunction:: canopen_interface_service
-.. doxygenfunction:: pdo_in
-.. doxygenfunction:: pdo_out
-.. doxygenfunction:: pdo_exchange_app
-.. doxygenfunction:: pdo_init
-.. doxygenfunction:: od_set_object_value
-.. doxygenfunction:: od_get_object_value
-.. doxygenfunction:: od_get_object_value_buffer
-.. doxygenfunction:: od_set_object_value_buffer
-.. doxygenfunction:: od_get_entry_description
-.. doxygenfunction:: od_get_all_list_length
-.. doxygenfunction:: od_get_list
-.. doxygenfunction:: od_get_object_description
-.. doxygenfunction:: od_get_data_length
-.. doxygenfunction:: od_get_access
-.. doxygenfunction:: configuration_ready
-.. doxygenfunction:: configuration_done
-.. doxygenfunction:: configuration_get
-.. doxygenfunction:: speed_sdo_update
+.. doxygeninterface:: canopen_interface_service
+.. doxygeninterface:: pdo_in
+.. doxygeninterface:: pdo_out
+.. doxygeninterface:: pdo_exchange_app
+.. doxygeninterface:: pdo_init
+.. doxygeninterface:: od_set_object_value
+.. doxygeninterface:: od_get_object_value
+.. doxygeninterface:: od_get_object_value_buffer
+.. doxygeninterface:: od_set_object_value_buffer
+.. doxygeninterface:: od_get_entry_description
+.. doxygeninterface:: od_get_all_list_length
+.. doxygeninterface:: od_get_list
+.. doxygeninterface:: od_get_object_description
+.. doxygeninterface:: od_get_data_length
+.. doxygeninterface:: od_get_access
+.. doxygeninterface:: configuration_ready
+.. doxygeninterface:: configuration_done
+.. doxygeninterface:: configuration_get
+.. doxygeninterface:: speed_sdo_update

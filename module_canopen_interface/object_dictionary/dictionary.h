@@ -154,6 +154,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 { 0x1A05, 0x8, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, RO, 0x20000007, "pad_7" },
 { 0x1A05, 0x9, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, RO, 0x2FFD0020, "Timestamp" },
 
+
 #elif COM_ETHERCAT || COM_ETHERNET
 
 { 0x1000, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x0007, 0x00020192, "Device Type" },

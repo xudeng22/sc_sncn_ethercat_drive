@@ -303,6 +303,14 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 pdo_output->tuning_command = TUNING_CMD_FAULT_RESET;
                 break;
 
+
+            //torque safe enable (tss)
+            case 't':
+                if (output->mode_2 == 's' && output->mode_3 == 's') {
+                    pdo_output->tuning_command = TUNING_CMD_SAFE_TORQUE;
+                }
+                break;
+
             //change pid coefficients
             case 'k':
                 pdo_output->user_mosi = output->value;

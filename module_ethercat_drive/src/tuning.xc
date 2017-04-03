@@ -283,18 +283,21 @@ void tuning_command_handler(
                     break;
                 }
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION;
+                tuning_mode_state.brake_flag = 1;
                 break;
 
 
             case TUNING_CMD_CONTROL_VELOCITY:
                 i_position_control.enable_velocity_ctrl();
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_VELOCITY;
+                tuning_mode_state.brake_flag = 1;
                 break;
 
 
             case TUNING_CMD_CONTROL_TORQUE:
                 i_position_control.enable_torque_ctrl();
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_TORQUE;
+                tuning_mode_state.brake_flag = 1;
                 break;
 
 
@@ -314,7 +317,9 @@ void tuning_command_handler(
                 break;
 
             case TUNING_CMD_SAFE_TORQUE:
-                //TODO
+                tuning_mode_state.brake_flag = 0;
+                tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                i_position_control.set_safe_torque_off_enabled();
                 break;
 
             //fault reset

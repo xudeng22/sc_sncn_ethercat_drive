@@ -8,7 +8,8 @@ CANopen Interface Module
     :backlinks: none
     :depth: 3
 
-This module provides a service between any communication stack and CANopen applications. This service is managing the Object Dictionary and the PDO handling.
+This module provides a service between any communication stack and CANopen applications. This service is managing the Object Dictionary and the PDO handling. 
+This service will run automatically, when a communication stack is used.
 
 
 .. cssclass:: github
@@ -18,8 +19,7 @@ This module provides a service between any communication stack and CANopen appli
 How to use CANopen Interface Service
 ====================================
 
-.. important:: We assume that you are using :ref:`SOMANET Base <somanet_base>`, :ref:`SOMANET Motor Control <somanet_motor_control>` libraries 
-   and one of our communication stacks (:ref:`SOMANET EtherCAT <somanet_ethercat>`, :ref:`SOMANET Ethernet <somanet_ethernet>` or :ref:`SOMANET CAN <somanet_can>`). And therefore, your app includes the required **board support** files for your SOMANET device, and the required Motor Control and Communication Stack Services. 
+.. important:: We assume that you are using :ref:`SOMANET Base <somanet_base>`, :ref:`SOMANET Motor Control <somanet_motor_control>` libraries and one of our communication stacks (:ref:`SOMANET EtherCAT <somanet_ethercat>`, :ref:`SOMANET Ethernet <somanet_ethernet>` or :ref:`SOMANET CAN <somanet_can>`). And therefore, your app includes the required **board support** files for your SOMANET device, and the required Motor Control and Communication Stack Services. 
          
 .. seealso:: You might find useful the :ref:`EtherCAT Drive Slave Firmware <ethercat_slave_demo>` example app, which illustrate the use of this module. 
     
@@ -30,10 +30,9 @@ How to use CANopen Interface Service
         USED_MODULES = config_motor lib_bldc_torque_control lib_can lib_canopen module_adc module_biss module_board-support module_canopen_interface module_controllers module_filters module_flash_service module_gpio module_hall module_misc module_motion_control module_network_drive module_position_feedback module_profile module_pwm module_qei module_reboot module_rem_14 module_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog
 
 
-    .. note:: Not all modules will be required, but when using a library it is recommended to include always all the contained modules. 
-              This will help solving internal dependency issues.
+    .. note:: Not all modules will be required, but when using a library it is recommended to include always all the contained modules. This will help solving internal dependency issues.
 
-2. Include the Network Drive Service header **network_drive_service.h** in your app. 
+2. Include the Network Drive Service header **canopen_interface_service.h** in your app. 
 3. Properly instantiate an **EtherCAT Drive Service**. For that, first you will have to fill up the Profiler configuration and provide channels/interfaces to the EtherCAT, Hall, Encoder, GPIO, Motor Control and Control Loop Services.
 
     .. code-block:: c
@@ -46,7 +45,7 @@ How to use CANopen Interface Service
         #include <user_config.h>
         
         #include <network_drive_service.h>
-        #include <canopen_service.h>
+        #include <canopen_interface_service.h>
 
         
         //BLDC Motor drive libs

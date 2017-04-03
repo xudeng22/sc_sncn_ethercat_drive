@@ -21,8 +21,7 @@ How to use CANopen Interface Service
 .. important:: We assume that you are using :ref:`SOMANET Base <somanet_base>`, :ref:`SOMANET Motor Control <somanet_motor_control>` libraries 
    and one of our communication stacks (:ref:`SOMANET EtherCAT <somanet_ethercat>`, :ref:`SOMANET Ethernet <somanet_ethernet>` or :ref:`SOMANET CAN <somanet_can>`). And therefore, your app includes the required **board support** files for your SOMANET device, and the required Motor Control and Communication Stack Services. 
          
-.. seealso:: 
-    You might find useful the :ref:`EtherCAT Drive Slave Firmware <ethercat_slave_demo>` example app, which illustrate the use of this module. 
+.. seealso:: You might find useful the :ref:`EtherCAT Drive Slave Firmware <ethercat_slave_demo>` example app, which illustrate the use of this module. 
     
 1. First, add the **SOMANET CANopen Service** module to your app Makefile.
 

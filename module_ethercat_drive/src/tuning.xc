@@ -149,7 +149,7 @@ void tuning_command_handler(
         int sensor_motion_control,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-                client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2
 )
 {
 
@@ -315,6 +315,14 @@ void tuning_command_handler(
 
             case TUNING_CMD_SAFE_TORQUE:
                 //TODO
+                break;
+
+            //fault reset
+            case TUNING_CMD_FAULT_RESET:
+                i_position_control.disable();
+                tuning_mode_state.brake_flag = 0;
+                tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                i_position_control.reset_motorcontrol_faults();
                 break;
 
             //set zero position

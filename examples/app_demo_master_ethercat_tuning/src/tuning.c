@@ -298,6 +298,11 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 break;
 
 
+            //reset fault
+            case 'f':
+                pdo_output->tuning_command = TUNING_CMD_FAULT_RESET;
+                break;
+
             //change pid coefficients
             case 'k':
                 pdo_output->user_mosi = output->value;

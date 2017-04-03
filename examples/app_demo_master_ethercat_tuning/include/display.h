@@ -22,7 +22,7 @@ void wmoveclr(WINDOW *wnd, int *row);
 
 int draw(WINDOW *wnd, char c, int row, int column);
 
-int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues input, RecordConfig record_config, int row);
+int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pdo_cia402_input pdo_input, InputValues input, RecordConfig record_config, int row);
 
 int display_tuning_help(WINDOW *wnd, int row);
 

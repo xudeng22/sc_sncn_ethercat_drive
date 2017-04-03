@@ -22,14 +22,12 @@
 #include <xscope.h>
 #include <mc_internal_constants.h>
 
-//FixMe Profiler initialization should be done in main. The user_config thus will be excluded from here!
-//#include <user_config_speedy_A1.h>
-//#include <user_config.h>
-
 #define TUNING_CMD_SET_PARAM_MASK               0x80
 #define TUNING_CMD_SET_MOTION_CONTROL_MASK      0x40
 #define TUNING_CMD_SET_MOTOR_CONTROL_MASK       0x20
 #define TUNING_CMD_SET_POSITION_FEEDBACK_MASK   0x10
+
+#define TUNING_ACK                          0x80000000
 
 typedef enum {
     TUNING_CMD_AUTO_OFFSET                = 0x01,
@@ -65,16 +63,44 @@ typedef enum {
 } TuningCommands;
 
 typedef enum {
-    TUNING_MOTORCTRL_OFF= 0,
-    TUNING_MOTORCTRL_TORQUE= 1,
-    TUNING_MOTORCTRL_POSITION= 2,
-    TUNING_MOTORCTRL_VELOCITY= 3,
-    TUNING_MOTORCTRL_POSITION_PROFILER= 4
+    TUNING_MOTORCTRL_OFF                            = 0,
+    TUNING_MOTORCTRL_POSITION_PID                   = 1,
+    TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED = 2,
+    TUNING_MOTORCTRL_POSITION_NL                    = 3,
+    TUNING_MOTORCTRL_VELOCITY                       = 4,
+    TUNING_MOTORCTRL_TORQUE                         = 5
 } TuningMotorCtrlStatus;
 
+typedef enum {
+    TUNING_STATUS_MUX_OFFSET        = 1,
+    TUNING_STATUS_MUX_POLE_PAIRS    = 2,
+    TUNING_STATUS_MUX_MIN_POS       = 3,
+    TUNING_STATUS_MUX_MAX_POS       = 4,
+    TUNING_STATUS_MUX_MAX_SPEED     = 5,
+    TUNING_STATUS_MUX_MAX_TORQUE    = 6,
+    TUNING_STATUS_MUX_POS_KP        = 7,
+    TUNING_STATUS_MUX_POS_KI        = 8,
+    TUNING_STATUS_MUX_POS_KD        = 9,
+    TUNING_STATUS_MUX_POS_I_LIM     = 10,
+    TUNING_STATUS_MUX_VEL_KP        = 11,
+    TUNING_STATUS_MUX_VEL_KI        = 12,
+    TUNING_STATUS_MUX_VEL_KD        = 13,
+    TUNING_STATUS_MUX_VEL_I_LIM     = 14,
+    TUNING_STATUS_MUX_FAULT         = 15,
+    TUNING_STATUS_MUX_BRAKE_STRAT   = 16,
+    TUNING_STATUS_MUX_SENSOR_ERROR  = 17
+} TuningStatusMux;
+
+typedef enum {
+    TUNING_FLAG_BRAKE               = 0,
+    TUNING_FLAG_MOTION_POLARITY     = 1,
+    TUNING_FLAG_SENSOR_POLARITY     = 2,
+    TUNING_FLAG_PHASES_INVERTED     = 3,
+    TUNING_FLAG_INTEGRATED_PROFILER = 4
+} TuningFlagsBit;
 
 typedef struct {
-    int mode_1;
+    int command;
     int value;
     int brake_flag;
     int flags;
@@ -93,7 +119,6 @@ int tuning_handler_ethercat(
         int sensor_commutation,
         int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
-        DownstreamControlData    &downstream_control_data,
         client interface PositionVelocityCtrlInterface i_position_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2

@@ -725,7 +725,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     tuning_mode_state,
                     motorcontrol_config, position_velocity_config, position_feedback_config_1, position_feedback_config_2,
                     sensor_commutation, sensor_motion_control,
-                    send_to_master, send_to_control,
+                    send_to_master,
                     i_position_control, i_position_feedback_1, i_position_feedback_2);
 
             //check and update opmode

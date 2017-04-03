@@ -13,58 +13,55 @@
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 {
     switch((pdo_input.tuning_status >> 16) & 0xff) {
-    case 1://offset
+    case TUNING_STATUS_MUX_OFFSET://offset
         (*input).offset = pdo_input.user_miso;
         break;
-    case 2://pole pairs
+    case TUNING_STATUS_MUX_POLE_PAIRS://pole pairs
         (*input).pole_pairs = pdo_input.user_miso;
         break;
-    case 3://target
-        (*input).target = pdo_input.user_miso;
-        break;
-    case 4://min position limit
+    case TUNING_STATUS_MUX_MIN_POS://min position limit
         (*input).min_position = pdo_input.user_miso;
         break;
-    case 5://max position limit
+    case TUNING_STATUS_MUX_MAX_POS://max position limit
         (*input).max_position = pdo_input.user_miso;
         break;
-    case 6://max speed
+    case TUNING_STATUS_MUX_MAX_SPEED://max speed
         (*input).max_speed = pdo_input.user_miso;
         break;
-    case 7://max torque
+    case TUNING_STATUS_MUX_MAX_TORQUE://max torque
         (*input).max_torque = pdo_input.user_miso;
         break;
-    case 8:
+    case TUNING_STATUS_MUX_POS_KP:
         (*input).P_pos = pdo_input.user_miso;
         break;
-    case 9:
+    case TUNING_STATUS_MUX_POS_KI:
         (*input).I_pos = pdo_input.user_miso;
         break;
-    case 10:
+    case TUNING_STATUS_MUX_POS_KD:
         (*input).D_pos = pdo_input.user_miso;
         break;
-    case 11:
+    case TUNING_STATUS_MUX_POS_I_LIM:
         (*input).integral_limit_pos = pdo_input.user_miso;
         break;
-    case 12:
+    case TUNING_STATUS_MUX_VEL_KP:
         (*input).P_velocity = pdo_input.user_miso;
         break;
-    case 13:
+    case TUNING_STATUS_MUX_VEL_KI:
         (*input).I_velocity = pdo_input.user_miso;
         break;
-    case 14:
+    case TUNING_STATUS_MUX_VEL_KD:
         (*input).D_velocity = pdo_input.user_miso;
         break;
-    case 15:
+    case TUNING_STATUS_MUX_VEL_I_LIM:
         (*input).integral_limit_velocity = pdo_input.user_miso;
         break;
-    case 16: //fault code
+    case TUNING_STATUS_MUX_FAULT: //fault code
         (*input).error_status = pdo_input.user_miso;
         break;
-    case 17://brake_release_strategy
+    case TUNING_STATUS_MUX_BRAKE_STRAT://brake_release_strategy
         (*input).brake_release_strategy = pdo_input.user_miso;
         break;
-    default://sensor error
+    case TUNING_STATUS_MUX_SENSOR_ERROR://sensor error
         (*input).sensor_error = pdo_input.user_miso;
         break;
     }
@@ -74,11 +71,11 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 
     //flags
     uint8_t flags = (pdo_input.tuning_status >> 8) & 0xff;
-    (*input).brake_flag = flags & 1;
-    (*input).motion_polarity = (flags >> 1) & 1;
-    (*input).sensor_polarity = (flags >> 2) & 1;
-    input->phases_inverted = (flags >> 3) & 1;
-    input->profiler = (flags >> 4) & 1;
+    (*input).brake_flag = (flags >> TUNING_FLAG_BRAKE) & 1;
+    (*input).motion_polarity = (flags >> TUNING_FLAG_MOTION_POLARITY) & 1;
+    (*input).sensor_polarity = (flags >> TUNING_FLAG_SENSOR_POLARITY) & 1;
+    input->phases_inverted = (flags >> TUNING_FLAG_PHASES_INVERTED) & 1;
+    input->profiler = (flags >> TUNING_FLAG_INTEGRATED_PROFILER) & 1;
     return ;
 }
 
@@ -542,8 +539,8 @@ void tuning(WINDOW *wnd, Cursor *cursor,
             printw("> ");
         }
     } else { // check if command is received by slave
-        if (pdo_input->tuning_status & 0x80000000) { //command received by slave
-            pdo_output->tuning_command = 0; //reset control word
+        if (pdo_input->tuning_status & TUNING_ACK) { //command received by slave
+            pdo_output->tuning_command = 0; //reset command
         } else if (pdo_output->tuning_command == 0) { //last command cleared, we can now send a new one
             if  (output->next_command) {
                 pdo_output->tuning_command = output->next_command;
@@ -557,7 +554,7 @@ void tuning(WINDOW *wnd, Cursor *cursor,
     tuning_input(*pdo_input, input);
 
     //print
-    display_tuning(wnd, *pdo_input, *input, *record_config, 0);
+    display_tuning(wnd, *pdo_output, *pdo_input, *input, *record_config, 0);
 
     //recorder
     tuning_record(record_config, *pdo_input, (*pdo_output), record_filename);

@@ -239,7 +239,11 @@ void tuning_command_handler(
                 motorcontrol_config.commutation_angle_offset = tuning_mode_state.value;
                 break;
             case TUNING_CMD_PHASES_INVERTED:
-                motorcontrol_config.phases_inverted = tuning_mode_state.value;
+                if (tuning_mode_state.value) {
+                    motorcontrol_config.phases_inverted = MOTOR_PHASES_INVERTED;
+                } else {
+                    motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
+                }
                 break;
             }
 

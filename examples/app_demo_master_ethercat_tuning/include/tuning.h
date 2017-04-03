@@ -69,6 +69,8 @@ typedef struct {
     int pole_pairs;
     int motion_polarity;
     int sensor_polarity;
+    int profiler;
+    int phases_inverted;
     int brake_release_strategy;
     int brake_flag;
     int error_status;

@@ -64,6 +64,7 @@
 0x200A,        0,          0 # DICT_MOMENT_OF_INERTIA
 
 #sensor config
+0x607C,        0,          0 # DICT_HOME_OFFSET
 0x2100,        1,          0 # DICT_FEEDBACK_SENSOR_PORTS 1
 0x2100,        2,     0x2201 # DICT_FEEDBACK_SENSOR_PORTS 2 # 0x2201 is BiSS 1
 0x2100,        3,          0 # DICT_FEEDBACK_SENSOR_PORTS 3
@@ -87,6 +88,5 @@
 #0x6083,        0,          0 # DICT_PROFILE_ACCELERATION
 #0x6084,        0,          0 # DICT_PROFILE_DECELERATION
 #0x607F,        0,          0 # DICT_PROFILE_VELOCITY
-#0x607C,        0,          0 # DICT_HOME_OFFSET
 #0x6073,        0,          0 # DICT_MAX_CURRENT
 #0x6079,        0,          0 # DICT_DC_LINK_CIRCUIT_VOLTAGE

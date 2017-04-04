@@ -106,6 +106,7 @@ int cm_sync_config_position_feedback(
         config.velocity_compute_period = i_coe.get_object_value(feedback_sensor_object, 4);
         config.polarity                = i_coe.get_object_value(feedback_sensor_object, 5);
         config.pole_pairs              = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
+        config.offset                  = i_coe.get_object_value(DICT_HOME_OFFSET, 0);
 
         //restart the service if the sensor type is changed
         if (old_sensor_type != config.sensor_type) {
@@ -347,6 +348,7 @@ void cm_default_config_position_feedback(
         i_coe.set_object_value(feedback_sensor_object, 3, config.resolution);
         i_coe.set_object_value(feedback_sensor_object, 4, config.velocity_compute_period);
         i_coe.set_object_value(feedback_sensor_object, 5, config.polarity);
+        i_coe.set_object_value(DICT_HOME_OFFSET, 0, config.offset);
 
         // sensor specific parameters
         switch (config.sensor_type) {

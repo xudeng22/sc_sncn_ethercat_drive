@@ -533,13 +533,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_velocity_value(actual_velocity, InOut);
         pdo_set_torque_value(actual_torque, InOut );
         pdo_set_position_value(actual_position, InOut);
-        pdo_set_secondary_position_value(send_to_master.position_additional, InOut);
-        pdo_set_secondary_velocity_value(send_to_master.velocity_additional, InOut);
+        pdo_set_secondary_position_value(send_to_master.secondary_position, InOut);
+        pdo_set_secondary_velocity_value(send_to_master.secondary_velocity, InOut);
         // FIXME this is one of the analog inputs?
         pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
         pdo_set_tuning_status(tuning_status, InOut);
         pdo_set_user_miso(user_miso, InOut);
-        pdo_set_timestamp(time/100, InOut);
+        pdo_set_timestamp(send_to_master.sensor_timestamp, InOut);
 
 //        xscope_int(ACTUAL_VELOCITY, actual_velocity);
 //        xscope_int(ACTUAL_POSITION, actual_position);

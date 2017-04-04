@@ -247,14 +247,14 @@ int main(void)
 
                     position_feedback_config_1.rem_16mt_config.filter = REM_16MT_FILTER;
 
-                    position_feedback_config_1.rem_14_config.hysteresis     = REM_14_SENSOR_HYSTERESIS ;
-                    position_feedback_config_1.rem_14_config.noise_setting  = REM_14_SENSOR_NOISE;
-                    position_feedback_config_1.rem_14_config.dyn_angle_comp = REM_14_SENSOR_DAE;
-                    position_feedback_config_1.rem_14_config.abi_resolution = REM_14_SENSOR_ABI_RES;
+                    position_feedback_config_1.rem_14_config.hysteresis              = REM_14_SENSOR_HYSTERESIS;
+                    position_feedback_config_1.rem_14_config.noise_settings          = REM_14_SENSOR_NOISE_SETTINGS;
+                    position_feedback_config_1.rem_14_config.dyn_angle_error_comp    = REM_14_DYN_ANGLE_ERROR_COMPENSATION;
+                    position_feedback_config_1.rem_14_config.abi_resolution_settings = REM_14_ABI_RESOLUTION_SETTINGS;
 
-                    position_feedback_config_1.qei_config.index_type  = QEI_SENSOR_INDEX_TYPE;
-                    position_feedback_config_1.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
-                    position_feedback_config_1.qei_config.port_number = QEI_SENSOR_PORT_NUMBER;
+                    position_feedback_config_1.qei_config.number_of_channels = QEI_SENSOR_NUMBER_OF_CHANNELS;
+                    position_feedback_config_1.qei_config.signal_type        = QEI_SENSOR_SIGNAL_TYPE;
+                    position_feedback_config_1.qei_config.port_number        = QEI_SENSOR_PORT_NUMBER;
 
                     position_feedback_config_1.hall_config.port_number = HALL_SENSOR_PORT_NUMBER;
 

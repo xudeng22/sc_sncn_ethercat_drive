@@ -121,9 +121,9 @@ int cm_sync_config_position_feedback(
         }
         switch (config.sensor_type) {
         case QEI_SENSOR:
-            config.qei_config.index_type  = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
-            config.qei_config.signal_type = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
-            config.qei_config.port_number = encoder_port_number;
+            config.qei_config.number_of_channels = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
+            config.qei_config.signal_type        = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
+            config.qei_config.port_number        = encoder_port_number;
             break;
 
         case BISS_SENSOR:
@@ -142,10 +142,10 @@ int cm_sync_config_position_feedback(
             break;
 
         case REM_14_SENSOR:
-            config.rem_14_config.hysteresis      = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
-            config.rem_14_config.noise_setting   = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
-            config.rem_14_config.dyn_angle_comp  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
-            config.rem_14_config.abi_resolution  = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
+            config.rem_14_config.hysteresis              = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
+            config.rem_14_config.noise_settings          = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
+            config.rem_14_config.dyn_angle_error_comp    = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
+            config.rem_14_config.abi_resolution_settings = i_coe.get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
             break;
 
         case REM_16MT_SENSOR:
@@ -354,7 +354,7 @@ void cm_default_config_position_feedback(
         switch (config.sensor_type) {
         case QEI_SENSOR:
             i_coe.set_object_value(feedback_sensor_object, 1, QEI_SENSOR);
-            i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS, config.qei_config.index_type);
+            i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS, config.qei_config.number_of_channels);
             i_coe.set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE,config.qei_config.signal_type);
             break;
 
@@ -376,9 +376,9 @@ void cm_default_config_position_feedback(
         case REM_14_SENSOR:
             i_coe.set_object_value(feedback_sensor_object, 1, REM_14_SENSOR);
             i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS, config.rem_14_config.hysteresis);
-            i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS, config.rem_14_config.noise_setting);
-            i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION, config.rem_14_config.dyn_angle_comp);
-            i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS, config.rem_14_config.abi_resolution);
+            i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS, config.rem_14_config.noise_settings);
+            i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION, config.rem_14_config.dyn_angle_error_comp);
+            i_coe.set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS, config.rem_14_config.abi_resolution_settings);
             break;
 
         case REM_16MT_SENSOR:

@@ -81,7 +81,10 @@ int cm_sync_config_position_feedback(
                     sensor_commutation = feedback_service_index;
                     sensor_motion_control = feedback_service_index;
                     break;
-                case SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY:
+                case SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_DISPLAY_ONLY:
+                    sensor_commutation = feedback_service_index;
+                    break;
+                case SENSOR_FUNCTION_COMMUTATION_ONLY:
                     sensor_commutation = feedback_service_index;
                     break;
                 case SENSOR_FUNCTION_MOTION_CONTROL:

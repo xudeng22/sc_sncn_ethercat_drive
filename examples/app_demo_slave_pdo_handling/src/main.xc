@@ -32,11 +32,13 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
 
     while (sdo_configured == 0) {
         select {
-            case i_coe.configuration_ready():
+            case i_coe.operational_state_change():
                 printstrln("Master requests OP mode - cyclic operation is about to start.");
-                sdo_configured = 1;
                 break;
         }
+
+        i_coe.configuration_done();
+        sdo_configured = 1;
 
         t when timerafter(time+delay) :> time;
     }
@@ -46,13 +48,13 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
 
     /* clear the notification before proceeding the operation */
-    i_coe.configuration_done();
 }
 
 /* Test application handling pdos from EtherCat */
 static void pdo_service(client interface i_coe_communication i_coe, client interface i_pdo_communication i_pdo)
 {
     timer t;
+    unsigned char device_in_opstate = 0;
 
     unsigned int delay = 100000;
     unsigned int time = 0;
@@ -63,10 +65,30 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
     t :> time;
 
     sdo_configuration(i_coe);
+    device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
 
     printstrln("Starting PDO protocol");
     while(1)
     {
+        select {
+            case i_coe.operational_state_change():
+                device_in_opstate = i_coe.in_op_state();
+                if (device_in_opstate) {
+                    printstrln("Device in opmode, \\o/");
+                } else {
+                    printstrln("Device not in opmode, sigh");
+                }
+                break;
+
+            default: /* don't do a blocking wait */
+                break;
+        }
+
+        if (device_in_opstate == 0) {
+            t when timerafter(time+delay) :> time;
+            continue;
+        }
+
         pdo_handler(i_pdo, InOut);
 
         /* Mirror incomimng value to the output */

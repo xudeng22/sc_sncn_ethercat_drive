@@ -214,25 +214,9 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
     return;
 }
 
-void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config)
+
+void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output)
 {
-    //init display
-    if (output->init == 0) {
-        output->init = 1;
-        clear();
-        cursor->row = number_slaves*3 + 2;
-        cursor->col = 2;
-        move(cursor->row, 0);
-        printw("> ");
-    }
-
-    //display slaves data
-    display_slaves(wnd, 0, pdo_output, pdo_input, number_slaves, *output);
-
-    //manage console commands
-    cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output, profile_config);
-
-    //manage slaves state machine and opmode
     for (int i=0; i<number_slaves; i++) {
         CIA402State current_state = cia402_read_state(pdo_input[i].statusword);
         switch(pdo_output[i].op_mode) {
@@ -260,7 +244,32 @@ void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_i
             break;
         }
     }
+}
 
-    //position profile
+
+void cyclic_synchronous_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config)
+{
+    //init display
+    if (output->init == 0) {
+        output->init = 1;
+        clear();
+        cursor->row = number_slaves*3 + 2;
+        //print help
+        print_help(wnd, (cursor->row)+2);
+        cursor->col = 2;
+        move(cursor->row, 0);
+        printw("> ");
+    }
+
+    //display slaves data
+    display_slaves(wnd, 0, pdo_output, pdo_input, number_slaves, *output);
+
+    //manage console commands
+    cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output, profile_config);
+
+    //manage slaves state machines and opmode
+    state_machine_control(pdo_output, pdo_input, number_slaves, output);
+
+    //use profile to generate a target for position/velocity
     target_generate(profile_config, pdo_output, pdo_input, number_slaves);
 }

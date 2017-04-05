@@ -27,6 +27,8 @@ void wmoveclr(WINDOW *wnd, int *row);
 
 int draw(WINDOW *wnd, char c, int row, int column);
 
+void print_help(WINDOW *wnd, int row);
+
 int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_input, size_t num_slaves, OutputValues output);
 
 #endif /* DISPLAY_H */

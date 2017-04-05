@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
     //init output structure
     OutputValues output = {0};
-    output.app_mode = CS_MODE;
+    output.app_mode = CYCLIC_SYNCHRONOUS_MODE;
     output.mode_1 = '@';
     output.mode_2 = '@';
     output.mode_3 = '@';
@@ -115,7 +115,6 @@ int main(int argc, char **argv)
         profile_config[i].profile_acceleration = 50;
         profile_config[i].max_position = 0x7fffffff;
         profile_config[i].min_position = -0x7fffffff;
-        profile_config[i].mode = POSITION_DIRECT;
         profile_config[i].ticks_per_turn = 65536; //default value
         if (sdo_enable) { //try to find the correct ticks_per_turn in the sdo config
             for (int sensor_port=1; sensor_port<=3; sensor_port++) {
@@ -164,8 +163,8 @@ int main(int argc, char **argv)
                     run_flag = 0;
                     break;
                 }
-            } else if (output.app_mode == CS_MODE){
-                cs_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output, profile_config);
+            } else if (output.app_mode == CYCLIC_SYNCHRONOUS_MODE){
+                cyclic_synchronous_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output, profile_config);
             }
 
             wrefresh(wnd); //refresh ncurses window

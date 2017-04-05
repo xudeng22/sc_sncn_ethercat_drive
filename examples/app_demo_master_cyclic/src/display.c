@@ -49,6 +49,17 @@ void print_state(WINDOW *wnd, CIA402State state)
     }
 }
 
+void print_help(WINDOW *wnd, int row)
+{
+    wmoveclr(wnd, &row);
+    wprintw(wnd,
+            "up | down arrows: select slave\n"
+            "p | v | t: switch to CSP | CSV | CST operation mode\n"
+            "s: disable operation, 'ss' to stop all the slaves\n"
+            "q: quit\n"
+            "[number]: set target (depends on the opmode)");
+}
+
 void wprintw_attr(WINDOW *wnd, char * str, int var, int attr)
 {
     wattron(wnd, attr);

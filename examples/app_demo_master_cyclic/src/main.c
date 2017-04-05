@@ -83,9 +83,6 @@ int main(int argc, char **argv)
     //init output structure
     OutputValues output = {0};
     output.app_mode = CYCLIC_SYNCHRONOUS_MODE;
-    output.mode_1 = '@';
-    output.mode_2 = '@';
-    output.mode_3 = '@';
     output.sign = 1;
     output.target_state = malloc(num_slaves*sizeof(CIA402State));
 

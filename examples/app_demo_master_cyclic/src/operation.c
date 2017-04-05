@@ -70,7 +70,7 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
             } else if (c2 == 'B') { //down arrow
                 output->select += 1;
             }
-            if (output->select > number_slaves-1) {
+            if (output->select > (int)number_slaves-1) {
                 output->select = 0;
             } else if (output->select < 0) {
                 output->select = number_slaves-1;
@@ -173,9 +173,9 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
         wprintw(wnd, "value %d, mode %c (%X), mode_2 %c, mode_3 %c", (*output).value, (*output).mode_1, (*output).mode_1, (*output).mode_2, (*output).mode_3);
 
         //reset
-        (*output).mode_1 = '@';
-        (*output).mode_2 = '@';
-        (*output).mode_3 = '@';
+        (*output).mode_1 = 0;
+        (*output).mode_2 = 0;
+        (*output).mode_3 = 0;
         (*output).value = 0;
         (*output).sign = 1;
 
@@ -197,9 +197,9 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
             } else if (c == '-') {
                 (*output).sign = -1;
             } else if (c != ' ' && c != '\n') {
-                if ((*output).mode_1 == '@') {
+                if ((*output).mode_1 == 0) {
                     (*output).mode_1 = c;
-                } else if ((*output).mode_2 == '@') {
+                } else if ((*output).mode_2 == 0) {
                     (*output).mode_2 = c;
                 } else {
                     (*output).mode_3 = c;

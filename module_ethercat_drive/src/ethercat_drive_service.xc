@@ -199,11 +199,11 @@ static void inline update_configuration(
     int restart = 0; //we need to restart position feedback service(s) when sensor type is changed
     int number_of_feedbacks_ports = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
     int feedback_port_index = 1;
-    restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1,
+    restart += cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1,
             sensor_commutation, sensor_motion_control,
             number_of_feedbacks_ports, feedback_port_index);
     if (!isnull(i_pos_feedback_2)) {
-        restart = cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2,
+        restart += cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2,
                 sensor_commutation, sensor_motion_control,
                 number_of_feedbacks_ports, feedback_port_index);
         if (restart)

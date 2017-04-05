@@ -29,7 +29,7 @@ typedef struct {
     int init;
     int select;
     int debug;
-    CIA402State target_state;
+    CIA402State *target_state;
     AppMode app_mode;
 } OutputValues;
 
@@ -80,7 +80,7 @@ typedef struct {
 #include "ecat_master.h"
 #include "display.h"
 
-void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input);
+void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput *pdo_input, int number_slaves);
 
 void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profiler_config);
 

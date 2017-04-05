@@ -298,12 +298,10 @@ int main(int argc, char **argv)
 
     if (sdo_enable) {
         /* SDO configuration of the slave */
-        for (int i = 0; i < num_slaves; i++) {
-            int ret = write_sdo_config(master, i, slave_config[i], sdo_config_parameter.param_count);
-            if (ret != 0) {
-                fprintf(stderr, "Error configuring SDOs\n");
-                return -1;
-            }
+        int ret = write_sdo_config(master, num_slaves-1, slave_config[num_slaves-1], sdo_config_parameter.param_count);
+        if (ret != 0) {
+            fprintf(stderr, "Error configuring SDOs\n");
+            return -1;
         }
     }
 

@@ -1,92 +1,104 @@
-#index, subindex,     axis 1, axis 2, axis 3, axis 4, axis 5, axis 6
+#index, subindex,      axis 1,      axis 2,      axis 3,      axis 4,      axis 5,      axis 6
 #offset
-0x2001,        0,       1201 # DICT_COMMUTATION_ANGLE_OFFSET
-0x2A00,        0,         20 # DICT_APPLIED_TUNING_TORQUE_PERCENT #for offset tuning
+0x2001,        0,        1201,        1202,        1202,        1204,        1205,        1206 # DICT_COMMUTATION_ANGLE_OFFSET
+0x2A00,        0,          20,          20,          20,          20,          20,          20 # DICT_APPLIED_TUNING_TORQUE_PERCENT #for offset tuning
 
 #motor config
-0x6075,        0,       4800 # DICT_MOTOR_RATED_CURRENT
-0x6076,        0,        270 # DICT_MOTOR_RATED_TORQUE
-0x2003,        1,         10 # DICT_MOTOR_SPECIFIC_SETTINGS POLE_PAIRS
-0x2003,        2,      60000 # DICT_MOTOR_SPECIFIC_SETTINGS TORQUE_CONSTANT
-0x2003,        3,     552000 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_RESISTANCE
-0x2003,        4,        720 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_INDUCTANCE     
-0x2003,        5,          1 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED
+0x6075,        0,        4800,        4800,        4800,        4800,        4800,        4800 # DICT_MOTOR_RATED_CURRENT
+0x6076,        0,         270,         270,         270,         270,         270,         270 # DICT_MOTOR_RATED_TORQUE
+0x2003,        1,          10,          10,          10,          10,          10,          10 # DICT_MOTOR_SPECIFIC_SETTINGS POLE_PAIRS
+0x2003,        2,       60000,       60000,       60000,       60000,       60000,       60000 # DICT_MOTOR_SPECIFIC_SETTINGS TORQUE_CONSTANT
+0x2003,        3,      552000,      552000,      552000,      552000,      552000,      552000 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_RESISTANCE
+0x2003,        4,         720,         720,         720,         720,         720,         720 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_INDUCTANCE     
+0x2003,        5,           1,           1,           1,           1,           1,           1 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED (1 normal, -1 inverted)
 
 #brake config
-0x2004,        1,      13000 # DICT_BREAK_RELEASE PULL_BRAKE_VOLTAGE
-0x2004,        2,       7000 # DICT_BREAK_RELEASE HOLD_BRAKE_VOLTAGE
-0x2004,        3,        500 # DICT_BREAK_RELEASE PULL_BRAKE_TIME 
-0x2004,        4,          0 # DICT_BREAK_RELEASE BRAKE_RELEASE_STRATEGY 
-0x2004,        5,          0 # DICT_BREAK_RELEASE BRAKE_RELEASE_DELAY 
-0x2004,        6,         24 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
+0x2004,        1,       13000,       13000,       13000,       13000,       13000,       13000 # DICT_BREAK_RELEASE PULL_BRAKE_VOLTAGE
+0x2004,        2,        7000,        7000,        7000,        7000,        7000,        7000 # DICT_BREAK_RELEASE HOLD_BRAKE_VOLTAGE
+0x2004,        3,         500,         500,         500,         500,         500,         500 # DICT_BREAK_RELEASE PULL_BRAKE_TIME 
+0x2004,        4,           0,           0,           0,           0,           0,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_STRATEGY 
+0x2004,        5,           0,           0,           0,           0,           0,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_DELAY 
+0x2004,        6,          24,          24,          24,          24,          24,          24 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
 
 #limits
-0x6072,        0,         50 # DICT_MAX_TORQUE
-0x6080,        0,       5000 # DICT_MAX_MOTOR_SPEED
-0x607D,        1,-0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
-0x607D,        2, 0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT
-0x607B,        1,-0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
-0x607B,        2, 0x7fffffff # DICT_POSITION_RANGE_LIMITS MAX
+0x6072,        0,          50,          50,          50,          50,          50,          50 # DICT_MAX_TORQUE
+0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_MAX_MOTOR_SPEED
+0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
+0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT
+0x607B,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
+0x607B,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_POSITION_RANGE_LIMITS MAX
 
 #recuperation
-#0x2005,        1,          0 # DICT_RECUPERATION enable
-#0x2005,        2,          0 # DICT_RECUPERATION MIN_BATTERY_ENERGY
-#0x2005,        3,          0 # DICT_RECUPERATION MAX_BATTERY_ENERGY 
-#0x2005,        4,          0 # DICT_RECUPERATION MIN_RECUPERATION_POWER
-#0x2005,        5,          0 # DICT_RECUPERATION MAX_RECUPERATION_POWER
-#0x2005,        6,          0 # DICT_RECUPERATION MINIMUM_RECUPERATION_SPEED
-#0x2005,        7,          0 # DICT_RECUPERATION MAXIMUM_RECUPERATION_SPEED
+#0x2005,        1,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION enable
+#0x2005,        2,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MIN_BATTERY_ENERGY
+#0x2005,        3,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MAX_BATTERY_ENERGY 
+#0x2005,        4,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MIN_RECUPERATION_POWER
+#0x2005,        5,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MAX_RECUPERATION_POWER
+#0x2005,        6,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MINIMUM_RECUPERATION_SPEED
+#0x2005,        7,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MAXIMUM_RECUPERATION_SPEED
 
 #protection
-0x2006,        1,         10 # DICT_PROTECTION MIN_DC_VOLTAGE
-0x2006,        2,         60 # DICT_PROTECTION MAX_DC_VOLTAGE
-0x2006,        3,        100 # DICT_PROTECTION MAX_CURRENT 
+0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
+0x2006,        2,          60,          60,          60,          60,          60,          60 # DICT_PROTECTION MAX_DC_VOLTAGE
+0x2006,        3,         100,         100,         100,         100,         100,         100 # DICT_PROTECTION MAX_CURRENT 
 
 #torque position velocity control
 #main parameters
-0x607E,        0,       0x00 # DICT_POLARITY (bit 0x80 invert in CSP mode, bit 0x40 invert in CSV mode)
-0x2012,        1,      16000 # DICT_POSITION_CONTROLLER kp
-0x2012,        2,        280 # DICT_POSITION_CONTROLLER ki
-0x2012,        3,      41000 # DICT_POSITION_CONTROLLER kd
-0x2012,        4,       1000 # DICT_POSITION_CONTROLLER integral limit
-0x2011,        1,     700000 # DICT_VELOCITY_CONTROLLER Kp
-0x2011,        2,      20000 # DICT_VELOCITY_CONTROLLER ki
-0x2011,        3,          0 # DICT_VELOCITY_CONTROLLER kd
-0x2011,        4,        900 # DICT_VELOCITY_CONTROLLER integral limit
-0x2002,        0,        103 # DICT_POSITION_CONTROL_STRATEGY #103: non linear  
-0x6086,        0,          0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
-# additional
-#0x2007,        1,          0 # DICT_FILTER_COEFFICIENTS 1
-#0x2007,        2,          0 # DICT_FILTER_COEFFICIENTS 2
-0x2010,        1,         40 # DICT_TORQUE_CONTROLLER Kp
-0x2010,        2,         40 # DICT_TORQUE_CONTROLLER Ki
-0x2010,        3,          0 # DICT_TORQUE_CONTROLLER Kd
-0x200A,        0,          0 # DICT_MOMENT_OF_INERTIA
+0x607E,        0,        0x00,        0x00,        0x00,        0x00,        0x00,        0x00 # DICT_POLARITY (bit 0x80 invert in CSP mode,  bit 0x40 invert in CSV mode)
+0x2012,        1,       16000,       16000,       16000,       16000,       16000,       16000 # DICT_POSITION_CONTROLLER kp
+0x2012,        2,         280,         280,         280,         280,         280,         280 # DICT_POSITION_CONTROLLER ki
+0x2012,        3,       41000,       41000,       41000,       41000,       41000,       41000 # DICT_POSITION_CONTROLLER kd
+0x2012,        4,        1000,        1000,        1000,        1000,        1000,        1000 # DICT_POSITION_CONTROLLER integral limit
+0x2011,        1,      700000,      700000,      700000,      700000,      700000,      700000 # DICT_VELOCITY_CONTROLLER Kp
+0x2011,        2,       20000,       20000,       20000,       20000,       20000,       20000 # DICT_VELOCITY_CONTROLLER ki
+0x2011,        3,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER kd
+0x2011,        4,         900,         900,         900,         900,         900,         900 # DICT_VELOCITY_CONTROLLER integral limit
+0x2002,        0,         103,         103,         103,         103,         103,         103 # DICT_POSITION_CONTROL_STRATEGY #103: non linear  
+0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
+# other
+#0x2007,        1,           0,           0,           0,           0,           0,           0 # DICT_FILTER_COEFFICIENTS 1
+#0x2007,        2,           0,           0,           0,           0,           0,           0 # DICT_FILTER_COEFFICIENTS 2
+0x2010,        1,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Kp
+0x2010,        2,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Ki
+0x2010,        3,           0,           0,           0,           0,           0,           0 # DICT_TORQUE_CONTROLLER Kd
+0x200A,        0,           0,           0,           0,           0,           0,           0 # DICT_MOMENT_OF_INERTIA
 
 #sensor config
-0x607C,        0,          0 # DICT_HOME_OFFSET
-0x2100,        1,          0 # DICT_FEEDBACK_SENSOR_PORTS 1
-0x2100,        2,     0x2201 # DICT_FEEDBACK_SENSOR_PORTS 2 # 0x2201 is BiSS 1
-0x2100,        3,          0 # DICT_FEEDBACK_SENSOR_PORTS 3
-#biss
-0x2201,        1,          4 # SENSOR TYPE (4 is BiSS)
-0x2201,        2,          1 # SUB_BISS_ENCODER_FUNCTION
-0x2201,        3,     262144 # SUB_BISS_ENCODER_RESOLUTION
-0x2201,        4,         50 # SUB_BISS_ENCODER_VELOCITY_CALCULATION_PERIOD
-0x2201,        5,          0 # SUB_BISS_ENCODER_POLARITY (0 normal, 1 inverted)
-0x2201,        6,         10 # SUB_BISS_ENCODER_MULTITURN_RESOLUTION
-0x2201,        7,       4000 # SUB_BISS_ENCODER_CLOCK_FREQUENCY
-0x2201,        8,         20 # SUB_BISS_ENCODER_TIMEOUT
-0x2201,        9,       0x30 # SUB_BISS_ENCODER_CRC_POLYNOM
-0x2201,       10,          8 # SUB_BISS_ENCODER_CLOCK_PORT_CONFIG
-0x2201,       12,          0 # SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS
-0x2201,       13,         30 # SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY
+0x607C,        0,           0,           0,           0,           0,           0,           0 # DICT_HOME_OFFSET
+0x2100,        1,           0,           0,           0,           0,           0,           0 # DICT_FEEDBACK_SENSOR_PORTS 1
+0x2100,        2,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201 # DICT_FEEDBACK_SENSOR_PORTS 2 # 0x2201 is BiSS 1
+0x2100,        3,           0,           0,           0,           0,           0,           0 # DICT_FEEDBACK_SENSOR_PORTS 3
+#biss 1
+0x2201,        1,           4,           4,           4,           4,           4,           4 # SENSOR TYPE (4 is BiSS)
+0x2201,        2,           1,           1,           1,           1,           1,           1 # SUB_ENCODER_FUNCTION (1 is commutation and motion control)
+0x2201,        3,      262144,      262144,      262144,      262144,      262144,      262144 # SUB_ENCODER_RESOLUTION
+0x2201,        4,          50,          50,          50,          50,          50,          50 # SUB_ENCODER_VELOCITY_CALCULATION_PERIOD
+0x2201,        5,          0,            0,           0,           0,           0,           0 # SUB_ENCODER_POLARITY (0 normal,  1 inverted)
+0x2201,        6,          10,          10,          10,          10,          10,          10 # SUB_BISS_ENCODER_MULTITURN_RESOLUTION
+0x2201,        7,        4000,        4000,        4000,        4000,        4000,        4000 # SUB_BISS_ENCODER_CLOCK_FREQUENCY
+0x2201,        8,          20,          20,          20,          20,          20,          20 # SUB_BISS_ENCODER_TIMEOUT
+0x2201,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # SUB_BISS_ENCODER_CRC_POLYNOM
+0x2201,       10,           8,           8,           8,           8,           8,           8 # SUB_BISS_ENCODER_CLOCK_PORT_CONFIG
+0x2201,       12,           0,           0,           0,           0,           0,           0 # SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS
+0x2201,       13,          30,          30,          30,          30,          30,          30 # SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY
+#hall 1
+0x2207,        1,           1,           1,           4,           4,           4,           4 # SENSOR TYPE (1 is Hall)
+0x2207,        2,           1,           1,           1,           1,           1,           1 # SUB_ENCODER_FUNCTION (1 is commutation and motion control)
+0x2207,        3,       16384,       16384,       16384,       16384,       16384,       16384 # SUB_ENCODER_RESOLUTION
+0x2207,        4,        1000,        1000,        1000,        1000,        1000,        1000 # SUB_ENCODER_VELOCITY_CALCULATION_PERIOD
+0x2207,        5,           0,          0,            0,           0,           0,           0 # SUB_ENCODER_POLARITY (0 normal,  1 inverted)
+0x2207,        6,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_0
+0x2207,        7,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_1
+0x2207,        8,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_2
+0x2207,        9,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_3
+0x2207,       10,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_4
+0x2207,       11,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_5
 
 #,        0,          0 # 
 #unknown ???
-#0x6085,        0,          0 # DICT_QUICK_STOP_DECELERATION
-#0x6083,        0,          0 # DICT_PROFILE_ACCELERATION
-#0x6084,        0,          0 # DICT_PROFILE_DECELERATION
-#0x607F,        0,          0 # DICT_PROFILE_VELOCITY
-#0x6073,        0,          0 # DICT_MAX_CURRENT
-#0x6079,        0,          0 # DICT_DC_LINK_CIRCUIT_VOLTAGE
+#0x6085,        0,           0,           0,           0,           0,           0,           0 # DICT_QUICK_STOP_DECELERATION
+#0x6083,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_ACCELERATION
+#0x6084,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_DECELERATION
+#0x607F,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_VELOCITY
+#0x6073,        0,           0,           0,           0,           0,           0,           0 # DICT_MAX_CURRENT
+#0x6079,        0,           0,           0,           0,           0,           0,           0 # DICT_DC_LINK_CIRCUIT_VOLTAGE

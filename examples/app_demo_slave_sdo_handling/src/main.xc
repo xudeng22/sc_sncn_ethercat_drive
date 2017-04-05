@@ -383,9 +383,13 @@ static void sdo_service(client interface i_coe_communication i_coe, server inter
      *  moment to read all necessary configuration parameters from the dictionary.
      */
     select {
-    case i_coe.configuration_ready():
-        printstrln("Master requests OP mode - cyclic operation is about to start.");
-        read_config = 1;
+    case i_coe.operational_state_change():
+        if (i_coe.in_op_state()) {
+            printstrln("Master requests OP mode - cyclic operation is about to start.");
+            read_config = 1;
+        } else {
+            printstrln("Master not in OP state, what happend here?");
+        }
         break;
     }
 
@@ -398,9 +402,14 @@ static void sdo_service(client interface i_coe_communication i_coe, server inter
 
     while (1) {
         select {
-        case i_coe.configuration_ready():
-            printstrln("Master requests OP mode - cyclic operation is about to start.");
-            read_config = 1;
+        case i_coe.operational_state_change():
+            if (i_coe.in_op_state()) {
+                printstrln("Master requests OP mode - cyclic operation is about to start.");
+                read_config = 1;
+            } else {
+                printstrln("Master leaves OP mode - stop cyclic operation.");
+                read_config = 0;
+            }
             break;
 
         case i_cmd.get_object_value(uint16_t index, uint8_t subindex, uint32_t &value) -> { int err }:

@@ -124,23 +124,38 @@ int cm_sync_config_position_feedback(
         }
         switch (config.sensor_type) {
         case QEI_SENSOR:
-            config.qei_config.number_of_channels = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
+            QEI_SignalType old_qei_signal_type = config.qei_config.signal_type;
             config.qei_config.signal_type        = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
+            if (config.qei_config.signal_type != old_qei_signal_type || config.qei_config.port_number != encoder_port_number) {
+                restart = 1;
+            }
+            config.qei_config.number_of_channels = i_coe.get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
             config.qei_config.port_number        = encoder_port_number;
             break;
 
         case BISS_SENSOR:
-            config.biss_config.multiturn_resolution = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
+            BISSClockPortConfig old_biss_clock_port_config = config.biss_config.clock_port_config;
+            int old_biss_clock_frequency = config.biss_config.clock_frequency;
+            config.biss_config.clock_port_config    = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
             config.biss_config.clock_frequency      = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
+            if (config.biss_config.clock_port_config != old_biss_clock_port_config ||
+                    config.biss_config.clock_frequency != old_biss_clock_frequency ||
+                    config.biss_config.data_port_number != encoder_port_number)
+            {
+                restart = 1;
+            }
+            config.biss_config.multiturn_resolution = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
             config.biss_config.timeout              = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT);
             config.biss_config.crc_poly             = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM);
-            config.biss_config.clock_port_config    = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
-            config.biss_config.data_port_number     = encoder_port_number;
             config.biss_config.filling_bits         = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
             config.biss_config.busy                 = i_coe.get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
+            config.biss_config.data_port_number     = encoder_port_number;
             break;
 
         case HALL_SENSOR:
+            if (config.hall_config.port_number != encoder_port_number) {
+                restart = 1;
+            }
             config.hall_config.port_number = encoder_port_number;
             break;
 

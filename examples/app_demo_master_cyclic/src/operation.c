@@ -89,7 +89,7 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
             break;
         case OPMODE_CSV:
             profile_config[output->select].step = 0;
-            profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile), -pdo_input[output->select].velocity_value, pdo_input[output->select].velocity_value,
+            profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile), -pdo_output[output->select].target_velocity, pdo_input[output->select].velocity_value,
                     profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration, profile_config[output->select].ticks_per_turn);
             break;
         case OPMODE_CST:

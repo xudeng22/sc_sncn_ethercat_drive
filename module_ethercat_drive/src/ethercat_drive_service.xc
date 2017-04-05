@@ -74,7 +74,7 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     unsigned int time;
 
     select {
-    case i_coe.configuration_ready():
+    case i_coe.operational_state_change():
         //printstrln("Master requests OP mode - cyclic operation is about to start.");
         break;
     }
@@ -414,6 +414,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
      */
     sdo_wait_first_config(i_coe);
 
+    /* if we reach this point the EtherCAT service is considered in OPMODE */
+    int drive_in_opstate = 1;
+
     /* start operation */
     int read_configuration = 1;
 
@@ -423,9 +426,12 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /* FIXME reduce code duplication with above init sequence */
         /* Check if we reenter the operation mode. If so, update the configuration please. */
         select {
-            case i_coe.configuration_ready():
+            case i_coe.operational_state_change():
                 //printstrln("Master requests OP mode - cyclic operation is about to start.");
-                read_configuration = 1;
+                drive_in_opstate = i_coe.in_op_state();
+                if (drive_in_opstate) {
+                    read_configuration = 1;
+                }
                 break;
             default:
                 break;
@@ -559,6 +565,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     inactive_timeout_flag = 1;
                 }
             }
+        } else if (communication_active != 0 && drive_in_opstate != 1) {
+            state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
+            inactive_timeout_flag = 1;
         } else {
             comm_inactive_flag = 0;
         }

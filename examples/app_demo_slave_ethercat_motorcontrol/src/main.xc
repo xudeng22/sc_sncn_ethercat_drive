@@ -233,7 +233,7 @@ int main(void)
                     position_feedback_config_1.pole_pairs  = MOTOR_POLE_PAIRS;
                     position_feedback_config_1.ifm_usec    = IFM_TILE_USEC;
                     position_feedback_config_1.max_ticks   = SENSOR_MAX_TICKS;
-                    position_feedback_config_1.offset      = 0;
+                    position_feedback_config_1.offset      = HOME_OFFSET;
                     position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;
 
                     position_feedback_config_1.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;

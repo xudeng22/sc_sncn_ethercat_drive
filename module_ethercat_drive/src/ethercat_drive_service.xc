@@ -40,7 +40,7 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode fault)
+static int get_cia402_error_code(FaultCode fault, SensorError sensor_error)
 {
     int error_code = 0;
 
@@ -56,9 +56,18 @@ static int get_cia402_error_code(FaultCode fault)
         break;
 #if 0 /* FIXME undefined symbol */
     case OVER_TEMPERATURE:
-        error_code = ERROR_CODE_EXCESS_TEMPEATUR_DEVICE;
+        error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
         break;
 #endif
+    case NO_FAULT: //if there is no motorcontrol fault check sensor fault
+        switch(sensor_error) {
+        case SENSOR_NO_ERROR:
+            break;
+        default:
+            error_code = ERROR_CODE_SENSOR;
+            break;
+        }
+        break;
     default: /* a fault occured but could not be specified further */
         error_code = ERROR_CODE_CONTROL;
         break;
@@ -496,6 +505,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_position = send_to_master.position; //i_position_control.get_position();
         actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
         FaultCode fault = send_to_master.error_status;
+        SensorError sensor_error = send_to_master.sensor_error;
 
 //        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
 //        xscope_int(ACTUAL_POSITION, actual_position);
@@ -504,7 +514,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /*
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
          */
-        if (fault != NO_FAULT) {
+        if (fault != NO_FAULT || sensor_error != SENSOR_NO_ERROR) {
             update_checklist(checklist, opmode, 1);
             if (fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
@@ -517,7 +527,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(fault);
+            int error_code = get_cia402_error_code(fault, sensor_error);
             i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
         }
 

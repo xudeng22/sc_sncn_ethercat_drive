@@ -9,7 +9,9 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_ethercat_motorcontrol
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = config_motor module_adc module_biss lib_bldc_torque_control module_board-support module_controllers module_ethercat module_ethercat_drive module_filters module_gpio module_hall module_misc module_motion_control module_pdo_handler module_position_feedback module_profile module_pwm module_qei module_reboot module_rem_14 module_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog
+USED_MODULES = config_motor module_adc module_biss module_board-support module_controllers module_ethercat lib_bldc_torque_control  module_ethercat_drive module_filters module_gpio module_hall module_misc module_motion_control module_pdo_handler module_position_feedback module_profile module_pwm module_qei module_reboot module_rem_14 module_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog
+# I expect this one to link against the wrong library
+#USED_MODULES = config_motor module_adc module_biss module_board-support module_controllers lib_bldc_torque_control module_ethercat  module_ethercat_drive module_filters module_gpio module_hall module_misc module_motion_control module_pdo_handler module_position_feedback module_profile module_pwm module_qei module_reboot module_rem_14 module_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog
 
 # When running the app with xtime (or xrun) you need to use the ethercat_service_standalone library.
 # When flashing the node you need to use the ethercat_service library (selected by default).

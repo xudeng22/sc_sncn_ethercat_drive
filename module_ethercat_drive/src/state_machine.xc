@@ -309,7 +309,7 @@ int8_t update_opmode(int8_t opmode, int8_t opmode_request,
         uint8_t polarity)
 {
     if (opmode != opmode_request) {
-        motion_control_config = i_motion_control.get_position_velocity_control_config();
+        motion_control_config = i_motion_control.get_motion_control_config();
         motion_control_config.polarity = MOTION_POLARITY_NORMAL;
         switch(opmode_request) {
         case OPMODE_NONE:
@@ -331,7 +331,7 @@ int8_t update_opmode(int8_t opmode, int8_t opmode_request,
             opmode_request = OPMODE_NONE;
             break;
         }
-        i_motion_control.set_position_velocity_control_config(motion_control_config);
+        i_motion_control.set_motion_control_config(motion_control_config);
         return opmode_request;
     }
     return opmode;

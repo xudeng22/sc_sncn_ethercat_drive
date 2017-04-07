@@ -232,7 +232,7 @@ void tuning_command_handler(
 
         //set config structures
         if (tuning_mode_state.command & TUNING_CMD_SET_MOTION_CONTROL_MASK) {
-            i_motion_control.set_position_velocity_control_config(motion_ctrl_config);
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
         }
         if (tuning_mode_state.command & TUNING_CMD_SET_MOTOR_CONTROL_MASK) {
             tuning_mode_state.brake_flag = 0;

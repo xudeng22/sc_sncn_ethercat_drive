@@ -253,7 +253,7 @@ void cm_sync_config_pos_velocity_control(
         MotionControlConfig &position_config,
         int sensor_resolution)
 {
-    i_motion_control.get_position_velocity_control_config();
+    i_motion_control.get_motion_control_config();
 
     //limits
     position_config.min_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
@@ -285,7 +285,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.pull_brake_time       = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME);
     position_config.hold_brake_voltage    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE);
 
-    i_motion_control.set_position_velocity_control_config(position_config);
+    i_motion_control.set_motion_control_config(position_config);
 }
 
 /*
@@ -480,7 +480,7 @@ void cm_default_config_pos_velocity_control(
         client interface MotionControlInterface i_motion_control
         )
 {
-    MotionControlConfig position_config = i_motion_control.get_position_velocity_control_config();
+    MotionControlConfig position_config = i_motion_control.get_motion_control_config();
 
     //limits
     i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
@@ -521,5 +521,5 @@ void cm_default_config_pos_velocity_control(
 //    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.position_fc);
 //    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_VELOCITY_FILTER_COEFFICIENT, position_config.velocity_fc);
 
-    i_motion_control.set_position_velocity_control_config(position_config);
+    i_motion_control.set_motion_control_config(position_config);
 }

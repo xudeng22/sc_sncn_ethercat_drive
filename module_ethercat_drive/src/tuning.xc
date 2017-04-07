@@ -38,6 +38,9 @@ int tuning_handler_ethercat(
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
+    if (status_mux > TUNING_STATUS_MUX_SENSOR_ERROR) {
+        status_mux = 1;
+    }
     switch(status_mux) {
     case TUNING_STATUS_MUX_OFFSET: //send offset
         user_miso = motorcontrol_config.commutation_angle_offset;
@@ -88,9 +91,7 @@ int tuning_handler_ethercat(
         user_miso = motion_ctrl_config.brake_release_strategy;
         break;
     case TUNING_STATUS_MUX_SENSOR_ERROR:// sensor error
-    default:
         user_miso = upstream_control_data.sensor_error;
-        status_mux = 0;
         break;
     }
 

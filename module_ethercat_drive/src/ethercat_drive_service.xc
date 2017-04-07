@@ -40,7 +40,7 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError sensor_error)
+static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error, SensorError commutation_sensor_error)
 {
     int error_code = 0;
 
@@ -59,15 +59,25 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError senso
         error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
         break;
 #endif
-    /* if there is no motorcontrol fault check sensor fault
-     * it means that motorcontrol faults take precedence over sensor faults
-     * */
     case NO_FAULT:
-        switch(sensor_error) {
+        /* if there is no motorcontrol fault check commutation sensor fault
+         * it means that motorcontrol faults take precedence over sensor faults
+         * */
+        switch(commutation_sensor_error) {
         case SENSOR_NO_ERROR:
+            /* if there is no motorcontrol fault check motion sensor fault
+             * it means that commutation sensor faults take precedence over motion sensor faults
+             * */
+            switch(motion_sensor_error) {
+            case SENSOR_NO_ERROR:
+                break;
+            default:
+                error_code = ERROR_CODE_SENSOR;
+                break;
+            }
             break;
         default:
-            error_code = ERROR_CODE_SENSOR;
+            error_code = ERROR_CODE_MOTOR_COMMUTATION;
             break;
         }
         break;
@@ -510,16 +520,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_position = send_to_master.position; //i_motion_control.get_position();
         actual_torque   = send_to_master.computed_torque; //i_motion_control.get_torque(); /* FIXME expected future implementation! */
         FaultCode motorcontrol_fault = send_to_master.error_status;
-        SensorError sensor_error = send_to_master.sensor_error;
+        SensorError motion_sensor_error = send_to_master.last_sensor_error;
+        SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
 
 //        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
 //        xscope_int(ACTUAL_POSITION, actual_position);
 //        xscope_int(FAMOUS_FAULT, motorcontrol_fault * 1000);
 
         /*
+         * Check states of the motor drive, sensor drive and control servers
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
          */
-        if (motorcontrol_fault != NO_FAULT || sensor_error != SENSOR_NO_ERROR) {
+        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
             update_checklist(checklist, opmode, 1);
             if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
@@ -532,8 +544,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(motorcontrol_fault, sensor_error);
+            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error);
             i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
+        } else {
+            update_checklist(checklist, opmode, 0); //no error
         }
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
@@ -578,8 +592,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             comm_inactive_flag = 0;
         }
 
-        /* Check states of the motor drive, sensor drive and control servers */
-        update_checklist(checklist, opmode, motorcontrol_fault);
 
         /*
          * new, perform actions according to state
@@ -728,23 +740,23 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         i_torque_control.reset_faults();
                         checklist.fault_reset_wait = true;
                     }
-                    if (sensor_error != SENSOR_NO_ERROR) {
+                    if (motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
                         if (!isnull(i_position_feedback_2)) {
-                            i_position_feedback_2.exit();
+                            i_position_feedback_2.set_config(position_feedback_config_2);
                         }
-                        i_position_feedback_1.exit();
+                        i_position_feedback_1.set_config(position_feedback_config_1);
                         checklist.fault_reset_wait = true;
                     }
                     //start timer
                     t :> fault_reset_wait_time;
-                    fault_reset_wait_time += MSEC_STD*500; //wait 500ms before restarting the motorcontrol
+                    fault_reset_wait_time += MSEC_STD*1000; //wait 1s before restarting the motorcontrol
                 } else if (checklist.fault_reset_wait == true) {
                     t :> t_now;
                     //check if timer ended
                     if (timeafter(t_now, fault_reset_wait_time)) {
                         checklist.fault_reset_wait = false;
                         /* recheck fault to see if it's realy removed */
-                        if (motorcontrol_fault != NO_FAULT || sensor_error != SENSOR_NO_ERROR) {
+                        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
                             update_checklist(checklist, opmode, 1);
                         }
                     }

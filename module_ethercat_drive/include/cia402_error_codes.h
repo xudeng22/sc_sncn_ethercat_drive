@@ -18,6 +18,7 @@
 #define ERROR_CODE_EXCESS_TEMPERATURE_DEVICE        0x4210
 
 #define ERROR_CODE_SENSOR                           0x7300
+#define ERROR_CODE_MOTOR_COMMUTATION                0x7122
 
 /* for all error in this control which could not further specified */
 #define ERROR_CODE_CONTROL                          0x8A00

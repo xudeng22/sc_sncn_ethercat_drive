@@ -32,7 +32,7 @@ static int tick2bits(int tick_resolution)
 void cm_sync_config_hall_states(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface TorqueControlInterface client ?i_torque_control,
         PositionFeedbackConfig &feedback_config,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_index)
@@ -187,15 +187,15 @@ int cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface TorqueControlInterface client ?i_torque_control,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_commutation,
         int sensor_commutation_type)
 {
-    if (isnull(i_motorcontrol))
+    if (isnull(i_torque_control))
         return;
 
-    motorcontrol_config = i_motorcontrol.get_config();
+    motorcontrol_config = i_torque_control.get_config();
 
     motorcontrol_config.dc_bus_voltage           = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     motorcontrol_config.phases_inverted          = sext(i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED), 8);
@@ -228,21 +228,7 @@ void cm_sync_config_motor_control(
         motorcontrol_config.hall_state_angle[5] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
     }
 
-
-    //not in main.xc
-    /* Read recuperation config */
-    //FIXME: do we set recuperation settings
-//    motorcontrol_config.recuperation    = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED);
-//    motorcontrol_config.battery_e_max   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY);
-//    motorcontrol_config.battery_e_min   = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY);
-//    motorcontrol_config.regen_p_max     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER);
-//    motorcontrol_config.regen_p_min     = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER);
-//    motorcontrol_config.regen_speed_min = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED);
-//    motorcontrol_config.regen_speed_max = i_coe.get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
-
-    //motorcontrol_config.max_current              = i_coe.get_object_value(DICT_MAX_CURRENT, 0);
-
-    i_motorcontrol.set_config(motorcontrol_config);
+    i_torque_control.set_config(motorcontrol_config);
 }
 
 void cm_sync_config_profiler(
@@ -263,11 +249,11 @@ void cm_sync_config_profiler(
 
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface MotionControlInterface i_motion_control,
         MotionControlConfig &position_config,
         int sensor_resolution)
 {
-    i_position_control.get_position_velocity_control_config();
+    i_motion_control.get_position_velocity_control_config();
 
     //limits
     position_config.min_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
@@ -299,11 +285,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.pull_brake_time       = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME);
     position_config.hold_brake_voltage    = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE);
 
-    //not in main.xc
-//    position_config.position_fc     = i_coe.get_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT);
-//    position_config.velocity_fc     = i_coe.get_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_VELOCITY_FILTER_COEFFICIENT);
-
-    i_position_control.set_position_velocity_control_config(position_config);
+    i_motion_control.set_position_velocity_control_config(position_config);
 }
 
 /*
@@ -416,14 +398,14 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface TorqueControlInterface client ?i_torque_control,
         MotorcontrolConfig &motorcontrol_config)
 
 {
-    if (isnull(i_motorcontrol))
+    if (isnull(i_torque_control))
         return;
 
-    motorcontrol_config = i_motorcontrol.get_config();
+    motorcontrol_config = i_torque_control.get_config();
 
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.dc_bus_voltage);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED, motorcontrol_config.phases_inverted);
@@ -495,10 +477,10 @@ void cm_default_config_profiler(
 
 void cm_default_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
-        client interface PositionVelocityCtrlInterface i_position_control
+        client interface MotionControlInterface i_motion_control
         )
 {
-    MotionControlConfig position_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_config = i_motion_control.get_position_velocity_control_config();
 
     //limits
     i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
@@ -539,5 +521,5 @@ void cm_default_config_pos_velocity_control(
 //    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.position_fc);
 //    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_VELOCITY_FILTER_COEFFICIENT, position_config.velocity_fc);
 
-    i_position_control.set_position_velocity_control_config(position_config);
+    i_motion_control.set_position_velocity_control_config(position_config);
 }

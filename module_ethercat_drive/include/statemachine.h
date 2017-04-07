@@ -33,6 +33,7 @@ typedef int bool;
 
 typedef struct S_Check_list {
     bool fault;
+    bool fault_reset_wait;
 } check_list;
 
 typedef enum e_States {

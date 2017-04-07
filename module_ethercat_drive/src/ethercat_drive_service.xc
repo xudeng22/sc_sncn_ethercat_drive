@@ -40,11 +40,11 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode fault, SensorError sensor_error)
+static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError sensor_error)
 {
     int error_code = 0;
 
-    switch (fault) {
+    switch (motorcontrol_fault) {
     case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
         error_code = ERROR_CODE_PHASE_FAILURE_L1;
         break;
@@ -59,7 +59,10 @@ static int get_cia402_error_code(FaultCode fault, SensorError sensor_error)
         error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
         break;
 #endif
-    case NO_FAULT: //if there is no motorcontrol fault check sensor fault
+    /* if there is no motorcontrol fault check sensor fault
+     * it means that motorcontrol faults take precedence over sensor faults
+     * */
+    case NO_FAULT:
         switch(sensor_error) {
         case SENSOR_NO_ERROR:
             break;
@@ -391,6 +394,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
+    unsigned int fault_reset_wait_time;
+    unsigned int t_now;
 
     int limit_switch_type;
     int homing_method;
@@ -504,30 +509,30 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         actual_velocity = send_to_master.velocity; //i_position_control.get_velocity();
         actual_position = send_to_master.position; //i_position_control.get_position();
         actual_torque   = send_to_master.computed_torque; //i_position_control.get_torque(); /* FIXME expected future implementation! */
-        FaultCode fault = send_to_master.error_status;
+        FaultCode motorcontrol_fault = send_to_master.error_status;
         SensorError sensor_error = send_to_master.sensor_error;
 
 //        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
 //        xscope_int(ACTUAL_POSITION, actual_position);
-//        xscope_int(FAMOUS_FAULT, fault * 1000);
+//        xscope_int(FAMOUS_FAULT, motorcontrol_fault * 1000);
 
         /*
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
          */
-        if (fault != NO_FAULT || sensor_error != SENSOR_NO_ERROR) {
+        if (motorcontrol_fault != NO_FAULT || sensor_error != SENSOR_NO_ERROR) {
             update_checklist(checklist, opmode, 1);
-            if (fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
+            if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (fault == UNDER_VOLTAGE_NO_1) {
+            } else if (motorcontrol_fault == UNDER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-            } else if (fault == OVER_VOLTAGE_NO_1) {
+            } else if (motorcontrol_fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
-            } else if (fault == 99/*OVER_TEMPERATURE*/) {
+            } else if (motorcontrol_fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(fault, sensor_error);
+            int error_code = get_cia402_error_code(motorcontrol_fault, sensor_error);
             i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
         }
 
@@ -574,7 +579,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         }
 
         /* Check states of the motor drive, sensor drive and control servers */
-        update_checklist(checklist, opmode, fault);
+        update_checklist(checklist, opmode, motorcontrol_fault);
 
         /*
          * new, perform actions according to state
@@ -711,7 +716,40 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 break;
 
             case S_FAULT:
-                /* wait until fault reset from the control device appears */
+                /* Wait until fault reset from the control device appears.
+                 * When we receive the fault reset, start a timer
+                 * and send the fault reset commands.
+                 * The fault can only be reset after the end of the timer.
+                 * This is because the motorcontrol needs time before restarting.
+                 */
+                if (read_controlword_fault_reset(controlword) && checklist.fault_reset_wait == false) {
+                    //reset fault in motorcontrol and position feedback
+                    if (motorcontrol_fault != NO_FAULT) {
+                        i_motorcontrol.reset_faults();
+                        checklist.fault_reset_wait = true;
+                    }
+                    if (sensor_error != SENSOR_NO_ERROR) {
+                        if (!isnull(i_position_feedback_2)) {
+                            i_position_feedback_2.exit();
+                        }
+                        i_position_feedback_1.exit();
+                        checklist.fault_reset_wait = true;
+                    }
+                    //start timer
+                    t :> fault_reset_wait_time;
+                    fault_reset_wait_time += MSEC_STD*500; //wait 500ms before restarting the motorcontrol
+                } else if (checklist.fault_reset_wait == true) {
+                    t :> t_now;
+                    //check if timer ended
+                    if (timeafter(t_now, fault_reset_wait_time)) {
+                        checklist.fault_reset_wait = false;
+                        /* recheck fault to see if it's realy removed */
+                        if (motorcontrol_fault != NO_FAULT || sensor_error != SENSOR_NO_ERROR) {
+                            update_checklist(checklist, opmode, 1);
+                        }
+                    }
+                }
+
                 state = get_next_state(state, checklist, controlword, 0);
 
                 if (state == S_SWITCH_ON_DISABLED) {

@@ -229,7 +229,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>9</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 1</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>272</BitOffs>
@@ -251,7 +251,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>11</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 2</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>336</BitOffs>
@@ -273,7 +273,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>13</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 3</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>400</BitOffs>
@@ -295,7 +295,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>15</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 4</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>464</BitOffs>
@@ -475,7 +475,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>14</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 1</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>432</BitOffs>
@@ -497,7 +497,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>16</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 2</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>496</BitOffs>
@@ -519,7 +519,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>18</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 3</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>560</BitOffs>
@@ -541,7 +541,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>20</SubIdx>
-                  <Name>padding entry (automatically added)</Name>
+                  <Name>padding 4</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>624</BitOffs>
@@ -2889,7 +2889,7 @@
                 <BitSize>16</BitSize>
                 <Info>
                   <DefaultData>0000</DefaultData>
-                  <Unit></Unit>
+                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3069,7 +3069,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00b44700</Unit>
+                  <Unit>#x00b44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3150,7 +3150,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00b44700</Unit>
+				  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3784,7 +3784,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>00b44700</Unit>
+                  <Unit>#x00b44700</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -4555,7 +4555,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>00b44700</Unit>
+                  <Unit>#x00b44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -4764,7 +4764,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name></Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4777,7 +4777,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name></Name>
             <DataType></DataType>
           </Entry>
           <Entry>

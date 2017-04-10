@@ -22,12 +22,14 @@ int main(int argc, char **argv)
     //default parameters
     int sdo_enable = 0;
     int num_slaves = 1;
-    int profile_speed = 50;
+    int profile_speed = 50; //rpm
+    int profile_acc = 50; //rpm/s
+    int profile_torque_acc = 50; // 1/1000 rated torque / s
     char *sdo_config_file = malloc(PATH_MAX);
     strncpy(sdo_config_file, default_sdo_config_file, PATH_MAX);
 
     //get parameters from cmdline
-    cmdline(argc, argv, VERSION, &sdo_enable, &profile_speed, &sdo_config_file);
+    cmdline(argc, argv, VERSION, &sdo_enable, &profile_speed, &profile_acc, &profile_torque_acc, &sdo_config_file);
 
     //read sdo parameters from file
     SdoConfigParameter_t sdo_config_parameter;
@@ -106,13 +108,14 @@ int main(int argc, char **argv)
         output.target_state[i] = CIASTATE_SWITCH_ON_DISABLED;
 
         //init profiler
-        profile_config[i].max_torque_acceleration = 1000;
-        profile_config[i].max_torque = 3000;
-        profile_config[i].max_acceleration = 1000;
-        profile_config[i].max_speed = 3000000;
-        profile_config[i].profile_torque_acceleration = 1000;
         profile_config[i].profile_speed = profile_speed;
-        profile_config[i].profile_acceleration = 50;
+        profile_config[i].profile_acceleration = profile_acc;
+        profile_config[i].profile_torque_acceleration = profile_torque_acc;
+
+        profile_config[i].max_torque = 1000; //max torque is 1000
+        profile_config[i].max_torque_acceleration = profile_torque_acc;
+        profile_config[i].max_acceleration = profile_acc;
+        profile_config[i].max_speed = 10000;
         profile_config[i].max_position = 0x7fffffff;
         profile_config[i].min_position = -0x7fffffff;
         profile_config[i].ticks_per_turn = 65536; //default value

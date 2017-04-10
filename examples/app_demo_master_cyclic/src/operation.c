@@ -170,8 +170,10 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
             case OPMODE_CSP:
                 //init profile
                 profile_config[output->select].step = 0;
-                profile_config[output->select].steps = init_position_profile(&(profile_config[output->select].motion_profile), (*output).value, pdo_input[output->select].position_value,\
-                        profile_config[output->select].profile_speed, profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration, profile_config[output->select].ticks_per_turn);
+                profile_config[output->select].steps = init_position_profile(&(profile_config[output->select].motion_profile),
+                        (*output).value, pdo_input[output->select].position_value,
+                        profile_config[output->select].profile_speed, profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration,
+                        profile_config[output->select].ticks_per_turn);
                 break;
             case OPMODE_CSV:
                 profile_config[output->select].step = 0;

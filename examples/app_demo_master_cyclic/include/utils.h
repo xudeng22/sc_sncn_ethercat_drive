@@ -16,7 +16,7 @@
 #include <sys/time.h>
 #include <linux/limits.h>
 
-void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *profile_speed, char **sdo_config);
+void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *profile_speed, int *profile_acc, int *profile_torque_acc, char **sdo_config);
 
 extern unsigned int sig_alarms;
 extern unsigned int user_alarms;

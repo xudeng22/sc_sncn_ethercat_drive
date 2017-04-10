@@ -475,7 +475,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         opmode_request  = pdo_get_op_mode(InOut);
         target_position = pdo_get_target_position(InOut);
         target_velocity = pdo_get_target_velocity(InOut);
-        target_torque   = pdo_get_target_torque(InOut);
+        target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
         send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
         /* FIXME removed! what is the next way to do it?
         update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
@@ -518,7 +518,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /* i_motion_control.get_all_feedbacks; */
         actual_velocity = send_to_master.velocity; //i_motion_control.get_velocity();
         actual_position = send_to_master.position; //i_motion_control.get_position();
-        actual_torque   = send_to_master.computed_torque; //i_motion_control.get_torque(); /* FIXME expected future implementation! */
+        actual_torque   = (send_to_master.computed_torque*1000) / motorcontrol_config.rated_torque; //torque sent to master in 1/1000 of rated torque
         FaultCode motorcontrol_fault = send_to_master.error_status;
         SensorError motion_sensor_error = send_to_master.last_sensor_error;
         SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;

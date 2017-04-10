@@ -14,6 +14,16 @@ EtherCAT PDO Handling Demo (Master)
 
    Connecting the motor and cables to your kit
 
+Build the application
++++++++++++++++++++++
+The application is build as usual with ::
+
+  make
+
+Please make sure the latest Synapticon EtherCAT Master is installed and
+functional, see :ref:`IgH EtherLab to be installed <ethercat_master_software_linux>`
+in at least version 1.5.2-sncn-4
+
 
 Run the application
 +++++++++++++++++++
@@ -30,7 +40,7 @@ When the application has been compiled (just execute make), the next step is to 
 
       The output should indicate a presence of the SOMANET node and pre-operational state if the slave side software is running: ::
 
-        0  0:0  PREOP  +  SNCN SOMANET COM ECAT
+        0  0:0  PREOP  +  CiA402 Drive
 
    #. Navigate with the terminal to your compiled application binary on the hard disk. Then execute the application with super user rights: ::
 
@@ -42,3 +52,10 @@ The application provides the following command line arguments
   - `-n slave`       slave number, default to 0
   - `-d`             print domain registry before start
   - `-w`             enable graphical output
+
+Running the application with `-w` shows a table with the send and received
+values of the PDO entries. The values are changed automatically according
+theire data type.
+
+The option `-d` is primary for debug and gives the current domain registration
+of the PDO values.

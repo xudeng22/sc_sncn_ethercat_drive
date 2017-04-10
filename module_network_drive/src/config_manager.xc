@@ -30,7 +30,7 @@ static int tick2bits(int tick_resolution)
 void cm_sync_config_hall_states(
         client interface i_co_communication i_co,
         client interface PositionFeedbackInterface i_pos_feedback,
-        interface MotorControlInterface client ?i_motorcontrol,
+        client interface TorqueControlInterface ?i_torque_control,
         PositionFeedbackConfig &feedback_config,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_index)
@@ -80,7 +80,10 @@ int cm_sync_config_position_feedback(
                     sensor_commutation = feedback_service_index;
                     sensor_motion_control = feedback_service_index;
                     break;
-                case SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_ONLY:
+                case SENSOR_FUNCTION_COMMUTATION_AND_FEEDBACK_DISPLAY_ONLY:
+                    sensor_commutation = feedback_service_index;
+                    break;
+                case SENSOR_FUNCTION_COMMUTATION_ONLY:
                     sensor_commutation = feedback_service_index;
                     break;
                 case SENSOR_FUNCTION_MOTION_CONTROL:
@@ -145,31 +148,46 @@ int cm_sync_config_position_feedback(
     }
     switch (config.sensor_type) {
     case QEI_SENSOR:
-        {config.qei_config.index_type, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
+        QEI_SignalType old_qei_signal_type = config.qei_config.signal_type;
         {config.qei_config.signal_type, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
+        if (config.qei_config.signal_type != old_qei_signal_type || config.qei_config.port_number != encoder_port_number) {
+            restart = 1;
+        }
+        {config.qei_config.number_of_channels, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS);
         config.qei_config.port_number = encoder_port_number;
         break;
 
     case BISS_SENSOR:
-        {config.biss_config.multiturn_resolution, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
+        BISSClockPortConfig old_biss_clock_port_config = config.biss_config.clock_port_config;
+        int old_biss_clock_frequency = config.biss_config.clock_frequency;
         {config.biss_config.clock_frequency, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
+        {config.biss_config.clock_port_config, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
+        if (config.biss_config.clock_port_config != old_biss_clock_port_config ||
+                config.biss_config.clock_frequency != old_biss_clock_frequency ||
+                config.biss_config.data_port_number != encoder_port_number)
+        {
+            restart = 1;
+        }
+        {config.biss_config.multiturn_resolution, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION);
         {config.biss_config.timeout, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT);
         {config.biss_config.crc_poly, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM);
-        {config.biss_config.clock_port_config, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
-        config.biss_config.data_port_number     = encoder_port_number;
         {config.biss_config.filling_bits, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS);
         {config.biss_config.busy, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY);
+        config.biss_config.data_port_number     = encoder_port_number;
         break;
 
     case HALL_SENSOR:
+        if (config.hall_config.port_number != encoder_port_number) {
+            restart = 1;
+        }
         config.hall_config.port_number = encoder_port_number;
         break;
 
     case REM_14_SENSOR:
         {config.rem_14_config.hysteresis, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS);
-        {config.rem_14_config.noise_setting, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
-        {config.rem_14_config.dyn_angle_comp, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
-        {config.rem_14_config.abi_resolution, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
+        {config.rem_14_config.noise_settings, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS);
+        {config.rem_14_config.dyn_angle_error_comp, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION);
+        {config.rem_14_config.abi_resolution_settings, void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS);
         break;
 
     case REM_16MT_SENSOR:
@@ -192,16 +210,16 @@ int cm_sync_config_position_feedback(
 
 void cm_sync_config_motor_control(
         client interface i_co_communication i_co,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface TorqueControlInterface client ?i_torque_control,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_commutation,
         int sensor_commutation_type)
 
 {
-    if (isnull(i_motorcontrol))
+    if (isnull(i_torque_control))
         return;
 
-    motorcontrol_config = i_motorcontrol.get_config();
+    motorcontrol_config = i_torque_control.get_config();
 
     {motorcontrol_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     {motorcontrol_config.phases_inverted, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
@@ -235,21 +253,7 @@ void cm_sync_config_motor_control(
         {motorcontrol_config.hall_state_angle[5], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
     }
 
-
-    //not in main.xc
-    /* Read recuperation config */
-    //FIXME: do we set recuperation settings
-//    {motorcontrol_config.recuperation, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED);
-//    {motorcontrol_config.battery_e_max, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY);
-//    {motorcontrol_config.battery_e_min, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY);
-//    {motorcontrol_config.regen_p_max, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER);
-//    {motorcontrol_config.regen_p_min, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER);
-//    {motorcontrol_config.regen_speed_min, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED);
-//    {motorcontrol_config.regen_speed_max, void, void} = i_co.od_get_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED);
-
-    //{motorcontrol_config.max_current, void, void} = i_co.od_get_object_value(DICT_MAX_CURRENT, 0);
-
-    i_motorcontrol.set_config(motorcontrol_config);
+    i_torque_control.set_config(motorcontrol_config);
 }
 
 void cm_sync_config_profiler(
@@ -270,11 +274,11 @@ void cm_sync_config_profiler(
 
 void cm_sync_config_pos_velocity_control(
         client interface i_co_communication i_co,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface MotionControlInterface i_motion_control,
         MotionControlConfig &position_config,
         int sensor_resolution)
 {
-    i_position_control.get_position_velocity_control_config();
+    i_motion_control.get_motion_control_config();
 
     //limits
     {position_config.min_pos_range_limit, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
@@ -313,7 +317,7 @@ void cm_sync_config_pos_velocity_control(
 //    {position_config.position_fc, void, void} = i_co.od_get_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT);
 //    {position_config.velocity_fc, void, void} = i_co.od_get_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_VELOCITY_FILTER_COEFFICIENT);
 
-    i_position_control.set_position_velocity_control_config(position_config);
+    i_motion_control.set_motion_control_config(position_config);
 }
 
 /*
@@ -380,11 +384,13 @@ void cm_default_config_position_feedback(
         // sensor specific parameters
         switch (config.sensor_type) {
         case QEI_SENSOR:
-            i_co.od_set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS, config.qei_config.index_type);
+            i_co.od_set_object_value(feedback_sensor_object, 1, QEI_SENSOR);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_NUMBER_OF_CHANNELS, config.qei_config.number_of_channels);
             i_co.od_set_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE,config.qei_config.signal_type);
             break;
 
         case BISS_SENSOR:
+            i_co.od_set_object_value(feedback_sensor_object, 1, BISS_SENSOR);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION, config.biss_config.multiturn_resolution);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY, config.biss_config.clock_frequency);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT, config.biss_config.timeout);
@@ -395,16 +401,19 @@ void cm_default_config_position_feedback(
             break;
 
         case HALL_SENSOR:
+            i_co.od_set_object_value(feedback_sensor_object, 1, HALL_SENSOR);
             break;
 
         case REM_14_SENSOR:
+            i_co.od_set_object_value(feedback_sensor_object, 1, REM_14_SENSOR);
             i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_HYSTERESIS, config.rem_14_config.hysteresis);
-            i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS, config.rem_14_config.noise_setting);
-            i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION, config.rem_14_config.dyn_angle_comp);
-            i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS, config.rem_14_config.abi_resolution);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_NOISE_SETTINGS, config.rem_14_config.noise_settings);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_DYNAMIC_ANGLE_ERROR_COMPENSATION, config.rem_14_config.dyn_angle_error_comp);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_REM_14_ENCODER_RESOLUTION_SETTINGS, config.rem_14_config.abi_resolution_settings);
             break;
 
         case REM_16MT_SENSOR:
+            i_co.od_set_object_value(feedback_sensor_object, 1, REM_16MT_SENSOR);
             i_co.od_set_object_value(feedback_sensor_object, SUB_REM_16MT_ENCODER_FILTER, config.rem_16mt_config.filter);
             break;
         }
@@ -420,14 +429,14 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_co_communication i_co,
-        interface MotorControlInterface client ?i_motorcontrol,
+        interface TorqueControlInterface client ?i_torque_control,
         MotorcontrolConfig &motorcontrol_config)
 
 {
-    if (isnull(i_motorcontrol))
+    if (isnull(i_torque_control))
         return;
 
-    motorcontrol_config = i_motorcontrol.get_config();
+    motorcontrol_config = i_torque_control.get_config();
 
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.dc_bus_voltage);
     i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED, motorcontrol_config.phases_inverted);
@@ -499,10 +508,10 @@ void cm_default_config_profiler(
 
 void cm_default_config_pos_velocity_control(
         client interface i_co_communication i_co,
-        client interface PositionVelocityCtrlInterface i_position_control
+        client interface MotionControlInterface i_motion_control
         )
 {
-    MotionControlConfig position_config = i_position_control.get_position_velocity_control_config();
+    MotionControlConfig position_config = i_motion_control.get_motion_control_config();
 
     //limits
     i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
@@ -540,5 +549,5 @@ void cm_default_config_pos_velocity_control(
 //    i_co.od_set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.position_fc);
 //    i_co.od_set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_VELOCITY_FILTER_COEFFICIENT, position_config.velocity_fc);
 
-    i_position_control.set_position_velocity_control_config(position_config);
+    i_motion_control.set_motion_control_config(position_config);
 }

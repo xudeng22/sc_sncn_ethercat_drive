@@ -105,6 +105,7 @@ check_list init_checklist(void)
     check_list check_list_param;
 
     check_list_param.fault = false;
+    check_list_param.fault_reset_wait = false;
     return check_list_param;
 }
 
@@ -293,7 +294,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
         case S_FAULT:
             ctrl_input = read_controlword_fault_reset(controlword);
-            if (ctrl_fault_reset(controlword)) {
+            if (ctrl_fault_reset(controlword) && checklist.fault_reset_wait == false && !checklist.fault) {
                 out_state = S_SWITCH_ON_DISABLED;
             } else {
                 out_state = S_FAULT;
@@ -306,12 +307,12 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 
 
 int8_t update_opmode(int8_t opmode, int8_t opmode_request,
-        client interface PositionVelocityCtrlInterface i_motion_control,
+        client interface MotionControlInterface i_motion_control,
         MotionControlConfig &motion_control_config,
         uint8_t polarity)
 {
     if (opmode != opmode_request) {
-        motion_control_config = i_motion_control.get_position_velocity_control_config();
+        motion_control_config = i_motion_control.get_motion_control_config();
         motion_control_config.polarity = MOTION_POLARITY_NORMAL;
         switch(opmode_request) {
         case OPMODE_NONE:
@@ -333,7 +334,7 @@ int8_t update_opmode(int8_t opmode, int8_t opmode_request,
             opmode_request = OPMODE_NONE;
             break;
         }
-        i_motion_control.set_position_velocity_control_config(motion_control_config);
+        i_motion_control.set_motion_control_config(motion_control_config);
         return opmode_request;
     }
     return opmode;

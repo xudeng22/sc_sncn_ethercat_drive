@@ -21,19 +21,19 @@
  * @param profiler_config Configuration for profile mode control.
  * @param i_pdo Interface for PDOs to communication module.
  * @param i_od Interface for SDOs to CANopen service.
- * @param i_motorcontrol Interface to Motor Commutation Service
- * @param i_position_velocity_control Interface to Position-Velocity Control Loop Service.
+ * @param i_torque_control Interface to Torque Control Loop Service.
+ * @param i_motion_control Interface to Position-Velocity Control Loop Service.
  * @param i_position_feedback Inteface to Position Feedback Service.
  */
 void network_drive_service(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
-                            client interface MotorControlInterface i_motorcontrol,
-                            client interface PositionVelocityCtrlInterface i_position_velocity_control,
+                            client interface TorqueControlInterface i_torque_control,
+                            client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2);
 
 void network_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_co_communication i_co,
-                            client interface MotorControlInterface i_motorcontrol,
-                            client interface PositionVelocityCtrlInterface i_position_velocity_control,
+                            client interface TorqueControlInterface i_torque_control,
+                            client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback);

@@ -15,8 +15,8 @@
     <Devices>
       <Device Physics="YY">
         <Type ProductCode="#x00000201" RevisionNo="#x0a000002">CiA402 Motor Control Device</Type>
-        <Name LcId="1033">CiA402 Drive</Name>
-        <Name LcId="1031">CiA402 Antrieb (Modules/Slots)</Name>
+        <Name LcId="1033">SOMANET CiA402 Drive</Name>
+        <Name LcId="1031">SOMANET CiA402 Antrieb</Name>
         <Info>
           <Mailbox>
             <Timeout>

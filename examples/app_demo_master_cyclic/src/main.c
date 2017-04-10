@@ -106,8 +106,11 @@ int main(int argc, char **argv)
         output.target_state[i] = CIASTATE_SWITCH_ON_DISABLED;
 
         //init profiler
+        profile_config[i].max_torque_acceleration = 1000;
+        profile_config[i].max_torque = 3000;
         profile_config[i].max_acceleration = 1000;
-        profile_config[i].max_speed = 3000;
+        profile_config[i].max_speed = 3000000;
+        profile_config[i].profile_torque_acceleration = 1000;
         profile_config[i].profile_speed = profile_speed;
         profile_config[i].profile_acceleration = 50;
         profile_config[i].max_position = 0x7fffffff;
@@ -125,7 +128,10 @@ int main(int argc, char **argv)
                 }
             }
         }
-        init_position_profile_limits(&(profile_config[i].motion_profile), profile_config[i].max_acceleration, profile_config[i].max_speed, profile_config[i].max_position, profile_config[i].min_position, profile_config[i].ticks_per_turn);
+        init_position_profile_limits(&(profile_config[i].motion_profile),
+                profile_config[i].max_torque, profile_config[i].max_torque_acceleration,
+                profile_config[i].max_acceleration, profile_config[i].max_speed,
+                profile_config[i].max_position, profile_config[i].min_position, profile_config[i].ticks_per_turn);
     }
 
     //init ncurses

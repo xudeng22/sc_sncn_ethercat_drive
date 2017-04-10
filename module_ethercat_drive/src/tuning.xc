@@ -29,7 +29,7 @@ int tuning_handler_ethercat(
         int sensor_commutation,
         int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2
     )
@@ -38,6 +38,9 @@ int tuning_handler_ethercat(
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
+    if (status_mux > TUNING_STATUS_MUX_SENSOR_ERROR) {
+        status_mux = 1;
+    }
     switch(status_mux) {
     case TUNING_STATUS_MUX_OFFSET: //send offset
         user_miso = motorcontrol_config.commutation_angle_offset;
@@ -88,9 +91,7 @@ int tuning_handler_ethercat(
         user_miso = motion_ctrl_config.brake_release_strategy;
         break;
     case TUNING_STATUS_MUX_SENSOR_ERROR:// sensor error
-    default:
         user_miso = upstream_control_data.sensor_error;
-        status_mux = 0;
         break;
     }
 
@@ -108,7 +109,7 @@ int tuning_handler_ethercat(
         tuning_command_handler(tuning_mode_state,
                 motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
                 sensor_commutation, sensor_motion_control,
-                i_position_control, i_position_feedback_1, i_position_feedback_2);
+                i_motion_control, i_position_feedback_1, i_position_feedback_2);
 
         //update flags
         tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_ctrl_config,
@@ -131,7 +132,7 @@ void tuning_command_handler(
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,
         int sensor_motion_control,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2
 )
@@ -232,19 +233,19 @@ void tuning_command_handler(
 
         //set config structures
         if (tuning_mode_state.command & TUNING_CMD_SET_MOTION_CONTROL_MASK) {
-            i_position_control.set_position_velocity_control_config(motion_ctrl_config);
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
         }
         if (tuning_mode_state.command & TUNING_CMD_SET_MOTOR_CONTROL_MASK) {
             tuning_mode_state.brake_flag = 0;
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            i_position_control.set_motorcontrol_config(motorcontrol_config);
+            i_motion_control.set_motorcontrol_config(motorcontrol_config);
         }
 
     } else { //action command
 
         switch(tuning_mode_state.command) {
         case TUNING_CMD_CONTROL_DISABLE:
-            i_position_control.disable();
+            i_motion_control.disable();
             tuning_mode_state.brake_flag = 0;
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             break;
@@ -264,7 +265,7 @@ void tuning_command_handler(
                 position_control_strategy = NL_POSITION_CONTROLLER;
                 break;
             }
-            i_position_control.enable_position_ctrl(position_control_strategy);
+            i_motion_control.enable_position_ctrl(position_control_strategy);
 
             //set motorcontrol status
             switch (position_control_strategy) {
@@ -283,14 +284,14 @@ void tuning_command_handler(
 
 
         case TUNING_CMD_CONTROL_VELOCITY:
-            i_position_control.enable_velocity_ctrl();
+            i_motion_control.enable_velocity_ctrl();
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_VELOCITY;
             tuning_mode_state.brake_flag = 1;
             break;
 
 
         case TUNING_CMD_CONTROL_TORQUE:
-            i_position_control.enable_torque_ctrl();
+            i_motion_control.enable_torque_ctrl();
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_TORQUE;
             tuning_mode_state.brake_flag = 1;
             break;
@@ -300,13 +301,13 @@ void tuning_command_handler(
         case TUNING_CMD_AUTO_OFFSET:
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             tuning_mode_state.brake_flag = 0;
-            motorcontrol_config = i_position_control.set_offset_detection_enabled();
+            motorcontrol_config = i_motion_control.set_offset_detection_enabled();
             break;
 
         //set brake
         case TUNING_CMD_BRAKE:
             if (tuning_mode_state.value == 1 || tuning_mode_state.value == 0) {
-                i_position_control.set_brake_status(tuning_mode_state.value);
+                i_motion_control.set_brake_status(tuning_mode_state.value);
                 tuning_mode_state.brake_flag = tuning_mode_state.value;
             }
             break;
@@ -314,15 +315,15 @@ void tuning_command_handler(
         case TUNING_CMD_SAFE_TORQUE:
             tuning_mode_state.brake_flag = 0;
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            i_position_control.set_safe_torque_off_enabled();
+            i_motion_control.set_safe_torque_off_enabled();
             break;
 
         //fault reset
         case TUNING_CMD_FAULT_RESET:
-            i_position_control.disable();
+            i_motion_control.disable();
             tuning_mode_state.brake_flag = 0;
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            i_position_control.reset_motorcontrol_faults();
+            i_motion_control.reset_motorcontrol_faults();
             break;
 
         //set zero position

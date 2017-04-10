@@ -119,7 +119,7 @@ int tuning_handler_ethercat(
         int sensor_commutation,
         int sensor_motion_control,
         UpstreamControlData      &upstream_control_data,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2
     );
@@ -132,7 +132,7 @@ void tuning_command_handler(
         PositionFeedbackConfig   &pos_feedback_config_2,
         int sensor_commutation,
         int sensor_motion_control,
-        client interface PositionVelocityCtrlInterface i_position_control,
+        client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2
     );

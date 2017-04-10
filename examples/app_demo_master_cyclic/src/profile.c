@@ -16,12 +16,15 @@ int ticks_to_rpm(int ticks, int ticks_per_turn) {
     return (ticks*60)/ticks_per_turn;
 }
 
-void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn) {
+void init_position_profile_limits(motion_profile_t *motion_profile, int max_torque, int max_torque_acceleration, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn)
+{
 
     motion_profile->max_position =  max_position;
     motion_profile->min_position = min_position;
 	motion_profile->max_acceleration =  rpm_to_ticks_sensor(max_acceleration, ticks_per_turn);
 	motion_profile->max_velocity = rpm_to_ticks_sensor(max_velocity, ticks_per_turn);
+    motion_profile->max_torque = max_torque;
+    motion_profile->max_torque_acceleration = max_torque_acceleration;
     motion_profile->limit_factor = 10;
 }
 
@@ -284,32 +287,54 @@ int init_velocity_profile(motion_profile_t *motion_profile, int target_velocity,
         motion_profile->acc = -ticks_to_rpm(motion_profile->max_acceleration, ticks_per_turn);
     }
 
+    return init_linear_profile(motion_profile);
+}
 
-    motion_profile->s_time = .001f;
+
+int init_torque_profile(motion_profile_t *motion_profile, int target_torque, int actual_torque, int acceleration, int deceleration)
+{
+    motion_profile->qid = (float) actual_torque;
+
+    //limit torque
+    if(target_torque > motion_profile->max_torque) {
+        target_torque = motion_profile->max_torque;
+    } else if(target_torque < -motion_profile->max_torque) {
+        target_torque = -motion_profile->max_torque;
+    }
+    motion_profile->qfd = (float) target_torque;
 
 
-    // compute time needed
-    float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
-
-    if (total_time < 0) {
-        motion_profile->T = (-total_time)/motion_profile->s_time;
+    //set acceleration
+    if (motion_profile->qfd >= motion_profile->qid) {
+        motion_profile->acc = (float) acceleration;
     } else {
-        motion_profile->T = total_time/motion_profile->s_time;
+        motion_profile->acc = -(float) deceleration;
     }
 
-//    motion_profile->T = motion_profile->t/motion_profile->s_time;
-//
-//    if(motion_profile->T<0) {
-//        motion_profile->T = -motion_profile->T;
-//    }
-//
-//    //length = (int) round (T);
-//    motion_profile->s_time = motion_profile->t/motion_profile->T;
+    //limit acceleration
+    if (motion_profile->acc > motion_profile->max_torque_acceleration) {
+        motion_profile->acc = motion_profile->max_torque_acceleration;
+    } else if (motion_profile->acc < -motion_profile->max_torque_acceleration) {
+        motion_profile->acc = -motion_profile->max_torque_acceleration;
+    }
+
+    return init_linear_profile(motion_profile);
+}
+
+int init_linear_profile(motion_profile_t *motion_profile)
+{
+    motion_profile->s_time = .001f;
+
+    // compute time needed (in seconds)
+    float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
+
+    //number of steps needed (1 step every 1ms)
+    motion_profile->T = total_time/motion_profile->s_time;
 
     return (int) round (motion_profile->T);
 }
 
-int velocity_profile_generate_in_steps(motion_profile_t *motion_profile, int step)
+int linear_profile_generate_in_steps(motion_profile_t *motion_profile, int step)
 {
     return (int) round( motion_profile->qid + motion_profile->acc * motion_profile->s_time * step);
 }

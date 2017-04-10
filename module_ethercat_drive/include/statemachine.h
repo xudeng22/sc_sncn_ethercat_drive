@@ -33,6 +33,7 @@ typedef int bool;
 
 typedef struct S_Check_list {
     bool fault;
+    bool fault_reset_wait;
 } check_list;
 
 typedef enum e_States {
@@ -87,7 +88,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
  * @return new opmode, OPMODE_NONE if opmode is unsupported
  */
 int8_t update_opmode(int8_t opmode, int8_t opmode_request,
-        client interface PositionVelocityCtrlInterface i_motion_control,
+        client interface MotionControlInterface i_motion_control,
         MotionControlConfig &motion_control_config,
         uint8_t polarity);
 

@@ -13,58 +13,55 @@
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 {
     switch((pdo_input.tuning_status >> 16) & 0xff) {
-    case 1://offset
+    case TUNING_STATUS_MUX_OFFSET://offset
         (*input).offset = pdo_input.user_miso;
         break;
-    case 2://pole pairs
+    case TUNING_STATUS_MUX_POLE_PAIRS://pole pairs
         (*input).pole_pairs = pdo_input.user_miso;
         break;
-    case 3://target
-        (*input).target = pdo_input.user_miso;
-        break;
-    case 4://min position limit
+    case TUNING_STATUS_MUX_MIN_POS://min position limit
         (*input).min_position = pdo_input.user_miso;
         break;
-    case 5://max position limit
+    case TUNING_STATUS_MUX_MAX_POS://max position limit
         (*input).max_position = pdo_input.user_miso;
         break;
-    case 6://max speed
+    case TUNING_STATUS_MUX_MAX_SPEED://max speed
         (*input).max_speed = pdo_input.user_miso;
         break;
-    case 7://max torque
+    case TUNING_STATUS_MUX_MAX_TORQUE://max torque
         (*input).max_torque = pdo_input.user_miso;
         break;
-    case 8:
+    case TUNING_STATUS_MUX_POS_KP:
         (*input).P_pos = pdo_input.user_miso;
         break;
-    case 9:
+    case TUNING_STATUS_MUX_POS_KI:
         (*input).I_pos = pdo_input.user_miso;
         break;
-    case 10:
+    case TUNING_STATUS_MUX_POS_KD:
         (*input).D_pos = pdo_input.user_miso;
         break;
-    case 11:
+    case TUNING_STATUS_MUX_POS_I_LIM:
         (*input).integral_limit_pos = pdo_input.user_miso;
         break;
-    case 12:
+    case TUNING_STATUS_MUX_VEL_KP:
         (*input).P_velocity = pdo_input.user_miso;
         break;
-    case 13:
+    case TUNING_STATUS_MUX_VEL_KI:
         (*input).I_velocity = pdo_input.user_miso;
         break;
-    case 14:
+    case TUNING_STATUS_MUX_VEL_KD:
         (*input).D_velocity = pdo_input.user_miso;
         break;
-    case 15:
+    case TUNING_STATUS_MUX_VEL_I_LIM:
         (*input).integral_limit_velocity = pdo_input.user_miso;
         break;
-    case 16: //fault code
+    case TUNING_STATUS_MUX_FAULT: //fault code
         (*input).error_status = pdo_input.user_miso;
         break;
-    case 17://brake_release_strategy
+    case TUNING_STATUS_MUX_BRAKE_STRAT://brake_release_strategy
         (*input).brake_release_strategy = pdo_input.user_miso;
         break;
-    default://sensor error
+    case TUNING_STATUS_MUX_SENSOR_ERROR://sensor error
         (*input).sensor_error = pdo_input.user_miso;
         break;
     }
@@ -74,9 +71,11 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 
     //flags
     uint8_t flags = (pdo_input.tuning_status >> 8) & 0xff;
-    (*input).brake_flag = flags & 1;
-    (*input).motion_polarity = (flags >> 1) & 1;
-    (*input).sensor_polarity = (flags >> 2) & 1;
+    (*input).brake_flag = (flags >> TUNING_FLAG_BRAKE) & 1;
+    (*input).motion_polarity = (flags >> TUNING_FLAG_MOTION_POLARITY) & 1;
+    (*input).sensor_polarity = (flags >> TUNING_FLAG_SENSOR_POLARITY) & 1;
+    input->phases_inverted = (flags >> TUNING_FLAG_PHASES_INVERTED) & 1;
+    input->profiler = (flags >> TUNING_FLAG_INTEGRATED_PROFILER) & 1;
     return ;
 }
 
@@ -87,6 +86,9 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
     wmove(wnd, (*cursor).row, (*cursor).col);
     int c = wgetch(wnd); // curses call to input from keyboard
     switch(c) {
+
+    /* One letter commands */
+
     //quit
     case 'q':
         pdo_output->tuning_command = TUNING_CMD_CONTROL_DISABLE;
@@ -94,6 +96,20 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         pdo_output->op_mode = 0;
         output->app_mode = QUIT_MODE;
         break;
+
+    //torque 0
+    case '0':
+        if (output->mode_1 == 1 && output->value == 0) { //the first char entered is 0
+            if ((pdo_input.tuning_status & 0xff) != TUNING_MOTORCTRL_OFF && (pdo_input.tuning_status & 0xff) != TUNING_MOTORCTRL_TORQUE) {
+                pdo_output->tuning_command = TUNING_CMD_CONTROL_TORQUE;
+            }
+            pdo_output->target_torque = 0;
+        } else { //normal 0
+            (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
+            output->value *= 10;
+        }
+        break;
+
 
     //switch to cs mode
     case 'y': //switch to cs mode
@@ -103,28 +119,13 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         output->app_mode = CS_MODE;
         break;
 
-    //auto offset
-    case 'a': //auto offset
-        pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
-        break;
-
-    //brake
-    case 'b':
-        pdo_output->tuning_command = TUNING_CMD_BRAKE;
-        if ((pdo_input.tuning_status >> 8) & 1) { //brake is released
-            pdo_output->user_mosi = 0;
-        } else {
-            pdo_output->user_mosi = 1;
-        }
-        break;
-
     //reverse command
     case 'r':
         pdo_output->target_velocity =  -pdo_output->target_velocity;
         pdo_output->target_torque =  -pdo_output->target_torque;
         break;
 
-    //discard
+    //discard command
     case KEY_BACKSPACE:
     case KEY_DC:
     case 127: //discard
@@ -138,36 +139,55 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         output->value = 0;
         output->sign = 1;
         break;
+
+
+    /* multiple letters commands */
     default:
+        //parse letters and numbers as they come
         if (0x20 <= c && c <= 0x7e) { //printable char
-            //torque 0 command
-            if (c == '0' && output->mode_1 == 1 && output->value == 0) { //first char is 0
-                if ((pdo_input.tuning_status & 0xff) != TUNING_MOTORCTRL_OFF && (pdo_input.tuning_status & 0xff) != TUNING_MOTORCTRL_TORQUE) {
-                    pdo_output->tuning_command = TUNING_CMD_CONTROL_TORQUE;
-                }
-                pdo_output->target_torque = 0;
-            } else {
-                (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
-                //parse input
-                if(isdigit(c)>0) {
-                    output->value *= 10;
-                    output->value += c - '0';
-                } else if (c == '-') {
-                    output->sign = -1;
-                } else if (c != ' ' && c != '\n') {
-                    if (output->mode_1 == 1) {
-                        output->mode_1 = c;
-                    } else if (output->mode_2 == 1) {
-                        output->mode_2 = c;
-                    } else {
-                        output->mode_3 = c;
-                    }
+            (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
+            //parse input
+            if(isdigit(c)>0) {
+                output->value *= 10;
+                output->value += c - '0';
+            } else if (c == '-') {
+                output->sign = -1;
+            } else if (c != ' ' && c != '\n') {
+                if (output->mode_1 == 1) {
+                    output->mode_1 = c;
+                } else if (output->mode_2 == 1) {
+                    output->mode_2 = c;
+                } else {
+                    output->mode_3 = c;
                 }
             }
-        //(enter) execute command
+
+        //(enter): parse and execute the whole command
         } else if (c == '\n') {
             output->value *= output->sign;
             switch(output->mode_1) {
+
+            //auto offset
+            case 'a': //auto offset
+                pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+                break;
+
+            //brake
+            case 'b':
+                if (output->mode_2 == 's') { // bs: set brake selease strategy value
+                    pdo_output->tuning_command = TUNING_CMD_BRAKE_RELEASE_STRATEGY;
+                    pdo_output->user_mosi = output->value;
+                } else { //b: toggle brake
+                    pdo_output->tuning_command = TUNING_CMD_BRAKE;
+                    if ((pdo_input.tuning_status >> 8) & 1) { //brake is released
+                        pdo_output->user_mosi = 0;
+                    } else {
+                        pdo_output->user_mosi = 1;
+                    }
+                }
+                break;
+
+            //set position commands
             case 'p':
                 if (output->mode_2 == 'p') { //position profile
                     profile_config->mode = POSITION_PROFILER;
@@ -198,6 +218,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 pdo_output->target_velocity = output->value;
                 break;
 
+            // enable/disable motorcontrol commands
             case 'e':
                 pdo_output->tuning_command = TUNING_CMD_CONTROL_DISABLE;
                 if (output->value) {
@@ -248,7 +269,6 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
 
            //motion polarity
             case 'd':
-            case 'm':
                 pdo_output->tuning_command = TUNING_CMD_POLARITY_MOTION;
                 if ((pdo_input.tuning_status >> 8) & 0x02) { //polarity is reverse
                     pdo_output->user_mosi = 0;
@@ -257,12 +277,36 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 }
                 break;
 
+            //phases inverted
+            case 'm':
+                pdo_output->tuning_command = TUNING_CMD_PHASES_INVERTED;
+                if ((pdo_input.tuning_status >> 8) & 0x08) { //phase inverted
+                    pdo_output->user_mosi = 0;
+                } else {
+                    pdo_output->user_mosi = 1;
+                }
+                break;
+
+
             //pole pairs
             case 'P':
                 pdo_output->tuning_command = TUNING_CMD_POLE_PAIRS;
                 pdo_output->user_mosi = output->value;
                 break;
 
+
+            //reset fault
+            case 'f':
+                pdo_output->tuning_command = TUNING_CMD_FAULT_RESET;
+                break;
+
+
+            //torque safe enable (tss)
+            case 't':
+                if (output->mode_2 == 's' && output->mode_3 == 's') {
+                    pdo_output->tuning_command = TUNING_CMD_SAFE_TORQUE;
+                }
+                break;
 
             //change pid coefficients
             case 'k':
@@ -284,6 +328,14 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                         break;
                     case 'j':
                         pdo_output->tuning_command = TUNING_CMD_MOMENT_INERTIA;
+                        break;
+                    case 'P':
+                        pdo_output->tuning_command = TUNING_CMD_POSITION_PROFILER;
+                        if ((pdo_input.tuning_status >> 8) & 0x10) { //profiler on
+                            pdo_output->user_mosi = 0;
+                        } else {
+                            pdo_output->user_mosi = 1;
+                        }
                         break;
                     }
                     break;
@@ -307,7 +359,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 break;
 
 
-            //limits
+            //set limits
             case 'L':
                 pdo_output->user_mosi = output->value;
                 switch(output->mode_2) {
@@ -340,6 +392,8 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 break;
 
 
+            // default is enable torque control and set torque command
+            // if the value is 0 stop everything. So just pressing Enter without a command act as an emergency stop
             default:
                 if (output->value) {
                     if ((pdo_input.tuning_status & 0xff) != TUNING_MOTORCTRL_TORQUE) {
@@ -361,7 +415,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             wclrtoeol(wnd);
             wprintw(wnd, "value %d, mode %c (%X), mode_2 %c, mode_3 %c", output->value, output->mode_1, output->mode_1, output->mode_2, output->mode_3);
 
-            //reset
+            //reset commmands
             output->mode_1 = 1;
             output->mode_2 = 1;
             output->mode_3 = 1;
@@ -485,8 +539,8 @@ void tuning(WINDOW *wnd, Cursor *cursor,
             printw("> ");
         }
     } else { // check if command is received by slave
-        if (pdo_input->tuning_status & 0x80000000) { //command received by slave
-            pdo_output->tuning_command = 0; //reset control word
+        if (pdo_input->tuning_status & TUNING_ACK) { //command received by slave
+            pdo_output->tuning_command = 0; //reset command
         } else if (pdo_output->tuning_command == 0) { //last command cleared, we can now send a new one
             if  (output->next_command) {
                 pdo_output->tuning_command = output->next_command;
@@ -500,7 +554,7 @@ void tuning(WINDOW *wnd, Cursor *cursor,
     tuning_input(*pdo_input, input);
 
     //print
-    display_tuning(wnd, *pdo_input, *input, *record_config, 0);
+    display_tuning(wnd, *pdo_output, *pdo_input, *input, *record_config, 0);
 
     //recorder
     tuning_record(record_config, *pdo_input, (*pdo_output), record_filename);

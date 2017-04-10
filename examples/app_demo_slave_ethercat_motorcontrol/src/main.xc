@@ -54,11 +54,11 @@ int main(void)
     /* Motor control channels */
     interface WatchdogInterface i_watchdog[2];
     interface ADCInterface i_adc[2];
-    interface MotorControlInterface i_motorcontrol[2];
+    interface TorqueControlInterface i_torque_control[2];
     interface UpdatePWM i_update_pwm;
     interface UpdateBrake i_update_brake;
     interface shared_memory_interface i_shared_memory[3];
-    interface PositionVelocityCtrlInterface i_position_control[3];
+    interface MotionControlInterface i_motion_control[3];
     interface PositionFeedbackInterface i_position_feedback_1[3];
     interface PositionFeedbackInterface i_position_feedback_2[3];
 
@@ -100,13 +100,13 @@ int main(void)
 #if 0
             network_drive_service_debug( profiler_config,
                                     i_co[1],
-                                    i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback_1[0]);
+                                    i_torque_control[1],
+                                    i_motion_control[0], i_position_feedback_1[0]);
 #else
             network_drive_service( profiler_config,
                                     i_co[1],
-                                    i_motorcontrol[1],
-                                    i_position_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+                                    i_torque_control[1],
+                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
 #endif
         }
 
@@ -126,6 +126,7 @@ int main(void)
 
                     motion_ctrl_config.enable_profiler =                      ENABLE_PROFILER;
                     motion_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
+                    motion_ctrl_config.max_deceleration_profiler =            MAX_DECELERATION_PROFILER;
                     motion_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
                     //select resolution of sensor used for motion control
                     if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {
@@ -155,7 +156,7 @@ int main(void)
                     motion_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                     motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
-                    motion_control_service(IFM_TILE_USEC, motion_ctrl_config, i_motorcontrol[0], i_position_control, i_update_brake);
+                    motion_control_service(IFM_TILE_USEC, motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
                 }
             }
         }
@@ -221,8 +222,8 @@ int main(void)
                     motorcontrol_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
                     motorcontrol_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
 
-                    motor_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
-                            i_watchdog[0], i_motorcontrol, i_update_pwm, IFM_TILE_USEC);
+                    torque_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
+                            i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC);
                 }
 
                 /* Shared memory Service */
@@ -238,7 +239,7 @@ int main(void)
                     position_feedback_config_1.pole_pairs  = MOTOR_POLE_PAIRS;
                     position_feedback_config_1.ifm_usec    = IFM_TILE_USEC;
                     position_feedback_config_1.max_ticks   = SENSOR_MAX_TICKS;
-                    position_feedback_config_1.offset      = 0;
+                    position_feedback_config_1.offset      = HOME_OFFSET;
                     position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;
 
                     position_feedback_config_1.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
@@ -252,14 +253,14 @@ int main(void)
 
                     position_feedback_config_1.rem_16mt_config.filter = REM_16MT_FILTER;
 
-                    position_feedback_config_1.rem_14_config.hysteresis     = REM_14_SENSOR_HYSTERESIS ;
-                    position_feedback_config_1.rem_14_config.noise_setting  = REM_14_SENSOR_NOISE;
-                    position_feedback_config_1.rem_14_config.dyn_angle_comp = REM_14_SENSOR_DAE;
-                    position_feedback_config_1.rem_14_config.abi_resolution = REM_14_SENSOR_ABI_RES;
+                    position_feedback_config_1.rem_14_config.hysteresis              = REM_14_SENSOR_HYSTERESIS;
+                    position_feedback_config_1.rem_14_config.noise_settings          = REM_14_SENSOR_NOISE_SETTINGS;
+                    position_feedback_config_1.rem_14_config.dyn_angle_error_comp    = REM_14_DYN_ANGLE_ERROR_COMPENSATION;
+                    position_feedback_config_1.rem_14_config.abi_resolution_settings = REM_14_ABI_RESOLUTION_SETTINGS;
 
-                    position_feedback_config_1.qei_config.index_type  = QEI_SENSOR_INDEX_TYPE;
-                    position_feedback_config_1.qei_config.signal_type = QEI_SENSOR_SIGNAL_TYPE;
-                    position_feedback_config_1.qei_config.port_number = QEI_SENSOR_PORT_NUMBER;
+                    position_feedback_config_1.qei_config.number_of_channels = QEI_SENSOR_NUMBER_OF_CHANNELS;
+                    position_feedback_config_1.qei_config.signal_type        = QEI_SENSOR_SIGNAL_TYPE;
+                    position_feedback_config_1.qei_config.port_number        = QEI_SENSOR_PORT_NUMBER;
 
                     position_feedback_config_1.hall_config.port_number = HALL_SENSOR_PORT_NUMBER;
 

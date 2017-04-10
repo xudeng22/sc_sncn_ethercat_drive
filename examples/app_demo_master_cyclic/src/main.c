@@ -55,6 +55,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    num_slaves = ecw_master_slave_count(master);
+
     // send sdo parameters to the slaves
     if (sdo_enable) {
         for (int i = 0; i < num_slaves; i++) {
@@ -71,14 +73,27 @@ int main(int argc, char **argv)
         fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
         return -1;
     }
-
-    num_slaves = ecw_master_slave_count(master);
 /****************************************************/
 
     /* Init pdos */
     PDOInput  *pdo_input  = malloc(num_slaves*sizeof(PDOInput));
     PDOOutput *pdo_output = malloc(num_slaves*sizeof(PDOOutput));
-    for (int i=0; i<num_slaves; i++) {
+
+
+    //init output structure
+    OutputValues output = {0};
+    output.app_mode = CYCLIC_SYNCHRONOUS_MODE;
+    output.sign = 1;
+    output.target_state = malloc(num_slaves*sizeof(CIA402State));
+
+
+    //init profiler
+    PositionProfileConfig *profile_config = malloc(num_slaves*sizeof(PositionProfileConfig));
+
+    //init for all slaves
+    for (int i = 0; i < num_slaves; i++) {
+
+        /* Init pdos */
         pdo_output[i].controlword = 0;
         pdo_output[i].op_mode = 0;
         pdo_output[i].target_position = 0;
@@ -86,41 +101,32 @@ int main(int argc, char **argv)
         pdo_output[i].target_velocity = 0;
         pdo_input[i].op_mode_display = 0;
         pdo_input[i].statusword = 0;
-    }
 
+        //init output structure
+        output.target_state[i] = CIASTATE_SWITCH_ON_DISABLED;
 
-    //init output structure
-    OutputValues output = {0};
-    output.app_mode = CS_MODE;
-    output.mode_1 = '@';
-    output.mode_2 = '@';
-    output.mode_3 = '@';
-    output.sign = 1;
-
-
-    //init profiler
-    PositionProfileConfig profile_config;
-    profile_config.max_acceleration = 1000;
-    profile_config.max_speed = 3000;
-    profile_config.profile_speed = profile_speed;
-    profile_config.profile_acceleration = 50;
-    profile_config.max_position = 0x7fffffff;
-    profile_config.min_position = -0x7fffffff;
-    profile_config.mode = POSITION_DIRECT;
-    profile_config.ticks_per_turn = 65536; //default value
-    if (sdo_enable) { //try to find the correct ticks_per_turn in the sdo config
-        for (int sensor_port=1; sensor_port<=3; sensor_port++) {
-            //get sensor config
-            int sensor_config = read_local_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
-            int sensor_function = read_local_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
-            //check sensor function
-            if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
-                profile_config.ticks_per_turn = read_local_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
-                break;
+        //init profiler
+        profile_config[i].max_acceleration = 1000;
+        profile_config[i].max_speed = 3000;
+        profile_config[i].profile_speed = profile_speed;
+        profile_config[i].profile_acceleration = 50;
+        profile_config[i].max_position = 0x7fffffff;
+        profile_config[i].min_position = -0x7fffffff;
+        profile_config[i].ticks_per_turn = 65536; //default value
+        if (sdo_enable) { //try to find the correct ticks_per_turn in the sdo config
+            for (int sensor_port=1; sensor_port<=3; sensor_port++) {
+                //get sensor config
+                int sensor_config = read_local_sdo(i, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
+                int sensor_function = read_local_sdo(i, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
+                //check sensor function
+                if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
+                    profile_config[i].ticks_per_turn = read_local_sdo(i, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
+                    break;
+                }
             }
         }
+        init_position_profile_limits(&(profile_config[i].motion_profile), profile_config[i].max_acceleration, profile_config[i].max_speed, profile_config[i].max_position, profile_config[i].min_position, profile_config[i].ticks_per_turn);
     }
-    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
 
     //init ncurses
     WINDOW *wnd;
@@ -154,8 +160,8 @@ int main(int argc, char **argv)
                     run_flag = 0;
                     break;
                 }
-            } else if (output.app_mode == CS_MODE){
-                cs_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output, &profile_config);
+            } else if (output.app_mode == CYCLIC_SYNCHRONOUS_MODE){
+                cyclic_synchronous_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output, profile_config);
             }
 
             wrefresh(wnd); //refresh ncurses window
@@ -169,6 +175,8 @@ int main(int argc, char **argv)
     endwin(); // curses call to restore the original window and leave
     free(pdo_input);
     free(pdo_output);
+    free(profile_config);
+    free(output.target_state);
 
     return 0;
 }

@@ -15,7 +15,7 @@
 typedef enum {
     NO_MODE,
     QUIT_MODE,
-    CS_MODE
+    CYCLIC_SYNCHRONOUS_MODE
 } AppMode;
 
 typedef struct {
@@ -29,19 +29,12 @@ typedef struct {
     int init;
     int select;
     int debug;
-    CIA402State target_state;
+    CIA402State *target_state;
     AppMode app_mode;
 } OutputValues;
 
 
 #include "profile.h"
-
-typedef enum {
-    POSITION_DIRECT=0,
-    POSITION_PROFILER=1,
-    POSITION_STEP=2,
-    POSITION_STEP_PROFILER=3
-} PositionCtrlMode;
 
 typedef struct {
     motion_profile_t motion_profile;
@@ -55,7 +48,6 @@ typedef struct {
     int ticks_per_turn;
     int step;
     int steps;
-    PositionCtrlMode mode;
 } PositionProfileConfig;
 
 typedef struct {
@@ -65,26 +57,16 @@ typedef struct {
     int16_t torque;
 } RecordData;
 
-typedef enum {
-    RECORD_ON,
-    RECORD_OFF
-} RecordState;
-
-typedef struct {
-    uint32_t count;
-    uint32_t max_values;
-    RecordData *data;
-    RecordState state;
-} RecordConfig;
-
 #include "ecat_master.h"
 #include "display.h"
 
-void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput pdo_input);
+void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOInput *pdo_input, int number_slaves);
 
 void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profiler_config);
 
-void cs_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config);
+void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output);
+
+void cyclic_synchronous_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config);
 
 
 #endif /* OPERATION_H_ */

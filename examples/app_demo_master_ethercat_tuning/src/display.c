@@ -49,7 +49,8 @@ void print_state(WINDOW *wnd, enum eCIAState state)
     }
 }
 
-int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues input, RecordConfig record_config, int row)
+
+int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pdo_cia402_input pdo_input, InputValues input, RecordConfig record_config, int row)
 {
     //row 0
     wmoveclr(wnd, &row);
@@ -59,17 +60,20 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
     case TUNING_MOTORCTRL_OFF:
         wprintw(wnd, "off");
         break;
-    case TUNING_MOTORCTRL_TORQUE:
-        wprintw(wnd, "Torque control %5d", input.target);
+    case TUNING_MOTORCTRL_POSITION_PID:
+        wprintw(wnd, "Position control PID %9d", pdo_output.target_position);
         break;
-    case TUNING_MOTORCTRL_POSITION:
-        wprintw(wnd, "Position control %9d", input.target);
+    case TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED:
+        wprintw(wnd, "Position control Velocity Cascaded %9d", pdo_output.target_position);
+        break;
+    case TUNING_MOTORCTRL_POSITION_NL:
+        wprintw(wnd, "Position control Non Linear %9d", pdo_output.target_position);
         break;
     case TUNING_MOTORCTRL_VELOCITY:
-        wprintw(wnd, "Velocity control %5d", input.target);
+        wprintw(wnd, "Velocity control %5d", pdo_output.target_velocity);
         break;
-    case TUNING_MOTORCTRL_POSITION_PROFILER:
-        wprintw(wnd, "Position control with integrated profiler %5d", input.target);
+    case TUNING_MOTORCTRL_TORQUE:
+        wprintw(wnd, "Torque control %5d", pdo_output.target_torque);
         break;
     }
     wprintw(wnd, " **");
@@ -94,37 +98,49 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_input pdo_input, InputValues 
         wprintw(wnd, "Sensor polarity inverted");
     //row 5
     wmoveclr(wnd, &row);
+    if (input.profiler) {
+        wprintw(wnd, "Integrated Profiler on  ");
+    } else {
+        wprintw(wnd, "Integrated Profiler off ");
+    }
+    if (input.phases_inverted) {
+        wprintw(wnd, "| Phases connection inverted");
+    } else {
+        wprintw(wnd, "| Phases connection normal");
+    }
+    //row 6
+    wmoveclr(wnd, &row);
     if (input.brake_flag == 0)
         wprintw(wnd, "Brake blocking          ");
     else
         wprintw(wnd, "Brake released          ");
     if (input.brake_release_strategy != 0)
         wprintw(wnd, "| Brake shaking %d\%", input.brake_release_strategy);
-    //row 6
+    //row 7
     wmoveclr(wnd, &row);
     wprintw(wnd, "Speed  limit      %5d | ", input.max_speed);
     wprintw(wnd, "Position min %11d", input.min_position);
-    //row 7
+    //row 8
     wmoveclr(wnd, &row);
     wprintw(wnd, "Torque limit      %5d | ", input.max_torque);
     wprintw(wnd, "Position max %11d", input.max_position);
-    //row 8
+    //row 9
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position P    %9d | ", input.P_pos);
     wprintw(wnd, "Velocity P     %9d", input.P_velocity);
-    //row 9
+    //row 10
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position I    %9d | ", input.I_pos);
     wprintw(wnd, "Velocity I     %9d", input.I_velocity);
-    //row 10
+    //row 11
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position D    %9d | ", input.D_pos);
     wprintw(wnd, "Velocity D     %9d", input.D_velocity);
-    //row 11
+    //row 12
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position I lim    %5d | ", input.integral_limit_pos);
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
-    //row 12
+    //row 13
     wmoveclr(wnd, &row);
     if (input.error_status != 0)
         wprintw(wnd, "* Error Status %d * ", input.error_status);

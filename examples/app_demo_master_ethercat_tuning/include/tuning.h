@@ -14,6 +14,8 @@
 #define DISPLAY_LINE 27
 #define HELP_ROW_COUNT 12
 
+#define TUNING_ACK                          0x80000000
+
 typedef enum {
     TUNING_CMD_AUTO_OFFSET                = 0x01,
     TUNING_CMD_BRAKE                      = 0x02,
@@ -48,11 +50,40 @@ typedef enum {
 } TuningCommands;
 
 typedef enum {
-    TUNING_MOTORCTRL_OFF= 0,
-    TUNING_MOTORCTRL_TORQUE= 1,
-    TUNING_MOTORCTRL_POSITION= 2,
-    TUNING_MOTORCTRL_VELOCITY= 3,
-    TUNING_MOTORCTRL_POSITION_PROFILER= 4
+    TUNING_STATUS_MUX_OFFSET        = 1,
+    TUNING_STATUS_MUX_POLE_PAIRS    = 2,
+    TUNING_STATUS_MUX_MIN_POS       = 3,
+    TUNING_STATUS_MUX_MAX_POS       = 4,
+    TUNING_STATUS_MUX_MAX_SPEED     = 5,
+    TUNING_STATUS_MUX_MAX_TORQUE    = 6,
+    TUNING_STATUS_MUX_POS_KP        = 7,
+    TUNING_STATUS_MUX_POS_KI        = 8,
+    TUNING_STATUS_MUX_POS_KD        = 9,
+    TUNING_STATUS_MUX_POS_I_LIM     = 10,
+    TUNING_STATUS_MUX_VEL_KP        = 11,
+    TUNING_STATUS_MUX_VEL_KI        = 12,
+    TUNING_STATUS_MUX_VEL_KD        = 13,
+    TUNING_STATUS_MUX_VEL_I_LIM     = 14,
+    TUNING_STATUS_MUX_FAULT         = 15,
+    TUNING_STATUS_MUX_BRAKE_STRAT   = 16,
+    TUNING_STATUS_MUX_SENSOR_ERROR  = 17
+} TuningStatusMux;
+
+typedef enum {
+    TUNING_FLAG_BRAKE               = 0,
+    TUNING_FLAG_MOTION_POLARITY     = 1,
+    TUNING_FLAG_SENSOR_POLARITY     = 2,
+    TUNING_FLAG_PHASES_INVERTED     = 3,
+    TUNING_FLAG_INTEGRATED_PROFILER = 4
+} TuningFlagsBit;
+
+typedef enum {
+    TUNING_MOTORCTRL_OFF                            = 0,
+    TUNING_MOTORCTRL_POSITION_PID                   = 1,
+    TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED = 2,
+    TUNING_MOTORCTRL_POSITION_NL                    = 3,
+    TUNING_MOTORCTRL_VELOCITY                       = 4,
+    TUNING_MOTORCTRL_TORQUE                         = 5
 } TuningMotorCtrlStatus;
 
 typedef enum {
@@ -64,11 +95,12 @@ typedef enum {
 
 typedef struct {
     TuningMotorCtrlStatus motorctrl_status;
-    int target;
     int offset;
     int pole_pairs;
     int motion_polarity;
     int sensor_polarity;
+    int profiler;
+    int phases_inverted;
     int brake_release_strategy;
     int brake_flag;
     int error_status;

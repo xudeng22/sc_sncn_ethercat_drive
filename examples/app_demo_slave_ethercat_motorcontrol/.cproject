@@ -300,6 +300,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/targets}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/pdo_handler}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.xc.compiler.input.1254155018" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -728,6 +731,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/targets}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/pdo_handler}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.1412724662" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1161,6 +1167,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/targets}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/pdo_handler}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.995471107" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

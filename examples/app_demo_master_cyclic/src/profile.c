@@ -287,15 +287,6 @@ int init_velocity_profile(motion_profile_t *motion_profile, int target_velocity,
         motion_profile->acc = -ticks_to_rpm(motion_profile->max_acceleration, ticks_per_turn);
     }
 
-
-    motion_profile->s_time = .001f;
-
-
-    // compute time needed
-    float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
-
-    motion_profile->T = total_time/motion_profile->s_time;
-
     return init_linear_profile(motion_profile);
 }
 
@@ -326,13 +317,6 @@ int init_torque_profile(motion_profile_t *motion_profile, int target_torque, int
     } else if (motion_profile->acc < -motion_profile->max_torque_acceleration) {
         motion_profile->acc = -motion_profile->max_torque_acceleration;
     }
-
-    motion_profile->s_time = .001f;
-
-    // compute time needed
-    float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
-
-    motion_profile->T = total_time/motion_profile->s_time;
 
     return init_linear_profile(motion_profile);
 }

@@ -124,18 +124,27 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
     case  'p':
         pdo_output[output->select].op_mode = OPMODE_CSP;
         (output->target_state)[output->select] = CIASTATE_OP_ENABLED;
+        //reset profile
+        profile_config[output->select].step = 1;
+        profile_config[output->select].steps = 0;
         break;
 
     //CSV opmode
     case 'v':
         pdo_output[output->select].op_mode = OPMODE_CSV;
         (output->target_state)[output->select] = CIASTATE_OP_ENABLED;
+        //reset profile
+        profile_config[output->select].step = 1;
+        profile_config[output->select].steps = 0;
         break;
 
     //CST opmode
     case 't':
         pdo_output[output->select].op_mode = OPMODE_CST;
         (output->target_state)[output->select] = CIASTATE_OP_ENABLED;
+        //reset profile
+        profile_config[output->select].step = 1;
+        profile_config[output->select].steps = 0;
         break;
 
     // (backspace) discard current command

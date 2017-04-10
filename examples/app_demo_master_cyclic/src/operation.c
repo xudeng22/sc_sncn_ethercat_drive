@@ -29,7 +29,10 @@ void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOIn
                 }
                 break;
             case OPMODE_CSV:
-                pdo_output[i].target_velocity = velocity_profile_generate_in_steps(&(config[i].motion_profile), config[i].step);
+                pdo_output[i].target_velocity = linear_profile_generate_in_steps(&(config[i].motion_profile), config[i].step);
+                break;
+            case OPMODE_CST:
+                pdo_output[i].target_torque = linear_profile_generate_in_steps(&(config[i].motion_profile), config[i].step);
                 break;
             }
             config[i].step++;
@@ -84,16 +87,24 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
         case OPMODE_CSP:
             //init profile
             profile_config[output->select].step = 0;
-            profile_config[output->select].steps = init_position_profile(&(profile_config[output->select].motion_profile), -pdo_output[output->select].target_position, pdo_input[output->select].position_value,\
-                    profile_config[output->select].profile_speed, profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration, profile_config[output->select].ticks_per_turn);
+            profile_config[output->select].steps = init_position_profile(&(profile_config[output->select].motion_profile),
+                    -pdo_output[output->select].target_position, pdo_input[output->select].position_value,
+                    profile_config[output->select].profile_speed,
+                    profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration,
+                    profile_config[output->select].ticks_per_turn);
             break;
         case OPMODE_CSV:
             profile_config[output->select].step = 0;
-            profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile), -pdo_output[output->select].target_velocity, pdo_input[output->select].velocity_value,
-                    profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration, profile_config[output->select].ticks_per_turn);
+            profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile),
+                    -pdo_output[output->select].target_velocity, pdo_input[output->select].velocity_value,
+                    profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration,
+                    profile_config[output->select].ticks_per_turn);
             break;
         case OPMODE_CST:
-            pdo_output[output->select].target_torque = -pdo_output[output->select].target_torque;
+            profile_config[output->select].step = 0;
+            profile_config[output->select].steps = init_torque_profile(&(profile_config[output->select].motion_profile),
+                    -pdo_output[output->select].target_torque, pdo_input[output->select].torque_value,
+                    profile_config[output->select].profile_torque_acceleration, profile_config[output->select].profile_torque_acceleration);
             break;
         }
         break;
@@ -155,11 +166,16 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
                 break;
             case OPMODE_CSV:
                 profile_config[output->select].step = 0;
-                profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile), (*output).value, pdo_input[output->select].velocity_value, profile_config[output->select].profile_acceleration,
-                        profile_config[output->select].profile_acceleration, profile_config[output->select].ticks_per_turn);
+                profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile),
+                        (*output).value, pdo_input[output->select].velocity_value,
+                        profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration,
+                        profile_config[output->select].ticks_per_turn);
                 break;
             case OPMODE_CST:
-                pdo_output[output->select].target_torque = (*output).value;
+                profile_config[output->select].step = 0;
+                profile_config[output->select].steps = init_torque_profile(&(profile_config[output->select].motion_profile),
+                        (*output).value, pdo_input[output->select].torque_value,
+                        profile_config[output->select].profile_torque_acceleration, profile_config[output->select].profile_torque_acceleration);
                 break;
             }
         }

@@ -38,10 +38,13 @@ typedef struct {
 
 typedef struct {
     motion_profile_t motion_profile;
+    int max_torque_acceleration;
+    int max_torque;
     int max_acceleration;
     int max_speed;
     int profile_speed;
     int profile_acceleration;
+    int profile_torque_acceleration;
     int max_position;
     int min_position;
     int target_position;

@@ -167,7 +167,7 @@ int cm_sync_config_position_feedback(
     return restart;
 }
 
-void cm_sync_config_motor_control(
+int cm_sync_config_motor_control(
         client interface i_coe_communication i_coe,
         interface TorqueControlInterface client ?i_torque_control,
         MotorcontrolConfig &motorcontrol_config,
@@ -187,12 +187,12 @@ void cm_sync_config_motor_control(
     motorcontrol_config.pole_pairs               = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
     motorcontrol_config.commutation_sensor       = sensor_commutation_type;
     motorcontrol_config.commutation_angle_offset = i_coe.get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
-    motorcontrol_config.max_torque               = i_coe.get_object_value(DICT_MAX_TORQUE, 0);
     motorcontrol_config.phase_resistance         = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE);
     motorcontrol_config.phase_inductance         = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE);
     motorcontrol_config.torque_constant          = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
     motorcontrol_config.rated_current            = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
     motorcontrol_config.rated_torque             = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
+    motorcontrol_config.max_torque               = (i_coe.get_object_value(DICT_MAX_TORQUE, 0)*motorcontrol_config.rated_torque)/1000; // in 1/1000 of rated torque
     motorcontrol_config.percent_offset_torque    = i_coe.get_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0);
     /* Read protection limits */
     motorcontrol_config.protection_limit_over_current  = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
@@ -212,6 +212,8 @@ void cm_sync_config_motor_control(
     }
 
     i_torque_control.set_config(motorcontrol_config);
+
+    return motorcontrol_config.max_torque;
 }
 
 void cm_sync_config_profiler(
@@ -234,7 +236,8 @@ void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface MotionControlInterface i_motion_control,
         MotionControlConfig &position_config,
-        int sensor_resolution)
+        int sensor_resolution,
+        int max_torque)
 {
     i_motion_control.get_motion_control_config();
 
@@ -242,7 +245,7 @@ void cm_sync_config_pos_velocity_control(
     position_config.min_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
     position_config.max_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
     position_config.max_motor_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
-    position_config.max_torque          = i_coe.get_object_value(DICT_MAX_TORQUE, 0);
+    position_config.max_torque          = max_torque;
 
     position_config.enable_profiler = i_coe.get_object_value(DICT_MOTION_PROFILE_TYPE, 0); //FIXME: profiler setting missing
     position_config.resolution      = sensor_resolution;
@@ -397,12 +400,12 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD, motorcontrol_config.torque_D_gain);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, motorcontrol_config.pole_pairs);
     i_coe.set_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0, motorcontrol_config.commutation_angle_offset);
-    i_coe.set_object_value(DICT_MAX_TORQUE, 0, motorcontrol_config.max_torque);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE, motorcontrol_config.phase_resistance);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE, motorcontrol_config.phase_inductance);
     i_coe.set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT, motorcontrol_config.torque_constant);
     i_coe.set_object_value(DICT_MOTOR_RATED_CURRENT, 0, motorcontrol_config.rated_current);
     i_coe.set_object_value(DICT_MOTOR_RATED_TORQUE, 0, motorcontrol_config.rated_torque);
+    i_coe.set_object_value(DICT_MAX_TORQUE, 0, (motorcontrol_config.max_torque*1000)/motorcontrol_config.rated_torque); // in 1/1000 of rated torque
     i_coe.set_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0, motorcontrol_config.percent_offset_torque);
     /* Write protection limits */
     i_coe.set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);

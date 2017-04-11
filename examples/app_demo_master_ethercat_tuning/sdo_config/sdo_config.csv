@@ -21,7 +21,7 @@
 0x2004,        6,          24,          24,          24,          24,          24,          24 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
 
 #limits
-0x6072,        0,          50,          50,          50,          50,          50,          50 # DICT_MAX_TORQUE
+0x6072,        0,         100,         100,         100,         100,         100,          50 # DICT_MAX_TORQUE, in 1/1000 of rated torque
 0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_MAX_MOTOR_SPEED
 0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
 0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT

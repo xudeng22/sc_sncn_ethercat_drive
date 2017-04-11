@@ -41,6 +41,16 @@ All the options in detail are:
   * `-m <index>` select the master with numerical index (value range:  0 .. n), if more than one master is available (default: 0)
   * `-n <index>` select the slave to use for testing (index rage: 0 .. n) (default: 0)
 
+After the application starts first the object dictionary on the slave is
+uploaded and displayed on the console. If this is successful the application
+tries to download values to the specified device and re-upload the value from
+the device object dictionary. The test succeeds if:
+
+#. the uploaded value is the same as the one previously downloaded if the object entry is writeable
+#. the uploaded value is different from the previous downloaded value if the object entry is read only
+
+Please note in the later case the EtherCAT master gives a warning that you tried to write a read only value.
+
 Examples
 --------
 

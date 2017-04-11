@@ -73,14 +73,13 @@ Examples
     :maxdepth: 1
 
     Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>
-    
-    Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index>
-    Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index>
-    Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index>
 
-    Dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index>
-    Dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>
-    Dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index>
+    Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index.html>
+    Special Engineering Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>
+    
+
+    SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index.html>
+    SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>
 
     PDO Handling Demo <examples/app_demo_slave_pdo_handling/doc/index>
     PDO Handling Demo Master <examples/app_linux_ctrlproto-master-example/doc/index>
@@ -102,7 +101,7 @@ Examples
     * `PDO Handling Demo Master <examples/app_demo_master_pdo_handling/doc/index.html>`_: Showcases simple PDO communication (Master)
 
     * `SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index.html>`_: Showcases how to handle parameters over SDO (Slave)
-    * `SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>`_: howcases how to handle parameters over SDO (Master)
+    * `SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>`_: Show access to the slaves object dictionary and tests reading and writing of the objects value (Master)
 
 
 Dependencies

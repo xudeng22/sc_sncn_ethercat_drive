@@ -11,24 +11,6 @@
 #include "config_manager.h"
 #include <xs1.h>
 
-struct _config_object {
-    uint16_t index;
-    uint8_t subindex;
-    uint8_t type;
-};
-
-
-static int tick2bits(int tick_resolution)
-{
-    unsigned r = 0;
-
-    while (tick_resolution >>= 1) {
-        r++;
-    }
-
-    return r;
-}
-
 void cm_sync_config_hall_states(
         client interface i_coe_communication i_coe,
         client interface PositionFeedbackInterface i_pos_feedback,
@@ -216,6 +198,7 @@ void cm_sync_config_motor_control(
     motorcontrol_config.protection_limit_over_current  = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
     motorcontrol_config.protection_limit_under_voltage = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE);
     motorcontrol_config.protection_limit_over_voltage  = i_coe.get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
+    //FIXME: missing motorcontrol_config.protection_limit_over_temperature
 
     uint16_t feedback_sensor_object = 0;
     feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_commutation); //select which hall config to read
@@ -441,23 +424,7 @@ void cm_default_config_motor_control(
     i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_4, motorcontrol_config.hall_state_angle[4]);
     i_coe.set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_5, motorcontrol_config.hall_state_angle[5]);
 
-    // The following are not set in the main.xc
-    /* Write recuperation config */
-    //FIXME: do we set recuperation settings
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_RECUPERATION_ENABLED, motorcontrol_config.recuperation);
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_BATTERY_ENERGY, motorcontrol_config.battery_e_max);
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_BATTERY_ENERGY, motorcontrol_config.battery_e_min);
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MIN_RECUPERATION_POWER, motorcontrol_config.regen_p_max);
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAX_RECUPERATION_POWER, motorcontrol_config.regen_p_min);
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MINIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_min);
-//    i_coe.set_object_value(DICT_RECUPERATION, SUB_RECUPERATION_MAXIMUM_RECUPERATION_SPEED, motorcontrol_config.regen_speed_max);
-
-//    i_coe.set_object_value(DICT_MAX_CURRENT, 0, motorcontrol_config.max_current);
-
-    // also missing:
-    // current_ratio
-    // voltage_ratio
-
+    //FIXME: missing motorcontrol_config.protection_limit_over_temperature
 }
 
 void cm_default_config_profiler(
@@ -516,10 +483,6 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE, position_config.pull_brake_voltage);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME, position_config.pull_brake_time);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE, position_config.hold_brake_voltage);
-
-    //not in main.xc
-//    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.position_fc);
-//    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_VELOCITY_FILTER_COEFFICIENT, position_config.velocity_fc);
 
     i_motion_control.set_motion_control_config(position_config);
 }

@@ -91,10 +91,6 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motio
 
 static void sdo_wait_first_config(client interface i_coe_communication i_coe)
 {
-    timer t;
-    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
-    unsigned int time;
-
     select {
     case i_coe.operational_state_change():
         //printstrln("Master requests OP mode - cyclic operation is about to start.");
@@ -258,9 +254,7 @@ static void inline update_configuration(
 //    cm_sync_config_hall_states(i_coe, i_pos_feedback_1, i_torque_control, position_feedback_config_1, motorcontrol_config, 1);
 
     /* Update values with current configuration */
-    /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
     profiler_config.ticks_per_turn = sensor_resolution;
-
     nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
@@ -398,9 +392,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //enum e_States state_old = state; /* necessary for something??? */
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
-    //uint16_t statusword_old = 0; /* FIXME is the previous statusword send necessary? */
     int controlword = 0;
-    //int controlword_old = 0; /* FIXME is the previous controlword received necessary? */
 
     //int torque_offstate = 0;
     check_list checklist = init_checklist();

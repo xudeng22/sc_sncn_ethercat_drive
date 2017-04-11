@@ -49,7 +49,7 @@ stack is running a proper software for the EtherCAT slave side, i.e.
 
    #. Navigate with the terminal to your compiled application binary on the hard disk. Then execute the application with super user rights: ::
 
-       sudo ./bin//app_demo_master_pdo_handling
+       sudo ./bin/app_demo_master_pdo_handling
 
 The application provides the following command line arguments
 

@@ -50,7 +50,7 @@ Modules
 
     Drive Module <module_ethercat_drive/doc/index>
 
-    * `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
 
 EtherCAT Drive Linux Master Libraries
 -------------------------------------
@@ -76,7 +76,6 @@ Examples
 
     Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index.html>
     Special Engineering Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>
-    
 
     SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index.html>
     SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>

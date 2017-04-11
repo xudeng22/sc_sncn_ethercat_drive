@@ -24,7 +24,9 @@ Quick How-to
 4. Download and :ref:`import in your workspace <getting_started_importing_library>` the SOMANET Motor Control Library and its dependencies.
 5. Open the **main.xc** within  the **app_demo_slave_pdo_handling**. Include the :ref:`board-support file according to your device <somanet_board_support_module>`. Also make sure to have an :ref:`appropriate target in your Makefile <somanet_board_support_module>`.
 6. :ref:`Run the application.`
-7. Start the master application app_demo_master_pdo_handling_, depending on the command line option you can now observe how the PDO values change.  If the compile option in `main.xc` ::
+7. Start the master application `app_demo_master_pdo_handling`_, depending on
+   the command line option you can now observe how the PDO values change.  If
+   the compile option in ``main.xc`` ::
 
       15 #define DEBUG_CONSOLE_PRINT       1
 

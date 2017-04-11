@@ -24,7 +24,7 @@ Quick How-to
 4. Download and :ref:`import in your workspace <getting_started_importing_library>` the SOMANET Motor Control Library and its dependencies.
 5. Open the **main.xc** within  the **app_demo_slave_sdo_handling**. Include the :ref:`board-support file according to your device <somanet_board_support_module>`. Also make sure to have an :ref:`appropriate target in your Makefile <somanet_board_support_module>`.
 6. :ref:`Run the application.` This application does not provide console outputs.
-    It is inteded to be used with :ref:`Demo_Master_Object_Dictionary_Access`_
+    It is inteded to be used with :ref:`Demo Master Object Dictionary Access <Demo_Master_Object_Dictionary_Access>`
 
 .. seealso:: Did everything go well? If you need further support please check out our `forum <http://forum.synapticon.com/>`_.
 

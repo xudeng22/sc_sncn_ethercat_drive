@@ -26,20 +26,20 @@ To compile this application simply type ::
 
   make
 
-You can find the resulting binary in the newly created `bin/` folder.
+You can find the resulting binary in the newly created ``bin/`` folder.
 
 Usage
 +++++
 
-The applicatin accepts various command line arguments. With `-h` a short
+The applicatin accepts various command line arguments. With ``-h`` a short
 overview of the available options are available.
 
 All the options in detail are:
 
-  * `-h` a short list of the available objects
-  * `-l` show a list of all connected slaves and exit
-  * `-m <index>` select the master with numerical index (value range:  0 .. n), if more than one master is available (default: 0)
-  * `-n <index>` select the slave to use for testing (index rage: 0 .. n) (default: 0)
+  * ``-h`` a short list of the available objects
+  * ``-l`` show a list of all connected slaves and exit
+  * ``-m <index>`` select the master with numerical index (value range:  0 .. n), if more than one master is available (default: 0)
+  * ``-n <index>`` select the slave to use for testing (index rage: 0 .. n) (default: 0)
 
 After the application starts first the object dictionary on the slave is
 uploaded and displayed on the console. If this is successful the application

@@ -33,7 +33,7 @@ Run the application
 When the application has been compiled (just execute make), the next step is to
 run it on the Linux PC. Before doing that, make sure that the SOMANET EtherCAT
 stack is running a proper software for the EtherCAT slave side, i.e.
-`app_demo_slave_pdo_handling`_.
+:ref:`EtherCAT PDO Handling Demo (Slave) <app_demo_slave_pdo_handling>`.
 
    #. Make sure your EtherCAT Master is up and running. To start the Master on a Linux machine, execute the following command: ::
 

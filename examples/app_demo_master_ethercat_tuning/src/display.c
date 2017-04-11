@@ -44,11 +44,31 @@ void print_state(WINDOW *wnd, enum eCIAState state)
         wprintw(wnd, "FAULT             ");
         break;
     default:
-        wprintw(wnd, "%04d              ");
+        wprintw(wnd, "%04d              ", state);
         break;
     }
 }
 
+void print_motor_fault(WINDOW *wnd, int fault)
+{
+    switch(fault) {
+    case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
+        wprintw(wnd, "Over Current");
+        break;
+    case OVER_VOLTAGE_NO_1:
+        wprintw(wnd, "Over Voltage");
+        break;
+    case UNDER_VOLTAGE_NO_1:
+        wprintw(wnd, "Under Voltage");
+        break;
+    case EXCESS_TEMPERATURE_DRIVE:
+        wprintw(wnd, "Temperature");
+        break;
+    default:
+        wprintw(wnd, "0x%04x", fault);
+        break;
+    }
+}
 
 int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pdo_cia402_input pdo_input, InputValues input, RecordConfig record_config, int row)
 {
@@ -142,8 +162,11 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 13
     wmoveclr(wnd, &row);
-    if (input.error_status != 0)
-        wprintw(wnd, "* Error Status %d * ", input.error_status);
+    if (input.error_status != 0) {
+        wprintw(wnd, "* Motor Fault ");
+        print_motor_fault(wnd, input.error_status);
+        wprintw(wnd, " * ");
+    }
     if (input.sensor_error != 0)
         wprintw(wnd, "* Sensor Error %d * ", input.sensor_error);
     if (record_config.state == RECORD_ON)

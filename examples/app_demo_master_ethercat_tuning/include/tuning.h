@@ -14,6 +14,24 @@
 #define DISPLAY_LINE 27
 #define HELP_ROW_COUNT 12
 
+
+/**
+ * @brief CiA 402 Fault Codes
+ */
+typedef enum {
+    //having no fault:
+    NO_FAULT=0,
+
+    //standard defined faults (IEC-61800)
+    DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1 = 0x2221,
+    OVER_VOLTAGE_NO_1                           = 0x3211,
+    UNDER_VOLTAGE_NO_1                          = 0x3221,
+    EXCESS_TEMPERATURE_DRIVE                    = 0x4310,
+
+    //user specific faults
+    WRONG_REF_CLK_FRQ=0xFF01
+} CIA402ErrorCodes;
+
 #define TUNING_ACK                          0x80000000
 
 typedef enum {

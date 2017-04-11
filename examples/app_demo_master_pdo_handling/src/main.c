@@ -41,6 +41,7 @@
 #define PDO_INDEX_DIGITAL_INPUT3             16
 #define PDO_INDEX_DIGITAL_INPUT4             18
 #define PDO_INDEX_USER_MISO                  20
+#define PDO_INDEX_TIMESTAMP                  21
 
 /* Index of sending (out) PDOs */
 #define PDO_INDEX_CONTROLWORD                 0

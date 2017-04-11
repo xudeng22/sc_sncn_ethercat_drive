@@ -125,6 +125,8 @@ int init_torque_profile(motion_profile_t *motion_profile, int target_torque, int
 
 int init_linear_profile(motion_profile_t *motion_profile);
 
+float ticks_to_rpm(float ticks, int ticks_per_turn);
+
 #ifdef __cplusplus
 }
 #endif

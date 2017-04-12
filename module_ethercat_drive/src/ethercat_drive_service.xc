@@ -54,11 +54,9 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motio
     case OVER_VOLTAGE_NO_1:
         error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
         break;
-#if 0 /* FIXME undefined symbol */
-    case OVER_TEMPERATURE:
+    case EXCESS_TEMPERATURE_DRIVE:
         error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
         break;
-#endif
     case NO_FAULT:
         /* if there is no motorcontrol fault check commutation sensor fault
          * it means that motorcontrol faults take precedence over sensor faults

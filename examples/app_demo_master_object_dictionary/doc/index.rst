@@ -14,7 +14,7 @@ read/write and read only objects.
 
 .. cssclass:: github
 
- `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/develop/examples/app_demo_master_object_dictionary>`_
+ `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_object_dictionary>`_
 
 Prerequisites
 +++++++++++++

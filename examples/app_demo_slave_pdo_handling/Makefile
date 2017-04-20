@@ -9,7 +9,7 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_pdo_handling
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = module_board-support module_canopen_interface module_ethercat module_reboot
+USED_MODULES = module_board-support module_canopen_interface lib_ethercat module_reboot
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:

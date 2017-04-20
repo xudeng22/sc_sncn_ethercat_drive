@@ -1,5 +1,5 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-G2.bsp>
 #include <COM_ECAT-rev-a.bsp>
 
 /**
@@ -199,6 +199,12 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
 }
 
+/* the led and watchdog ports must be defined so they get higher priority,
+ * otherwise undefined behavior on the chip occures.
+ */
+port wd_port = WD_PORT_TICK;
+port led_port = COM_PORT_4BIT_48_52_28_32;
+
 int main(void) {
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
@@ -212,15 +218,30 @@ int main(void) {
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
+                ethercat_service(null, i_coe, null,
                         i_foe, i_pdo, ethercat_ports);
+#if 0 /* reboot service does not work here since one task is marked [[distributeable]] and the XTC fails here */
                 reboot_service_ethercat(i_ecat_reboot);
+#endif
             }
         }
+#if 0 /* Experiment with watchdog trigger */
+        on tile[APP_TILE]:
+        {
+            timer wd_time;
+            unsigned wdtick = 0;
 
+            while (1) {
+                delay_milliseconds(100);
+                wd_port <: wdtick;
+                wdtick ^= 1;
+            }
+        }
+#endif
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
+            wd_port <: 1; /* pull up watchdog */
             pdo_service(i_coe, i_pdo);
         }
     }

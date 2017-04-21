@@ -38,7 +38,7 @@ int tuning_handler_ethercat(
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
-    if (status_mux > TUNING_STATUS_MUX_SENSOR_ERROR) {
+    if (status_mux > TUNING_STATUS_MUX_RATED_TORQUE) {
         status_mux = 1;
     }
     switch(status_mux) {
@@ -58,7 +58,7 @@ int tuning_handler_ethercat(
         user_miso = motion_ctrl_config.max_motor_speed;
         break;
     case TUNING_STATUS_MUX_MAX_TORQUE: //max torque
-        user_miso = motion_ctrl_config.max_torque;
+        user_miso = (motion_ctrl_config.max_torque*1000)/motorcontrol_config.rated_torque;
         break;
     case TUNING_STATUS_MUX_POS_KP: //P_pos
         user_miso = motion_ctrl_config.position_kp;
@@ -92,6 +92,12 @@ int tuning_handler_ethercat(
         break;
     case TUNING_STATUS_MUX_SENSOR_ERROR:// sensor error
         user_miso = upstream_control_data.sensor_error;
+        break;
+    case TUNING_STATUS_MUX_MOTION_CTRL_ERROR:// motion control error
+        user_miso = upstream_control_data.motion_control_error;
+        break;
+    case TUNING_STATUS_MUX_RATED_TORQUE:// motion control error
+        user_miso = motorcontrol_config.rated_torque;
         break;
     }
 
@@ -172,8 +178,8 @@ void tuning_command_handler(
             motion_ctrl_config.velocity_integral_limit = tuning_mode_state.value;
             break;
         case TUNING_CMD_MAX_TORQUE:
-            motion_ctrl_config.max_torque = tuning_mode_state.value;
-            motorcontrol_config.max_torque = tuning_mode_state.value;
+            motion_ctrl_config.max_torque = (tuning_mode_state.value*motorcontrol_config.rated_torque)/1000;
+            motorcontrol_config.max_torque = motion_ctrl_config.max_torque;
             break;
         case TUNING_CMD_MAX_SPEED:
             motion_ctrl_config.max_motor_speed = tuning_mode_state.value;
@@ -228,6 +234,9 @@ void tuning_command_handler(
             } else {
                 motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
             }
+            break;
+        case TUNING_CMD_RATED_TORQUE:
+            motorcontrol_config.rated_torque = tuning_mode_state.value;
             break;
         }
 

@@ -32,6 +32,16 @@ typedef enum {
     WRONG_REF_CLK_FRQ=0xFF01
 } CIA402ErrorCodes;
 
+
+/**
+ * @brief Type for Motion control Error
+ *
+ */
+typedef enum {
+    MOTION_CONTROL_NO_ERROR=0,
+    MOTION_CONTROL_BRAKE_NOT_RELEASED=1
+} MotionControlError;
+
 #define TUNING_ACK                          0x80000000
 
 typedef enum {
@@ -64,27 +74,30 @@ typedef enum {
     TUNING_CMD_POLARITY_SENSOR            = 0x90,
     TUNING_CMD_POLE_PAIRS                 = 0xB0,
     TUNING_CMD_OFFSET                     = 0xA0,
-    TUNING_CMD_PHASES_INVERTED            = 0xA1
+    TUNING_CMD_PHASES_INVERTED            = 0xA1,
+    TUNING_CMD_RATED_TORQUE               = 0xA2
 } TuningCommands;
 
 typedef enum {
-    TUNING_STATUS_MUX_OFFSET        = 1,
-    TUNING_STATUS_MUX_POLE_PAIRS    = 2,
-    TUNING_STATUS_MUX_MIN_POS       = 3,
-    TUNING_STATUS_MUX_MAX_POS       = 4,
-    TUNING_STATUS_MUX_MAX_SPEED     = 5,
-    TUNING_STATUS_MUX_MAX_TORQUE    = 6,
-    TUNING_STATUS_MUX_POS_KP        = 7,
-    TUNING_STATUS_MUX_POS_KI        = 8,
-    TUNING_STATUS_MUX_POS_KD        = 9,
-    TUNING_STATUS_MUX_POS_I_LIM     = 10,
-    TUNING_STATUS_MUX_VEL_KP        = 11,
-    TUNING_STATUS_MUX_VEL_KI        = 12,
-    TUNING_STATUS_MUX_VEL_KD        = 13,
-    TUNING_STATUS_MUX_VEL_I_LIM     = 14,
-    TUNING_STATUS_MUX_FAULT         = 15,
-    TUNING_STATUS_MUX_BRAKE_STRAT   = 16,
-    TUNING_STATUS_MUX_SENSOR_ERROR  = 17
+    TUNING_STATUS_MUX_OFFSET            = 1,
+    TUNING_STATUS_MUX_POLE_PAIRS        = 2,
+    TUNING_STATUS_MUX_MIN_POS           = 3,
+    TUNING_STATUS_MUX_MAX_POS           = 4,
+    TUNING_STATUS_MUX_MAX_SPEED         = 5,
+    TUNING_STATUS_MUX_MAX_TORQUE        = 6,
+    TUNING_STATUS_MUX_POS_KP            = 7,
+    TUNING_STATUS_MUX_POS_KI            = 8,
+    TUNING_STATUS_MUX_POS_KD            = 9,
+    TUNING_STATUS_MUX_POS_I_LIM         = 10,
+    TUNING_STATUS_MUX_VEL_KP            = 11,
+    TUNING_STATUS_MUX_VEL_KI            = 12,
+    TUNING_STATUS_MUX_VEL_KD            = 13,
+    TUNING_STATUS_MUX_VEL_I_LIM         = 14,
+    TUNING_STATUS_MUX_FAULT             = 15,
+    TUNING_STATUS_MUX_BRAKE_STRAT       = 16,
+    TUNING_STATUS_MUX_SENSOR_ERROR      = 17,
+    TUNING_STATUS_MUX_MOTION_CTRL_ERROR = 18,
+    TUNING_STATUS_MUX_RATED_TORQUE      = 19
 } TuningStatusMux;
 
 typedef enum {
@@ -123,10 +136,12 @@ typedef struct {
     int brake_flag;
     int error_status;
     int sensor_error;
+    int motion_control_error;
     int max_position;
     int min_position;
     int max_speed;
     int max_torque;
+    int rated_torque;
     int P_pos;
     int I_pos;
     int D_pos;

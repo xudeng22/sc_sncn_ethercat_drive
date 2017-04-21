@@ -40,7 +40,7 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error, SensorError commutation_sensor_error)
+static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error, SensorError commutation_sensor_error, MotionControlError motion_control_error)
 {
     int error_code = 0;
 
@@ -58,25 +58,23 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motio
         error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
         break;
     case NO_FAULT:
-        /* if there is no motorcontrol fault check commutation sensor fault
+        /* if there is no motorcontrol fault check sensor fault
          * it means that motorcontrol faults take precedence over sensor faults
          * */
-        switch(commutation_sensor_error) {
-        case SENSOR_NO_ERROR:
-            /* if there is no motorcontrol fault check motion sensor fault
-             * it means that commutation sensor faults take precedence over motion sensor faults
-             * */
-            switch(motion_sensor_error) {
-            case SENSOR_NO_ERROR:
+        if (commutation_sensor_error != SENSOR_NO_ERROR || motion_sensor_error != SENSOR_NO_ERROR) {
+            error_code = ERROR_CODE_SENSOR;
+        } else {
+            /* if there is no sensor fault check motion control fault */
+            switch(motion_control_error) {
+            case MOTION_CONTROL_BRAKE_NOT_RELEASED:
+                error_code = ERROR_CODE_MOTOR_BLOCKED;
+                break;
+            case MOTION_CONTROL_NO_ERROR:
                 break;
             default:
-                error_code = ERROR_CODE_SENSOR;
+                error_code = ERROR_CODE_CONTROL;
                 break;
             }
-            break;
-        default:
-            error_code = ERROR_CODE_MOTOR_COMMUTATION;
-            break;
         }
         break;
     default: /* a fault occured but could not be specified further */
@@ -518,6 +516,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         FaultCode motorcontrol_fault = send_to_master.error_status;
         SensorError motion_sensor_error = send_to_master.last_sensor_error;
         SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
+        MotionControlError motion_control_error = send_to_master.motion_control_error;
 
 //        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
 //        xscope_int(ACTUAL_POSITION, actual_position);
@@ -527,7 +526,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          * Check states of the motor drive, sensor drive and control servers
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
          */
-        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
+        if (motorcontrol_fault != NO_FAULT ||
+                motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR ||
+                motion_control_error != MOTION_CONTROL_NO_ERROR)
+        {
             update_checklist(checklist, opmode, 1);
             if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
@@ -540,7 +542,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error);
+            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
             i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
         } else {
             update_checklist(checklist, opmode, 0); //no error
@@ -734,17 +736,22 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                  * This is because the motorcontrol needs time before restarting.
                  */
                 if (read_controlword_fault_reset(controlword) && checklist.fault_reset_wait == false) {
-                    //reset fault in motorcontrol and position feedback
+                    //reset fault in motorcontrol
                     if (motorcontrol_fault != NO_FAULT) {
                         i_torque_control.reset_faults();
                         checklist.fault_reset_wait = true;
                     }
+                    //reset fault in position feedback
                     if (motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
                         if (!isnull(i_position_feedback_2)) {
                             i_position_feedback_2.set_config(position_feedback_config_2);
                         }
                         i_position_feedback_1.set_config(position_feedback_config_1);
                         checklist.fault_reset_wait = true;
+                    }
+                    //reset fault in position feedback
+                    if (motion_control_error != MOTION_CONTROL_NO_ERROR) {
+                        i_motion_control.set_motion_control_config(motion_control_config);
                     }
                     //start timer
                     t :> fault_reset_wait_time;

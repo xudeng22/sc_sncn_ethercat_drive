@@ -64,6 +64,12 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case TUNING_STATUS_MUX_SENSOR_ERROR://sensor error
         (*input).sensor_error = pdo_input.user_miso;
         break;
+    case TUNING_STATUS_MUX_MOTION_CTRL_ERROR://sensor error
+        (*input).motion_control_error = pdo_input.user_miso;
+        break;
+    case TUNING_STATUS_MUX_RATED_TORQUE://rated torque
+        (*input).rated_torque = pdo_input.user_miso;
+        break;
     }
 
     //tuning state
@@ -121,8 +127,17 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
 
     //reverse command
     case 'r':
-        pdo_output->target_velocity =  -pdo_output->target_velocity;
-        pdo_output->target_torque =  -pdo_output->target_torque;
+        if (output->mode_1 == 1) {
+            pdo_output->target_velocity =  -pdo_output->target_velocity;
+            pdo_output->target_torque =  -pdo_output->target_torque;
+        } else {
+            (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
+            if (output->mode_2 == 1) {
+                output->mode_2 = c;
+            } else {
+                output->mode_3 = c;
+            }
+        }
         break;
 
     //discard command
@@ -352,6 +367,13 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                             break;
                         case 'l':
                             pdo_output->tuning_command = TUNING_CMD_VELOCITY_I_LIM;
+                            break;
+                        }
+                        break;
+                    case 't': //torque
+                        switch(output->mode_3) {
+                        case 'r':
+                            pdo_output->tuning_command = TUNING_CMD_RATED_TORQUE;
                             break;
                         }
                         break;

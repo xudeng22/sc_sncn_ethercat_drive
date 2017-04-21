@@ -8,7 +8,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <canopen_service.h>
+#include <canopen_interface_service.h>
 #include <ethercat_service.h>
 
 #include <reboot.h>

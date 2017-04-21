@@ -103,7 +103,7 @@ int tuning_handler_ethercat(
         tuning_mode_state.command   = tuning_command;
 
         // debug print
-        printf("command: %3d, value: %d\n", tuning_mode_state.command, tuning_mode_state.value);
+        //printf("command: %3d, value: %d\n", tuning_mode_state.command, tuning_mode_state.value);
 
         //execute command
         tuning_command_handler(tuning_mode_state,

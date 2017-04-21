@@ -70,6 +70,18 @@ void print_motor_fault(WINDOW *wnd, int fault)
     }
 }
 
+void print_motion_control_error(WINDOW *wnd, int fault)
+{
+    switch(fault) {
+    case MOTION_CONTROL_BRAKE_NOT_RELEASED:
+        wprintw(wnd, "Brake not released");
+        break;
+    default:
+        wprintw(wnd, "%d", fault);
+        break;
+    }
+}
+
 int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pdo_cia402_input pdo_input, InputValues input, RecordConfig record_config, int row)
 {
     //row 0
@@ -93,7 +105,7 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
         wprintw(wnd, "Velocity control %5d", pdo_output.target_velocity);
         break;
     case TUNING_MOTORCTRL_TORQUE:
-        wprintw(wnd, "Torque control %5d", pdo_output.target_torque);
+        wprintw(wnd, "Torque control %6d / %5d mNm", pdo_output.target_torque, (pdo_output.target_torque*input.rated_torque)/1000);
         break;
     }
     wprintw(wnd, " **");
@@ -102,7 +114,7 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Position %14d | Velocity            %4d",  pdo_input.position_value, pdo_input.velocity_value);
     //row 2
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Torque computed    %4d | Torque sensor       %4d", (int16_t)pdo_input.torque_value, pdo_input.analog_input1);
+    wprintw(wnd, "Torque %6d/%5d mNm | analog input 1: %8d", (int16_t)pdo_input.torque_value, ((int16_t)pdo_input.torque_value*input.rated_torque)/1000, pdo_input.analog_input1);
     //row 3
     wmoveclr(wnd, &row);
     wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);
@@ -139,11 +151,14 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     //row 7
     wmoveclr(wnd, &row);
     wprintw(wnd, "Speed  limit      %5d | ", input.max_speed);
-    wprintw(wnd, "Position min %11d", input.min_position);
+    wprintw(wnd, "Position min/max %11d / %11d", input.min_position, input.max_position);
     //row 8
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Torque limit      %5d | ", input.max_torque);
-    wprintw(wnd, "Position max %11d", input.max_position);
+    if (input.rated_torque <= 0) {
+        input.rated_torque = 1;
+    }
+    wprintw(wnd, "Torque rated  %5d mNm | ", input.rated_torque);
+    wprintw(wnd, "Torque max %6d / %5d mNm", input.max_torque,  (input.max_torque*input.rated_torque)/1000);
     //row 9
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position P    %9d | ", input.P_pos);
@@ -162,13 +177,21 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 13
     wmoveclr(wnd, &row);
+    //motorcontrol fault
     if (input.error_status != 0) {
         wprintw(wnd, "* Motor Fault ");
         print_motor_fault(wnd, input.error_status);
         wprintw(wnd, " * ");
     }
+    //sensor error
     if (input.sensor_error != 0)
         wprintw(wnd, "* Sensor Error %d * ", input.sensor_error);
+    //motion control error
+    if (input.motion_control_error != 0) {
+        wprintw(wnd, "* Motion Control Error ");
+        print_motion_control_error(wnd, input.motion_control_error);
+        wprintw(wnd, " * ");
+    }
     if (record_config.state == RECORD_ON)
         wprintw(wnd, "* Record ON *");
     return row;

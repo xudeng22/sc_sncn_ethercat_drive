@@ -59,7 +59,8 @@ typedef enum {
     TUNING_CMD_POLARITY_SENSOR            = 0x90,
     TUNING_CMD_POLE_PAIRS                 = 0xB0,
     TUNING_CMD_OFFSET                     = 0xA0,
-    TUNING_CMD_PHASES_INVERTED            = 0xA1
+    TUNING_CMD_PHASES_INVERTED            = 0xA1,
+    TUNING_CMD_RATED_TORQUE               = 0xA2
 } TuningCommands;
 
 typedef enum {
@@ -72,23 +73,25 @@ typedef enum {
 } TuningMotorCtrlStatus;
 
 typedef enum {
-    TUNING_STATUS_MUX_OFFSET        = 1,
-    TUNING_STATUS_MUX_POLE_PAIRS    = 2,
-    TUNING_STATUS_MUX_MIN_POS       = 3,
-    TUNING_STATUS_MUX_MAX_POS       = 4,
-    TUNING_STATUS_MUX_MAX_SPEED     = 5,
-    TUNING_STATUS_MUX_MAX_TORQUE    = 6,
-    TUNING_STATUS_MUX_POS_KP        = 7,
-    TUNING_STATUS_MUX_POS_KI        = 8,
-    TUNING_STATUS_MUX_POS_KD        = 9,
-    TUNING_STATUS_MUX_POS_I_LIM     = 10,
-    TUNING_STATUS_MUX_VEL_KP        = 11,
-    TUNING_STATUS_MUX_VEL_KI        = 12,
-    TUNING_STATUS_MUX_VEL_KD        = 13,
-    TUNING_STATUS_MUX_VEL_I_LIM     = 14,
-    TUNING_STATUS_MUX_FAULT         = 15,
-    TUNING_STATUS_MUX_BRAKE_STRAT   = 16,
-    TUNING_STATUS_MUX_SENSOR_ERROR  = 17
+    TUNING_STATUS_MUX_OFFSET            = 1,
+    TUNING_STATUS_MUX_POLE_PAIRS        = 2,
+    TUNING_STATUS_MUX_MIN_POS           = 3,
+    TUNING_STATUS_MUX_MAX_POS           = 4,
+    TUNING_STATUS_MUX_MAX_SPEED         = 5,
+    TUNING_STATUS_MUX_MAX_TORQUE        = 6,
+    TUNING_STATUS_MUX_POS_KP            = 7,
+    TUNING_STATUS_MUX_POS_KI            = 8,
+    TUNING_STATUS_MUX_POS_KD            = 9,
+    TUNING_STATUS_MUX_POS_I_LIM         = 10,
+    TUNING_STATUS_MUX_VEL_KP            = 11,
+    TUNING_STATUS_MUX_VEL_KI            = 12,
+    TUNING_STATUS_MUX_VEL_KD            = 13,
+    TUNING_STATUS_MUX_VEL_I_LIM         = 14,
+    TUNING_STATUS_MUX_FAULT             = 15,
+    TUNING_STATUS_MUX_BRAKE_STRAT       = 16,
+    TUNING_STATUS_MUX_SENSOR_ERROR      = 17,
+    TUNING_STATUS_MUX_MOTION_CTRL_ERROR = 18,
+    TUNING_STATUS_MUX_RATED_TORQUE      = 19
 } TuningStatusMux;
 
 typedef enum {

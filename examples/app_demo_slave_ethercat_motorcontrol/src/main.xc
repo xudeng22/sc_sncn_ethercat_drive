@@ -150,7 +150,7 @@ int main(void)
                     motion_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                     motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
-                    motion_control_service(IFM_TILE_USEC, motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
+                    motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
                 }
             }
         }

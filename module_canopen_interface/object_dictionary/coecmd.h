@@ -15,6 +15,8 @@
 #ifndef COECMD_H
 #define COECMD_H
 
+#warning FIXME deprecated - remove!
+
 /** Command to request object from OD */
 #define CAN_GET_OBJECT    0x1
 /** Command to set  object from OD */

@@ -17,6 +17,8 @@ USED_MODULES = config_motor lib_bldc_torque_control module_adc module_biss modul
 # and when compilling in Release mode it uses the ethercat_service library.
 ifeq ($(CONFIG),Debug)
 	MODULE_LIBRARIES = ethercat_service_standalone
+else
+	MODULE_LIBRARIES = ethercat_service
 endif
 
 

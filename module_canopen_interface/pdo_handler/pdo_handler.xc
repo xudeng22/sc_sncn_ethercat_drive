@@ -34,7 +34,7 @@ pdo_mapping_t pdo_map_rx[4];
  * @param[in] pdo_mapping_address Either 0x1600 or 0x1A00 for Tx/Rx PDOs
  * @param[out] pdo_map  Struct for Rx or Tx PDO OD data.
  */
-void pdo_init_mapping_struct(unsigned pdo_mapping_address, pdo_mapping_t pdo_map[])
+void pdo_init_mapping_struct(unsigned pdo_mapping_address, pdo_mapping_t pdo_map[], size_t pdo_map_size)
 {
     unsigned error = 0, pdo_num = 0, value = 0, pdo_entries = 0, bitlength = 0, od_index;
 
@@ -44,6 +44,11 @@ void pdo_init_mapping_struct(unsigned pdo_mapping_address, pdo_mapping_t pdo_map
         if (error) break;
 
         pdo_entries = value;
+
+        /* avoid out of bounds exception
+         * FIXME apply proper error handling */
+        if (pdo_map_size < pdo_entries)
+            return;
 
         for (int i = 0; i < pdo_entries; i++)
         {
@@ -104,8 +109,8 @@ pdo_values_t pdo_init_data(void)
     inout.user_miso         = 0x0;
     inout.timestamp         = 0x0;
 
-    pdo_init_mapping_struct(TPDO_MAPPING_PARAMETER, pdo_map_tx);
-    pdo_init_mapping_struct(RPDO_MAPPING_PARAMETER, pdo_map_rx);
+    pdo_init_mapping_struct(TPDO_MAPPING_PARAMETER, pdo_map_tx, 6);
+    pdo_init_mapping_struct(RPDO_MAPPING_PARAMETER, pdo_map_rx, 4);
 
 	return inout;
 }

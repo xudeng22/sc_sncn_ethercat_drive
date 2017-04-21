@@ -342,6 +342,7 @@ static void debug_print_state(DriveState_t state)
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
 void network_drive_service(ProfilerConfig &profiler_config,
+                            client interface i_pdo_handler_exchange i_pdo,
                             client interface i_co_communication i_co,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
@@ -376,7 +377,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
     MotionControlConfig motion_control_config = i_motion_control.get_motion_control_config();
 
-    pdo_values_t InOut = i_co.pdo_init();
+    pdo_values_t InOut = i_pdo.pdo_init();
 
     int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
     int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
@@ -573,7 +574,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
 
         /* Read/Write packets to ethercat Master application */
-        {InOut, communication_active} = i_co.pdo_exchange_app(InOut);
+        {InOut, communication_active} = i_pdo.pdo_exchange_app(InOut);
 
 
         if (communication_active == 0) {
@@ -863,6 +864,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
  * test if the motor will move.
  */
 void network_drive_service_debug(ProfilerConfig &profiler_config,
+                            client interface i_pdo_handler_exchange i_pdo,
                             client interface i_co_communication i_co,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,

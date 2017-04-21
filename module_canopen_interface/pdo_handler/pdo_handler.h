@@ -6,6 +6,70 @@
 #include "co_interface.h"
 
 /**
+ * @brief Structure to store values for PDO exchange with master
+ */
+typedef struct
+{
+    /* Input from Master */
+    uint16_t controlword;
+    int8_t op_mode;
+    int16_t target_torque;
+    int32_t target_position;
+    int32_t target_velocity;
+    int32_t offset_torque;
+    uint32_t tuning_command;
+    uint8_t digital_output1;
+    uint8_t digital_output2;
+    uint8_t digital_output3;
+    uint8_t digital_output4;
+    uint32_t user_mosi;
+    /* Output to Master */
+    uint16_t statusword;
+    int8_t op_mode_display;
+    int32_t position_value;
+    int32_t velocity_value;
+    int16_t torque_value;
+    int32_t secondary_position_value;
+    int32_t secondary_velocity_value;
+    uint16_t analog_input1;
+    uint16_t analog_input2;
+    uint16_t analog_input3;
+    uint16_t analog_input4;
+    uint32_t tuning_status;
+    uint8_t digital_input1;
+    uint8_t digital_input2;
+    uint8_t digital_input3;
+    uint8_t digital_input4;
+    uint32_t user_miso;
+    uint32_t timestamp;
+} pdo_values_t;
+
+
+/**
+ * @brief PDO handler interface for value exchange with the client application
+ */
+interface i_pdo_handler_exchange
+{
+    /**
+     * @brief Exchange function to update values to and form master
+     *
+     * @param[in] pdo_out  All output parameters to be sent
+     * @return  1. pdo values recently received
+     *          2. communication status
+     */
+    {pdo_values_t, unsigned int} pdo_exchange_app(pdo_values_t pdo_out);
+
+    /**
+     * @brief Initialize pdo struct
+     *
+     * @deprecated Initialize the structure when declared!
+     *
+     * @return Zero initialized PDO values struct @see pdo_values_t
+     */
+    pdo_values_t pdo_init(void);
+};
+
+/**
  * @brief Writes PDOs from struct into sending buffer.
  * @param[in] pdo_number    PDO number
  * @param[out] buffer       Sending buffer

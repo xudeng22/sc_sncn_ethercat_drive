@@ -26,6 +26,7 @@
  * @param i_position_feedback Inteface to Position Feedback Service.
  */
 void network_drive_service(ProfilerConfig &profiler_config,
+                            client interface i_pdo_handler_exchange i_pdo,
                             client interface i_co_communication i_co,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
@@ -33,6 +34,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                             client interface PositionFeedbackInterface ?i_position_feedback_2);
 
 void network_drive_service_debug(ProfilerConfig &profiler_config,
+                            client interface i_pdo_handler_exchange i_pdo,
                             client interface i_co_communication i_co,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,

@@ -8,6 +8,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <co_interface.h>
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
 
@@ -49,24 +50,25 @@ static void sdo_configuration(client interface i_co_communication i_co)
 }
 
 /* Test application handling pdos from EtherCat */
-static void pdo_service(client interface i_co_communication i_co)
+static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co)
 {
     timer t;
 
     unsigned int delay = 100000;
     unsigned int time = 0;
     unsigned int analog_value = 0;
+    unsigned int comm_status = 0;
 
-    pdo_handler_values_t InOut = {0};
-    pdo_handler_values_t InOutOld = {0};
+    pdo_values_t InOut = {0};
+    pdo_values_t InOutOld = {0};
     t :> time;
 
-    sdo_configuration(i_coe);
+    sdo_configuration(i_co);
 
     printstrln("Starting PDO protocol");
     while(1)
     {
-        pdo_handler(i_pdo, InOut);
+        { InOut, comm_status } = i_pdo.pdo_exchange_app(InOut);
 
         /* Mirror incomimng value to the output */
         InOut.position_value  = InOut.target_position;
@@ -182,7 +184,7 @@ static void pdo_service(client interface i_co_communication i_co)
 
 int main(void) {
     /* EtherCat Communication channels */
-    interface i_coe_communication i_coe;
+    interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
     interface i_co_communication i_co[3];
     interface EtherCATRebootInterface i_ecat_reboot;
@@ -193,8 +195,8 @@ int main(void) {
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
-                        i_foe, i_pdo, ethercat_ports);
+                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+                        i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
             }
         }
@@ -202,7 +204,7 @@ int main(void) {
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
-            pdo_service(i_coe, i_pdo);
+            pdo_service(i_pdo, i_co[1]);
         }
     }
 

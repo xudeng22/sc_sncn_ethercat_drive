@@ -17,7 +17,10 @@
 #define MAX_PDO_SIZE 64
 
 [[distributable]]
-void canopen_interface_service(server interface i_co_communication i_co[n], unsigned n)
+void canopen_interface_service(
+        server interface i_pdo_handler_exchange i_pdo_handler,
+        server interface i_co_communication i_co[n],
+        unsigned n)
 {
     pdo_values_t InOut = pdo_init_data();
     pdo_size_t pdo_buffer[MAX_PDO_SIZE];
@@ -47,13 +50,15 @@ void canopen_interface_service(server interface i_co_communication i_co[n], unsi
                 size_out = pdo_size;
                 break;
 
-            case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out }:
+//            case i_co[int j].pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out }:
+            case i_pdo_handler.pdo_exchange_app(pdo_values_t pdo_out) -> { pdo_values_t pdo_in, unsigned int status_out }:
                 pdo_exchange(InOut, pdo_out, pdo_in);
                 status_out = comm_state;
                 comm_state = 0;
                 break;
 
-            case i_co[int j].pdo_init(void) -> {pdo_values_t pdo_out}:
+//            case i_co[int j].pdo_init(void) -> {pdo_values_t pdo_out}:
+            case i_pdo_handler.pdo_init(void) -> {pdo_values_t pdo_out}:
                 pdo_out = pdo_init_data();
                 break;
 

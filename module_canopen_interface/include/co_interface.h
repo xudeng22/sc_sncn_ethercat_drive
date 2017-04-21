@@ -35,49 +35,11 @@ enum {
   RW = 0x3f,
 };
 
-/**
- * @brief
- *  Struct for Tx, Rx PDOs
- */
-typedef struct
-{
-    uint16_t controlword;
-    int8_t op_mode;
-    int16_t target_torque;
-    int32_t target_position;
-    int32_t target_velocity;
-    int32_t offset_torque;
-    uint32_t tuning_command;
-    uint8_t digital_output1;
-    uint8_t digital_output2;
-    uint8_t digital_output3;
-    uint8_t digital_output4;
-    uint32_t user_mosi;
-    uint16_t statusword;
-    int8_t op_mode_display;
-    int32_t position_value;
-    int32_t velocity_value;
-    int16_t torque_value;
-    int32_t secondary_position_value;
-    int32_t secondary_velocity_value;
-    uint16_t analog_input1;
-    uint16_t analog_input2;
-    uint16_t analog_input3;
-    uint16_t analog_input4;
-    uint32_t tuning_status;
-    uint8_t digital_input1;
-    uint8_t digital_input2;
-    uint8_t digital_input3;
-    uint8_t digital_input4;
-    uint32_t user_miso;
-    uint32_t timestamp;
-} pdo_values_t;
-
 /* FIXME keep typedef for obfuscation? */
 typedef uint8_t pdo_size_t;
 
 /**
- * @brief Communication interface for OD service
+ * @brief Communication interface for OD service request to network service
  */
 interface i_co_communication
 {
@@ -96,22 +58,6 @@ interface i_co_communication
      * @return     PDO buffer size
      */
     unsigned int pdo_out(uint8_t pdo_number, pdo_size_t data_out[]);
-
-    /**
-     * @brief Exchange PDOs with CANopen Interface Service and application
-     * @param[in]   pdo_out PDOs, which will sent to the master.
-     * @return  PDOs, which are received from the master.
-     * @return  unsigned int    Communication state
-     */
-    {pdo_values_t, unsigned int} pdo_exchange_app(pdo_values_t pdo_out);
-
-
-    /**
-     * @brief Initialized PDO struct
-     * @return Empty PDO struct
-     */
-    pdo_values_t pdo_init(void);
-
 
 
     /**

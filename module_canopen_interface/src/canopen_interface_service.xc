@@ -24,6 +24,7 @@ void canopen_interface_service(server interface i_co_communication i_co[n], unsi
     char comm_state = 0;
 
     int configuration_done = 0;
+    int drive_operational = 0;
 
     printstrln("SOMANET CANOPEN SERVICE STARTING...");
 
@@ -149,8 +150,15 @@ void canopen_interface_service(server interface i_co_communication i_co[n], unsi
 
             /* Simple notification interface */
 
-            case i_co[int j].configuration_ready(void):
-                    configuration_done = 1;
+            case i_co[int j].operational_state_change(int opmode):
+                    drive_operational = opmode;
+                    if (opmode) {
+                        configuration_done = 1;
+                    }
+                    break;
+
+            case i_co[int j].in_operational_state(void) -> { int in_op_state }:
+                    in_op_state = drive_operational;
                     break;
 
             case i_co[int j].configuration_get(void) -> { int value }:

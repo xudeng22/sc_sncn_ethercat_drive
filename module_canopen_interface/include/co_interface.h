@@ -208,8 +208,17 @@ interface i_co_communication
     // SDO Notification
     /**
      * @brief Set flag "configuration done"
+     *
+     * @param[in] opmode  1 - if opmode is entered, 0 - if opmode is left.
      */
-    void configuration_ready(void);
+    void operational_state_change(int opmode);
+
+    /**
+     * @brief Check if the EtherCAT State Machine (ESM) is in operation mode
+     *
+     * @return  1 - if drive is in operational state; 0 - otherwise
+     */
+    int in_operational_state(void);
 
     /**
      * @brief Delete flag "configuration done"

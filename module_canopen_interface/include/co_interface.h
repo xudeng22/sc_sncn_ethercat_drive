@@ -21,7 +21,7 @@ struct _sdoinfo_entry_description {
     uint8_t dataType;
     uint8_t objectCode;
     uint8_t bitLength;
-    uint8_t objectAccess;
+    uint16_t objectAccess;
     uint32_t value; ///< real data type is defined by .dataType
     uint8_t name[50];
 };
@@ -73,11 +73,8 @@ typedef struct
     uint32_t timestamp;
 } pdo_values_t;
 
-#if COM_ETHERCAT || COM_ETHERNET
+/* FIXME keep typedef for obfuscation? */
 typedef uint8_t pdo_size_t;
-#elif COM_CAN
-typedef uint8_t pdo_size_t;
-#endif
 
 /**
  * @brief Communication interface for OD service

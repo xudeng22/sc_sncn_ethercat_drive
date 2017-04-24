@@ -59,7 +59,7 @@ The application provides the following command line arguments
   - ``-s <profile velocity>`` velocity in rpm used for CSP
   - ``-a <profile acceleration>`` acceleration in rmp/s used for CSP and CSV
   - ``-t <profile torque acceleration>`` Torque acceleration in 1/1000 of rated torque per second used for CST
-  - ``-c <SDO config filename>`` filename of the sdo config csv file. Default it ``sdo_config/sdo_config.csv``
+  - ``-c <SDO config filename>`` filename of the sdo config csv file. Default is ``sdo_config/sdo_config.csv``
 
 The application is a ``ncurses`` graphical console application. It uses simple commands to switch between CSP, CSV and CST modes and send a target position, velocity or torque:
 

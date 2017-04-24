@@ -117,6 +117,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         break;
 
 
+#if 0 //continuous cyclic mode is disabled in tuning app. Use the dedicated app_master_cyclic.
     //switch to cs mode
     case 'y': //switch to cs mode
         output->init = 0;
@@ -124,6 +125,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         pdo_output->tuning_command = 0;
         output->app_mode = CS_MODE;
         break;
+#endif
 
     //reverse command
     case 'r':

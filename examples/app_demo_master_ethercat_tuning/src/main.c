@@ -192,7 +192,7 @@ static void printhelp(const char *prog)
     //printf("  -l <level>     set log level (0..3)\n");
     printf("  -n <slave number>  first slave is 0\n");
     printf("  -s <profile velocity>\n");
-    printf("  -f <SDO config filename>\n");
+    printf("  -c <SDO config filename>\n");
     printf("  -F <record filename>\n");
 }
 
@@ -201,7 +201,7 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable,
 {
     int  opt;
 
-    const char *options = "hvlos:n:f:F:";
+    const char *options = "hvlos:n:c:F:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -234,7 +234,7 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *sdo_enable,
             *sdo_enable = 1;
             break;
 
-        case 'f':
+        case 'c':
             strncpy(*sdo_config, optarg, PATH_MAX);
             break;
 

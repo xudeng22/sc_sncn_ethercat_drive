@@ -10,6 +10,7 @@
 
 #include <co_interface.h>
 #include <canopen_interface_service.h>
+#include <pdo_handler.h>
 #include <ethercat_service.h>
 
 #include <reboot.h>
@@ -177,6 +178,9 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
 //        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
 //        printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
 //        printstr(" = "); printintln(value);
+        t :> time;
+        InOut.timestamp = time;
+
         t when timerafter(time+delay) :> time;
     }
 

@@ -14,7 +14,7 @@ read/write and read only objects.
 
 .. cssclass:: github
 
- `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/develop/examples/app_demo_master_object_dictionary>`_
+ `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_object_dictionary>`_
 
 Prerequisites
 +++++++++++++
@@ -26,20 +26,30 @@ To compile this application simply type ::
 
   make
 
-You can find the resulting binary in the newly created `bin/` folder.
+You can find the resulting binary in the newly created ``bin/`` folder.
 
 Usage
 +++++
 
-The applicatin accepts various command line arguments. With `-h` a short
+The applicatin accepts various command line arguments. With ``-h`` a short
 overview of the available options are available.
 
 All the options in detail are:
 
-  * `-h` a short list of the available objects
-  * `-l` show a list of all connected slaves and exit
-  * `-m <index>` select the master with numerical index (value range:  0 .. n), if more than one master is available (default: 0)
-  * `-n <index>` select the slave to use for testing (index rage: 0 .. n) (default: 0)
+  * ``-h`` a short list of the available objects
+  * ``-l`` show a list of all connected slaves and exit
+  * ``-m <index>`` select the master with numerical index (value range:  0 .. n), if more than one master is available (default: 0)
+  * ``-n <index>`` select the slave to use for testing (index rage: 0 .. n) (default: 0)
+
+After the application starts first the object dictionary on the slave is
+uploaded and displayed on the console. If this is successful the application
+tries to download values to the specified device and re-upload the value from
+the device object dictionary. The test succeeds if:
+
+#. the uploaded value is the same as the one previously downloaded if the object entry is writeable
+#. the uploaded value is different from the previous downloaded value if the object entry is read only
+
+Please note in the later case the EtherCAT master gives a warning that you tried to write a read only value.
 
 Examples
 --------

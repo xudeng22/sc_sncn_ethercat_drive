@@ -19,6 +19,8 @@ extern "C" {
 typedef struct motion_profile_t {
     float max_acceleration;   // max acceleration
     float max_velocity;
+    int max_torque; //mNm
+    int max_torque_acceleration; // mNm/s
 
     /*User Inputs*/
 
@@ -87,7 +89,7 @@ typedef struct motion_profile_t {
  * @param ticks_per_turn number of ticks in one turn
  *
  */
-void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn);
+void init_position_profile_limits(motion_profile_t *motion_profile, int max_torque, int max_torque_acceleration, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn);
 
 /**
  * @brief Initialize Position Profile
@@ -117,9 +119,13 @@ int position_profile_generate(motion_profile_t *motion_profile, int step);
 
 int init_velocity_profile(motion_profile_t *motion_profile, int target_velocity, int actual_velocity, int acceleration, int deceleration, int ticks_per_turn);
 
-int velocity_profile_generate_in_steps(motion_profile_t *motion_profile, int step);
+int linear_profile_generate_in_steps(motion_profile_t *motion_profile, int step);
 
+int init_torque_profile(motion_profile_t *motion_profile, int target_torque, int actual_torque, int acceleration, int deceleration);
 
+int init_linear_profile(motion_profile_t *motion_profile);
+
+float ticks_to_rpm(float ticks, int ticks_per_turn);
 
 #ifdef __cplusplus
 }

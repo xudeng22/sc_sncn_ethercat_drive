@@ -31,7 +31,7 @@ int cm_sync_config_position_feedback(
         int &sensor_commutation, int &sensor_motion_control,
         int number_of_ports, int &port_index);
 
-void cm_sync_config_motor_control(
+int cm_sync_config_motor_control(
         client interface i_co_communication i_co,
         client interface TorqueControlInterface ?i_torque_control,
         MotorcontrolConfig &commutation_params,
@@ -47,7 +47,8 @@ void cm_sync_config_pos_velocity_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
         MotionControlConfig &position_config,
-        int sensor_resolution);
+        int sensor_resolution,
+        int max_torque);
 
 /* This function is a workaround until the hall and motorconfig is reorganized. */
 void cm_sync_config_hall_states(

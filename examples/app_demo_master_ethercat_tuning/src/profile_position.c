@@ -8,7 +8,7 @@
 
 #include "profile.h"
 
-int rpm_to_ticks_sensor(int rpm, int max_ticks_per_turn) {
+int rpm_to_ticks(int rpm, int max_ticks_per_turn) {
     return (rpm * max_ticks_per_turn)/60;
 }
 
@@ -16,8 +16,8 @@ void init_position_profile_limits(motion_profile_t *motion_profile, int max_acce
 
     motion_profile->max_position =  max_position;
     motion_profile->min_position = min_position;
-	motion_profile->max_acceleration =  rpm_to_ticks_sensor(max_acceleration, ticks_per_turn);
-	motion_profile->max_velocity = rpm_to_ticks_sensor(max_velocity, ticks_per_turn);
+	motion_profile->max_acceleration =  rpm_to_ticks(max_acceleration, ticks_per_turn);
+	motion_profile->max_velocity = rpm_to_ticks(max_velocity, ticks_per_turn);
     motion_profile->limit_factor = 10;
 }
 
@@ -32,9 +32,9 @@ int init_position_profile(motion_profile_t *motion_profile, int target_position,
         motion_profile->qf = motion_profile->min_position;
     }
 
-	motion_profile->vi = rpm_to_ticks_sensor(velocity, ticks_per_turn);
-	motion_profile->acc =  rpm_to_ticks_sensor(acceleration, ticks_per_turn);
-	motion_profile->dec =  rpm_to_ticks_sensor(deceleration, ticks_per_turn);
+	motion_profile->vi = rpm_to_ticks(velocity, ticks_per_turn);
+	motion_profile->acc =  rpm_to_ticks(acceleration, ticks_per_turn);
+	motion_profile->dec =  rpm_to_ticks(deceleration, ticks_per_turn);
 
     if (motion_profile->vi > motion_profile->max_velocity) {
         motion_profile->vi = motion_profile->max_velocity;

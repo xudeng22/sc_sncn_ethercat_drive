@@ -55,11 +55,9 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motio
     case OVER_VOLTAGE_NO_1:
         error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
         break;
-#if 0 /* FIXME undefined symbol */
-    case OVER_TEMPERATURE:
+    case EXCESS_TEMPERATURE_DRIVE:
         error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
         break;
-#endif
     case NO_FAULT:
         /* if there is no motorcontrol fault check commutation sensor fault
          * it means that motorcontrol faults take precedence over sensor faults
@@ -218,11 +216,11 @@ static void inline update_configuration(
     int number_of_feedbacks_ports;
     {number_of_feedbacks_ports, void, void}= i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
     int feedback_port_index = 1;
-    restart = cm_sync_config_position_feedback(i_co, i_pos_feedback_1, position_feedback_config_1, 1,
+    restart += cm_sync_config_position_feedback(i_co, i_pos_feedback_1, position_feedback_config_1, 1,
             sensor_commutation, sensor_motion_control,
             number_of_feedbacks_ports, feedback_port_index);
     if (!isnull(i_pos_feedback_2)) {
-        restart = cm_sync_config_position_feedback(i_co, i_pos_feedback_2, position_feedback_config_2, 2,
+        restart += cm_sync_config_position_feedback(i_co, i_pos_feedback_2, position_feedback_config_2, 2,
                 sensor_commutation, sensor_motion_control,
                 number_of_feedbacks_ports, feedback_port_index);
         if (restart)
@@ -248,14 +246,13 @@ static void inline update_configuration(
     }
 
     cm_sync_config_profiler(i_co, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
-    cm_sync_config_motor_control(i_co, i_torque_control, motorcontrol_config, sensor_commutation, sensor_commutation_type);
-    cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution);
+    int max_torque = cm_sync_config_motor_control(i_co, i_torque_control, motorcontrol_config, sensor_commutation, sensor_commutation_type);
+    cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution, max_torque);
 
     //FIXME: as the hall_states params are still in the motorcontrol config they are set in cm_sync_config_motor_control
 //    cm_sync_config_hall_states(i_co, i_pos_feedback_1, i_torque_control, position_feedback_config_1, motorcontrol_config, 1);
 
     /* Update values with current configuration */
-    /* FIXME this looks a little bit obnoxious, is this value really initialized previously? */
     profiler_config.ticks_per_turn = sensor_resolution;
 
     {nominal_speed, void, void}     = i_co.od_get_object_value(DICT_MAX_MOTOR_SPEED, 0);
@@ -400,9 +397,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
     //enum e_States state_old = state; /* necessary for something??? */
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
-    //uint16_t statusword_old = 0; /* FIXME is the previous statusword send necessary? */
     int controlword = 0;
-    //int controlword_old = 0; /* FIXME is the previous controlword received necessary? */
 
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
@@ -443,6 +438,9 @@ void network_drive_service(ProfilerConfig &profiler_config,
      */
     sdo_wait_first_config(i_co);
 
+    /* if we reach this point the EtherCAT service is considered in OPMODE */
+    int drive_in_opstate = 1;
+
     /* start operation */
     int read_configuration = 1;
 
@@ -474,7 +472,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         opmode_request  = pdo_get_op_mode(InOut);
         target_position = pdo_get_target_position(InOut);
         target_velocity = pdo_get_target_velocity(InOut);
-        target_torque   = pdo_get_target_torque(InOut);
+        target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
         send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
         /* FIXME removed! what is the next way to do it?
         update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
@@ -517,7 +515,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         /* i_motion_control.get_all_feedbacks; */
         actual_velocity = send_to_master.velocity; //i_motion_control.get_velocity();
         actual_position = send_to_master.position; //i_motion_control.get_position();
-        actual_torque   = send_to_master.computed_torque; //i_motion_control.get_torque(); /* FIXME expected future implementation! */
+        actual_torque   = (send_to_master.computed_torque*1000) / motorcontrol_config.rated_torque; //torque sent to master in 1/1000 of rated torque
         FaultCode motorcontrol_fault = send_to_master.error_status;
         SensorError motion_sensor_error = send_to_master.last_sensor_error;
         SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
@@ -589,6 +587,9 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     inactive_timeout_flag = 1;
                 }
             }
+        } else if (communication_active != 0 && drive_in_opstate != 1) {
+            state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
+            inactive_timeout_flag = 1;
         } else {
             comm_inactive_flag = 0;
         }
@@ -597,8 +598,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         /*
          * new, perform actions according to state
          */
-
-        debug_print_state(state);
+//        debug_print_state(state);
 
         if (opmode == OPMODE_NONE) {
             statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
@@ -654,15 +654,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 state = get_next_state(state, checklist, controlword, 0);
                 if (state == S_OPERATION_ENABLE) {
                     motioncontrol_enable(opmode, motion_control_config.position_control_strategy, i_motion_control);
-#if 1
-                    if (opmode == OPMODE_CSP) {
-                        printstrln("enable position ctrl");
-                    } else if (opmode == OPMODE_CSV) {
-                        printstrln("enable velocity ctrl");
-                    } else if (opmode == OPMODE_CST) {
-                        printstrln("enable torque ctrl");
-                    }
-#endif
                 }
 
                 break;
@@ -832,9 +823,9 @@ void network_drive_service(ProfilerConfig &profiler_config,
         unsigned error;
         if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
             /* Update PID vlaues so they can be set on the fly */
-            {motion_control_config.position_kp, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, 1); /* POSITION_Kp; */
-            {motion_control_config.position_ki, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, 2); /* POSITION_Ki; */
-            {motion_control_config.position_kd, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, 3); /* POSITION_Kd; */
+            {motion_control_config.position_kp, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, 1); /* POSITION_P_VALUE; */
+            {motion_control_config.position_ki, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, 2); /* POSITION_I_VALUE; */
+            {motion_control_config.position_kd, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, 3); /* POSITION_D_VALUE; */
 
             i_motion_control.set_motion_control_config(motion_control_config);
         }
@@ -844,9 +835,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
             {motion_control_config.velocity_ki, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 22; */
             {motion_control_config.velocity_kd, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, 3); /* 25; */
 
-
             i_motion_control.set_motion_control_config(motion_control_config);
-
         }
 
 

@@ -50,7 +50,7 @@ Modules
 
     Drive Module <module_ethercat_drive/doc/index>
 
-    * `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
 
 EtherCAT Drive Linux Master Libraries
 -------------------------------------
@@ -73,14 +73,12 @@ Examples
     :maxdepth: 1
 
     Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>
-    
-    Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index>
-    Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index>
-    Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index>
 
-    Dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index>
-    Dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index>
-    Dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index>
+    Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index.html>
+    Special Engineering Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>
+
+    SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index.html>
+    SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>
 
     PDO Handling Demo <examples/app_demo_slave_pdo_handling/doc/index>
     PDO Handling Demo Master <examples/app_linux_ctrlproto-master-example/doc/index>
@@ -92,16 +90,18 @@ Examples
 
 * **Master examples (for Linux machines):**
 
-    * `Cyclic Position Control Demo <examples/app_demo_master_cyclic_position/doc/index.html>`_: Example to do cyclic position control on one axis over EtherCAT.
-    * `Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity/doc/index.html>`_: Example to do cyclic velocity control on one axis over EtherCAT.
-    * `Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque/doc/index.html>`_: Example to do cyclic torque control on one axis over EtherCAT.
+    * `Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index.html>`_: Example to do cyclic position/velocity/torque control on one/multiple axis over EtherCAT.
 
-    * `Dual-node Cyclic Position Control Demo <examples/app_demo_master_cyclic_position_2_nodes/doc/index.html>`_: Example to do cyclic position control on two axis over EtherCAT.
-    * `Dual-node Cyclic Velocity Control Demo <examples/app_demo_master_cyclic_velocity_2_nodes/doc/index.html>`_: Example to do cyclic velocity control on two axis over EtherCAT.
-    * `Dual-node Cyclic Torque Control Demo <examples/app_demo_master_cyclic_torque_2_nodes/doc/index.html>`_: Example to do cyclic torque control on two axis over EtherCAT.
+    * `Special Engineering Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>`_: Provides access to extended features of the EtherCAT Slave Drive Controller like PID or commutation angle offset tining over EtherCAT.
 
+
+* **Test Master+Slave examples (for Linux Master machines):**
     * `PDO Handling Demo Slave <examples/app_demo_slave_pdo_handling/doc/index.html>`_: Showcases simple PDO communication (Slave)
-    * `PDO Handling Demo Master <examples/app_linux_ctrlproto-master-example/doc/index.html>`_: Showcases simple PDO communication (Master)
+    * `PDO Handling Demo Master <examples/app_demo_master_pdo_handling/doc/index.html>`_: Showcases simple PDO communication (Master)
+
+    * `SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index.html>`_: Showcases how to handle parameters over SDO (Slave)
+    * `SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>`_: Show access to the slaves object dictionary and tests reading and writing of the objects value (Master)
+
 
 Dependencies
 ------------

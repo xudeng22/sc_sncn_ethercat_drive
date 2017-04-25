@@ -23,7 +23,14 @@ Quick How-to
 3. :ref:`Set up your XMOS development tools <getting_started_xmos_dev_tools>`. 
 4. Download and :ref:`import in your workspace <getting_started_importing_library>` the SOMANET Motor Control Library and its dependencies.
 5. Open the **main.xc** within  the **app_demo_slave_pdo_handling**. Include the :ref:`board-support file according to your device <somanet_board_support_module>`. Also make sure to have an :ref:`appropriate target in your Makefile <somanet_board_support_module>`.
-6. :ref:`Run the application.
+6. :ref:`Run the application.`
+7. Start the master application :ref:`EtherCAT PDO Handling Demo (Master) <app_demo_master_pdo_handling>`, depending on
+   the command line option you can now observe how the PDO values change.  If
+   the compile option in ``main.xc`` ::
+
+      15 #define DEBUG_CONSOLE_PRINT       1
+
+  is set to 1 the console print is also active and the received values are printed.
 
 .. seealso:: Did everything go well? If you need further support please check out our `forum <http://forum.synapticon.com/>`_.
 

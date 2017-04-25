@@ -217,12 +217,14 @@ int main(void)
                     motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
                     motorcontrol_config.current_ratio =  CURRENT_RATIO;
                     motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
+                    motorcontrol_config.temperature_ratio =  TEMPERATURE_RATIO;
                     motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
                     motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
                     motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
                     motorcontrol_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
                     motorcontrol_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
                     motorcontrol_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
+                    motorcontrol_config.protection_limit_over_temperature = TEMP_BOARD_MAX;
 
                     torque_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
                             i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC);

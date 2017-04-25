@@ -31,15 +31,17 @@ static void printhelp(const char *prog)
     printf("  -h             print this help and exit\n");
     printf("  -o             enable sdo upload\n");
     printf("  -v             print version and exit\n");
-    printf("  -s <profile velocity>\n");
+    printf("  -s <profile velocity in rpm>\n");
+    printf("  -a <profile acceleration in rpm/s>\n");
+    printf("  -t <profile torque acceleration in 1/1000 of rated torque per second>\n");
     printf("  -c <SDO config filename>\n");
 }
 
-void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *profile_speed, char **sdo_config)
+void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *profile_speed, int *profile_acc, int *profile_torque_acc, char **sdo_config)
 {
     int  opt;
 
-    const char *options = "hvos:c:";
+    const char *options = "hvos:c:a:t:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -50,6 +52,14 @@ void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *p
 
         case 's':
             *profile_speed = atoi(optarg);
+            break;
+
+        case 'a':
+            *profile_acc = atoi(optarg);
+            break;
+
+        case 't':
+            *profile_torque_acc = atoi(optarg);
             break;
 
         case 'o':

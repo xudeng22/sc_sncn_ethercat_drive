@@ -9,18 +9,13 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_sdo_handling
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = lib_ethercat lib_bldc_torque_control module_board-support module_canopen_interface module_misc module_reboot
+USED_MODULES = module_board-support module_canopen_interface lib_ethercat module_reboot
 
-# When running the app with xtime (or xrun) you need to use the ethercat_service_standalone library.
-# When flashing the node you need to use the ethercat_service library (selected by default).
-# Here when compilling in Debug mode it uses the ethercat_service_standalone library
-# and when compilling in Release mode it uses the ethercat_service library.
-ifeq ($(CONFIG),Debug)
+ifeq ($(CONFIG), Debug)
 MODULE_LIBRARIES = ethercat_service_standalone
 else
 MODULE_LIBRARIES = ethercat_service
 endif
-
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:

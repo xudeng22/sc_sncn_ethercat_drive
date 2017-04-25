@@ -39,6 +39,9 @@ static void sdo_configuration(client interface i_co_communication i_co)
             sdo_configured = 1;
         }
 
+        i_co.configuration_done();
+        sdo_configured = 1;
+
         t when timerafter(time+delay) :> time;
     }
 
@@ -54,6 +57,7 @@ static void sdo_configuration(client interface i_co_communication i_co)
 static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co)
 {
     timer t;
+    unsigned char device_in_opstate = 0;
 
     unsigned int delay = 100000;
     unsigned int time = 0;
@@ -65,10 +69,19 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     t :> time;
 
     sdo_configuration(i_co);
+    device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
 
     printstrln("Starting PDO protocol");
     while(1)
     {
+        device_in_opstate = i_co.in_operational_state();
+        if (!device_in_opstate) {
+            t :> time;
+            t when timerafter(time+delay) :> time;
+
+            continue;
+        }
+
         { InOut, comm_status } = i_pdo.pdo_exchange_app(InOut);
 
         /* Mirror incomimng value to the output */

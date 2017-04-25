@@ -8,20 +8,23 @@
 
 #include "profile.h"
 
-int rpm_to_ticks_sensor(int rpm, int ticks_per_turn) {
-    return (rpm * ticks_per_turn)/60;
+float rpm_to_ticks(int rpm, int ticks_per_turn) {
+    return ((float)rpm * (float)ticks_per_turn)/(float)60;
 }
 
-int ticks_to_rpm(int ticks, int ticks_per_turn) {
-    return (ticks*60)/ticks_per_turn;
+float ticks_to_rpm(float ticks, int ticks_per_turn) {
+    return (ticks*(float)60)/(float)ticks_per_turn;
 }
 
-void init_position_profile_limits(motion_profile_t *motion_profile, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn) {
+void init_position_profile_limits(motion_profile_t *motion_profile, int max_torque, int max_torque_acceleration, int max_acceleration, int max_velocity, int max_position, int min_position, int ticks_per_turn)
+{
 
-    motion_profile->max_position =  max_position;
-    motion_profile->min_position = min_position;
-	motion_profile->max_acceleration =  rpm_to_ticks_sensor(max_acceleration, ticks_per_turn);
-	motion_profile->max_velocity = rpm_to_ticks_sensor(max_velocity, ticks_per_turn);
+    motion_profile->max_position =  (float)max_position;
+    motion_profile->min_position = (float)min_position;
+	motion_profile->max_acceleration =  rpm_to_ticks(max_acceleration, ticks_per_turn);
+	motion_profile->max_velocity = rpm_to_ticks(max_velocity, ticks_per_turn);
+    motion_profile->max_torque = max_torque;
+    motion_profile->max_torque_acceleration = max_torque_acceleration;
     motion_profile->limit_factor = 10;
 }
 
@@ -36,9 +39,9 @@ int init_position_profile(motion_profile_t *motion_profile, int target_position,
         motion_profile->qf = motion_profile->min_position;
     }
 
-	motion_profile->vi = rpm_to_ticks_sensor(velocity, ticks_per_turn);
-	motion_profile->acc =  rpm_to_ticks_sensor(acceleration, ticks_per_turn);
-	motion_profile->dec =  rpm_to_ticks_sensor(deceleration, ticks_per_turn);
+	motion_profile->vi = rpm_to_ticks(velocity, ticks_per_turn);
+	motion_profile->acc =  rpm_to_ticks(acceleration, ticks_per_turn);
+	motion_profile->dec =  rpm_to_ticks(deceleration, ticks_per_turn);
 
     if (motion_profile->vi > motion_profile->max_velocity) {
         motion_profile->vi = motion_profile->max_velocity;
@@ -260,15 +263,14 @@ int position_profile_generate(motion_profile_t *motion_profile, int step) {
 int init_velocity_profile(motion_profile_t *motion_profile, int target_velocity, int actual_velocity, int acceleration, int deceleration, int ticks_per_turn)
 {
     motion_profile->qid = (float) actual_velocity;
-
-    //limit velocity
-    if(target_velocity >= ticks_to_rpm(motion_profile->max_velocity, ticks_per_turn)) {
-        target_velocity = ticks_to_rpm(motion_profile->max_velocity, ticks_per_turn);
-    } else if(target_velocity <= ticks_to_rpm(-motion_profile->max_velocity, ticks_per_turn)) {
-        target_velocity = ticks_to_rpm(-motion_profile->max_velocity, ticks_per_turn);
-    }
     motion_profile->qfd = (float) target_velocity;
 
+    //limit velocity
+    if(motion_profile->qfd > ticks_to_rpm(motion_profile->max_velocity, ticks_per_turn)) {
+        motion_profile->qfd = ticks_to_rpm(motion_profile->max_velocity, ticks_per_turn);
+    } else if(motion_profile->qfd < -ticks_to_rpm(motion_profile->max_velocity, ticks_per_turn)) {
+        motion_profile->qfd = -ticks_to_rpm(motion_profile->max_velocity, ticks_per_turn);
+    }
 
     //set acceleration
     if (motion_profile->qfd >= motion_profile->qid) {
@@ -284,32 +286,54 @@ int init_velocity_profile(motion_profile_t *motion_profile, int target_velocity,
         motion_profile->acc = -ticks_to_rpm(motion_profile->max_acceleration, ticks_per_turn);
     }
 
-
-    motion_profile->s_time = .001f;
-
-
-    // compute time needed
-    float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
-
-    if (total_time < 0) {
-        motion_profile->T = (-total_time)/motion_profile->s_time;
-    } else {
-        motion_profile->T = total_time/motion_profile->s_time;
-    }
-
-//    motion_profile->T = motion_profile->t/motion_profile->s_time;
-//
-//    if(motion_profile->T<0) {
-//        motion_profile->T = -motion_profile->T;
-//    }
-//
-//    //length = (int) round (T);
-//    motion_profile->s_time = motion_profile->t/motion_profile->T;
-
-    return (int) round (motion_profile->T);
+    return init_linear_profile(motion_profile);
 }
 
-int velocity_profile_generate_in_steps(motion_profile_t *motion_profile, int step)
+
+int init_torque_profile(motion_profile_t *motion_profile, int target_torque, int actual_torque, int acceleration, int deceleration)
+{
+    motion_profile->qid = (float) actual_torque;
+
+    //limit torque
+    if(target_torque > motion_profile->max_torque) {
+        target_torque = motion_profile->max_torque;
+    } else if(target_torque < -motion_profile->max_torque) {
+        target_torque = -motion_profile->max_torque;
+    }
+    motion_profile->qfd = (float) target_torque;
+
+
+    //set acceleration
+    if (motion_profile->qfd >= motion_profile->qid) {
+        motion_profile->acc = (float) acceleration;
+    } else {
+        motion_profile->acc = -(float) deceleration;
+    }
+
+    //limit acceleration
+    if (motion_profile->acc > motion_profile->max_torque_acceleration) {
+        motion_profile->acc = motion_profile->max_torque_acceleration;
+    } else if (motion_profile->acc < -motion_profile->max_torque_acceleration) {
+        motion_profile->acc = -motion_profile->max_torque_acceleration;
+    }
+
+    return init_linear_profile(motion_profile);
+}
+
+int init_linear_profile(motion_profile_t *motion_profile)
+{
+    motion_profile->s_time = .001f;
+
+    // compute time needed (in seconds)
+    float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
+
+    //number of steps needed (1 step every 1ms)
+    float steps = total_time/motion_profile->s_time;
+
+    return (int)round(steps);
+}
+
+int linear_profile_generate_in_steps(motion_profile_t *motion_profile, int step)
 {
     return (int) round( motion_profile->qid + motion_profile->acc * motion_profile->s_time * step);
 }

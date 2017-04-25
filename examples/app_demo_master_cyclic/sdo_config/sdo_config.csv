@@ -21,21 +21,12 @@
 0x2004,        6,          24,          24,          24,          24,          24,          24 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
 
 #limits
-0x6072,        0,          50,          50,          50,          50,          50,          50 # DICT_MAX_TORQUE
+0x6072,        0,         100,         100,         100,         100,         100,          50 # DICT_MAX_TORQUE, in 1/1000 of rated torque
 0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_MAX_MOTOR_SPEED
 0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
 0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT
 0x607B,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
 0x607B,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_POSITION_RANGE_LIMITS MAX
-
-#recuperation
-#0x2005,        1,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION enable
-#0x2005,        2,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MIN_BATTERY_ENERGY
-#0x2005,        3,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MAX_BATTERY_ENERGY 
-#0x2005,        4,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MIN_RECUPERATION_POWER
-#0x2005,        5,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MAX_RECUPERATION_POWER
-#0x2005,        6,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MINIMUM_RECUPERATION_SPEED
-#0x2005,        7,           0,           0,           0,           0,           0,           0 # DICT_RECUPERATION MAXIMUM_RECUPERATION_SPEED
 
 #protection
 0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
@@ -56,8 +47,6 @@
 0x2002,        0,         103,         103,         103,         103,         103,         103 # DICT_POSITION_CONTROL_STRATEGY #103: non linear  
 0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
 # other
-#0x2007,        1,           0,           0,           0,           0,           0,           0 # DICT_FILTER_COEFFICIENTS 1
-#0x2007,        2,           0,           0,           0,           0,           0,           0 # DICT_FILTER_COEFFICIENTS 2
 0x2010,        1,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Kp
 0x2010,        2,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Ki
 0x2010,        3,           0,           0,           0,           0,           0,           0 # DICT_TORQUE_CONTROLLER Kd

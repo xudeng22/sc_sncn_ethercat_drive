@@ -47,7 +47,7 @@ interface i_command {
 };
 
 /* Test application handling pdos from EtherCat */
-static void pdo_service(client interface i_co_communication i_co, client interface i_command i_cmd)
+static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co, client interface i_command i_cmd)
 
 {
 	timer t;
@@ -67,7 +67,7 @@ static void pdo_service(client interface i_co_communication i_co, client interfa
 
 	while(1)
 	{
-        {InOut, void} = i_co.pdo_exchange_app(InOut);
+        {InOut, void} = i_pdo.pdo_exchange_app(InOut);
 
 		command = InOut.controlword;
 
@@ -432,6 +432,7 @@ int main(void)
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
     interface i_co_communication i_co[3];
+    interface i_pdo_handler_exchange i_pdo;
 
 	par
 	{
@@ -441,6 +442,7 @@ int main(void)
 		    par
 		    {
                 ethercat_service(i_ecat_reboot,
+                                   i_pdo,
                                    i_co,
                                    null,
                                    i_foe,
@@ -456,7 +458,7 @@ int main(void)
             par
             {
                 /* Start trivial PDO exchange service */
-                pdo_service(i_co[1], i_cmd);
+                pdo_service(i_pdo, i_co[1], i_cmd);
 
 
                 /* Start the SDO / Object Dictionary test service */

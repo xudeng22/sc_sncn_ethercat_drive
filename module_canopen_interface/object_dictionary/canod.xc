@@ -62,7 +62,7 @@ static int get_maxvalue(unsigned datatype)
 
 {unsigned, unsigned} canod_find_index(uint16_t index, uint8_t subindex)
 {
-    static unsigned old_index, old_subindex, old_od_index;
+    static unsigned old_index = 0, old_subindex = 0, old_od_index = 0;
     unsigned od_index,
     j = -1,
     k = -1;

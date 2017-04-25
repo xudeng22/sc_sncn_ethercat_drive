@@ -303,6 +303,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/END_EFFECTOR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc/canod}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/object_dictionary/object_dictionary_generator}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.xc.compiler.input.1254155018" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -734,6 +745,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/END_EFFECTOR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc/canod}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/object_dictionary/object_dictionary_generator}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.1412724662" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1170,6 +1192,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/END_EFFECTOR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc/canod}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/object_dictionary/object_dictionary_generator}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.995471107" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>

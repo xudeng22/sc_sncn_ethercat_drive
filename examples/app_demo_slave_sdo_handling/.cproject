@@ -300,6 +300,18 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/END_EFFECTOR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/object_dictionary/object_dictionary_generator}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.xc.compiler.input.775356499" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -728,6 +740,18 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/END_EFFECTOR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/object_dictionary/object_dictionary_generator}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.138141185" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1161,6 +1185,18 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_ethercat/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/END_EFFECTOR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/libsrc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_canopen_interface/object_dictionary/object_dictionary_generator}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.1490618326" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>
@@ -2009,6 +2045,7 @@
 					<fileInfo id="0.2045233414.753948734.Makefile" name="Makefile" rcbsApplicability="disable" resourcePath="Makefile" toolsToInvoke=""/>
 				</configuration>
 			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 		<cconfiguration id="0.2045233414.1482531620">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="0.2045233414.1482531620" moduleId="org.eclipse.cdt.core.settings" name="Release">
@@ -2049,6 +2086,7 @@
 					<fileInfo id="0.2045233414.1482531620.Makefile" name="Makefile" rcbsApplicability="disable" resourcePath="Makefile" toolsToInvoke=""/>
 				</configuration>
 			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">

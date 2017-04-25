@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <IFM_DC1K-rev-c4.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -31,6 +31,8 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
+#include "emc_test.h"
+
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
@@ -44,6 +46,11 @@ port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
 port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
 port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
 port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
+//port led_port = LED_PORT_4BIT_X_nG_nB_nR;
+
+clock gpio_clk = IFM_TILE_CLOCK_5;
+
+//port wd_port = WD_PORT_TICK;
 
 int main(void)
 {
@@ -53,7 +60,7 @@ int main(void)
     interface TorqueControlInterface i_torque_control[2];
     interface UpdatePWM i_update_pwm;
     interface UpdateBrake i_update_brake;
-    interface shared_memory_interface i_shared_memory[3];
+    interface shared_memory_interface i_shared_memory[4];
     interface MotionControlInterface i_motion_control[3];
     interface PositionFeedbackInterface i_position_feedback_1[3];
     interface PositionFeedbackInterface i_position_feedback_2[3];
@@ -74,9 +81,9 @@ int main(void)
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
+                ethercat_service(null, i_coe, null,
                                     i_foe, i_pdo, ethercat_ports);
-                reboot_service_ethercat(i_ecat_reboot);
+                //reboot_service_ethercat(i_ecat_reboot);
             }
         }
 
@@ -142,8 +149,8 @@ int main(void)
                     motion_ctrl_config.velocity_kd =                          VELOCITY_Kd;
                     motion_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
 
-                    motion_ctrl_config.brake_release_strategy =                BRAKE_RELEASE_STRATEGY;
-                    motion_ctrl_config.brake_release_delay =                 BRAKE_RELEASE_DELAY;
+                    motion_ctrl_config.brake_release_strategy =               BRAKE_RELEASE_STRATEGY;
+                    motion_ctrl_config.brake_release_delay =                  BRAKE_RELEASE_DELAY;
 
                     motion_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
                     motion_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;
@@ -151,6 +158,11 @@ int main(void)
                     motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
                     motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
+                }
+
+                {
+                    /* Shared memory Service */// [[distribute]]
+                    shared_memory_service(i_shared_memory, 4);
                 }
             }
         }
@@ -162,6 +174,9 @@ int main(void)
         {
             par
             {
+                {
+                    dio_test(i_shared_memory[3], gpio_clk, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3);
+                }
                 /* PWM Service */
                 {
                     pwm_config(pwm_ports);
@@ -222,9 +237,6 @@ int main(void)
                             i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC);
                 }
 
-                /* Shared memory Service */
-                [[distribute]] shared_memory_service(i_shared_memory, 3);
-
                 /* Position feedback service */
                 {
                     PositionFeedbackConfig position_feedback_config_1;
@@ -239,13 +251,13 @@ int main(void)
                     position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;
 
                     position_feedback_config_1.biss_config.multiturn_resolution = BISS_MULTITURN_RESOLUTION;
-                    position_feedback_config_1.biss_config.filling_bits = BISS_FILLING_BITS;
-                    position_feedback_config_1.biss_config.crc_poly = BISS_CRC_POLY;
-                    position_feedback_config_1.biss_config.clock_frequency = BISS_CLOCK_FREQUENCY;
-                    position_feedback_config_1.biss_config.timeout = BISS_TIMEOUT;
-                    position_feedback_config_1.biss_config.busy = BISS_BUSY;
-                    position_feedback_config_1.biss_config.clock_port_config = BISS_CLOCK_PORT;
-                    position_feedback_config_1.biss_config.data_port_number = BISS_DATA_PORT_NUMBER;
+                    position_feedback_config_1.biss_config.filling_bits         = BISS_FILLING_BITS;
+                    position_feedback_config_1.biss_config.crc_poly             = BISS_CRC_POLY;
+                    position_feedback_config_1.biss_config.clock_frequency      = BISS_CLOCK_FREQUENCY;
+                    position_feedback_config_1.biss_config.timeout              = BISS_TIMEOUT;
+                    position_feedback_config_1.biss_config.busy                 = BISS_BUSY;
+                    position_feedback_config_1.biss_config.clock_port_config    = BISS_CLOCK_PORT;
+                    position_feedback_config_1.biss_config.data_port_number     = BISS_DATA_PORT_NUMBER;
 
                     position_feedback_config_1.rem_16mt_config.filter = REM_16MT_FILTER;
 
@@ -272,7 +284,7 @@ int main(void)
                         position_feedback_config_2.sensor_function = SENSOR_2_FUNCTION;
                     }
 
-                    position_feedback_service(qei_hall_port_1, qei_hall_port_2, hall_enc_select_port, spi_ports, gpio_port_0, gpio_port_1, gpio_port_2, gpio_port_3,
+                    position_feedback_service(qei_hall_port_1, qei_hall_port_2, hall_enc_select_port, spi_ports, null, null, null, null,
                             position_feedback_config_1, i_shared_memory[0], i_position_feedback_1,
                             position_feedback_config_2, i_shared_memory[1], i_position_feedback_2);
                 }

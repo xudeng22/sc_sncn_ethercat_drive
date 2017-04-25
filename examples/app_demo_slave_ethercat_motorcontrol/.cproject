@@ -5,9 +5,9 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.xmos.cdt.toolchain.30949597" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<externalSettings/>
 				<extensions>
+					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="com.xmos.cdt.core.XdeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
@@ -267,6 +267,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/predriver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_serial_encoder/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<option id="com.xmos.xc.compiler.option.defined.symbols.1360019877" name="com.xmos.xc.compiler.option.defined.symbols" superClass="com.xmos.xc.compiler.option.defined.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__SHRT_MAX__=32767"/>
@@ -982,6 +992,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/predriver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_serial_encoder/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.c.compiler.input.c.19072911" name="C" superClass="com.xmos.cdt.c.compiler.input.c"/>
 							</tool>
@@ -1517,6 +1537,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/predriver}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_filters/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_bldc_torque_control/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_serial_encoder/doc/images}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs1b}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/lib/xs2a}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/doc}&quot;"/>
 								</option>
 								<inputType id="com.xmos.cdt.cxx.compiler.input.cpp.86765864" name="C++" superClass="com.xmos.cdt.cxx.compiler.input.cpp"/>
 							</tool>
@@ -1535,9 +1565,9 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.xmos.cdt.toolchain.45988488" moduleId="org.eclipse.cdt.core.settings" name="Release">
 				<externalSettings/>
 				<extensions>
+					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="com.xmos.cdt.core.XdeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="com.xmos.cdt.core.XEBinaryParser" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">

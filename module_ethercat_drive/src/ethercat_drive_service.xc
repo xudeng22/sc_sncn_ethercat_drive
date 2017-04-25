@@ -518,9 +518,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
         MotionControlError motion_control_error = send_to_master.motion_control_error;
 
-//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-//        xscope_int(ACTUAL_POSITION, actual_position);
-//        xscope_int(FAMOUS_FAULT, motorcontrol_fault * 1000);
+        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+        xscope_int(ACTUAL_POSITION, actual_position);
+        xscope_int(FAMOUS_FAULT, motorcontrol_fault * 1000);
 
         /*
          * Check states of the motor drive, sensor drive and control servers
@@ -564,6 +564,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         pdo_set_secondary_velocity_value(send_to_master.secondary_velocity, InOut);
         // FIXME this is one of the analog inputs?
         pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
+        pdo_set_analog_input2((1000 * 5 * send_to_master.analogue_input_a_2) / 4096, InOut);
+        pdo_set_analog_input3((1000 * 5 * send_to_master.analogue_input_b_1) / 4096, InOut);
+        pdo_set_analog_input4((1000 * 5 * send_to_master.analogue_input_b_2) / 4096, InOut);
+        pdo_set_digital_input1((1000 * send_to_master.gpio[0] ), InOut);
+        pdo_set_digital_input2((1000 * send_to_master.gpio[1] ), InOut);
+        pdo_set_digital_input3((1000 * send_to_master.gpio[2] ), InOut);
+        pdo_set_digital_input4((1000 * send_to_master.gpio[3] ), InOut);
         pdo_set_tuning_status(tuning_status, InOut);
         pdo_set_user_miso(user_miso, InOut);
         pdo_set_timestamp(send_to_master.sensor_timestamp, InOut);

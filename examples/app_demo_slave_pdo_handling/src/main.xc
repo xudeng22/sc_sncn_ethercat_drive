@@ -12,7 +12,7 @@
 #include <pdo_handler.h>
 #include <reboot.h>
 
-#define DEBUG_CONSOLE_PRINT       0
+#define DEBUG_CONSOLE_PRINT       1
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
@@ -199,6 +199,9 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
 }
 
+port wd_port = WD_PORT_TICK;
+port led_port = LED_PORT_4BIT_X_nG_nB_nR;
+
 int main(void) {
     /* EtherCat Communication channels */
     interface i_coe_communication i_coe;
@@ -212,15 +215,16 @@ int main(void) {
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
+                ethercat_service(null, i_coe, null,
                         i_foe, i_pdo, ethercat_ports);
-                reboot_service_ethercat(i_ecat_reboot);
+                //reboot_service_ethercat(i_ecat_reboot);
             }
         }
 
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
+            wd_port <: 1; /* pull up watchdog */
             pdo_service(i_coe, i_pdo);
         }
     }

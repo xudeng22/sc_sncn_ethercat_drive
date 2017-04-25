@@ -384,6 +384,7 @@ int canod_set_entry_fast(uint16_t od_index, unsigned value, unsigned intern)
     return 0;
 }
 
+/* FIXME remove 'intern' parameter because of obsoleteness */
 int canod_set_entry(uint16_t index, uint8_t subindex, unsigned value, unsigned intern)
 {
 

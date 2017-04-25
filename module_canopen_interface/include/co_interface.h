@@ -29,7 +29,7 @@ struct _sdoinfo_entry_description {
 /**
  * @brief Access types
  */
-enum {
+enum eAccessRights {
   RO = 0x07,
   WO = 0x38,
   RW = 0x3f,
@@ -138,7 +138,7 @@ interface i_co_communication
      * @param[in] subindex  Object dictionary subindex
      * @return Access type, Error
      */
-    {uint8_t, uint8_t} od_get_access(uint16_t index_, uint8_t subindex);
+    {enum eAccessRights, uint8_t} od_get_access(uint16_t index_, uint8_t subindex);
 
 
 //    // PDO Notification

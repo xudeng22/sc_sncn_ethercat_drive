@@ -65,7 +65,7 @@ void canopen_interface_service(
 
             /* SDO */
 
-            case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { uint8_t access, uint8_t error }:
+            case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { enum eAccessRights access, uint8_t error }:
                     {access, error}  = canod_get_access(index_, subindex);
                     break;
 

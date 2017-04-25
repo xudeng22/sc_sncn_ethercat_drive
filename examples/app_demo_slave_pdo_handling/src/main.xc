@@ -137,6 +137,12 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
             printhexln(InOut.tuning_status);
         }
 
+        if (InOutOld.user_mosi != InOut.user_mosi)
+        {
+            printstr("MISO Data: ");
+            printhexln(InOut.user_miso);
+        }
+
         if (InOutOld.digital_output1 != InOut.digital_output1) {
             printstr("Digital output 1 = ");
             printintln(InOut.digital_output1);

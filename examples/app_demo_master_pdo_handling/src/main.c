@@ -75,6 +75,7 @@ struct _input_t {
     unsigned int digital_input3;
     unsigned int digital_input4;
     unsigned int user_miso;
+    unsigned int timestamp;
 };
 
 struct _output_t {
@@ -292,7 +293,7 @@ static void data_update_test_pdos(Ethercat_Slave_t *slave,
     if (received == output->offset_torque) {
         input->secondary_position_value = received;
         input->secondary_velocity_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_VELOCITY_VALUE);
-        output->offset_torque = (input->secondary_position_value >= MAX_UINT32) ? 0 : input->secondary_position_value + 1;
+        output->offset_torque = (input->secondary_position_value >= MAX_UINT16) ? 0 : input->secondary_position_value + 1;
         ecw_slave_set_out_value(slave, PDO_INDEX_OFFSET_TORQUE, output->offset_torque);
     }
 
@@ -328,6 +329,8 @@ static void data_update_test_pdos(Ethercat_Slave_t *slave,
     input->analog_input2 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT2);
     input->analog_input3 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT3);
     input->analog_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
+
+    input->timestamp = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TIMESTAMP);
 }
 
 static void data_update_monitor_pdos(Ethercat_Slave_t *slave,
@@ -415,6 +418,9 @@ static void display_printframe(WINDOW *wnd)
     wprintw(wnd, "analog_input3");
     wmove(wnd, row++, title_column);
     wprintw(wnd, "analog_input4");
+    row++;
+    wmove(wnd, row++, title_column);
+    wprintw(wnd, "device timestamp");
     wmove(wnd, row+3, title_column);
     wprintw(wnd, "Press <Crtl>+C to abort");
 }
@@ -499,6 +505,9 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wmove(wnd, row++, input_column);
     wprintw(wnd, "%5d", input->analog_input4);
 
+    row++;
+    wmove(wnd, row++, input_column);
+    wprintw(wnd, "%5u", input->timestamp);
     wrefresh(wnd);
 }
 

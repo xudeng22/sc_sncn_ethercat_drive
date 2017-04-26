@@ -101,35 +101,13 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     i_coe.configuration_done();
 }
 
-{int, int} quick_stop_perform(int opmode, int steps, int velocity)
+static int quick_stop_perform(int opmode, int &step)
 {
-    static int step = 0;
-
-    if (step >= steps) {
-        step = 0;
-        return { 0, 0 };
-    }
-
-#if 1
-    /* This looks like a quick and dirty hack and it is to make the quick_stop stop if we reach
-     * a minimal velocity. This avoids the reacceleration of the motor to reach the real quick stop
-     * position.
-     *
-     * FIXME maybe the profile generation is not correct
-     *
-     */
-
-    if ((velocity < 200) && (velocity > -200)) {
-        step = 0;
-        return { 0, 0 };
-    }
-#endif
-
     int target = 0;
 
     switch (opmode) {
     case OPMODE_CSP:
-        target = quick_stop_position_profile_generate(step, velocity);
+        target = quick_stop_position_profile_generate(step);
         break;
 
     case OPMODE_CSV:
@@ -137,53 +115,61 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
         break;
 
     case OPMODE_CST:
-        //FIXME: add quick_stop_torque_profile_generate
-//        target = quick_stop_torque_profile_generate(step);
-        target = 1;
+        /* We can use the same linear profile for torque because it's actually independant on units */
+        target = quick_stop_velocity_profile_generate(step);
         break;
     }
 
     step++;
 
-    return { target, steps-step };
+    return target;
 }
 
 static int quick_stop_init(int opmode,
-                                int actual_velocity,
-                                int sensor_resolution,
-                                int actual_position,
-                                ProfilerConfig &profiler_config)
+        int actual_position,
+        int actual_velocity,
+        int actual_torque,
+        int sensor_resolution,
+        int deceleration)
 {
-
     int steps = 0;
-    int deceleration = profiler_config.max_deceleration;
 
-    /* FIXME avoid to accelerate to perform a quick stop */
-    if ((actual_velocity < 200) && (actual_velocity > -200)) {
-        return 0;
-    }
-
-    if (opmode == OPMODE_CSP) {
-        if (actual_velocity < 0) {
-            actual_velocity = -actual_velocity;
-        }
-
+    switch(opmode) {
+    case OPMODE_CSP:
         steps = init_quick_stop_position_profile(
                 (actual_velocity * sensor_resolution) / 60,
                 actual_position,
                 (deceleration * sensor_resolution) / 60);
-
-    } else if (opmode == OPMODE_CSV) {
-        if (actual_velocity < 0) {
-            actual_velocity = -actual_velocity;
+        break;
+    case OPMODE_CSV:
+        steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
+        break;
+    case OPMODE_CST:
+        // we get the time needed to stop using the velocity quick stop
+        steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
+        // we set the torque deceleration to decrease to 0 with the same duration
+        if (steps != 0) {
+            if (actual_torque < 0) {
+                deceleration = (1000*(-actual_torque))/steps;
+            } else {
+                deceleration = (1000*actual_torque)/steps;
+            }
+            // we use the same linear profile for torque because it's actually independant on units
+            steps = init_quick_stop_velocity_profile(actual_torque, deceleration);
         }
-
-        steps = init_quick_stop_velocity_profile(
-                (actual_velocity * sensor_resolution) / 60,
-                (deceleration * sensor_resolution) / 60);
-
-    } else {
+        break;
+    default:
         steps = 0;
+        break;
+    }
+
+    //limit steps
+    if (actual_velocity < 0) {
+        actual_velocity = -actual_velocity;
+    }
+    int steps_limit = (1000*actual_velocity)/deceleration + 1;
+    if (steps > steps_limit) {
+        steps = steps_limit;
     }
 
     return steps;
@@ -321,8 +307,6 @@ static void debug_print_state(DriveState_t state)
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
-#define QUICK_STOP_WAIT_COUNTER    2000
-
 #define UPDATE_POSITION_GAIN    0x0000000f
 #define UPDATE_VELOCITY_GAIN    0x000000f0
 #define UPDATE_TORQUE_GAIN      0x00000f00
@@ -340,9 +324,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2)
 {
-    int quick_stop_steps = 0;
-    int quick_stop_steps_left = 0;
-    int quick_stop_count = 0;
 
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
@@ -350,6 +331,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int target_velocity = 0;
     int target_torque   = 0;
     int qs_target = 0;
+    int qs_start_velocity = 0;
+    int quick_stop_steps = 0;
+    int quick_stop_step = 0;
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
@@ -485,22 +469,32 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        send_to_control.position_cmd = target_position;
-        send_to_control.velocity_cmd = target_velocity;
-        send_to_control.torque_cmd   = target_torque;
 
-        if (quick_stop_steps != 0) {
+        if (quick_stop_steps == 0) {
+            send_to_control.position_cmd = target_position;
+            send_to_control.velocity_cmd = target_velocity;
+            send_to_control.torque_cmd   = target_torque;
+        } else {
             switch (opmode) {
             case OPMODE_CSP:
-                send_to_control.position_cmd = qs_target;
+                // we update the position command only if the qs target is in the right direction
+                if ((qs_start_velocity > 0 && qs_target > send_to_control.position_cmd) || (qs_start_velocity < 0 && qs_target < send_to_control.position_cmd)) {
+                    send_to_control.position_cmd = qs_target;
+                }
                 break;
 
             case OPMODE_CSV:
-                send_to_control.velocity_cmd = qs_target;
+                // we update the velocity command only if decreasing
+                if ((send_to_control.velocity_cmd > 0 && qs_target < send_to_control.velocity_cmd) || (send_to_control.velocity_cmd < 0 && qs_target > send_to_control.velocity_cmd)) {
+                    send_to_control.velocity_cmd = qs_target;
+                }
                 break;
 
             case OPMODE_CST:
-                send_to_control.torque_cmd = qs_target;
+                // we update the torque command only if decreasing
+                if ((send_to_control.torque_cmd > 0 && qs_target < send_to_control.torque_cmd) || (send_to_control.torque_cmd < 0 && qs_target > send_to_control.torque_cmd)) {
+                    send_to_control.torque_cmd = qs_target;
+                }
                 break;
 
             /* FIXME what to do for the default? */
@@ -667,63 +661,36 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                 /* if quick stop is requested start immediately */
                 if (state == S_QUICK_STOP_ACTIVE) {
-                    quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
+                    qs_start_velocity = actual_velocity;
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, profiler_config.max_deceleration); // <- can be done in the calling command
+                    quick_stop_step = 0;
+                    qs_target = quick_stop_perform(opmode, quick_stop_step); // compute the fisrt step now
                 }
                 break;
 
             case S_QUICK_STOP_ACTIVE:
                 /* quick stop function shall be started and running */
-                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
+                qs_target = quick_stop_perform(opmode, quick_stop_step);
 
-                if (quick_stop_steps_left == 0 ) {
-                    quick_stop_count += 1;
-
-                    switch (opmode) {
-                    case OPMODE_CSP:
-                        qs_target = actual_position;
-                        break;
-                    case OPMODE_CSV:
-                        qs_target = actual_velocity;
-                        break;
-                    case OPMODE_CST:
-                        qs_target = 0;
-                        break;
-                    }
-
+                if (quick_stop_step > quick_stop_steps) {
                     i_motion_control.disable();
-                    if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
-                        state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                        quick_stop_steps = 0;
-                        quick_stop_count = 0;
-                    }
+                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                    quick_stop_steps = 0;
                 }
-
                 break;
 
             case S_FAULT_REACTION_ACTIVE:
                 /* a fault is detected, perform fault recovery actions like a quick_stop */
                 if (quick_stop_steps == 0) {
-                    quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, profiler_config.max_deceleration);
+                    quick_stop_step = 0;
                 }
 
-                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
+                qs_target= quick_stop_perform(opmode, quick_stop_step);
 
-                if (quick_stop_steps_left == 0) {
+                if (quick_stop_step > quick_stop_steps) {
                     state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                     quick_stop_steps = 0;
-
-                    switch (opmode) {
-                    case OPMODE_CSP:
-                        qs_target = actual_position;
-                        break;
-                    case OPMODE_CSV:
-                        qs_target = actual_velocity;
-                        break;
-                    case OPMODE_CST:
-                        qs_target = 0;
-                        break;
-                    }
-
                     i_motion_control.disable();
                 }
                 break;

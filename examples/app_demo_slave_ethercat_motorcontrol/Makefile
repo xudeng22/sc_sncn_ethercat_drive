@@ -18,7 +18,7 @@ USED_MODULES = config_motor module_adc module_biss module_board-support module_c
 # Here when compilling in Debug mode it uses the ethercat_service_standalone library
 # and when compilling in Release mode it uses the ethercat_service library.
 ifeq ($(CONFIG),Debug)
-	MODULE_LIBRARIES = ethercat_service_standalone
+	MODULE_LIBRARIES = ethercat_service_debug
 endif
 
 # The flags passed to xcc when building the application

@@ -1,7 +1,7 @@
 # The TARGET variable determines what target system the application is
 # compiled for. It either refers to an XN file in the source directories
 # or a valid argument for the --target option when compiling
-TARGET = SOMANET-C22
+TARGET = SOMANET-C21-DX_G2
 
 # The APP_NAME variable determines the name of the final .xe file. It should
 # not include the .xe postfix. If left blank the name will default to
@@ -18,7 +18,7 @@ USED_MODULES = config_motor module_adc module_biss module_board-support module_c
 # Here when compilling in Debug mode it uses the ethercat_service_standalone library
 # and when compilling in Release mode it uses the ethercat_service library.
 ifeq ($(CONFIG),Debug)
-	MODULE_LIBRARIES = ethercat_service_standalone
+	MODULE_LIBRARIES = ethercat_service_debug
 endif
 
 # The flags passed to xcc when building the application

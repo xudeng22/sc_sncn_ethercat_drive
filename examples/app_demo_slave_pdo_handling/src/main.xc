@@ -1,5 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <CORE_C21-G2.bsp>
+//#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 #include <COM_ECAT-rev-a.bsp>
 
 /**
@@ -199,11 +200,13 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
 }
 
+#ifdef CORE_C21_DX_G2
 /* the led and watchdog ports must be defined so they get higher priority,
  * otherwise undefined behavior on the chip occures.
  */
 port wd_port = WD_PORT_TICK;
-port led_port = COM_PORT_4BIT_48_52_28_32;
+port led_port = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
 
 int main(void) {
     /* EtherCat Communication channels */
@@ -241,7 +244,9 @@ int main(void) {
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
+#ifdef CORE_C21_DX_G2
             wd_port <: 1; /* pull up watchdog */
+#endif
             pdo_service(i_coe, i_pdo);
         }
     }

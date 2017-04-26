@@ -408,6 +408,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
 
+    /* read tile frequency
+     * this needs to be after the first call to i_torque_control
+     * so when we read it the frequency has already been changed by the torque controller
+     */
+    unsigned int tile_usec = USEC_STD;
+    unsigned ctrlReadData;
+    read_sswitch_reg(get_local_tile_id(), 8, ctrlReadData);
+    if(ctrlReadData == 1) {
+        tile_usec = USEC_FAST;
+    }
+
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
@@ -581,7 +592,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             } else if (comm_inactive_flag == 1) {
                 unsigned ts_comm_inactive;
                 t :> ts_comm_inactive;
-                if (ts_comm_inactive - c_time > 1*SEC_STD) {
+                if (ts_comm_inactive - c_time > 1000000*tile_usec) {
                     state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
                     inactive_timeout_flag = 1;
                 }
@@ -755,7 +766,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     }
                     //start timer
                     t :> fault_reset_wait_time;
-                    fault_reset_wait_time += MSEC_STD*1000; //wait 1s before restarting the motorcontrol
+                    fault_reset_wait_time += tile_usec*1000*1000; //wait 1s before restarting the motorcontrol
                 } else if (checklist.fault_reset_wait == true) {
                     t :> t_now;
                     //check if timer ended
@@ -847,7 +858,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 #endif
 
         /* wait 1 ms to respect timing */
-        t when timerafter(time + MSEC_STD) :> time;
+        t when timerafter(time + 1000*tile_usec) :> time;
 
 //#pragma xta endpoint "ecatloop_stop"
     }

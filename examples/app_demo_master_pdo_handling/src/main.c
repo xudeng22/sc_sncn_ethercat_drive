@@ -92,9 +92,15 @@ struct _output_t {
     unsigned int user_mosi;
 };
 
+enum eOperationMode {
+    MODE_ECAT_TEST = 0 /* default mode */
+    ,MODE_ECAT_MONITOR
+};
+
 static int g_running = 1;
 static unsigned int sig_alarms  = 0;
 static unsigned int user_alarms = 0;
+static enum eOperationMode g_operation_mode = MODE_ECAT_TEST;
 
 /* set eventually higher priority */
 
@@ -131,7 +137,7 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *masterid, int *
 {
     int  opt;
 
-    const char *options = "hn:m:wd";
+    const char *options = "hn:m:wdM";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -148,6 +154,11 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *masterid, int *
             break;
 
         case 'w':
+            *curses = 1;
+            break;
+
+        case 'M':
+            g_operation_mode = MODE_ECAT_MONITOR;
             *curses = 1;
             break;
 
@@ -222,7 +233,7 @@ static void setup_timer(struct itimerval *tv)
     }
 }
 
-static void data_update_pdos(Ethercat_Slave_t *slave,
+static void data_update_test_pdos(Ethercat_Slave_t *slave,
                         struct _input_t  *input,
                         struct _output_t *output)
 {
@@ -318,6 +329,48 @@ static void data_update_pdos(Ethercat_Slave_t *slave,
     input->analog_input3 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT3);
     input->analog_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
 }
+
+static void data_update_monitor_pdos(Ethercat_Slave_t *slave,
+                        struct _input_t  *input,
+                        struct _output_t *output)
+{
+    (void)output; /* no output here */
+
+    input->statusword = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_STATUSWORD);
+    input->op_mode_display = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_OPMODEDISP);
+    input->torque_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TORQUE_VALUE);
+    input->position_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_POSITION_VALUE);
+    input->velocity_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_VELOCITY_VALUE);
+
+    input->user_miso = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
+
+    input->tuning_status = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TUNING_STATUS);
+
+    input->secondary_position_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_POSITION_VALUE);
+    input->secondary_velocity_value = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_SECONDARY_VELOCITY_VALUE);
+
+    input->digital_input1 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT1);
+    input->digital_input2 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT2);
+    input->digital_input3 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT3);
+    input->digital_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT4);
+
+    input->analog_input1 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT1);
+    input->analog_input2 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT2);
+    input->analog_input3 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT3);
+    input->analog_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
+}
+
+static void data_update_pdos(Ethercat_Slave_t *slave,
+                        struct _input_t  *input,
+                        struct _output_t *output)
+{
+    if (g_operation_mode == MODE_ECAT_TEST) {
+        data_update_test_pdos(slave, input, output);
+    } else {
+        data_update_monitor_pdos(slave, input, output);
+    }
+}
+
 
 static void display_printframe(WINDOW *wnd)
 {

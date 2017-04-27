@@ -130,7 +130,7 @@ static int quick_stop_init(int opmode,
         int actual_velocity,
         int actual_torque,
         int sensor_resolution,
-        int deceleration)
+        int quick_stop_deceleration)
 {
     int steps = 0;
 
@@ -139,23 +139,23 @@ static int quick_stop_init(int opmode,
         steps = init_quick_stop_position_profile(
                 (actual_velocity * sensor_resolution) / 60,
                 actual_position,
-                (deceleration * sensor_resolution) / 60);
+                (quick_stop_deceleration * sensor_resolution) / 60);
         break;
     case OPMODE_CSV:
-        steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
+        steps = init_quick_stop_velocity_profile(actual_velocity, quick_stop_deceleration);
         break;
     case OPMODE_CST:
         // we get the time needed to stop using the velocity quick stop
-        steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
+        steps = init_quick_stop_velocity_profile(actual_velocity, quick_stop_deceleration);
         // we set the torque deceleration to decrease to 0 with the same duration
         if (steps != 0) {
             if (actual_torque < 0) {
-                deceleration = (1000*(-actual_torque))/steps;
+                quick_stop_deceleration = (1000*(-actual_torque))/steps;
             } else {
-                deceleration = (1000*actual_torque)/steps;
+                quick_stop_deceleration = (1000*actual_torque)/steps;
             }
             // we use the same linear profile for torque because it's actually independant on units
-            steps = init_quick_stop_velocity_profile(actual_torque, deceleration);
+            steps = init_quick_stop_velocity_profile(actual_torque, quick_stop_deceleration);
         }
         break;
     default:
@@ -167,7 +167,7 @@ static int quick_stop_init(int opmode,
     if (actual_velocity < 0) {
         actual_velocity = -actual_velocity;
     }
-    int steps_limit = (1000*actual_velocity)/deceleration + 1;
+    int steps_limit = (1000*actual_velocity)/quick_stop_deceleration + 1;
     if (steps > steps_limit) {
         steps = steps_limit;
     }
@@ -192,7 +192,7 @@ static void inline update_configuration(
         uint8_t &polarity,
         int &nominal_speed,
         int &homing_method,
-        int &opmode)
+        int &quick_stop_deceleration)
 {
 
     // set position feedback services parameters
@@ -241,6 +241,7 @@ static void inline update_configuration(
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
     polarity          = i_coe.get_object_value(DICT_POLARITY, 0);
+    quick_stop_deceleration = i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
 }
 
 static void motioncontrol_enable(int opmode, int position_control_strategy,
@@ -330,6 +331,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int target_position = 0;
     int target_velocity = 0;
     int target_torque   = 0;
+    int quick_stop_deceleration = 0;
     int qs_target = 0;
     int qs_start_velocity = 0;
     int quick_stop_steps = 0;
@@ -402,6 +404,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     cm_default_config_profiler(i_coe, profiler_config);
     cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_coe, i_motion_control);
+    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
@@ -438,7 +441,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             update_configuration(i_coe, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
                     motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
                     sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
-                    opmode
+                    quick_stop_deceleration
                     );
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
@@ -662,7 +665,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 /* if quick stop is requested start immediately */
                 if (state == S_QUICK_STOP_ACTIVE) {
                     qs_start_velocity = actual_velocity;
-                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, profiler_config.max_deceleration); // <- can be done in the calling command
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, quick_stop_deceleration); // <- can be done in the calling command
                     quick_stop_step = 0;
                     qs_target = quick_stop_perform(opmode, quick_stop_step); // compute the fisrt step now
                 }
@@ -682,7 +685,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             case S_FAULT_REACTION_ACTIVE:
                 /* a fault is detected, perform fault recovery actions like a quick_stop */
                 if (quick_stop_steps == 0) {
-                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, profiler_config.max_deceleration);
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, quick_stop_deceleration);
                     quick_stop_step = 0;
                 }
 

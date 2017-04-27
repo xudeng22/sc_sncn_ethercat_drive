@@ -6,11 +6,7 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-<<<<<<< HEAD
-			<name>com.xmos.cdt.core.LegacyProjectCheckerBuilder</name>
-=======
 			<name>com.xmos.cdt.core.ModulePathBuilder</name>
->>>>>>> develop
 			<arguments>
 			</arguments>
 		</buildCommand>

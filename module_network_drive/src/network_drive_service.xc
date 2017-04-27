@@ -544,7 +544,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
             /* Write error code to object dictionary */
             int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
-            i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
+            i_co.od_set_object_value(DICT_ERROR_CODE, 0, error_code);
         } else {
             update_checklist(checklist, opmode, 0); //no error
         }

@@ -7,12 +7,27 @@
 #include <command_service.h>
 #include <xs1.h>
 
-#define MAX_TIME_TO_WAIT_SDO      100000
-#define TIME_FOR_LOOP            (500 * 1000 * 1000)
+#include <print.h>
+
+#ifndef MSEC_STD
+#define MSEC_STD 100000
+#endif
+
+#define TIME_FOR_LOOP            (500 * MSEC_STD)
 
 static int flash_write_od_config(client interface i_co_communication i_canopen)
 {
     /* read object dictionsry values and write to flash */
+
+    printstrln("Command scheduled - notthing to do now");
+
+    /* Simulate a huge amount of processing time */
+    timer tsim;
+    unsigned time_current = 0;
+    const unsigned time_to_wait = (5000 * MSEC_STD);
+
+    tsim :> time_current;
+    tsim when timerafter(time_current + time_to_wait) :> void;
 
     return 1;
 }

@@ -90,7 +90,7 @@ void canopen_interface_service(
             case i_co[int j].od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value) -> { uint8_t error_out }:
                     if (index_ == DICT_COMMAND_OBJECT && sdo_command_object.state == OD_COMMAND_STATE_IDLE) {
                         sdo_command_object.command = (uint16_t)(value & 0xffff);
-                        break;
+                        value = OD_COMMAND_STATE_IDLE;
                     }
 
                     error_out = canod_set_entry(index_, subindex, value, 1);
@@ -194,7 +194,9 @@ void canopen_interface_service(
             case i_co[int j].command_ready(void) -> { enum eSdoCommand command }:
                     //canod_set_entry(0, 0, 0, 1);
                     command = sdo_command_object.command;
-                    sdo_command_object.state = OD_COMMAND_STATE_PROCESSING;
+                    if (command != OD_COMMAND_NONE) {
+                        sdo_command_object.state = OD_COMMAND_STATE_PROCESSING;
+                    }
                     canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
                     break;
 

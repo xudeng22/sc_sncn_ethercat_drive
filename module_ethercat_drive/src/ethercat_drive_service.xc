@@ -339,7 +339,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
-    int update_position_velocity = 0;
     int follow_error = 0;
     //int target_position_progress = 0; /* is current target_position necessary to remember??? */
 
@@ -379,7 +378,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
     unsigned int fault_reset_wait_time;
-    unsigned int t_now;
 
     int limit_switch_type;
     int homing_method;
@@ -393,6 +391,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     MotorcontrolConfig motorcontrol_config = i_torque_control.get_config();
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
+
+    /* read tile frequency
+     * this needs to be after the first call to i_torque_control
+     * so when we read it the frequency has already been changed by the torque controller
+     */
+    unsigned int tile_usec = USEC_STD;
+    unsigned ctrlReadData;
+    read_sswitch_reg(get_local_tile_id(), 8, ctrlReadData);
+    if(ctrlReadData == 1) {
+        tile_usec = USEC_FAST;
+    }
 
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
@@ -458,9 +467,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
         send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
-        /* FIXME removed! what is the next way to do it?
-        update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
-         */
 
         /* tuning pdos */
         tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
@@ -578,7 +584,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             } else if (comm_inactive_flag == 1) {
                 unsigned ts_comm_inactive;
                 t :> ts_comm_inactive;
-                if (ts_comm_inactive - c_time > 1*SEC_STD) {
+                if (ts_comm_inactive - c_time > 1000000*tile_usec) {
                     state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
                     inactive_timeout_flag = 1;
                 }
@@ -724,12 +730,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         i_motion_control.set_motion_control_config(motion_control_config);
                     }
                     //start timer
-                    t :> fault_reset_wait_time;
-                    fault_reset_wait_time += MSEC_STD*1000; //wait 1s before restarting the motorcontrol
+                    fault_reset_wait_time = time + 1000000*tile_usec; //wait 1s before restarting the motorcontrol
                 } else if (checklist.fault_reset_wait == true) {
-                    t :> t_now;
                     //check if timer ended
-                    if (timeafter(t_now, fault_reset_wait_time)) {
+                    if (timeafter(time, fault_reset_wait_time)) {
                         checklist.fault_reset_wait = false;
                         /* recheck fault to see if it's realy removed */
                         if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
@@ -788,36 +792,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
         }
 
-#if 1 /* Draft to get PID updates on the fly */
-        t :> time; /* FIXME check the timing here! */
-
-        if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
-            /* Update PID vlaues so they can be set on the fly */
-            motion_control_config.position_kp          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 1); /* POSITION_P_VALUE; */
-            motion_control_config.position_ki          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 2); /* POSITION_I_VALUE; */
-            motion_control_config.position_kd          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 3); /* POSITION_D_VALUE; */
-
-            i_motion_control.set_motion_control_config(motion_control_config);
-        }
-
-        if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            motion_control_config.velocity_kp          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 1); /* 18; */
-            motion_control_config.velocity_ki          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 22; */
-            motion_control_config.velocity_kd          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 25; */
-
-            i_motion_control.set_motion_control_config(motion_control_config);
-        }
-
-
-        /*
-        motorcontrol_config.torque_P_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 1);
-        motorcontrol_config.torque_I_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 2);
-        motorcontrol_config.torque_D_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 3);
-         */
-#endif
-
         /* wait 1 ms to respect timing */
-        t when timerafter(time + MSEC_STD) :> time;
+        t when timerafter(time + tile_usec*1000) :> time;
 
 //#pragma xta endpoint "ecatloop_stop"
     }

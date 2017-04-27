@@ -329,6 +329,7 @@ int init_linear_profile(motion_profile_t *motion_profile)
 
     //number of steps needed (1 step every 1ms)
     float steps = total_time/motion_profile->s_time;
+    motion_profile->s_time = total_time/steps;
 
     return (int)round(steps);
 }

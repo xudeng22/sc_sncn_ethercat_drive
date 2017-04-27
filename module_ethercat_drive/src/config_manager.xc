@@ -226,8 +226,7 @@ void cm_sync_config_profiler(
     profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
     profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    /* FIXME this profiler is only used for Quick Stop so the max_deceleration is read from the quick stop deceleration */
-    profiler.max_deceleration =  i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
+    profiler.max_deceleration =  profiler.deceleration;
     profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
     profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
 }
@@ -439,8 +438,6 @@ void cm_default_config_profiler(
     i_coe.set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.acceleration);
     i_coe.set_object_value(DICT_PROFILE_DECELERATION, 0, profiler.deceleration);
     i_coe.set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.max_velocity);
-    /* FIXME this profiler is only used for Quick Stop so the max_deceleration is read from the quick stop deceleration */
-    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler.max_deceleration);
     i_coe.set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.max_acceleration);
     i_coe.set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.velocity);
 }

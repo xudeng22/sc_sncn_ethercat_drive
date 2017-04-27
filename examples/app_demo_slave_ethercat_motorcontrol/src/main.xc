@@ -62,7 +62,7 @@ int main(void)
     interface PositionFeedbackInterface i_position_feedback_2[3];
 
     /* EtherCat Communication channels */
-    interface i_co_communication i_co[3];
+    interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;

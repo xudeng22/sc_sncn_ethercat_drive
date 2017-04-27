@@ -83,11 +83,8 @@
 0x2207,       10,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_4
 0x2207,       11,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_5
 
-#,        0,          0 # 
-#unknown ???
+#Profiler
 #0x6085,        0,           0,           0,           0,           0,           0,           0 # DICT_QUICK_STOP_DECELERATION
 #0x6083,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_ACCELERATION
 #0x6084,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_DECELERATION
 #0x607F,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_VELOCITY
-#0x6073,        0,           0,           0,           0,           0,           0,           0 # DICT_MAX_CURRENT
-#0x6079,        0,           0,           0,           0,           0,           0,           0 # DICT_DC_LINK_CIRCUIT_VOLTAGE

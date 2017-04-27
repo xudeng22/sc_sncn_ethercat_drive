@@ -431,7 +431,7 @@ int main(void)
 
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
-    interface i_co_communication i_co[3];
+    interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
 
 	par
@@ -449,6 +449,7 @@ int main(void)
                                    ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
+                command_service(i_co[3]);
             }
         }
 

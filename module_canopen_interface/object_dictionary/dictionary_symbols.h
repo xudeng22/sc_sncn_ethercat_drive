@@ -229,4 +229,5 @@
 #define DICT_USER_MISO                                0x2FFF
 #define DICT_USER_MOSI                                0x2FFE
 #define DICT_ERROR_CODE                               0x603F
+#define DICT_COMMAND_OBJECT                           0x3000
 #endif /* CANOD_CONSTANTS_H */

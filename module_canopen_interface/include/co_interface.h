@@ -11,7 +11,24 @@
 
 #include <stdint.h>
 
-#define CO_IF_COUNT 3
+#define CO_IF_COUNT 4
+
+enum eSdoCommand {
+    OD_COMMAND_NONE = 0
+    ,OD_COMMAND_WRITE_CONFIG
+};
+
+enum eSdoState {
+    OD_COMMAND_STATE_IDLE = 0
+    ,OD_COMMAND_STATE_PROCESSING
+    ,OD_COMMAND_STATE_SUCCESS
+    ,OD_COMMAND_STATE_ERROR
+};
+
+struct _sdo_command_object {
+    enum eSdoCommand command;
+    enum eSdoState   state;
+};
 
 /** entry description structure */
 struct _sdoinfo_entry_description {
@@ -176,6 +193,15 @@ interface i_co_communication
 
     void inactive_communication(void);
 
+    /*
+     *  commanding handling
+     */
+
+    /* Since a notification cannot be send from a interface call this one is
+     * necessary to poll if a command is ready to be executed */
+    enum eSdoCommand command_ready(void);
+
+    void command_set_result(int result);
 };
 
 

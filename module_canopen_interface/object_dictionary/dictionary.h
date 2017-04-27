@@ -267,6 +267,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
     { 0x2201, 13, 0, DEFTYPE_UNSIGNED8, CANOD_TYPE_RECORD, 8, 0x003f, 0x04, "Number of bits to read while busy" },
     { 0x603F, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x0007, 0x00, "Error code" },
     { 0x2FFD, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x0007, 0x00, "Timestamp" },
+    { 0x3000, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x0037, 0x00, "Command" },
     { 0, 0, 0, 0, 0, 0, 0, 0, "" }
 };
 

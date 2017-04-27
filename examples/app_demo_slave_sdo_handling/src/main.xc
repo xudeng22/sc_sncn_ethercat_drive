@@ -10,11 +10,12 @@
 
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
-
+#include <command_service.h>
 #include <reboot.h>
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
+#include <flash_service.h>
 
 #define OBJECT_PRINT              0  /* enable object print with 1 */
 #define MAX_TIME_TO_WAIT_SDO      100000
@@ -434,6 +435,10 @@ int main(void)
     interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
 
+    /* flash interfaces */
+    interface EtherCATFlashDataInterface i_data_ecat;
+    interface EtherCATFlashDataInterface i_boot_ecat;
+
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
@@ -449,7 +454,8 @@ int main(void)
                                    ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
-                command_service(i_co[3]);
+
+                flash_service_ethercat(p_spi_flash, i_boot_ecat, i_data_ecat);
             }
         }
 
@@ -464,6 +470,11 @@ int main(void)
 
                 /* Start the SDO / Object Dictionary test service */
                 sdo_service(i_co[2], i_cmd);
+
+                /* due to serious space problems on tile 0 because of the large object dictionary the command
+                 * service is located here.
+                 */
+                command_service(i_data_ecat, i_co[3]);
             }
         }
     }

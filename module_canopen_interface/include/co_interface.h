@@ -12,10 +12,12 @@
 #include <stdint.h>
 
 #define CO_IF_COUNT 4
+#define OD_LIST_ALL 1
 
 enum eSdoCommand {
     OD_COMMAND_NONE = 0
     ,OD_COMMAND_WRITE_CONFIG
+    ,OD_COMMAND_READ_CONFIG
 };
 
 enum eSdoState {
@@ -54,6 +56,15 @@ enum eAccessRights {
 
 /* FIXME keep typedef for obfuscation? */
 typedef uint8_t pdo_size_t;
+
+/**
+ * @brief Forward declaration for flash data interface
+ */
+interface EtherCATFlashDataInterface {
+    uint8_t get_object(uint8_t position, unsigned char data[], unsigned &object_size);
+    uint8_t add_object(unsigned char data[], unsigned object_size);
+    uint8_t remove_object(uint8_t position);
+};
 
 /**
  * @brief Communication interface for OD service request to network service
@@ -123,6 +134,17 @@ interface i_co_communication
 
     /**
      * @brief Returns an array with five length entrys (Currently just one entry).
+     *
+     * The list lengths are:
+     * Arrary Index | List type
+     * -------------+-----------
+     *        0     | All objects (without subindex)
+     *        1     | RxPDO Mappable
+     *        2     | TxPDO Mappable
+     *        3     | List Replace
+     *        4     | List all Startup Parameters
+     *
+     * @param[out] Array with all list lengths
      */
     void od_get_all_list_length(uint32_t lists[]);
 

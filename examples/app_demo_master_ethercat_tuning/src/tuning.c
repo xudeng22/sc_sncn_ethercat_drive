@@ -116,6 +116,15 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         }
         break;
 
+    //record
+    case '.':
+        if (record_config->state == RECORD_ON) {
+            record_config->state = RECORD_OFF;
+        } else {
+            record_config->state = RECORD_ON;
+        }
+        break;
+
 
 #if 0 //continuous cyclic mode is disabled in tuning app. Use the dedicated app_master_cyclic.
     //switch to cs mode

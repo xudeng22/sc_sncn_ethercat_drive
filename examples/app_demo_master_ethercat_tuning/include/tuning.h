@@ -194,7 +194,7 @@ typedef struct {
 } PositionProfileConfig;
 
 typedef struct {
-    int32_t target_position;
+    int32_t target;
     int32_t position;
     int32_t velocity;
     int16_t torque;
@@ -222,7 +222,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
 
 void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input pdo_input);
 
-void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, struct _pdo_cia402_output pdo_output, char *filename);
+void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, struct _pdo_cia402_output pdo_output, InputValues input, char *filename);
 
 void tuning(WINDOW *wnd, Cursor *cursor,
             struct _pdo_cia402_output *pdo_output, struct _pdo_cia402_input *pdo_input,

@@ -6,7 +6,7 @@ It implements a CiA 402-compliant Motor Control protocol that gathers all the fu
 
 .. cssclass:: downloadable-button 
 
-  `Download Library <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/master.zip>`_
+  `Download Library <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/release_2.0.0.zip>`_
 
 .. cssclass:: github
 

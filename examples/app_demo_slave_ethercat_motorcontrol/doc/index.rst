@@ -21,20 +21,36 @@ Quick How-to
 ============
 
 1. :ref:`Assemble your SOMANET device <assembling_somanet_node>`.
-2. Wire up your device. Check how at your specific :ref:`hardware documentation <hardware>`. Connect your Hall sensor, Encoder Interface (if used), motor phases, power supply and EtherCAT cables, and XTAG. Power up!
+
+.. figure:: images/ethercat_stack.jpg
+   :align: center
+   
+2. Wire up your device. Check how at your specific :ref:`hardware documentation <hardware>`. Connect your sensor, motor phases, power supply and EtherCAT cables, and XTAG. Power up!
+
+.. figure:: images/stack_and_motor.jpg
+   :align: center
+
 3. :ref:`Set up your XMOS development tools <getting_started_xmos_dev_tools>`. 
 4. Download and :ref:`import in your workspace <getting_started_importing_library>` the SOMANET EtherCAT Drive Library and its dependencies.
 5. Open the **main.xc** within  the **app_demo_slave_ethercat**. Include the :ref:`board-support file according to your SOMANET IFM device <somanet_board_support_module>`.
 
 .. important:: Make sure the SOMANET Motor Control Library supports your SOMANET device. For that, check the :ref:`Hardware compatibility <ecat_drive_hw_compatibility>` section of the library.
 
-6. :ref:`Set the configuration <motor_configuration_label>` for Motor Control, Hall, Encoder (if used), and Position Control Services. Also for your Profiler. In any case, later on you will need to set proper configuration on your **Master Application** since the parameters are overwritten by the Master side before starting the operation.
-7. :ref:`Run the application. Enabling XScope <running_an_application>` is recommended, since you could monitor the current phases in real-time.
+6. Set the **user_config.h** configuration file. Most of the parameters can be update over EtherCat by the master so you can leave default values.
+   Some parameters which need to be set at compile time are:
+
+   - IFM_TILE_USEC
+   - PROTECTION_MAXIMUM_CURRENT
+   - PROTECTION_MINIMUM_VOLTAGE 
+   - PROTECTION_MAXIMUM_VOLTAGE
+   - TEMP_BOARD_MAX     
+
+7. Run the application.
+
 8. Now it is time to start working from the EtherCAT master side, for that check our **EtherCAT Master applications quickstart guides**:
 
-            * :ref:`EtherCAT Cyclic Position Control Demo <SOMANET_Cyclic_Positioning_Control_with_EtherCAT_Demo_Quickstart>`
-            * :ref:`EtherCAT Cyclic Velocity Control Demo <SOMANET_Cyclic_Velocity_Control_with_EtherCAT_Demo_Quickstart>`
-            * :ref:`EtherCAT Cyclic Torque Control Demo <SOMANET_Cyclic_Torque_Control_with_EtherCAT_Demo_Quickstart>`
+            * :ref:`Cyclic Position/Velocity/Torque Control Demo <app_demo_master_cyclic>`
+            * :ref:`Special Engineering Mode Application <app_demo_master_ethercat_tuning>`
 
 
 .. important:: To be able to **run** EtherCAT Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
@@ -42,4 +58,4 @@ Quick How-to
 	Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 
 
 .. seealso:: Did everything go well? If you need further support please check out our `forum <http://forum.synapticon.com/>`_.
-        
+

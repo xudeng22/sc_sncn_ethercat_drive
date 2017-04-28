@@ -71,6 +71,7 @@ The following one character commands are executed directly without pressing ente
   - ``[enter]``: just pressing enter will disable the motorcontrol block the brake.
   - ``0``: pressing 0 will switch to torque control mode with a 0 torque command. Which stops the motor slower than by disabling the motorcontrol with ``[enter]``. Be careful if the axis is loaded it could fall.
   - ``r``: reverse the current torque/velocity command
+  - ``.``: start/stop record. this record the position/velocity/torque to a csv formated file.
   - ``[backspace]``: discard current command
 
 The rest of the commands can be up to 3 characters with an optional number. The command is then executed by pressing [enter].
@@ -84,7 +85,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``ps[number]``: start a position step command. For example ``ps1000`` will move to 1000 then to -1000 then to 0. The motor need to be in 0 position before sending this command.
   - ``psp[number]``: start a position step command with profile. same as ps but with profiler.
   - ``v[number]``: set a velocity command. the velocity controller needs to be enabled first.
-  - ``ep``: enable position control. The value is to set the position control mode. 1 is for simple PID, 2 for velocity cascaded, and 3 for Non linear. The modes don't use the same parameters so check if the parameters are for the right mode before enabling. 
+  - ``ep[number]``: enable position control. The value is to set the position control mode. 1 is for simple PID, 2 for velocity cascaded, and 3 for Non linear. The modes don't use the same parameters so check if the parameters are for the right mode before enabling.
   - ``ev1``: enable velocity control.
   - ``et1``: enable torque control.
   - ``e``: and any command starting with e like ep, ev, et will disable the motorcontrol. It's the same as the command [enter].

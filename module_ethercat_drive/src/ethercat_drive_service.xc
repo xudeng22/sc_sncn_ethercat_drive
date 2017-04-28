@@ -101,35 +101,13 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
     i_coe.configuration_done();
 }
 
-{int, int} quick_stop_perform(int opmode, int steps, int velocity)
+static int quick_stop_perform(int opmode, int &step)
 {
-    static int step = 0;
-
-    if (step >= steps) {
-        step = 0;
-        return { 0, 0 };
-    }
-
-#if 1
-    /* This looks like a quick and dirty hack and it is to make the quick_stop stop if we reach
-     * a minimal velocity. This avoids the reacceleration of the motor to reach the real quick stop
-     * position.
-     *
-     * FIXME maybe the profile generation is not correct
-     *
-     */
-
-    if ((velocity < 200) && (velocity > -200)) {
-        step = 0;
-        return { 0, 0 };
-    }
-#endif
-
     int target = 0;
 
     switch (opmode) {
     case OPMODE_CSP:
-        target = quick_stop_position_profile_generate(step, velocity);
+        target = quick_stop_position_profile_generate(step);
         break;
 
     case OPMODE_CSV:
@@ -137,53 +115,61 @@ static void sdo_wait_first_config(client interface i_coe_communication i_coe)
         break;
 
     case OPMODE_CST:
-        //FIXME: add quick_stop_torque_profile_generate
-//        target = quick_stop_torque_profile_generate(step);
-        target = 1;
+        /* We can use the same linear profile for torque because it's actually independant on units */
+        target = quick_stop_velocity_profile_generate(step);
         break;
     }
 
     step++;
 
-    return { target, steps-step };
+    return target;
 }
 
 static int quick_stop_init(int opmode,
-                                int actual_velocity,
-                                int sensor_resolution,
-                                int actual_position,
-                                ProfilerConfig &profiler_config)
+        int actual_position,
+        int actual_velocity,
+        int actual_torque,
+        int sensor_resolution,
+        int quick_stop_deceleration)
 {
-
     int steps = 0;
-    int deceleration = profiler_config.max_deceleration;
 
-    /* FIXME avoid to accelerate to perform a quick stop */
-    if ((actual_velocity < 200) && (actual_velocity > -200)) {
-        return 0;
-    }
-
-    if (opmode == OPMODE_CSP) {
-        if (actual_velocity < 0) {
-            actual_velocity = -actual_velocity;
-        }
-
+    switch(opmode) {
+    case OPMODE_CSP:
         steps = init_quick_stop_position_profile(
                 (actual_velocity * sensor_resolution) / 60,
                 actual_position,
-                (deceleration * sensor_resolution) / 60);
-
-    } else if (opmode == OPMODE_CSV) {
-        if (actual_velocity < 0) {
-            actual_velocity = -actual_velocity;
+                (quick_stop_deceleration * sensor_resolution) / 60);
+        break;
+    case OPMODE_CSV:
+        steps = init_quick_stop_velocity_profile(actual_velocity, quick_stop_deceleration);
+        break;
+    case OPMODE_CST:
+        // we get the time needed to stop using the velocity quick stop
+        steps = init_quick_stop_velocity_profile(actual_velocity, quick_stop_deceleration);
+        // we set the torque deceleration to decrease to 0 with the same duration
+        if (steps != 0) {
+            if (actual_torque < 0) {
+                quick_stop_deceleration = (1000*(-actual_torque))/steps;
+            } else {
+                quick_stop_deceleration = (1000*actual_torque)/steps;
+            }
+            // we use the same linear profile for torque because it's actually independant on units
+            steps = init_quick_stop_velocity_profile(actual_torque, quick_stop_deceleration);
         }
-
-        steps = init_quick_stop_velocity_profile(
-                (actual_velocity * sensor_resolution) / 60,
-                (deceleration * sensor_resolution) / 60);
-
-    } else {
+        break;
+    default:
         steps = 0;
+        break;
+    }
+
+    //limit steps
+    if (actual_velocity < 0) {
+        actual_velocity = -actual_velocity;
+    }
+    int steps_limit = (1000*actual_velocity)/quick_stop_deceleration + 1;
+    if (steps > steps_limit) {
+        steps = steps_limit;
     }
 
     return steps;
@@ -206,7 +192,7 @@ static void inline update_configuration(
         uint8_t &polarity,
         int &nominal_speed,
         int &homing_method,
-        int &opmode)
+        int &quick_stop_deceleration)
 {
 
     // set position feedback services parameters
@@ -255,6 +241,7 @@ static void inline update_configuration(
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
     polarity          = i_coe.get_object_value(DICT_POLARITY, 0);
+    quick_stop_deceleration = i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
 }
 
 static void motioncontrol_enable(int opmode, int position_control_strategy,
@@ -321,8 +308,6 @@ static void debug_print_state(DriveState_t state)
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
-#define QUICK_STOP_WAIT_COUNTER    2000
-
 #define UPDATE_POSITION_GAIN    0x0000000f
 #define UPDATE_VELOCITY_GAIN    0x000000f0
 #define UPDATE_TORQUE_GAIN      0x00000f00
@@ -340,20 +325,20 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2)
 {
-    int quick_stop_steps = 0;
-    int quick_stop_steps_left = 0;
-    int quick_stop_count = 0;
 
     //int target_torque = 0; /* used for CST */
     //int target_velocity = 0; /* used for CSV */
     int target_position = 0;
     int target_velocity = 0;
     int target_torque   = 0;
+    int quick_stop_deceleration = 0;
     int qs_target = 0;
+    int qs_start_velocity = 0;
+    int quick_stop_steps = 0;
+    int quick_stop_step = 0;
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
-    int update_position_velocity = 0;
     int follow_error = 0;
     //int target_position_progress = 0; /* is current target_position necessary to remember??? */
 
@@ -393,7 +378,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
     unsigned int fault_reset_wait_time;
-    unsigned int t_now;
 
     int limit_switch_type;
     int homing_method;
@@ -408,6 +392,17 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
 
+    /* read tile frequency
+     * this needs to be after the first call to i_torque_control
+     * so when we read it the frequency has already been changed by the torque controller
+     */
+    unsigned int tile_usec = USEC_STD;
+    unsigned ctrlReadData;
+    read_sswitch_reg(get_local_tile_id(), 8, ctrlReadData);
+    if(ctrlReadData == 1) {
+        tile_usec = USEC_FAST;
+    }
+
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
@@ -418,6 +413,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     cm_default_config_profiler(i_coe, profiler_config);
     cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_coe, i_motion_control);
+    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
@@ -454,7 +450,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             update_configuration(i_coe, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
                     motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
                     sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
-                    opmode
+                    quick_stop_deceleration
                     );
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
@@ -471,9 +467,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
         send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
-        /* FIXME removed! what is the next way to do it?
-        update_position_velocity = pdo_get_command_pid_update(InOut); // Update trigger which PID setting should be updated now
-         */
 
         /* tuning pdos */
         tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
@@ -485,22 +478,32 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         printhexln(statusword);
         */
 
-        send_to_control.position_cmd = target_position;
-        send_to_control.velocity_cmd = target_velocity;
-        send_to_control.torque_cmd   = target_torque;
 
-        if (quick_stop_steps != 0) {
+        if (quick_stop_steps == 0) {
+            send_to_control.position_cmd = target_position;
+            send_to_control.velocity_cmd = target_velocity;
+            send_to_control.torque_cmd   = target_torque;
+        } else {
             switch (opmode) {
             case OPMODE_CSP:
-                send_to_control.position_cmd = qs_target;
+                // we update the position command only if the qs target is in the right direction
+                if ((qs_start_velocity > 0 && qs_target > send_to_control.position_cmd) || (qs_start_velocity < 0 && qs_target < send_to_control.position_cmd)) {
+                    send_to_control.position_cmd = qs_target;
+                }
                 break;
 
             case OPMODE_CSV:
-                send_to_control.velocity_cmd = qs_target;
+                // we update the velocity command only if decreasing
+                if ((send_to_control.velocity_cmd > 0 && qs_target < send_to_control.velocity_cmd) || (send_to_control.velocity_cmd < 0 && qs_target > send_to_control.velocity_cmd)) {
+                    send_to_control.velocity_cmd = qs_target;
+                }
                 break;
 
             case OPMODE_CST:
-                send_to_control.torque_cmd = qs_target;
+                // we update the torque command only if decreasing
+                if ((send_to_control.torque_cmd > 0 && qs_target < send_to_control.torque_cmd) || (send_to_control.torque_cmd < 0 && qs_target > send_to_control.torque_cmd)) {
+                    send_to_control.torque_cmd = qs_target;
+                }
                 break;
 
             /* FIXME what to do for the default? */
@@ -581,7 +584,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             } else if (comm_inactive_flag == 1) {
                 unsigned ts_comm_inactive;
                 t :> ts_comm_inactive;
-                if (ts_comm_inactive - c_time > 1*SEC_STD) {
+                if (ts_comm_inactive - c_time > 1000000*tile_usec) {
                     state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
                     inactive_timeout_flag = 1;
                 }
@@ -667,63 +670,36 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                 /* if quick stop is requested start immediately */
                 if (state == S_QUICK_STOP_ACTIVE) {
-                    quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config); // <- can be done in the calling command
+                    qs_start_velocity = actual_velocity;
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, quick_stop_deceleration); // <- can be done in the calling command
+                    quick_stop_step = 0;
+                    qs_target = quick_stop_perform(opmode, quick_stop_step); // compute the fisrt step now
                 }
                 break;
 
             case S_QUICK_STOP_ACTIVE:
                 /* quick stop function shall be started and running */
-                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
+                qs_target = quick_stop_perform(opmode, quick_stop_step);
 
-                if (quick_stop_steps_left == 0 ) {
-                    quick_stop_count += 1;
-
-                    switch (opmode) {
-                    case OPMODE_CSP:
-                        qs_target = actual_position;
-                        break;
-                    case OPMODE_CSV:
-                        qs_target = actual_velocity;
-                        break;
-                    case OPMODE_CST:
-                        qs_target = 0;
-                        break;
-                    }
-
+                if (quick_stop_step > quick_stop_steps) {
                     i_motion_control.disable();
-                    if (quick_stop_count >= QUICK_STOP_WAIT_COUNTER) {
-                        state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
-                        quick_stop_steps = 0;
-                        quick_stop_count = 0;
-                    }
+                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                    quick_stop_steps = 0;
                 }
-
                 break;
 
             case S_FAULT_REACTION_ACTIVE:
                 /* a fault is detected, perform fault recovery actions like a quick_stop */
                 if (quick_stop_steps == 0) {
-                    quick_stop_steps = quick_stop_init(opmode, actual_velocity, sensor_resolution, actual_position, profiler_config);
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, quick_stop_deceleration);
+                    quick_stop_step = 0;
                 }
 
-                { qs_target, quick_stop_steps_left } = quick_stop_perform(opmode, quick_stop_steps, actual_velocity);
+                qs_target= quick_stop_perform(opmode, quick_stop_step);
 
-                if (quick_stop_steps_left == 0) {
+                if (quick_stop_step > quick_stop_steps) {
                     state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
                     quick_stop_steps = 0;
-
-                    switch (opmode) {
-                    case OPMODE_CSP:
-                        qs_target = actual_position;
-                        break;
-                    case OPMODE_CSV:
-                        qs_target = actual_velocity;
-                        break;
-                    case OPMODE_CST:
-                        qs_target = 0;
-                        break;
-                    }
-
                     i_motion_control.disable();
                 }
                 break;
@@ -754,12 +730,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                         i_motion_control.set_motion_control_config(motion_control_config);
                     }
                     //start timer
-                    t :> fault_reset_wait_time;
-                    fault_reset_wait_time += MSEC_STD*1000; //wait 1s before restarting the motorcontrol
+                    fault_reset_wait_time = time + 1000000*tile_usec; //wait 1s before restarting the motorcontrol
                 } else if (checklist.fault_reset_wait == true) {
-                    t :> t_now;
                     //check if timer ended
-                    if (timeafter(t_now, fault_reset_wait_time)) {
+                    if (timeafter(time, fault_reset_wait_time)) {
                         checklist.fault_reset_wait = false;
                         /* recheck fault to see if it's realy removed */
                         if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
@@ -818,36 +792,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
         }
 
-#if 1 /* Draft to get PID updates on the fly */
-        t :> time; /* FIXME check the timing here! */
-
-        if ((update_position_velocity & UPDATE_POSITION_GAIN) == UPDATE_POSITION_GAIN) {
-            /* Update PID vlaues so they can be set on the fly */
-            motion_control_config.position_kp          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 1); /* POSITION_P_VALUE; */
-            motion_control_config.position_ki          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 2); /* POSITION_I_VALUE; */
-            motion_control_config.position_kd          = i_coe.get_object_value(DICT_POSITION_CONTROLLER, 3); /* POSITION_D_VALUE; */
-
-            i_motion_control.set_motion_control_config(motion_control_config);
-        }
-
-        if ((update_position_velocity & UPDATE_VELOCITY_GAIN) == UPDATE_VELOCITY_GAIN) {
-            motion_control_config.velocity_kp          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 1); /* 18; */
-            motion_control_config.velocity_ki          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 22; */
-            motion_control_config.velocity_kd          = i_coe.get_object_value(DICT_VELOCITY_CONTROLLER, 2); /* 25; */
-
-            i_motion_control.set_motion_control_config(motion_control_config);
-        }
-
-
-        /*
-        motorcontrol_config.torque_P_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 1);
-        motorcontrol_config.torque_I_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 2);
-        motorcontrol_config.torque_D_gain     = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, 3);
-         */
-#endif
-
         /* wait 1 ms to respect timing */
-        t when timerafter(time + MSEC_STD) :> time;
+        t when timerafter(time + tile_usec*1000) :> time;
 
 //#pragma xta endpoint "ecatloop_stop"
     }

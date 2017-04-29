@@ -18,17 +18,12 @@
  * @brief This Service enables motor drive functions via EtherCAT.
  *
  * @param profiler_config Configuration for profile mode control.
- * @param pdo_out Channel to send out information to EtherCAT Service.
- * @param pdo_in Channel to receive information from EtherCAT Service.
- * @param coe_out Channel to receive motor configuration information from EtherCAT Service.
- * @param i_torque_control Interface to Motor Commutation Service
- * @param i_hall Interface to Hall Service.
- * @param i_qei Interface to Incremental Encoder Service.
- * @param i_biss Interface to BiSS Encoder Service.
- * @param i_gpio Interface to the GPIO Service.
- * @param i_torque_control Interface to Torque Control Loop Service.
- * @param i_velocity_control Interface to Velocity Control Loop Service.
- * @param i_motion_control Interface to Position Control Loop Service.
+ * @param i_pdo Channel to send and receive information to EtherCAT Service.
+ * @param i_coe Channel to receive motor configuration information from EtherCAT Service.
+ * @param i_torque_control Interface to Motor Control Service
+ * @param i_motion_control Interface to Motion Control Service.
+ * @param i_position_feedback_1 Interface to the fisrt sensor service
+ * @param i_position_feedback_2 Interface to the second sensor service
  */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface i_pdo_communication i_pdo,

@@ -120,6 +120,8 @@ Examine the code
     - The rest is initialisation of various data structures used by the app. The profiler settings are initialized using values from the command line arguments.
 
   Main loop:
+    To be able to handle multiple slave all the functions of the main loop are executed for each slaves using a for loop with the slave count parameter. So each slave is handled independently. Only the commands entered by the user apply to only the selected slave. The selected slave is known by using the `select` local variable which is changed using the up and down arrows.
+
     - In the main loop the communication with the slave is done with ``ecw_master_cyclic_function``.
     - The pdo values are read and write with ``pdo_handler``.
     - The ``display_slaves`` function display the slaves data (position, velocity, torque) and state.

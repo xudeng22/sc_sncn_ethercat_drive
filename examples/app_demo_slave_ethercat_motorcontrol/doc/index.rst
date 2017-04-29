@@ -43,9 +43,10 @@ Quick How-to
    - PROTECTION_MAXIMUM_CURRENT
    - PROTECTION_MINIMUM_VOLTAGE 
    - PROTECTION_MAXIMUM_VOLTAGE
-   - TEMP_BOARD_MAX     
+   - TEMP_BOARD_MAX
 
-7. Run the application.
+
+7. Run the application. The application use the :ref:`Somanet Ethercat slave service <somanet_ethercat_slave>` as well as all the Somanet Motor and Motion control services: :ref:`Motion control <module_motion_control>`, :ref:`PWM <module_pwm>`, :ref:`ADC <module_adc>`, :ref:`Watchdog <module_watchdog>`, :ref:`Motorcontrol <lib_bldc_torque_control>`, :ref:`Shared Memory <module_shared_memory>`, :ref:`Posision Feedback <module_position_feedback>`
 
 8. Now it is time to start working from the EtherCAT master side, for that check our **EtherCAT Master applications quickstart guides**:
 

@@ -9,111 +9,222 @@
  */
 
 #include <ethercat_service.h>
-#include <cia402_wrapper.h>
+#include <pdo_handler.h>
+#include <reboot.h>
 
+#define DEBUG_CONSOLE_PRINT       0
+#define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
-/* Test application handling pdos from EtherCat */
-static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
+/* function declaration of later used functions */
+static void read_od_config(client interface i_coe_communication i_coe);
+
+/* Wait until the EtherCAT enters operation mode. At this point the master
+ * should have finished all client configuration. */
+static void sdo_configuration(client interface i_coe_communication i_coe)
 {
-	timer t;
+    timer t;
+    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
+    unsigned int time;
 
-	unsigned int delay = 100000;
-	unsigned int time = 0;
+    int sdo_configured = 0;
 
-	uint16_t status = 255;
-	int i = 0;
-	ctrl_proto_values_t InOut;
-	ctrl_proto_values_t InOutOld;
-	InOut = init_ctrl_proto();
-	t :> time;
+    while (sdo_configured == 0) {
+        select {
+            case i_coe.operational_state_change():
+                printstrln("Master requests OP mode - cyclic operation is about to start.");
+                break;
+        }
 
-	while(1)
-	{
-		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+        i_coe.configuration_done();
+        sdo_configured = 1;
 
-		i++;
-		if(i >= 999) {
-			i = 100;
+        t when timerafter(time+delay) :> time;
+    }
+
+    /* comment in the read_od_config() function to print the object values */
+//    read_od_config(i_coe);
+    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
+
+    /* clear the notification before proceeding the operation */
+}
+
+/* Test application handling pdos from EtherCat */
+static void pdo_service(client interface i_coe_communication i_coe, client interface i_pdo_communication i_pdo)
+{
+    timer t;
+    unsigned char device_in_opstate = 0;
+
+    unsigned int delay = 100000;
+    unsigned int time = 0;
+    unsigned int analog_value = 0;
+
+    pdo_handler_values_t InOut = {0};
+    pdo_handler_values_t InOutOld = {0};
+    t :> time;
+
+    sdo_configuration(i_coe);
+    device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
+
+    printstrln("Starting PDO protocol");
+    while(1)
+    {
+        select {
+            case i_coe.operational_state_change():
+                device_in_opstate = i_coe.in_op_state();
+                if (device_in_opstate) {
+                    printstrln("Device in opmode, \\o/");
+                } else {
+                    printstrln("Device not in opmode, sigh");
                 }
+                break;
 
-		InOut.position_actual = i;
-		InOut.torque_actual = i;
-		InOut.velocity_actual = i;
-		InOut.status_word = status;
-		InOut.operation_mode_display = InOut.operation_mode;
+            default: /* don't do a blocking wait */
+                break;
+        }
 
+        if (device_in_opstate == 0) {
+            t when timerafter(time+delay) :> time;
+            continue;
+        }
 
-		if(InOutOld.control_word != InOut.control_word)
-		{
-			printstr("\nMotor: ");
-			printintln(InOut.control_word);
-		}
+        pdo_handler(i_pdo, InOut);
 
-		if(InOutOld.operation_mode != InOut.operation_mode )
-		{
-			printstr("\nOperation mode: ");
-			printintln(InOut.operation_mode);
-		}
+        /* Mirror incomimng value to the output */
+        InOut.position_value  = InOut.target_position;
+        InOut.torque_value    = InOut.target_torque;
+        InOut.velocity_value  = InOut.target_velocity;
+        InOut.statusword      = InOut.controlword;
+        InOut.op_mode_display = InOut.op_mode;
 
-		if(InOutOld.target_position != InOut.target_position)
-		{
-			printstr("\nPosition: ");
-			printintln(InOut.target_position);
-		}
+        InOut.tuning_status            = InOut.tuning_command;
+        InOut.user_miso                = InOut.user_mosi;
+        InOut.secondary_position_value = InOut.offset_torque;
+        InOut.secondary_velocity_value = ~InOut.offset_torque;
 
-		if(InOutOld.target_velocity != InOut.target_velocity)
-		{
-			printstr("\nSpeed: ");
-			printintln(InOut.target_velocity);
-		}
+        /* mirror digital inputs */
+        InOut.digital_input1 = InOut.digital_output1;
+        InOut.digital_input2 = InOut.digital_output2;
+        InOut.digital_input3 = InOut.digital_output3;
+        InOut.digital_input4 = InOut.digital_output4;
 
-		if(InOutOld.target_torque != InOut.target_torque )
-		{
-			printstr("\nTorque: ");
-			printintln(InOut.target_torque);
-		}
-	   InOutOld.control_word 	= InOut.control_word;
-	   InOutOld.target_position = InOut.target_position;
-	   InOutOld.target_velocity = InOut.target_velocity;
-	   InOutOld.target_torque = InOut.target_torque;
-	   InOutOld.operation_mode = InOut.operation_mode;
+        /* increment analog values */
+        InOut.analog_input1 = analog_value + 1000;
+        InOut.analog_input2 = analog_value + 2000;
+        InOut.analog_input3 = analog_value + 3000;
+        InOut.analog_input4 = analog_value + 4000;
 
-	   t when timerafter(time+delay) :> time;
+        analog_value = analog_value >= 1000 ? 0 : analog_value + 1;
 
-	}
+#if DEBUG_CONSOLE_PRINT == 1
+        /*
+         * Print updated values to the console
+         */
+        if(InOutOld.controlword != InOut.controlword)
+        {
+            printstr("\nMotor: ");
+            printintln(InOut.controlword);
+        }
+
+        if(InOutOld.op_mode != InOut.op_mode )
+        {
+            printstr("\nOperation mode: ");
+            printintln(InOut.op_mode);
+        }
+
+        if(InOutOld.target_position != InOut.target_position)
+        {
+            printstr("\nPosition: ");
+            printintln(InOut.target_position);
+        }
+
+        if(InOutOld.target_velocity != InOut.target_velocity)
+        {
+            printstr("\nSpeed: ");
+            printintln(InOut.target_velocity);
+        }
+
+        if(InOutOld.target_torque != InOut.target_torque )
+        {
+            printstr("\nTorque: ");
+            printintln(InOut.target_torque);
+        }
+
+        if (InOutOld.tuning_command != InOut.tuning_command)
+        {
+            printstr("Tuning Status Data: ");
+            printhexln(InOut.tuning_status);
+        }
+
+        if (InOutOld.digital_output1 != InOut.digital_output1) {
+            printstr("Digital output 1 = ");
+            printintln(InOut.digital_output1);
+        }
+
+        if (InOutOld.digital_output2 != InOut.digital_output2) {
+            printstr("Digital output 2 = ");
+            printintln(InOut.digital_output2);
+        }
+
+        if (InOutOld.digital_output3 != InOut.digital_output3) {
+            printstr("Digital output 3 = ");
+            printintln(InOut.digital_output3);
+        }
+
+        if (InOutOld.digital_output4 != InOut.digital_output4) {
+            printstr("Digital output 4 = ");
+            printintln(InOut.digital_output4);
+        }
+#endif
+
+        /*
+         *  Update the local stored structure to recognize value changes
+         */
+        InOutOld.controlword     = InOut.controlword;
+        InOutOld.target_position = InOut.target_position;
+        InOutOld.target_velocity = InOut.target_velocity;
+        InOutOld.target_torque   = InOut.target_torque;
+        InOutOld.op_mode         = InOut.op_mode;
+        InOutOld.tuning_command  = InOut.tuning_command;
+        InOutOld.user_mosi       = InOut.user_mosi;
+        InOutOld.offset_torque   = InOut.offset_torque;
+        InOutOld.digital_output1 = InOut.digital_output1;
+        InOutOld.digital_output2 = InOut.digital_output2;
+        InOutOld.digital_output3 = InOut.digital_output3;
+        InOutOld.digital_output4 = InOut.digital_output4;
+
+        t when timerafter(time+delay) :> time;
+    }
 
 }
 
+int main(void) {
+    /* EtherCat Communication channels */
+    interface i_coe_communication i_coe;
+    interface i_foe_communication i_foe;
+    interface i_pdo_communication i_pdo;
+    interface EtherCATRebootInterface i_ecat_reboot;
 
-int main(void)
-{
-	chan coe_in;  	 	// CAN from module_ethercat to consumer
-	chan coe_out;  		// CAN from consumer to module_ethercat
-	chan eoe_in;   		// Ethernet from module_ethercat to consumer
-	chan eoe_out;  		// Ethernet from consumer to module_ethercat
-	chan eoe_sig;
-	chan foe_in;   		// File from module_ethercat to consumer
-	chan foe_out;  		// File from consumer to module_ethercat
-	chan pdo_in;
-	chan pdo_out;
+    par
+    {
+        /* EtherCAT Communication Handler Loop */
+        on tile[COM_TILE] :
+        {
+            par {
+                ethercat_service(i_ecat_reboot, i_coe, null,
+                        i_foe, i_pdo, ethercat_ports);
+                reboot_service_ethercat(i_ecat_reboot);
+            }
+        }
 
-	par
-	{
-		/* EtherCAT Communication Handler Loop */
-		on tile[COM_TILE] : {
-			ethercat_service(coe_out, coe_in, eoe_out, eoe_in, eoe_sig,
-			                foe_out, foe_in, pdo_out, pdo_in, ethercat_ports);
-		}
+        /* Test application handling pdos from EtherCat */
+        on tile[APP_TILE] :
+        {
+            pdo_service(i_coe, i_pdo);
+        }
+    }
 
-		/* Test application handling pdos from EtherCat */
-		on tile[APP_TILE] :
-		{
-			pdo_handler(coe_out, pdo_out, pdo_in);
-		}
-	}
-
-	return 0;
+    return 0;
 }
 

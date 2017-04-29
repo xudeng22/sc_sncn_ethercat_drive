@@ -4,150 +4,578 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <cia402_error_codes.h>
 #include <ethercat_drive_service.h>
 #include <refclk.h>
 #include <cia402_wrapper.h>
+#include <pdo_handler.h>
 #include <statemachine.h>
 #include <state_modes.h>
 #include <profile.h>
+#include <config_manager.h>
+#include <motion_control_service.h>
+#include <position_feedback_service.h>
+#include <profile_control.h>
+#include <xscope.h>
+#include <tuning.h>
 
-{int, int} static inline get_position_absolute(int sensor_select, interface HallInterface client ?i_hall,
-                                                interface QEIInterface client ?i_qei, interface BISSInterface client ?i_biss)
+/* FIXME move to some stdlib */
+#define ABSOLUTE_VALUE(x)   (x < 0 ? -x : x)
+
+const char * state_names[] = {"u shouldn't see me",
+"S_NOT_READY_TO_SWITCH_ON",
+"S_SWITCH_ON_DISABLED",
+"S_READY_TO_SWITCH_ON",
+"S_SWITCH_ON",
+"S_OPERATION_ENABLE",
+"S_QUICK_STOP_ACTIVE",
+"S_FAULT"
+};
+
+enum eDirection {
+    DIRECTION_NEUTRAL = 0
+    ,DIRECTION_CLK    = 1
+    ,DIRECTION_CCLK   = -1
+};
+
+#define MAX_TIME_TO_WAIT_SDO      100000
+
+static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error, SensorError commutation_sensor_error, MotionControlError motion_control_error)
 {
-    int actual_position;
-    int direction;
+    int error_code = 0;
 
-    if (sensor_select == HALL_SENSOR) {
-        actual_position = i_hall.get_hall_position_absolute();//get_hall_position_absolute(c_hall);
-        direction = i_hall.get_hall_direction();
-    } else if (sensor_select == QEI_SENSOR) { /* QEI */
-        actual_position = i_qei.get_qei_position_absolute();//get_qei_position_absolute(c_qei);
-        direction = i_qei.get_qei_direction();
-    } else if (sensor_select == BISS_SENSOR) { /* BISS */
-        { actual_position, void, void } = i_biss.get_biss_position();
-        if (i_biss.get_biss_velocity() >= 0)
-            direction = 1;
-        else
-            direction = -1;
+    switch (motorcontrol_fault) {
+    case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
+        error_code = ERROR_CODE_PHASE_FAILURE_L1;
+        break;
+    case UNDER_VOLTAGE_NO_1:
+        error_code = ERROR_CODE_DC_LINK_UNDER_VOLTAGE;
+        break;
+    case OVER_VOLTAGE_NO_1:
+        error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
+        break;
+    case EXCESS_TEMPERATURE_DRIVE:
+        error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
+        break;
+    case NO_FAULT:
+        /* if there is no motorcontrol fault check sensor fault
+         * it means that motorcontrol faults take precedence over sensor faults
+         * */
+        if (commutation_sensor_error != SENSOR_NO_ERROR || motion_sensor_error != SENSOR_NO_ERROR) {
+            error_code = ERROR_CODE_SENSOR;
+        } else {
+            /* if there is no sensor fault check motion control fault */
+            switch(motion_control_error) {
+            case MOTION_CONTROL_BRAKE_NOT_RELEASED:
+                error_code = ERROR_CODE_MOTOR_BLOCKED;
+                break;
+            case MOTION_CONTROL_NO_ERROR:
+                break;
+            default:
+                error_code = ERROR_CODE_CONTROL;
+                break;
+            }
+        }
+        break;
+    default: /* a fault occured but could not be specified further */
+        error_code = ERROR_CODE_CONTROL;
+        break;
     }
 
-    return {actual_position, direction};
+    return error_code;
+}
+
+static void sdo_wait_first_config(client interface i_coe_communication i_coe)
+{
+    select {
+    case i_coe.operational_state_change():
+        //printstrln("Master requests OP mode - cyclic operation is about to start.");
+        break;
+    }
+
+    /* comment in the read_od_config() function to print the object values */
+    //read_od_config(i_coe);
+    printstrln("start cyclic operation");
+
+    /* clear the notification before proceeding the operation */
+    i_coe.configuration_done();
+}
+
+static int quick_stop_perform(int opmode, int &step)
+{
+    int target = 0;
+
+    switch (opmode) {
+    case OPMODE_CSP:
+        target = quick_stop_position_profile_generate(step);
+        break;
+
+    case OPMODE_CSV:
+        target = quick_stop_velocity_profile_generate(step);
+        break;
+
+    case OPMODE_CST:
+        /* We can use the same linear profile for torque because it's actually independant on units */
+        target = quick_stop_velocity_profile_generate(step);
+        break;
+    }
+
+    step++;
+
+    return target;
+}
+
+static int quick_stop_init(int opmode,
+        int actual_position,
+        int actual_velocity,
+        int actual_torque,
+        int sensor_resolution,
+        int quick_stop_deceleration)
+{
+    int steps = 0;
+
+    switch(opmode) {
+    case OPMODE_CSP:
+        steps = init_quick_stop_position_profile(
+                (actual_velocity * sensor_resolution) / 60,
+                actual_position,
+                (quick_stop_deceleration * sensor_resolution) / 60);
+        break;
+    case OPMODE_CSV:
+        steps = init_quick_stop_velocity_profile(actual_velocity, quick_stop_deceleration);
+        break;
+    case OPMODE_CST:
+        // we get the time needed to stop using the velocity quick stop
+        steps = init_quick_stop_velocity_profile(actual_velocity, quick_stop_deceleration);
+        // we set the torque deceleration to decrease to 0 with the same duration
+        if (steps != 0) {
+            if (actual_torque < 0) {
+                quick_stop_deceleration = (1000*(-actual_torque))/steps;
+            } else {
+                quick_stop_deceleration = (1000*actual_torque)/steps;
+            }
+            // we use the same linear profile for torque because it's actually independant on units
+            steps = init_quick_stop_velocity_profile(actual_torque, quick_stop_deceleration);
+        }
+        break;
+    default:
+        steps = 0;
+        break;
+    }
+
+    //limit steps
+    if (actual_velocity < 0) {
+        actual_velocity = -actual_velocity;
+    }
+    int steps_limit = (1000*actual_velocity)/quick_stop_deceleration + 1;
+    if (steps > steps_limit) {
+        steps = steps_limit;
+    }
+
+    return steps;
+}
+
+static void inline update_configuration(
+        client interface i_coe_communication           i_coe,
+        client interface TorqueControlInterface         i_torque_control,
+        client interface MotionControlInterface i_motion_control,
+        client interface PositionFeedbackInterface i_pos_feedback_1,
+        client interface PositionFeedbackInterface ?i_pos_feedback_2,
+        MotionControlConfig  &position_config,
+        PositionFeedbackConfig    &position_feedback_config_1,
+        PositionFeedbackConfig    &position_feedback_config_2,
+        MotorcontrolConfig        &motorcontrol_config,
+        ProfilerConfig            &profiler_config,
+        int &sensor_commutation, int &sensor_motion_control,
+        int &limit_switch_type,
+        int &sensor_resolution,
+        uint8_t &polarity,
+        int &nominal_speed,
+        int &homing_method,
+        int &quick_stop_deceleration)
+{
+
+    // set position feedback services parameters
+    int restart = 0; //we need to restart position feedback service(s) when sensor type is changed
+    int number_of_feedbacks_ports = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
+    int feedback_port_index = 1;
+    restart += cm_sync_config_position_feedback(i_coe, i_pos_feedback_1, position_feedback_config_1, 1,
+            sensor_commutation, sensor_motion_control,
+            number_of_feedbacks_ports, feedback_port_index);
+    if (!isnull(i_pos_feedback_2)) {
+        restart += cm_sync_config_position_feedback(i_coe, i_pos_feedback_2, position_feedback_config_2, 2,
+                sensor_commutation, sensor_motion_control,
+                number_of_feedbacks_ports, feedback_port_index);
+        if (restart)
+            i_pos_feedback_2.exit();
+    }
+    if (restart) {
+        i_pos_feedback_1.exit();
+    }
+
+    // set sensor resolution from the resolution of the sensor used for motion control (used by profiler)
+    if (sensor_motion_control == 2) {
+        sensor_resolution = position_feedback_config_2.resolution;
+    } else {
+        sensor_resolution = position_feedback_config_1.resolution;
+    }
+
+    // set commutation sensor type (used by motorcontrol service to detect if hall is used)
+    int sensor_commutation_type = 0;
+    if (sensor_commutation == 2) {
+        sensor_commutation_type = position_feedback_config_2.sensor_type;
+    } else {
+        sensor_commutation_type = position_feedback_config_1.sensor_type;
+    }
+
+    cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
+    int max_torque = cm_sync_config_motor_control(i_coe, i_torque_control, motorcontrol_config, sensor_commutation, sensor_commutation_type);
+    cm_sync_config_pos_velocity_control(i_coe, i_motion_control, position_config, sensor_resolution, max_torque);
+
+    //FIXME: as the hall_states params are still in the motorcontrol config they are set in cm_sync_config_motor_control
+//    cm_sync_config_hall_states(i_coe, i_pos_feedback_1, i_torque_control, position_feedback_config_1, motorcontrol_config, 1);
+
+    /* Update values with current configuration */
+    profiler_config.ticks_per_turn = sensor_resolution;
+    nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
+    limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
+    homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
+    polarity          = i_coe.get_object_value(DICT_POLARITY, 0);
+    quick_stop_deceleration = i_coe.get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
+}
+
+static void motioncontrol_enable(int opmode, int position_control_strategy,
+                                 client interface MotionControlInterface i_motion_control)
+{
+    switch (opmode) {
+    case OPMODE_CSP:
+        i_motion_control.enable_position_ctrl(position_control_strategy);
+        break;
+
+    case OPMODE_CSV:
+        i_motion_control.enable_velocity_ctrl();
+        break;
+
+    case OPMODE_CST:
+        i_motion_control.enable_torque_ctrl();
+        break;
+
+    default:
+        break;
+    }
+}
+
+static void debug_print_state(DriveState_t state)
+{
+    static DriveState_t oldstate = 0;
+
+    if (state == oldstate)
+        return;
+
+    switch (state) {
+    case S_NOT_READY_TO_SWITCH_ON:
+        printstrln("S_NOT_READY_TO_SWITCH_ON");
+        break;
+    case S_SWITCH_ON_DISABLED:
+        printstrln("S_SWITCH_ON_DISABLED");
+        break;
+    case S_READY_TO_SWITCH_ON:
+        printstrln("S_READY_TO_SWITCH_ON");
+        break;
+    case S_SWITCH_ON:
+        printstrln("S_SWITCH_ON");
+        break;
+    case S_OPERATION_ENABLE:
+        printstrln("S_OPERATION_ENABLE");
+        break;
+    case S_QUICK_STOP_ACTIVE:
+        printstrln("S_QUICK_STOP_ACTIVE");
+        break;
+    case S_FAULT_REACTION_ACTIVE:
+        printstrln("S_FAULT_REACTION_ACTIVE");
+        break;
+    case S_FAULT:
+        printstrln("S_FAULT");
+        break;
+    default:
+        printstrln("Never happen State.");
+        break;
+    }
+
+    oldstate = state;
 }
 
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
 
+#define UPDATE_POSITION_GAIN    0x0000000f
+#define UPDATE_VELOCITY_GAIN    0x000000f0
+#define UPDATE_TORQUE_GAIN      0x00000f00
+
+
+/* NOTE:
+ * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
+ * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
+ */
 void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            chanend pdo_out, chanend pdo_in, chanend coe_out,
-                            interface MotorcontrolInterface client i_commutation,
-                            interface HallInterface client ?i_hall,
-                            interface QEIInterface client ?i_qei,
-                            interface BISSInterface client ?i_biss,
-                            interface GPIOInterface client ?i_gpio,
-                            interface TorqueControlInterface client i_torque_control,
-                            interface VelocityControlInterface client i_velocity_control,
-                            interface PositionControlInterface client i_position_control)
+                            client interface i_pdo_communication i_pdo,
+                            client interface i_coe_communication i_coe,
+                            client interface TorqueControlInterface i_torque_control,
+                            client interface MotionControlInterface i_motion_control,
+                            client interface PositionFeedbackInterface i_position_feedback_1,
+                            client interface PositionFeedbackInterface ?i_position_feedback_2)
 {
-    int i = 0;
-    int mode = 40;
-    int steps = 0;
 
-    int target_torque = 0;
-    int actual_torque = 0;
-    int target_velocity = 0;
-    int actual_velocity = 0;
+    //int target_torque = 0; /* used for CST */
+    //int target_velocity = 0; /* used for CSV */
     int target_position = 0;
+    int target_velocity = 0;
+    int target_torque   = 0;
+    int quick_stop_deceleration = 0;
+    int qs_target = 0;
+    int qs_start_velocity = 0;
+    int quick_stop_steps = 0;
+    int quick_stop_step = 0;
+    int actual_torque = 0;
+    int actual_velocity = 0;
     int actual_position = 0;
+    int follow_error = 0;
+    //int target_position_progress = 0; /* is current target_position necessary to remember??? */
 
-    int direction = 0;
-
-    int position_ramp = 0;
-    int prev_position = 0;
-
-    int velocity_ramp = 0;
-    int prev_velocity = 0;
-
-    int torque_ramp = 0;
-    int prev_torque = 0;
+    enum eDirection direction = DIRECTION_NEUTRAL;
 
     int nominal_speed;
     timer t;
 
-    int init = 0;
-    int op_set_flag = 0;
-    int op_mode = 0;
+    int opmode = OPMODE_NONE;
+    int opmode_request = OPMODE_NONE;
 
-    ControlConfig position_ctrl_params;
-    ControlConfig torque_ctrl_params;
-    ControlConfig velocity_ctrl_params;
+    MotionControlConfig motion_control_config = i_motion_control.get_motion_control_config();
 
-    QEIConfig qei_params;
-    HallConfig hall_config;
-    BISSConfig biss_config;
+    pdo_handler_values_t InOut = { 0 };
 
-    MotorcontrolConfig commutation_params;
-    ctrl_proto_values_t InOut;
-
-    int setup_loop_flag = 0;
-    int sense;
-
-    int ack = 0;
-    int quick_active = 0;
-    int mode_quick_flag = 0;
-    int shutdown_ack = 0;
-    int sensor_select = -1;
+    int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
+    int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
 
     int communication_active = 0;
     unsigned int c_time;
     int comm_inactive_flag = 0;
     int inactive_timeout_flag = 0;
 
-    unsigned int time;
-    int state;
-    int statusword;
-    int controlword;
+    /* tuning specific variables */
+    uint32_t tuning_command = 0;
+    uint32_t tuning_status = 0;
+    uint32_t user_miso = 0;
+    TuningModeState tuning_mode_state = {0};
 
-    int status=0;
-    int tmp=0;
+    unsigned int time;
+    enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
+    //enum e_States state_old = state; /* necessary for something??? */
+
+    uint16_t statusword = update_statusword(0, state, 0, 0, 0);
+    int controlword = 0;
 
     //int torque_offstate = 0;
-    int mode_selected = 0;
-    check_list checklist;
+    check_list checklist = init_checklist();
+    unsigned int fault_reset_wait_time;
 
-    int home_velocity = 0;
-    int home_acceleration = 0;
-
-    int limit_switch = -1;      // positive negative limit switches
-    int reset_counter = 0;
-
-    int home_state = 0;
-    int safety_state = 0;
-    int capture_position = 0;
-    int current_position = 0;
-    int home_offset = 0;
-    int end_state = 0;
-    int ctrl_state;
     int limit_switch_type;
     int homing_method;
-    int polarity = 1;
-    int homing_done = 0;
-    state       = init_state(); // init state
-    checklist   = init_checklist();
-    InOut       = init_ctrl_proto();
 
-    if (!isnull(i_hall))
-        hall_config = i_hall.get_hall_config();
-    if (!isnull(i_qei))
-        qei_params = i_qei.get_qei_config();
-    if (!isnull(i_biss))
-        biss_config = i_biss.get_biss_config();
-    velocity_ctrl_params = i_velocity_control.get_velocity_control_config();
+    int sensor_resolution = 0;
+    uint8_t polarity = 0;
+
+    PositionFeedbackConfig position_feedback_config_1 = i_position_feedback_1.get_config();
+    PositionFeedbackConfig position_feedback_config_2;
+
+    MotorcontrolConfig motorcontrol_config = i_torque_control.get_config();
+    UpstreamControlData   send_to_master = { 0 };
+    DownstreamControlData send_to_control = { 0 };
+
+    /* read tile frequency
+     * this needs to be after the first call to i_torque_control
+     * so when we read it the frequency has already been changed by the torque controller
+     */
+    unsigned int tile_usec = USEC_STD;
+    unsigned ctrlReadData;
+    read_sswitch_reg(get_local_tile_id(), 8, ctrlReadData);
+    if(ctrlReadData == 1) {
+        tile_usec = USEC_FAST;
+    }
+
+    /*
+     * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
+     */
+    cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
+    if (!isnull(i_position_feedback_2)) {
+        cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
+    }
+    cm_default_config_profiler(i_coe, profiler_config);
+    cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
+    cm_default_config_pos_velocity_control(i_coe, i_motion_control);
+    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+
+    /* check if the slave enters the operation mode. If this happens we assume the configuration values are
+     * written into the object dictionary. So we read the object dictionary values and continue operation.
+     *
+     * This should be done before we configure anything.
+     */
+    sdo_wait_first_config(i_coe);
+
+    /* if we reach this point the EtherCAT service is considered in OPMODE */
+    int drive_in_opstate = 1;
+
+    /* start operation */
+    int read_configuration = 1;
 
     t :> time;
     while (1) {
 //#pragma xta endpoint "ecatloop"
+        /* FIXME reduce code duplication with above init sequence */
+        /* Check if we reenter the operation mode. If so, update the configuration please. */
+        select {
+            case i_coe.operational_state_change():
+                //printstrln("Master requests OP mode - cyclic operation is about to start.");
+                drive_in_opstate = i_coe.in_op_state();
+                if (drive_in_opstate) {
+                    read_configuration = 1;
+                }
+                break;
+            default:
+                break;
+        }
+
+        /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
+        if (read_configuration) {
+            update_configuration(i_coe, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
+                    motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
+                    sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
+                    quick_stop_deceleration
+                    );
+            tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
+                    position_feedback_config_1, position_feedback_config_2, sensor_commutation);
+            read_configuration = 0;
+            i_coe.configuration_done();
+        }
+
+        /*
+         *  local state variables
+         */
+        controlword     = pdo_get_controlword(InOut);
+        opmode_request  = pdo_get_op_mode(InOut);
+        target_position = pdo_get_target_position(InOut);
+        target_velocity = pdo_get_target_velocity(InOut);
+        target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
+        send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
+
+        /* tuning pdos */
+        tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
+        tuning_mode_state.value = pdo_get_user_mosi(InOut); // value of tuning command
+
+        /*
+        printint(state);
+        printstr(" ");
+        printhexln(statusword);
+        */
+
+
+        if (quick_stop_steps == 0) {
+            send_to_control.position_cmd = target_position;
+            send_to_control.velocity_cmd = target_velocity;
+            send_to_control.torque_cmd   = target_torque;
+        } else {
+            switch (opmode) {
+            case OPMODE_CSP:
+                // we update the position command only if the qs target is in the right direction
+                if ((qs_start_velocity > 0 && qs_target > send_to_control.position_cmd) || (qs_start_velocity < 0 && qs_target < send_to_control.position_cmd)) {
+                    send_to_control.position_cmd = qs_target;
+                }
+                break;
+
+            case OPMODE_CSV:
+                // we update the velocity command only if decreasing
+                if ((send_to_control.velocity_cmd > 0 && qs_target < send_to_control.velocity_cmd) || (send_to_control.velocity_cmd < 0 && qs_target > send_to_control.velocity_cmd)) {
+                    send_to_control.velocity_cmd = qs_target;
+                }
+                break;
+
+            case OPMODE_CST:
+                // we update the torque command only if decreasing
+                if ((send_to_control.torque_cmd > 0 && qs_target < send_to_control.torque_cmd) || (send_to_control.torque_cmd < 0 && qs_target > send_to_control.torque_cmd)) {
+                    send_to_control.torque_cmd = qs_target;
+                }
+                break;
+
+            /* FIXME what to do for the default? */
+            }
+        }
+
+        send_to_master = i_motion_control.update_control_data(send_to_control);
+
+        /* i_motion_control.get_all_feedbacks; */
+        actual_velocity = send_to_master.velocity; //i_motion_control.get_velocity();
+        actual_position = send_to_master.position; //i_motion_control.get_position();
+        actual_torque   = (send_to_master.computed_torque*1000) / motorcontrol_config.rated_torque; //torque sent to master in 1/1000 of rated torque
+        FaultCode motorcontrol_fault = send_to_master.error_status;
+        SensorError motion_sensor_error = send_to_master.last_sensor_error;
+        SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
+        MotionControlError motion_control_error = send_to_master.motion_control_error;
+
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, actual_position);
+//        xscope_int(FAMOUS_FAULT, motorcontrol_fault * 1000);
+
+        /*
+         * Check states of the motor drive, sensor drive and control servers
+         * Fault signaling to the master in the manufacturer specifc bit in the the statusword
+         */
+        if (motorcontrol_fault != NO_FAULT ||
+                motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR ||
+                motion_control_error != MOTION_CONTROL_NO_ERROR)
+        {
+            update_checklist(checklist, opmode, 1);
+            if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
+                SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
+            } else if (motorcontrol_fault == UNDER_VOLTAGE_NO_1) {
+                SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
+            } else if (motorcontrol_fault == OVER_VOLTAGE_NO_1) {
+                SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
+            } else if (motorcontrol_fault == 99/*OVER_TEMPERATURE*/) {
+                SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
+            }
+
+            /* Write error code to object dictionary */
+            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
+            i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
+        } else {
+            update_checklist(checklist, opmode, 0); //no error
+        }
+
+        follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
+
+        direction = (actual_velocity < 0) ? DIRECTION_CCLK : DIRECTION_CLK;
+
+        /*
+         *  update values to send
+         */
+        pdo_set_statusword(statusword, InOut);
+        pdo_set_op_mode_display(opmode, InOut);
+        pdo_set_velocity_value(actual_velocity, InOut);
+        pdo_set_torque_value(actual_torque, InOut );
+        pdo_set_position_value(actual_position, InOut);
+        pdo_set_secondary_position_value(send_to_master.secondary_position, InOut);
+        pdo_set_secondary_velocity_value(send_to_master.secondary_velocity, InOut);
+        // FIXME this is one of the analog inputs?
+        pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
+        pdo_set_tuning_status(tuning_status, InOut);
+        pdo_set_user_miso(user_miso, InOut);
+        pdo_set_timestamp(send_to_master.sensor_timestamp, InOut);
+
+//        xscope_int(ACTUAL_VELOCITY, actual_velocity);
+//        xscope_int(ACTUAL_POSITION, actual_position);
+
         /* Read/Write packets to ethercat Master application */
-        communication_active = ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
+        communication_active = pdo_handler(i_pdo, InOut);
 
         if (communication_active == 0) {
             if (comm_inactive_flag == 0) {
@@ -156,980 +584,286 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             } else if (comm_inactive_flag == 1) {
                 unsigned ts_comm_inactive;
                 t :> ts_comm_inactive;
-                if (ts_comm_inactive - c_time > 1*SEC_STD) {
-                    //printstrln("comm inactive timeout");
-                    t :> c_time;
-                    t when timerafter(c_time + 2*SEC_STD) :> c_time;
+                if (ts_comm_inactive - c_time > 1000000*tile_usec) {
+                    state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
                     inactive_timeout_flag = 1;
                 }
             }
-        } else if (communication_active >= 1) {
+        } else if (communication_active != 0 && drive_in_opstate != 1) {
+            state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
+            inactive_timeout_flag = 1;
+        } else {
             comm_inactive_flag = 0;
-            inactive_timeout_flag = 0;
-        }
-
-        /*********************************************************************************
-         * If communication is inactive, trigger quick stop mode if motor is in motion 
-         *********************************************************************************/
-        if (inactive_timeout_flag == 1) {
-
-            /* quick stop for torque mode */
-            if (op_mode == CST || op_mode == TQ)
-            {
-                actual_torque = i_torque_control.get_torque();
-                steps = init_linear_profile(0, actual_torque, profiler_config.max_current_slope,
-                                            profiler_config.max_current_slope);
-                t :> c_time;
-                for (int i=0; i<steps; i++) {
-                    target_torque = linear_profile_generate(i);
-                    i_torque_control.set_torque(target_torque);
-                    actual_torque = i_torque_control.get_torque();
-                    send_actual_torque(actual_torque * profiler_config.polarity, InOut);
-
-                    t when timerafter(c_time + MSEC_STD) :> c_time;
-                }
-            }
-
-            /* quick stop for velocity mode */
-            if (op_mode == CSV || op_mode == PV) {
-                actual_velocity = i_velocity_control.get_velocity();
-
-                int deceleration;
-                int max_velocity;
-                int polarity;
-                if (op_mode == CSV) {
-                    deceleration = profiler_config.max_acceleration;
-                    max_velocity = profiler_config.max_velocity; //cyclic_sync_velocity_config.max_motor_speed;
-                    polarity = profiler_config.polarity; //cyclic_sync_velocity_config.polarity;
-                } else {        /* op_mode == PV */
-                    deceleration = profiler_config.max_deceleration;//profile_velocity_config.quick_stop_deceleration;
-                    max_velocity = profiler_config.max_velocity;//profile_velocity_config.max_profile_velocity;
-                    polarity = profiler_config.polarity; //profile_velocity_config.polarity;
-                }
-                steps = init_quick_stop_velocity_profile(actual_velocity, deceleration);
-
-                t :> c_time;
-                for (int i=0; i<steps; i++) {
-                    target_velocity = quick_stop_velocity_profile_generate(i);
-
-                    i_velocity_control.set_velocity(max_speed_limit(target_velocity, max_velocity));
-
-                    actual_velocity = i_velocity_control.get_velocity();
-                    send_actual_velocity(actual_velocity * polarity, InOut);
-
-                    t when timerafter(c_time + MSEC_STD) :> c_time;
-                }
-            }
-
-            /* quick stop for position mode */
-            else if (op_mode == CSP || op_mode == PP) {
-                if (sensor_select == HALL_SENSOR && !isnull(i_hall))
-                    actual_velocity = i_hall.get_hall_velocity();
-                else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                    actual_velocity = i_biss.get_biss_velocity();
-                else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                    actual_velocity = i_qei.get_qei_velocity();
-                else if (!isnull(i_hall))
-                    actual_velocity = i_hall.get_hall_velocity();
-                else if (!isnull(i_biss))
-                    actual_velocity = i_biss.get_biss_velocity();
-                else if (!isnull(i_qei))
-                    actual_velocity = i_qei.get_qei_velocity();
-                actual_position = i_position_control.get_position();
-
-                int deceleration;
-                int max_position_limit;
-                int min_position_limit;
-                //int polarity;
-                if (op_mode == CSP) {
-                    deceleration = profiler_config.max_acceleration;
-                    max_position_limit = profiler_config.max_position;
-                    min_position_limit = profiler_config.min_position;
-                    //polarity = cyclic_sync_position_config.velocity_config.polarity;
-                } else {    /* op_mode == PP */
-                    deceleration = profiler_config.max_deceleration;
-                    max_position_limit = profiler_config.max_position;//profile_position_config.software_position_limit_max;
-                    min_position_limit = profiler_config.min_position;//profile_position_config.software_position_limit_min;
-                    //polarity = profile_position_config.velocity_config.polarity;
-                }
-
-                if (actual_velocity>=500 || actual_velocity<=-500) {
-                    if (actual_velocity < 0) {
-                        actual_velocity = -actual_velocity;
-                    }
-
-                    int sensor_ticks;
-                    if (sensor_select == HALL_SENSOR) {
-                        sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-                    } else if (sensor_select == QEI_SENSOR){    /* QEI */
-                        sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                    } else if (sensor_select == BISS_SENSOR){    /* QEI */
-                        sensor_ticks = (1 << biss_config.singleturn_resolution);
-                    }
-
-                    steps = init_quick_stop_position_profile(
-                        (actual_velocity * sensor_ticks) / 60,
-                        actual_position,
-                        (deceleration * sensor_ticks) / 60);
-
-                    mode_selected = 3; // non interruptible mode
-                    mode_quick_flag = 0;
-                }
-
-                {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
-
-                t :> c_time;
-                for (int i=0; i<steps; i++) {
-                    target_position = quick_stop_position_profile_generate(i, sense);
-                    i_position_control.set_position(position_limit( target_position, max_position_limit,
-                                                                    min_position_limit));
-
-                    //send_actual_position(actual_position * polarity, InOut);
-                    t when timerafter(c_time + MSEC_STD) :> c_time;
-                }
-            }
-            mode_selected = 0;
-            setup_loop_flag = 0;
-            op_set_flag = 0;
-            op_mode = 256;      /* FIXME: why 256? */
         }
 
 
-        /*********************************************************************************
-         * EtherCAT communication is Active
-         *********************************************************************************/
-        if (comm_inactive_flag == 0) {
-            /* Read controlword from the received from EtherCAT Master application */
-            controlword = InOut.control_word;
+        /*
+         * new, perform actions according to state
+         */
+//        debug_print_state(state);
 
-            /* Check states of the motor drive, sensor drive and control servers */
-            update_checklist(checklist, mode, i_commutation, i_hall, i_qei, i_biss, null,
-                             i_torque_control, i_velocity_control, i_position_control);
+        if (opmode == OPMODE_NONE) {
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            /* for safety considerations, if no opmode choosen, the brake should blocking. */
+            i_torque_control.set_brake_status(0);
 
-            /* Update state machine */
-            state = get_next_state(state, checklist, controlword);
+            //check and update opmode
+            opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
 
-            /* Update statusword sent to the EtherCAT Master Application */
-            statusword = update_statusword(statusword, state, ack, quick_active, shutdown_ack);
-            InOut.status_word = statusword;
+        } else if (opmode == OPMODE_CSP || opmode == OPMODE_CST || opmode == OPMODE_CSV) {
+            /* FIXME Put this into a separate CSP, CST, CSV function! */
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
 
-            if (setup_loop_flag == 0) {
-                if (controlword == 6) {
-                    coe_out <: CAN_GET_OBJECT;
-                    coe_out <: CAN_OBJ_ADR(0x60b0, 0);
-                    coe_out :> tmp;
-                    status = (unsigned char)(tmp&0xff);
-                    if (status == 0) {
-                        coe_out <: CAN_SET_OBJECT;
-                        coe_out <: CAN_OBJ_ADR(0x60b0, 0);
-                        status = 0xaf;
-                        coe_out <: (unsigned)status;
-                        coe_out :> tmp;
-                        if (tmp == status) {
-                            t :> c_time;
-                            t when timerafter(c_time + 500*MSEC_STD) :> c_time;
-                            InOut.operation_mode_display = 105;
+            /*
+             * Additionally used bits in statusword for...
+             *
+             * ...CSP:
+             * Bit 10: Reserved -> 0
+             * Bit 12: "Target Position Ignored"
+             *         -> 0 Target position ignored
+             *         -> 1 Target position shall be used as input to position control loop
+             * Bit 13: "Following Error"
+             *         -> 0 no error
+             *         -> 1 if target_position_value || position_offset is outside of following_error_window
+             *              around position_demand_value for longer than following_error_time_out
+             */
+            statusword = SET_BIT(statusword, SW_CSP_TARGET_POSITION_IGNORED);
+            statusword = CLEAR_BIT(statusword, SW_CSP_FOLLOWING_ERROR);
 
+            // FIXME make this function: continous_synchronous_operation(controlword, statusword, state, opmode, checklist, i_motion_control);
+            switch (state) {
+            case S_NOT_READY_TO_SWITCH_ON:
+                /* internal stuff, automatic transition (1) to next state */
+                state = get_next_state(state, checklist, 0, 0);
+                break;
+
+            case S_SWITCH_ON_DISABLED:
+                /* we allow opmode change in this state */
+                //check and update opmode
+                opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
+
+                /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
+                state = get_next_state(state, checklist, controlword, 0);
+                break;
+
+            case S_READY_TO_SWITCH_ON:
+                /* nothing special, transition form local (when?) or control device */
+                state = get_next_state(state, checklist, controlword, 0);
+                break;
+
+            case S_SWITCH_ON:
+                /* high power shall be switched on  */
+                state = get_next_state(state, checklist, controlword, 0);
+                if (state == S_OPERATION_ENABLE) {
+                    motioncontrol_enable(opmode, motion_control_config.position_control_strategy, i_motion_control);
+                }
+                break;
+
+            case S_OPERATION_ENABLE:
+                /* drive function shall be enabled and internal set-points are cleared */
+
+                /* check if state change occured */
+                state = get_next_state(state, checklist, controlword, 0);
+                if (state == S_SWITCH_ON || state == S_READY_TO_SWITCH_ON || state == S_SWITCH_ON_DISABLED) {
+                    i_motion_control.disable();
+                }
+
+                /* if quick stop is requested start immediately */
+                if (state == S_QUICK_STOP_ACTIVE) {
+                    qs_start_velocity = actual_velocity;
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, quick_stop_deceleration); // <- can be done in the calling command
+                    quick_stop_step = 0;
+                    qs_target = quick_stop_perform(opmode, quick_stop_step); // compute the fisrt step now
+                }
+                break;
+
+            case S_QUICK_STOP_ACTIVE:
+                /* quick stop function shall be started and running */
+                qs_target = quick_stop_perform(opmode, quick_stop_step);
+
+                if (quick_stop_step > quick_stop_steps) {
+                    i_motion_control.disable();
+                    state = get_next_state(state, checklist, 0, CTRL_QUICK_STOP_FINISHED);
+                    quick_stop_steps = 0;
+                }
+                break;
+
+            case S_FAULT_REACTION_ACTIVE:
+                /* a fault is detected, perform fault recovery actions like a quick_stop */
+                if (quick_stop_steps == 0) {
+                    quick_stop_steps = quick_stop_init(opmode, actual_position, actual_velocity, actual_torque, sensor_resolution, quick_stop_deceleration);
+                    quick_stop_step = 0;
+                }
+
+                qs_target= quick_stop_perform(opmode, quick_stop_step);
+
+                if (quick_stop_step > quick_stop_steps) {
+                    state = get_next_state(state, checklist, 0, CTRL_FAULT_REACTION_FINISHED);
+                    quick_stop_steps = 0;
+                    i_motion_control.disable();
+                }
+                break;
+
+            case S_FAULT:
+                /* Wait until fault reset from the control device appears.
+                 * When we receive the fault reset, start a timer
+                 * and send the fault reset commands.
+                 * The fault can only be reset after the end of the timer.
+                 * This is because the motorcontrol needs time before restarting.
+                 */
+                if (read_controlword_fault_reset(controlword) && checklist.fault_reset_wait == false) {
+                    //reset fault in motorcontrol
+                    if (motorcontrol_fault != NO_FAULT) {
+                        i_torque_control.reset_faults();
+                        checklist.fault_reset_wait = true;
+                    }
+                    //reset fault in position feedback
+                    if (motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
+                        if (!isnull(i_position_feedback_2)) {
+                            i_position_feedback_2.set_config(position_feedback_config_2);
                         }
-                    } else if (status == 0xaf) {
-                        InOut.operation_mode_display = 105;
+                        i_position_feedback_1.set_config(position_feedback_config_1);
+                        checklist.fault_reset_wait = true;
+                    }
+                    //reset fault in position feedback
+                    if (motion_control_error != MOTION_CONTROL_NO_ERROR) {
+                        i_motion_control.set_motion_control_config(motion_control_config);
+                    }
+                    //start timer
+                    fault_reset_wait_time = time + 1000000*tile_usec; //wait 1s before restarting the motorcontrol
+                } else if (checklist.fault_reset_wait == true) {
+                    //check if timer ended
+                    if (timeafter(time, fault_reset_wait_time)) {
+                        checklist.fault_reset_wait = false;
+                        /* recheck fault to see if it's realy removed */
+                        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
+                            update_checklist(checklist, opmode, 1);
+                        }
                     }
                 }
-                /* Read Motor Configuration sent from the EtherCAT Master Application */
-                if (controlword == 5) {
-                    update_commutation_param_ecat(commutation_params, coe_out);
-                    sensor_select = sensor_select_sdo(coe_out);
 
-                    //if (sensor_select == HALL_SENSOR)  /* FIXME (?)
-                    //{
-                    update_hall_config_ecat(hall_config, coe_out);
-                    //}
-                    biss_config.pole_pairs = hall_config.pole_pairs;
-                    if (sensor_select >= QEI_SENSOR) { /* FIXME QEI with Index defined as 2 and without Index as 3  */
-                        update_qei_param_ecat(qei_params, coe_out);
-                    }
-                    nominal_speed = speed_sdo_update(coe_out);
-                    update_pp_param_ecat(profiler_config, coe_out);
-                    polarity = profiler_config.polarity;//profile_position_config.velocity_config.polarity;
-                    //qei_params.poles = hall_config.pole_pairs;
+                state = get_next_state(state, checklist, controlword, 0);
 
-                    //config_sdo_handler(coe_out);
-                    {homing_method, limit_switch_type} = homing_sdo_update(coe_out);
-                    if (homing_method == HOMING_NEGATIVE_SWITCH)
-                        limit_switch = -1;
-                    else if (homing_method == HOMING_POSITIVE_SWITCH)
-                        limit_switch = 1;
-
-                    /* Configuration of GPIO Digital ports follows here */
-                    if (!isnull(i_gpio)) {
-                        i_gpio.config_dio_input(0, SWITCH_INPUT_TYPE, limit_switch_type);
-                        i_gpio.config_dio_input(1, SWITCH_INPUT_TYPE, limit_switch_type);
-                        i_gpio.config_dio_done();//end_config_gpio(c_gpio);
-                    }
-                    if (!isnull(i_hall))
-                        i_hall.set_hall_config(hall_config); //set_hall_conifg_ecat(c_hall, hall_config);
-                    if (homing_done == 0 && !isnull(i_qei))
-                        i_qei.set_qei_config(qei_params);
-                    if (!isnull(i_biss))
-                        i_biss.set_biss_config(biss_config);
-                    i_commutation.set_all_parameters(hall_config, qei_params,
-                                               commutation_params);
-
-                    setup_loop_flag = 1;
-                    op_set_flag = 0;
+                if (state == S_SWITCH_ON_DISABLED) {
+                    CLEAR_BIT(statusword, SW_FAULT_OVER_CURRENT);
+                    CLEAR_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
+                    CLEAR_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
+                    CLEAR_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
                 }
-            }
-            /* Read Position Sensor */
-            if (sensor_select == HALL_SENSOR && !isnull(i_hall)) {
-                actual_velocity = i_hall.get_hall_velocity();
-            } else if (sensor_select == QEI_SENSOR && !isnull(i_qei)) {
-                actual_velocity = i_qei.get_qei_velocity();
-               //printintln(actual_velocity);
-            } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) {
-                actual_velocity = i_biss.get_biss_velocity();
-            }
-            send_actual_velocity(actual_velocity * polarity, InOut);
+                break;
 
-            if (mode_selected == 0) {
-                /* Select an operation mode requested from EtherCAT Master Application */
-                switch (InOut.operation_mode) {
-                    /* Homing Mode initialization */
-                case HM:
-                    if (op_set_flag == 0) {
-                        ctrl_state = i_torque_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_torque_control.disable_torque_ctrl();
-                        init_velocity_control(i_velocity_control);
-                    }
-                    if (i_velocity_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        op_mode = HM;
-                        steps = 0;
-                        mode_quick_flag = 10;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        i_velocity_control.set_velocity_sensor(QEI_SENSOR); //QEI
-                        InOut.operation_mode_display = HM;
-                    }
-                    break;
-
-                    /* Profile Position Mode initialization */
-                case PP:
-                    if (op_set_flag == 0) {
-                        update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
-
-                        if (sensor_select == HALL_SENSOR) {
-                            i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        }
-                        i_position_control.set_position_control_config(position_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-
-                        ctrl_state = i_velocity_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_velocity_control.disable_velocity_ctrl();
-                            init_position_control(i_position_control);
-                    }
-                    if (i_position_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        op_mode = PP;
-                        steps = 0;
-                        mode_quick_flag = 10;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        update_pp_param_ecat(profiler_config, coe_out);
-                        init_position_profile_limits(profiler_config.max_acceleration,
-                                                     profiler_config.max_velocity,
-                                                     qei_params, hall_config, biss_config, sensor_select,
-                                                     profiler_config.max_position,
-                                                     profiler_config.min_position);
-                        InOut.operation_mode_display = PP;
-                    }
-                    break;
-
-                    /* Profile Torque Mode initialization */
-                case TQ:
-                    if (op_set_flag == 0) {
-                        update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
-                        if (sensor_select == HALL_SENSOR) {
-                            i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        }
-
-                        i_torque_control.set_torque_control_config(torque_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-
-                        ctrl_state = i_position_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_position_control.disable_position_ctrl();
-                        init_torque_control(i_torque_control);
-                    }
-                    if (i_torque_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        op_mode = TQ;
-                        steps = 0;
-                        mode_quick_flag = 10;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        update_cst_param_ecat(profiler_config, coe_out);
-                        update_pt_param_ecat(profiler_config, coe_out);
-                       // torque_offstate = (cyclic_sync_torque_config.max_torque * 15) /
-                       //     (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
-                        // REMOVED BY AGUS BECAUSE IT SEEMS UNNECCESSARY
-                        init_linear_profile_limits(profiler_config.max_current, profiler_config.polarity);
-
-                        InOut.operation_mode_display = TQ;
-                    }
-                    break;
-
-                    /* Profile Velocity Mode initialization */
-                case PV:
-                    if (op_set_flag == 0) {
-                        update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
-
-                        if (sensor_select == HALL_SENSOR) {
-                            i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        }
-
-                        i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-
-                        ctrl_state = i_position_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_position_control.disable_position_ctrl();
-                        init_velocity_control(i_velocity_control);
-                    }
-                    if (i_velocity_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        op_mode = PV;
-                        steps = 0;
-                        mode_quick_flag = 10;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        update_pv_param_ecat(profiler_config, coe_out);
-                        init_velocity_profile_limits(profiler_config.max_velocity,profiler_config.max_deceleration,
-                                                        profiler_config.max_deceleration);//profile_velocity_config.quick_stop_deceleration);
-                        InOut.operation_mode_display = PV;
-                    }
-                    break;
-
-                    /* Cyclic synchronous position mode initialization */
-                case CSP:
-                    if (op_set_flag == 0) {
-                        update_position_ctrl_param_ecat(position_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
-
-                        if (sensor_select == HALL_SENSOR) {
-                            i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        }
-                        i_position_control.set_position_control_config(position_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-
-                        ctrl_state = i_velocity_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_velocity_control.disable_velocity_ctrl();
-                            init_position_control(i_position_control);
-                    }
-                    if (i_position_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        mode_quick_flag = 10;
-                        op_mode = CSP;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        update_csp_param_ecat(profiler_config, coe_out);
-                        InOut.operation_mode_display = CSP;
-                    }
-                    break;
-
-                    /* Cyclic synchronous velocity mode initialization */
-                case CSV:   //csv mode index
-                    if (op_set_flag == 0) {
-                        update_velocity_ctrl_param_ecat(velocity_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
-
-                        if (sensor_select == HALL_SENSOR) {
-                            i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        }
-
-                        i_velocity_control.set_velocity_control_config(velocity_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-                        ctrl_state = i_position_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_position_control.disable_position_ctrl();
-                        init_velocity_control(i_velocity_control);
-                    }
-                    if (i_velocity_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        mode_quick_flag = 10;
-                        op_mode = CSV;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        update_csv_param_ecat(profiler_config, coe_out);
-                        InOut.operation_mode_display = CSV;
-                    }
-                    break;
-
-                    /* Cyclic synchronous torque mode initialization */
-                case CST:
-                    if (op_set_flag == 0) {
-                        update_torque_ctrl_param_ecat(torque_ctrl_params, coe_out);
-                        sensor_select = sensor_select_sdo(coe_out);
-
-                        if (sensor_select == HALL_SENSOR) {
-                            i_hall.set_hall_config(hall_config);
-                        } else { /* QEI */
-                            i_qei.set_qei_config(qei_params);
-                        }
-
-                        i_torque_control.set_torque_control_config(torque_ctrl_params);
-                        i_torque_control.set_torque_sensor(sensor_select);
-                        i_velocity_control.set_velocity_sensor(sensor_select);
-                        i_position_control.set_position_sensor(sensor_select);
-
-                        ctrl_state = i_velocity_control.check_busy();
-                        if (ctrl_state == 1)
-                            i_velocity_control.disable_velocity_ctrl();
-                        ctrl_state = i_position_control.check_busy(); /* FIXME: why twice? */
-                        if (ctrl_state == 1)
-                            i_position_control.disable_position_ctrl();
-                            init_torque_control(i_torque_control);
-                    }
-                    if (i_torque_control.check_busy() == INIT) {
-                        op_set_flag = 1;
-                        mode_selected = 1;
-                        mode_quick_flag = 10;
-                        op_mode = CST;
-                        ack = 0;
-                        shutdown_ack = 0;
-
-                        update_cst_param_ecat(profiler_config, coe_out);
-                        update_pt_param_ecat(profiler_config, coe_out);
-                        //torque_offstate = (cyclic_sync_torque_config.max_torque * 15) / (cyclic_sync_torque_config.nominal_current * 100 * cyclic_sync_torque_config.motor_torque_constant);
-                        InOut.operation_mode_display = CST;
-                    }
-                    break;
-                }
+            default: /* should never happen! */
+                //printstrln("Should never happen happend.");
+                state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
+                break;
             }
 
-            /* After operation mode is selected the loop enters a continuous operation
-             * until the operation is shutdown */
-            if (mode_selected == 1) {
-                switch (InOut.control_word) {
-                case QUICK_STOP:
-                    if (op_mode == CST || op_mode == TQ) {
-                        actual_torque = i_torque_control.get_torque();
-                        steps = init_linear_profile(0, actual_torque, profiler_config.current_slope,
-                                                        profiler_config.current_slope);
-                        i = 0;
-                        mode_selected = 3; // non interruptible mode
-                        mode_quick_flag = 0;
-                    }
-                    else if (op_mode == CSV || op_mode == PV) {
-                        actual_velocity = i_velocity_control.get_velocity();
-                        int deceleration;
-                        if (op_mode == CSV) {
-                            deceleration = profiler_config.max_acceleration;
-                        } else { /* op_mode == PV */
-                            deceleration = profiler_config.max_deceleration;
-                        }
-                        steps = init_quick_stop_velocity_profile(actual_velocity,
-                                                                 deceleration);
-                        i = 0;
-                        mode_selected = 3; // non interruptible mode
-                        mode_quick_flag = 0;
-                    } else if (op_mode == CSP || op_mode == PP) {
-                        if (sensor_select == HALL_SENSOR && !isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
-                        else if (!isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (!isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (!isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
-                        actual_position = i_position_control.get_position();
+        } else if (opmode == OPMODE_SNCN_TUNING) {
+            /* run offset tuning -> this will be called as long as OPMODE_SNCN_TUNING is set */
+            tuning_handler_ethercat(tuning_command,
+                    user_miso, tuning_status,
+                    tuning_mode_state,
+                    motorcontrol_config, motion_control_config, position_feedback_config_1, position_feedback_config_2,
+                    sensor_commutation, sensor_motion_control,
+                    send_to_master,
+                    i_motion_control, i_position_feedback_1, i_position_feedback_2);
 
-                        if (actual_velocity>=500 || actual_velocity<=-500) {
-                            if (actual_velocity < 0) {
-                                actual_velocity = -actual_velocity;
-                            }
+            //check and update opmode
+            opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
 
-                            int deceleration;
-                            if (op_mode == CSP) {
-                                deceleration = profiler_config.max_acceleration;
-                            } else { /* op_ode == PP */
-                                deceleration = profiler_config.max_deceleration;
-                            }
-
-                            int sensor_ticks;
-                            if (sensor_select == HALL_SENSOR) {
-                                sensor_ticks = hall_config.pole_pairs * HALL_TICKS_PER_ELECTRICAL_ROTATION;//max_ticks_per_turn;
-                            } else if (sensor_select == QEI_SENSOR){    /* QEI */
-                                sensor_ticks = qei_params.ticks_resolution * QEI_CHANGES_PER_TICK;
-                            } else if (sensor_select == BISS_SENSOR){    /* BiSS */
-                                sensor_ticks = (1 << biss_config.singleturn_resolution);
-                            }
-
-                            steps = init_quick_stop_position_profile(
-                                (actual_velocity * sensor_ticks) / 60,
-                                actual_position,
-                                (deceleration * sensor_ticks) / 60);
-
-                            i = 0;
-                            mode_selected = 3; // non interruptible mode
-                            mode_quick_flag = 0;
-                        } else {
-                            mode_selected = 100;
-                            op_set_flag = 0;
-                            init = 0;
-                            mode_quick_flag = 0;
-                        }
-                    }
-                    break;
-
-                    /* continuous controlword */
-                case SWITCH_ON: //switch on cyclic
-                    //printstrln("cyclic");
-                    if (op_mode == HM) {
-                        if (ack == 0) {
-                            home_velocity = get_target_velocity(InOut);
-                            home_acceleration = get_target_torque(InOut);
-                            //h_active = 1;
-
-                            if (home_acceleration == 0) {
-                                home_acceleration = get_target_torque(InOut);
-                            }
-
-                            if (home_velocity == 0) {
-                                home_velocity = get_target_velocity(InOut);
-                            } else {
-                                if (home_acceleration != 0) {
-                                    //mode_selected = 4;
-                                    // set_home_switch_type(c_home, limit_switch_type);
-                                    i = 1;
-                                    actual_velocity = i_velocity_control.get_velocity();
-                                    steps = init_velocity_profile(home_velocity * limit_switch,
-                                                                  actual_velocity, home_acceleration,
-                                                                  home_acceleration);
-                                    //printintln(home_velocity);
-                                    //printintln(home_acceleration);
-                                    ack = 1;
-                                    reset_counter = 0;
-                                    end_state = 0;
-                                }
-                            }
-                        } else if (ack == 1) {
-                            if (reset_counter == 0) {
-                                ack = 1;
-                                if (i < steps) {
-                                    velocity_ramp = velocity_profile_generate(i);
-                                    i_velocity_control.set_velocity(velocity_ramp);
-                                    i++;
-                                }
-                                if (!isnull(i_gpio)) {
-                                    home_state = i_gpio.read_gpio(0);//read_gpio_digital_input(c_gpio, 0);
-                                    safety_state = i_gpio.read_gpio(1);//read_gpio_digital_input(c_gpio, 1);
-                                } else {
-                                    home_state = 0;
-                                    safety_state = 0;
-                                }
-                                if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                                    capture_position = i_qei.get_qei_position_absolute();
-                                else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                                    { capture_position, void, void } = i_biss.get_biss_position();
-                                else if (!isnull(i_qei))
-                                    capture_position = i_qei.get_qei_position_absolute();
-                                else if (!isnull(i_biss))
-                                    { capture_position, void, void } = i_biss.get_biss_position();
-
-                                if ((home_state == 1 || safety_state == 1) && end_state == 0) {
-                                    actual_velocity = i_velocity_control.get_velocity();
-                                    steps = init_velocity_profile(0, actual_velocity,
-                                                                  home_acceleration,
-                                                                  home_acceleration);
-                                    i = 1;
-                                    end_state = 1;
-                                }
-                                if (end_state == 1 && i >= steps) {
-                                    i_velocity_control.disable_velocity_ctrl();
-                                    if (home_state == 1) {
-                                        if (sensor_select == QEI_SENSOR && !isnull(i_qei)) {
-                                            current_position = i_qei.get_qei_position_absolute();
-                                            home_offset = current_position - capture_position;
-                                            i_qei.reset_qei_absolute_position(home_offset);
-                                        } else if (sensor_select == BISS_SENSOR && !isnull(i_biss)) {
-                                            { current_position, void, void } = i_biss.get_biss_position();
-                                            home_offset = current_position - capture_position;
-                                            i_biss.reset_biss_position(home_offset);
-                                        } else if (!isnull(i_qei)) {
-                                            current_position = i_qei.get_qei_position_absolute();
-                                            home_offset = current_position - capture_position;
-                                            i_qei.reset_qei_absolute_position(home_offset);
-                                        } else if (!isnull(i_biss)) {
-                                            { current_position, void, void } = i_biss.get_biss_position();
-                                            home_offset = current_position - capture_position;
-                                            i_biss.reset_biss_position(home_offset);
-                                        }
-                                        reset_counter = 1;
-                                    }
-                                }
-
-                            }
-                            if (reset_counter == 1) {
-                                ack = 0;//h_active = 1;
-
-                                //mode_selected = 100;
-                                homing_done = 1;
-                                //printstrln("homing_success"); //done
-                                InOut.operation_mode_display = 250;
-                            }
-                        }
-                    }
-
-                    if (op_mode == CSV) {
-                        target_velocity = get_target_velocity(InOut);
-                        i_velocity_control.set_velocity(max_speed_limit( target_velocity * profiler_config.polarity,
-                                                        profiler_config.max_velocity ));
-                        //set_velocity_csv(profiler_config, target_velocity, 0, 0, i_velocity_control);
-
-                        actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;//cyclic_sync_velocity_config.polarity;
-                        send_actual_velocity(actual_velocity, InOut);
-                    } else if (op_mode == CST) {
-                        target_torque = get_target_torque(InOut);
-                        i_torque_control.set_torque(torque_limit( target_torque * profiler_config.polarity,
-                                                    profiler_config.max_current));
-                        //set_torque_cst(profiler_config, target_torque, 0, i_torque_control);
-
-                        actual_torque = i_torque_control.get_torque();
-                        //printintln(target_torque);
-                        send_actual_torque(actual_torque, InOut);
-                    } else if (op_mode == CSP) {
-                        target_position = get_target_position(InOut);
-                        i_position_control.set_position(position_limit( (target_position) * profiler_config.polarity,
-                                                        profiler_config.max_position, profiler_config.min_position));
-                       // set_position_csp(profiler_config, target_position, 0, 0, 0, i_position_control);
-
-                        actual_position = i_position_control.get_position() * profiler_config.polarity;//cyclic_sync_position_config.velocity_config.polarity;
-                        send_actual_position(actual_position, InOut);
-                        //safety_state = read_gpio_digital_input(c_gpio, 1);        // read port 1
-                        //value = (port_3_value<<3 | port_2_value<<2 | port_1_value <<1| safety_state );  pack values if more than one port inputs
-                    } else if (op_mode == PP) {
-                        if (ack == 1) {
-                            target_position = get_target_position(InOut);
-                            actual_position = i_position_control.get_position() * profiler_config.polarity;//profile_position_config.velocity_config.polarity;
-                            send_actual_position(actual_position, InOut);
-
-                            if (prev_position != target_position) {
-                                ack = 0;
-                                steps = init_position_profile(target_position, actual_position,
-                                                              profiler_config.velocity,
-                                                              profiler_config.acceleration,
-                                                              profiler_config.deceleration);
-
-                                i = 1;
-                                prev_position = target_position;
-                            }
-                        } else if (ack == 0) {
-                            if (i < steps) {
-                                position_ramp = position_profile_generate(i);
-                                i_position_control.set_position(position_limit(position_ramp * profiler_config.polarity,
-                                        profiler_config.max_position,
-                                        profiler_config.min_position));
-                                i++;
-                            } else if (i == steps) {
-                                t :> c_time;
-                                t when timerafter(c_time + 15*MSEC_STD) :> c_time;
-                                ack = 1;
-                            } else if (i > steps) {
-                                ack = 1;
-                            }
-                            //actual_position = get_position(c_position_ctrl) * profiler_config.velocity_config.polarity;
-                            //send_actual_position(actual_position, InOut);
-                        }
-                    } else if (op_mode == TQ) {
-                        if (ack == 1) {
-                            target_torque = get_target_torque(InOut);
-                            actual_torque = i_torque_control.get_torque();
-                            send_actual_torque(actual_torque, InOut);
-
-                            if (prev_torque != target_torque) {
-                                ack = 0;
-                                steps = init_linear_profile(target_torque, actual_torque,
-                                                            profiler_config.current_slope,
-                                                            profiler_config.current_slope);
-                                i = 1;
-                                prev_torque = target_torque;
-                            }
-                        } else if (ack == 0) {
-                            if (i < steps) {
-                                torque_ramp = linear_profile_generate(i);
-                                i_torque_control.set_torque(torque_limit( torque_ramp * profiler_config.polarity,
-                                                            profiler_config.max_current));
-                                //set_torque_cst(profiler_config, torque_ramp, 0, i_torque_control);
-                                i++;
-                            } else if (i == steps) {
-                                t :> c_time;
-                                t when timerafter(c_time + 10*MSEC_STD) :> c_time;
-                                ack = 1;
-                            } else if (i > steps) {
-                                ack = 1;
-                            }
-                            actual_torque = i_torque_control.get_torque();
-                            send_actual_torque(actual_torque, InOut);
-                        }
-                    } else if (op_mode == PV) {
-                        if (ack == 1) {
-                            target_velocity = get_target_velocity(InOut);
-                            actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;//profile_velocity_config.polarity;
-                            send_actual_velocity(actual_velocity, InOut);
-
-                            if (prev_velocity != target_velocity) {
-                                ack = 0;
-                                steps = init_velocity_profile(target_velocity, actual_velocity,
-                                                                profiler_config.acceleration,//profile_velocity_config.profile_acceleration,
-                                                                profiler_config.deceleration);//profile_velocity_config.profile_deceleration);
-                                i = 1;
-                                prev_velocity = target_velocity;
-                            }
-                        } else if (ack == 0) {
-                            if (i < steps) {
-                                velocity_ramp = velocity_profile_generate(i);
-                                i_velocity_control.set_velocity(max_speed_limit( (velocity_ramp) * profiler_config.polarity,
-                                        profiler_config.max_velocity));
-                                i++;
-                            } else if (i == steps) {
-                                t :> c_time;
-                                t when timerafter(c_time + 10*MSEC_STD) :> c_time;
-                                ack = 1;
-                            } else if (i > steps) {
-                                ack = 1;
-                            }
-                            actual_velocity = i_velocity_control.get_velocity() * profiler_config.polarity;
-                            send_actual_velocity(actual_velocity, InOut);
-                        }
-                    }
-                    break;
-
-                case SHUTDOWN:
-                    if (op_mode == CST || op_mode == TQ) {
-                        i_torque_control.disable_torque_ctrl();
-                        shutdown_ack = 1;
-                        op_set_flag = 0;
-                        init = 0;
-                        mode_selected = 0;  // to reenable the op selection and reset the controller
-                        setup_loop_flag = 0;
-                    } else if (op_mode == CSV || op_mode == PV) {
-                        i_velocity_control.disable_velocity_ctrl();
-                        shutdown_ack = 1;
-                        op_set_flag = 0;
-                        init = 0;
-                        mode_selected = 0;  // to reenable the op selection and reset the controller
-                        setup_loop_flag = 0;
-                    } else if (op_mode == CSP || op_mode == PP) {
-                        i_position_control.disable_position_ctrl();
-                        shutdown_ack = 1;
-                        op_set_flag = 0;
-                        init = 0;
-                        mode_selected = 0;  // to reenable the op selection and reset the controller
-                        setup_loop_flag = 0;
-                    } else if (op_mode == HM) {
-                        //shutdown_position_ctrl(c_position_ctrl);
-                        shutdown_ack = 1;
-                        op_set_flag = 0;
-                        init = 0;
-                        mode_selected = 0;  // to reenable the op selection and reset the controller
-                        setup_loop_flag = 0;
-                    }
-                    break;
-                }
+            //exit tuning mode
+            if (opmode != OPMODE_SNCN_TUNING) {
+                opmode = opmode_request; /* stop tuning and switch to new opmode */
+                i_motion_control.disable();
+                state = S_SWITCH_ON_DISABLED;
+                statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+                //reset tuning status
+                tuning_mode_state.brake_flag = 0;
+                tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
+                        position_feedback_config_1, position_feedback_config_2, sensor_commutation);
+                tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             }
-
-            /* quick stop controlword routine */
-            else if (mode_selected == 3) { // non interrupt
-                if (op_mode == CST || op_mode == TQ) {
-                    t :> c_time;
-                    while (i < steps) {
-                        target_torque = linear_profile_generate(i);
-                        i_torque_control.set_torque(target_torque);
-                        actual_torque = i_torque_control.get_torque() * profiler_config.polarity;
-                        send_actual_torque(actual_torque, InOut);
-                        t when timerafter(c_time + MSEC_STD) :> c_time;
-                        i++;
-                    }
-                    if (i == steps) {
-                        t when timerafter(c_time + 100*MSEC_STD) :> c_time;
-                        actual_torque = i_torque_control.get_torque();
-                        send_actual_torque(actual_torque, InOut);
-                        ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
-                    }
-                    if (i >= steps) {
-                        actual_torque = i_torque_control.get_torque();
-                        send_actual_torque(actual_torque, InOut);
-                    //    if (actual_torque < torque_offstate || actual_torque > -torque_offstate) {
-                            mode_selected = 100;
-                            op_set_flag = 0;
-                            init = 0;
-                            t when timerafter(c_time + 250*MSEC_STD) :> c_time;//FixMe: why is this nesessary?
-                    //    }
-                    }
-                    if (steps == 0) {
-                        mode_selected = 100;
-                        op_set_flag = 0;
-                        init = 0;
-                    }
-                } else if (op_mode == CSV || op_mode == PV) {
-                    t :> c_time;
-                    while (i < steps) {
-                        target_velocity = quick_stop_velocity_profile_generate(i);
-                        if (op_mode == CSV) {
-                            i_velocity_control.set_velocity(max_speed_limit(target_velocity, profiler_config.max_velocity));//cyclic_sync_velocity_config.max_motor_speed));
-                            actual_velocity = i_velocity_control.get_velocity();
-                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
-                        } else if (op_mode == PV) {
-                            i_velocity_control.set_velocity(max_speed_limit(target_velocity, profiler_config.max_velocity));
-                            actual_velocity = i_velocity_control.get_velocity();
-                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
-                        }
-                        t when timerafter(c_time + MSEC_STD) :> c_time;
-                        i++;
-                    }
-                    if (i == steps) {
-                        t when timerafter(c_time + 100*MSEC_STD) :> c_time;
-                    }
-                    if (i >= steps) {
-                        if (op_mode == CSV)
-                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
-                        else if (op_mode == PV)
-                            send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
-                        if (actual_velocity < 50 || actual_velocity > -50) {
-                            ctrlproto_protocol_handler_function(pdo_out, pdo_in, InOut);
-                            mode_selected = 100;
-                            op_set_flag = 0;
-                            init = 0;
-                        }
-                    }
-                    if (steps == 0) {
-                        mode_selected = 100;
-                        op_set_flag = 0;
-                        init = 0;
-                    }
-                    t when timerafter(c_time + 100*MSEC_STD) :> c_time; //FixMe: why is this nesessary?
-
-                } else if (op_mode == CSP || op_mode == PP) {
-                    {actual_position, sense} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
-
-                    t :> c_time;
-                    while (i < steps) {
-                        target_position = quick_stop_position_profile_generate(i, sense);
-                        if (op_mode == CSP) {
-                            i_position_control.set_position(position_limit(target_position,
-                                                                    profiler_config.max_position,
-                                                                    profiler_config.min_position));
-                                                                 //  cyclic_sync_position_config.max_position_limit,
-                                                                 //  cyclic_sync_position_config.min_position_limit));
-                        } else if (op_mode == PP) {
-                            i_position_control.set_position(position_limit(target_position,
-                                                            profiler_config.max_position,
-                                                            profiler_config.min_position));
-                        }
-                        t when timerafter(c_time + MSEC_STD) :> c_time;
-                        i++;
-                    }
-
-                    if (i == steps) {
-                        t when timerafter(c_time + 100*MSEC_STD) :> c_time;
-                    }
-                    if (i >= steps) {
-                        if (sensor_select == HALL_SENSOR && !isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (sensor_select == BISS_SENSOR && !isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (sensor_select == QEI_SENSOR && !isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
-                        else if (!isnull(i_hall))
-                            actual_velocity = i_hall.get_hall_velocity();
-                        else if (!isnull(i_biss))
-                            actual_velocity = i_biss.get_biss_velocity();
-                        else if (!isnull(i_qei))
-                            actual_velocity = i_qei.get_qei_velocity();
-                        if (actual_velocity < 50 || actual_velocity > -50) {
-                            mode_selected = 100;
-                            op_set_flag = 0;
-                            init = 0;
-                        }
-                    }
-                }
-            } else if (mode_selected == 100) {
-                if (mode_quick_flag == 0)
-                    quick_active = 1;
-
-                if (op_mode == CST) {
-                    actual_torque = i_torque_control.get_torque();
-                    send_actual_torque(actual_torque, InOut);
-                } else if (op_mode == TQ) {
-                    actual_torque = i_torque_control.get_torque();
-                    send_actual_torque(actual_torque, InOut);
-                } else if (op_mode == CSV) {
-                    actual_velocity = i_velocity_control.get_velocity();
-                    send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
-                } else if (op_mode == PV) {
-                    actual_velocity = i_velocity_control.get_velocity();
-                    send_actual_velocity(actual_velocity * profiler_config.polarity, InOut);
-                    send_actual_velocity(actual_velocity, InOut);
-                }
-                switch (InOut.operation_mode) {
-                case 100:
-                    mode_selected = 0;
-                    quick_active = 0;
-                    mode_quick_flag = 1;
-                    InOut.operation_mode_display = 100;
-                    break;
-                }
-            }
-
-            /* Read Torque and Position */
-            {actual_position, direction} = get_position_absolute(sensor_select, i_hall, i_qei, i_biss);
-            send_actual_torque( i_torque_control.get_torque(), InOut );
-            //send_actual_torque( get_torque(c_torque_ctrl) * polarity, InOut );
-            send_actual_position(actual_position * polarity, InOut);
-            t when timerafter(time + MSEC_STD) :> time;
+        } else {
+            /* if a unknown or unsupported opmode is requested we simply return
+             * no opmode and don't allow any operation.
+             * For safety reasons, if no opmode is selected the brake is closed! */
+            i_torque_control.set_brake_status(0);
+            opmode = OPMODE_NONE;
+            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
         }
+
+        /* wait 1 ms to respect timing */
+        t when timerafter(time + tile_usec*1000) :> time;
+
 //#pragma xta endpoint "ecatloop_stop"
+    }
+}
+
+/*
+ * super simple test function for debugging without actual ethercat communication to just
+ * test if the motor will move.
+ */
+void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
+                            client interface i_pdo_communication i_pdo,
+                            client interface i_coe_communication i_coe,
+                            client interface TorqueControlInterface i_torque_control,
+                            client interface MotionControlInterface i_motion_control,
+                            client interface PositionFeedbackInterface i_position_feedback)
+{
+    MotionControlConfig motion_control_config = i_motion_control.get_motion_control_config();
+    PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
+    MotorcontrolConfig motorcontrol_config = i_torque_control.get_config();
+
+    UpstreamControlData   send_to_master;
+    DownstreamControlData send_to_control;
+    send_to_control.position_cmd = 0;
+    send_to_control.velocity_cmd = 0;
+    send_to_control.torque_cmd = 0;
+    send_to_control.offset_torque = 0;
+
+    int enabled = 0;
+
+    timer t;
+    unsigned time;
+
+    printstr("Motorconfig\n");
+    printstr("pole pair: "); printintln(motorcontrol_config.pole_pairs);
+    printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
+
+    printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);
+    printstr("Protecction limit over voltage: "); printintln(motorcontrol_config.protection_limit_over_voltage);
+    printstr("Protecction limit under voltage: "); printintln(motorcontrol_config.protection_limit_under_voltage);
+
+    t :> time;
+//    i_torque_control.set_offset_detection_enabled();
+//    delay_milliseconds(30000);
+
+    while (1) {
+
+        send_to_master = i_motion_control.update_control_data(send_to_control);
+
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, send_to_master.position);
+//        xscope_int(FAMOUS_FAULT,    send_to_master.error_status * 1000);
+
+        if (enabled == 0) {
+            //delay_milliseconds(2000);
+//            i_torque_control.set_torque_control_enabled();
+//            i_motion_control.enable_torque_ctrl();
+           //i_motion_control.enable_velocity_ctrl();
+           //printstr("enable\n");
+            i_motion_control.enable_position_ctrl(POS_PID_CONTROLLER);
+            enabled = 1;
+        }
+        else {
+//            i_torque_control.set_torque(100);
+//            i_motion_control.set_velocity(0);
+//            i_motion_control.set_position(0);
+//            i_motion_control.set_velocity(500);
+            send_to_control.position_cmd = 100000;
+//            send_to_control.offset_torque = 0;
+        }
+
+        t when timerafter(time + MSEC_STD) :> time;
     }
 }

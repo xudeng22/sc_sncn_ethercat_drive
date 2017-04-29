@@ -9,18 +9,24 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_pdo_handling
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = module_adc module_biss module_board-support module_ctrl_loops module_ethercat module_ethercat_drive module_ethercat_fwupdate module_gpio module_hall module_misc module_motorcontrol module_profile module_pwm_symmetrical module_qei module_watchdog
+USED_MODULES = module_board-support lib_ethercat module_pdo_handler module_reboot
+
+ifeq ($(CONFIG), Debug)
+MODULE_LIBRARIES = ethercat_service_standalone
+else
+MODULE_LIBRARIES = ethercat_service
+endif
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
 # XCC_XC_FLAGS, XCC_C_FLAGS, XCC_ASM_FLAGS, XCC_CPP_FLAGS
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to
 # xcc for the final link (mapping) stage.
-XCC_FLAGS_Debug = -g -O0 -lflash -report
-XCC_FLAGS_Release = -g -O3 -lflash
+XCC_FLAGS_Debug = -g -O0 -DCOM_ETHERCAT -lflash -report
+XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lflash
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
-VERBOSE = 0
+VERBOSE = 1
 
 XMOS_MAKE_PATH ?= ../..
 -include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.common

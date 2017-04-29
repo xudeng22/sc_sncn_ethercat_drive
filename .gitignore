@@ -19,6 +19,7 @@
 
 ## ignore xTIMEcomposer(ecipse) files
 .metadata/
+xscope.xmt
 
 ## generic files to ignore
 *~
@@ -36,6 +37,7 @@
 *.xe
 *.o
 bin/
+examples/libreadsdoconfig/testreadconfig
 
 #settings directory
 .settings
@@ -45,4 +47,12 @@ bin/
 
 #doxygen output
 .dox/gen/
+
+# ignore profiler files
+*.gprof
+*.inc
+*.sh
+*.log
+record.csv
+config_motor
 

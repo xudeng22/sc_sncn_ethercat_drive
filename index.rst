@@ -1,12 +1,12 @@
-SOMANET EtherCAT Drive
-======================
+SOMANET EtherCAT Drive Application
+==================================
 
-The **SOMANET EtherCAT Drive Library** offers the services and utilities required to perform BLDC/BDC Motor Control over EtherCAT using SOMANET devices.
-It implements a CiA 402-compliant Motor Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motor Control Library<somanet_motor_control>` and gives flexibility for application-specific requirements.
+The **SOMANET EtherCAT Drive Component** is an application-specific component that contains services and utilities required to perform a BLDC Motor Motion Control over EtherCAT using SOMANET IFM DC-Drive and COM-EtherCAT devices.
+It implements a CiA 402-compliant Motion Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motion Control Component <somanet_motor_control>` and gives flexibility for application-specific requirements.
 
 .. cssclass:: downloadable-button 
 
-  `Download Library <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/master.zip>`_
+  `Download Component <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/master.zip>`_
 
 .. cssclass:: github
 
@@ -38,7 +38,7 @@ Hardware Compatibility
 +-----------------------------------------------------------------------------------------------+
 | SOMANET Core: :ref:`C22 <core_c22>`                                                           |
 +-----------------------------------------------------------------------------------------------+
-| SOMANET IFM: :ref:`DC 100 <ifm_dc100>`, :ref:`DC 300 <ifm_dc300>`, **DC 1000**, **DC 5000**   |
+| SOMANET IFM: :ref:`DC 100 <ifm_dc100>`,  :ref:`DC 1000 <ifm_dc1000_b2>`                       |
 +-----------------------------------------------------------------------------------------------+
 
 Modules
@@ -49,21 +49,11 @@ Modules
     :hidden:
 
     Drive Module <module_ethercat_drive/doc/index>
+    EtherCAT PDO Handler Module <module_pdo_handler/doc/index>
 
 * `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `EtherCAT PDO Handler Module <module_pdo_handler/doc/index.html>`_: Provides the exchange of the current PDO values between :ref:`SOMANET EtherCAT <somanet_ethercat>` and the user application
 
-EtherCAT Drive Linux Master Libraries
--------------------------------------
-
-.. toctree::
-    :maxdepth: 1
-    :hidden:
-
-    Linux Control Protocol Library <lib_linux_ctrlproto/doc/index>
-    Linux Motor Drive Library <lib_linux_motor_drive/doc/index>
-
-    * `Linux Control Protocol Library <lib_linux_ctrlproto/doc/index.html>`_: Provides functionality to your EtherCAT Master app to handle basic communication with your SOMANET EtherCAT slave.
-    * `Linux Motor Drive Library <lib_linux_motor_drive/doc/index.html>`_: Provides functionality to your EtherCAT Master app to drive motors using your SOMANET EtherCAT slave.
 
 Examples
 --------
@@ -74,13 +64,13 @@ Examples
 
     Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index>
 
-    Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index.html>
-    Special Engineering Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>
+    Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index>
+    Special Tuning Mode Application <examples/app_demo_master_ethercat_tuning/doc/index>
 
-    SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index.html>
-    SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index.html>
+    SDO Handling Demo Slave <examples/app_demo_slave_sdo_handling/doc/index>
+    SDO Handling Demo Master <examples/app_demo_master_object_dictionary/doc/index>
 
-    PDO Handling Demo <examples/app_demo_slave_pdo_handling/doc/index>
+    PDO Handling Demo Slave <examples/app_demo_slave_pdo_handling/doc/index>
     PDO Handling Demo Master <examples/app_linux_ctrlproto-master-example/doc/index>
 
 * **Slave examples (for SOMANET devices):**
@@ -92,7 +82,7 @@ Examples
 
     * `Cyclic Position/Velocity/Torque Control Demo <examples/app_demo_master_cyclic/doc/index.html>`_: Example to do cyclic position/velocity/torque control on one/multiple axis over EtherCAT.
 
-    * `Special Engineering Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>`_: Provides access to extended features of the EtherCAT Slave Drive Controller like PID or commutation angle offset tining over EtherCAT.
+    * `Special Tuning Mode Application <examples/app_demo_master_ethercat_tuning/doc/index.html>`_: Provides access to extended features of the EtherCAT Slave Drive Controller like PID or commutation angle offset tining over EtherCAT.
 
 
 * **Test Master+Slave examples (for Linux Master machines):**
@@ -108,21 +98,21 @@ Dependencies
 
 To run **EtherCAT Drive applications** it is necessary to include additionally the following libraries:
 
-* :ref:`SOMANET Motor Control <somanet_motor_control>`
+* :ref:`SOMANET Motion Control <somanet_motion_control>`
 
     .. cssclass:: downloadable-button 
 
-     `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/master.zip>`_
+     `Download SOMANET Motion Control Component <https://github.com/synapticon/sc_sncn_motorcontrol/archive/master.zip>`_
 
     .. cssclass:: github
 
-      `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
+      `Visit SOMANET Motion Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
 
 * :ref:`SOMANET EtherCAT <somanet_ethercat>`
 
     .. cssclass:: downloadable-button 
 
-     `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/master.zip>`_
+     `Download SOMANET EtherCAT Component  <https://github.com/synapticon/sc_sncn_ethercat/archive/master.zip>`_
 
     .. cssclass:: github
 
@@ -132,7 +122,7 @@ To run **EtherCAT Drive applications** it is necessary to include additionally t
 
     .. cssclass:: downloadable-button 
 
-      `Download SOMANET Base Library <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
+      `Download SOMANET Base Component <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
 
     .. cssclass:: github
 

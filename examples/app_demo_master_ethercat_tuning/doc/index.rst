@@ -1,14 +1,14 @@
 .. _app_demo_master_ethercat_tuning:
 
-SOMANET EtherCat Drive Special Engineering Mode Application
-===================================================================
+SOMANET EtherCat Drive Special Tuning Mode Application
+======================================================
 
 .. contents:: In this document
     :backlinks: none
     :depth: 3
 
-This application is demonstrating the use of the engineering mode of SOMANET EtherCat Drive.
-It allows to find the commutation offset of the motor, tune the PID parameters and test the Position, Velocity and Torque controller. 
+This application is demonstrating the use of the tuning mode of SOMANET EtherCat Drive.
+It allows finding the commutation offset of the motor, tuning of the PID parameters and test the Position, Velocity and Torque controllers. 
 
 .. cssclass:: github
 

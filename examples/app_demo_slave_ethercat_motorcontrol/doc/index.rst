@@ -8,7 +8,7 @@ EtherCAT Drive Slave Firmware Demo
     :backlinks: none
     :depth: 3
 
-The purpose of this app (app_demo_slave_ethercat_motorcontrol) is showing the use of the :ref:`EtherCAT Drive Module <ethercat_drive_module>` and serving as a standard firmware for EtherCAT Drive applications. It includes all Motor Control Services and utilities offered by the :ref:`Motor Control Library <somanet_motor_control>. It also supports :ref:`Firmware Update over EtherCAT <ecat_fw_update>`.
+The purpose of this app (app_demo_slave_ethercat_motorcontrol) is to demonstrate the use of the :ref:`EtherCAT Drive Module <ethercat_drive_module>` and to serve as a standard firmware for EtherCAT Drive applications. It includes all Motion Control Services and utilities offered by the :ref:`Motion Control Library <somanet_motion_control>. It also supports :ref:`Firmware Update over EtherCAT <ecat_fw_update>`.
 
 * **Minimum Number of Cores**: 14
 * **Minimum Number of Tiles**: 4
@@ -46,7 +46,7 @@ Quick How-to
    - TEMP_BOARD_MAX
 
 
-7. Run the application. The application use the :ref:`Somanet Ethercat slave service <somanet_ethercat_slave>` as well as all the Somanet Motor and Motion control services: :ref:`Motion control <module_motion_control>`, :ref:`PWM <module_pwm>`, :ref:`ADC <module_adc>`, :ref:`Watchdog <module_watchdog>`, :ref:`Motorcontrol <lib_bldc_torque_control>`, :ref:`Shared Memory <module_shared_memory>`, :ref:`Posision Feedback <module_position_feedback>`
+7. Run the application. The application use the :ref:`Somanet Ethercat slave service <somanet_ethercat_slave>` as well as all the Somanet Motor and Motion control services: :ref:`Motion control <module_motion_control>`, :ref:`PWM <module_pwm>`, :ref:`ADC <module_adc>`, :ref:`Watchdog <module_watchdog>`, :ref:`Torque Control <lib_bldc_torque_control>`, :ref:`Shared Memory <module_shared_memory>`, :ref:`Posision Feedback <module_position_feedback>`
 
 8. Now it is time to start working from the EtherCAT master side, for that check our **EtherCAT Master applications quickstart guides**:
 

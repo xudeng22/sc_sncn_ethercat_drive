@@ -10,6 +10,7 @@
  */
 
 #include <command_service.h>
+#include <co_interface.h>
 #include <flash_service.h>
 #include <xs1.h>
 #include <print.h>
@@ -24,7 +25,8 @@
 #endif
 
 #define TIME_FOR_LOOP            (500 * MSEC_STD)
-#define MAX_CONFIG_SDO_ENTRIES   200
+#define MAX_CONFIG_SDO_ENTRIES   250
+#define CMD_DRIVE_INDEX          5
 
 typedef struct _sdoinfo_configuration_paramater {
     uint16_t index;
@@ -55,13 +57,15 @@ int get_drive_configuration(client interface EtherCATFlashDataInterface i_data_e
         }
 
         if (drive_configuration.index == drive_index) {
-            return position;
+            break;
         }
+
         position++;
     }
+
+    return position;
 }
 
-/* obsolete */
 static void set_configuration_to_dictionary(
         client interface i_co_communication i_canopen,
         unsigned char data[], unsigned size)
@@ -84,10 +88,10 @@ static unsigned get_configuration_from_dictionary(
         printstrln("Warning OD to large, only get what fits.");
     }
 
-    unsigned all_od_objects[MAX_CONFIG_SDO_ENTRIES];
-    i_canopen.od_get_list(all_od_objects, MAX_CONFIG_SDO_ENTRIES, OD_LIST_ALL);
+    unsigned all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
+    i_canopen.od_get_list(all_od_objects, list_lengths[0], OD_LIST_ALL);
 
-        struct _sdoinfo_entry_description od_entry;
+    struct _sdoinfo_entry_description od_entry;
 
     int count = 0;
     uint32_t value = 0;
@@ -102,7 +106,7 @@ static unsigned get_configuration_from_dictionary(
 
         /* object is no simple variable and subindex 0 holds the highest subindex then read all sub elements */
         if (od_entry.objectCode != CANOD_TYPE_VAR && od_entry.value > 0) {
-            for (unsigned k = 1; k < od_entry.value; k++) {
+            for (unsigned k = 1; k <= od_entry.value; k++) {
                 //...
                 {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], k);
 
@@ -117,16 +121,6 @@ static unsigned get_configuration_from_dictionary(
             configuration[count].value    = od_entry.value;
             count++;
         }
-
-#if 0
-        if ((SDO_Info_Entries[i].index >= 0x2000 && SDO_Info_Entries[i].index <= 0x2FFF) ||
-            (SDO_Info_Entries[i].index >= 0x6000 && SDO_Info_Entries[i].index <= 0x6FFF)) {
-            configuration[count].index = SDO_Info_Entries[i].index;
-            configuration[count].subindex = SDO_Info_Entries[i].subindex;
-            configuration[count].value = SDO_Info_Entries[i].value;
-            count++;
-        }
-#endif
     }
 
     unsigned bytes_of_data = count * sizeof(Configuration);
@@ -152,7 +146,7 @@ static int flash_write_od_config(
     // Function previously in i_coe.save_configuration_to_flash(uint8_t drive_index)
 
     /* Get the current position of the object dictionary in flash (if any) */
-    uint8_t drive_index = 5;
+    uint8_t drive_index = CMD_DRIVE_INDEX;
     DriveConfiguration drive_configuration;
     unsigned drive_configuration_size = 0;
 
@@ -173,14 +167,14 @@ static int flash_write_od_config(
     // Save the drive configuration together with the drive index
     result = i_flash_ecat_data.add_object((unsigned char*)&drive_configuration, drive_configuration_size);
 
-    return 0;
+    return result;
 }
 
 static int flash_read_od_config(
         client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
         client interface i_co_communication i_canopen)
 {
-    uint8_t drive_index = 5;
+    uint8_t drive_index = CMD_DRIVE_INDEX;
     DriveConfiguration drive_configuration;
     unsigned drive_configuration_size = 0;
 

@@ -9,9 +9,11 @@
 #include <co_interface.h>
 #include <stdint.h>
 
+#define MAX_FLASH_PACKET_SIZE   (1024 + 512)
+
 typedef struct {
     uint8_t index;
-    unsigned char data[1024];
+    unsigned char data[MAX_FLASH_PACKET_SIZE];
 } DriveConfiguration;
 
 

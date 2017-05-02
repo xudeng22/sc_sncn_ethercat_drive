@@ -77,6 +77,22 @@ static void set_configuration_to_dictionary(
     }
 }
 
+static int exclude_object(uint16_t index)
+{
+    const uint16_t blacklist[] = {
+            0x3000, 0x603f, /* special objects */
+            0x6040, 0x6060, 0x6071, 0x607a, 0x60ff, 0x2300, 0x2a01, 0x2601, 0x2602, 0x2603, 0x2604, 0x2ffe, /* receive pdos */
+            0x6041, 0x6061, 0x6064, 0x606c, 0x6077, 0x230a, 0x230b, 0x2401, 0x2402, 0x2403, 0x2404, 0x2a03, 0x2501, 0x2502, 0x2503, 0x2504, 0x2fff, 0x2ffd /* send pdos */
+    };
+
+    for (int i = 0; i < sizeof(blacklist)/sizeof(blacklist[0]); i++) {
+        if (index == blacklist[i])
+            return 1;
+    }
+
+    return 0;
+}
+
 static unsigned get_configuration_from_dictionary(
         client interface i_co_communication i_canopen,
         unsigned char data[])
@@ -99,6 +115,11 @@ static unsigned get_configuration_from_dictionary(
     for (unsigned i = 0; i < list_lengths[0]; i++) {
         /* Skip objects below index 0x2000 */
         if (all_od_objects[i] < 0x2000) {
+            continue;
+        }
+
+        /* filter out unnecessary objects (like PDOs and command objects or read only stuff) */
+        if (exclude_object(all_od_objects[i])) {
             continue;
         }
 

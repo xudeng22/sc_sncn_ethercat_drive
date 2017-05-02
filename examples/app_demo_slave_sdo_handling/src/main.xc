@@ -454,8 +454,7 @@ int main(void)
                                    ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
-
-                flash_service_ethercat(p_spi_flash, i_boot_ecat, i_data_ecat);
+                flash_service_ethercat(p_spi_flash, null, i_data_ecat);
             }
         }
 

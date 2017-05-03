@@ -7,6 +7,8 @@
 #pragma once
 
 #include <motor_control_interfaces.h>
+#include <hall_service.h>
+#include <qei_service.h>
 #include <motion_control_service.h>
 #include <profile_control.h>
 

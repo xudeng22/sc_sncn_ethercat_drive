@@ -67,15 +67,36 @@ check_list init_checklist(void);
  * @param mode sets mode of operation
  * @param fault sets fault
  */
-
 void update_checklist(check_list &check_list_param, int mode, int fault);
 
+
+/**
+ * @brief Update status word according to the current state of the statemachine
+ *
+ * @param current_status current statusword
+ * @param state_reached current state of the statemachine
+ * @param ack more internal state
+ * @param q_active more internal state
+ * @param shutdown_ack more internal state
+ *
+ * @return new statusword
+ */
 int16_t update_statusword(int current_status, DriveState_t state_reached, int ack, int q_active, int shutdown_ack);
 
+/**
+ * @brief Change state of the state machine according to master controlword and local conditions
+ *
+ * @param in_state current state
+ * @param checklist local conditions checked before changing the state
+ * @param controlword contains the control command from the master
+ * @param localcontrol local command checked before changing the state
+ *
+ * @return new state
+ */
 int get_next_state(int in_state, check_list &checklist, int controlword, int localcontrol);
 
 /**
- * @brief Update opmode if this opmode is supported
+ * @brief Update opmode, check if this opmode is supported
  *
  *  Also set the polarity if the new opmode it CSP or CSV
  *

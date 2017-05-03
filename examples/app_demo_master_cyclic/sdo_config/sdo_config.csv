@@ -23,6 +23,7 @@
 #limits
 0x6072,        0,         100,         100,         100,         100,         100,          50 # DICT_MAX_TORQUE, in 1/1000 of rated torque
 0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_MAX_MOTOR_SPEED
+0x6085,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_QUICK_STOP_DECELERATION
 0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
 0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT
 0x607B,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
@@ -83,8 +84,3 @@
 0x2207,       10,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_4
 0x2207,       11,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_5
 
-#Profiler
-#0x6085,        0,           0,           0,           0,           0,           0,           0 # DICT_QUICK_STOP_DECELERATION
-#0x6083,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_ACCELERATION
-#0x6084,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_DECELERATION
-#0x607F,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_VELOCITY

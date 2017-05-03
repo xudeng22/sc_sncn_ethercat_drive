@@ -207,7 +207,9 @@ int cm_sync_config_motor_control(
     {motorcontrol_config.pole_pairs, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
     motorcontrol_config.commutation_sensor       = sensor_commutation_type;
     {motorcontrol_config.commutation_angle_offset, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
-    {motorcontrol_config.max_torque, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0) * motorcontrol_config.rated_torque) / 1000; // in 1/1000 of rated torque;
+    int tmp = 0;
+    {tmp, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0);
+    motorcontrol_config.max_torque = (tmp  * motorcontrol_config.rated_torque) / 1000; // in 1/1000 of rated torque;
     {motorcontrol_config.phase_resistance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE);
     {motorcontrol_config.phase_inductance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE);
     {motorcontrol_config.torque_constant, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);

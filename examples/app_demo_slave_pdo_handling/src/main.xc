@@ -209,7 +209,7 @@ int main(void) {
     /* EtherCat Communication channels */
     interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
-    interface i_co_communication i_co[3];
+    interface i_co_communication i_co[CO_IF_COUNT];
     interface EtherCATRebootInterface i_ecat_reboot;
 
     par

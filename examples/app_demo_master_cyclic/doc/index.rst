@@ -7,7 +7,7 @@ SOMANET EtherCat Drive Cyclic Position/Velocity/Torque Control Demo
     :backlinks: none
     :depth: 3
 
-This simple demonstration shows how to control your motor using SOMANET EtherCAT Motor Control Kit from a Linux PC. Only Cyclic Synchronous Position, Velocity and Torque control modes (CSP, CSV, CST) are included with a simple linear profile generator. The CSP, CSV and CST control modes are designed to achieve a desired motion trajectory by using various motion profiles and closing the control loop over EtherCAT. The slave controller is taking the generated position, velocity or torque setpoints at a fixed time interval (1ms) as a controller input and will be following them. 
+This simple demonstration shows how to control your motor using SOMANET EtherCAT DC-Drive kit from a Linux PC. Only Cyclic Synchronous Position, Velocity and Torque control modes (CSP, CSV, CST) are included with a simple linear profile generator. The CSP, CSV and CST control modes are designed to achieve a desired motion trajectory by using various motion profiles and closing the control loop over EtherCAT. The slave controller is taking the generated position, velocity or torque setpoints at a fixed time interval (1ms) as a controller input and will be following them. 
 
 .. cssclass:: github
 
@@ -120,6 +120,8 @@ Examine the code
     - The rest is initialisation of various data structures used by the app. The profiler settings are initialized using values from the command line arguments.
 
   Main loop:
+    To be able to handle multiple slave all the functions of the main loop are executed for each slaves using a for loop with the slave count parameter. So each slave is handled independently. Only the commands entered by the user apply to only the selected slave. The selected slave is known by using the `select` local variable which is changed using the up and down arrows.
+
     - In the main loop the communication with the slave is done with ``ecw_master_cyclic_function``.
     - The pdo values are read and write with ``pdo_handler``.
     - The ``display_slaves`` function display the slaves data (position, velocity, torque) and state.

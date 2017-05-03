@@ -1,6 +1,17 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.0.0
+-----
+
+  * Synchronize version number with global SDK Version
+  * New Object Dictionary enabling better components configurability
+  * Removed ctrl_proto and linux_drive libraries
+  * Fixed state-machine
+  * Special tuing mode is added 
+  * Fail-safe firmware update with FoE
+
+
 1.0.0
 -----
 

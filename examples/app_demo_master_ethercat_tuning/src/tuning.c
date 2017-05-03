@@ -116,6 +116,15 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         }
         break;
 
+    //record
+    case '.':
+        if (record_config->state == RECORD_ON) {
+            record_config->state = RECORD_OFF;
+        } else {
+            record_config->state = RECORD_ON;
+        }
+        break;
+
 
 #if 0 //continuous cyclic mode is disabled in tuning app. Use the dedicated app_master_cyclic.
     //switch to cs mode
@@ -513,13 +522,28 @@ void tuning_position(PositionProfileConfig *config, struct _pdo_cia402_output *p
     }
 }
 
-void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, struct _pdo_cia402_output pdo_output, char *filename)
+void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, struct _pdo_cia402_output pdo_output, InputValues input, char *filename)
 {
     if (config->state == RECORD_ON && config->count < config->max_values) {
         if (config->data == NULL) {
             config->data = malloc(sizeof(RecordData)*config->max_values); //malloc for 2 minutes of data
         }
-        config->data[config->count].target_position = (int32_t)pdo_output.user_mosi;
+        switch(input.motorctrl_status) {
+        case TUNING_MOTORCTRL_POSITION_PID:
+        case TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED:
+        case TUNING_MOTORCTRL_POSITION_NL:
+            config->data[config->count].target = pdo_output.target_position;
+            break;
+        case TUNING_MOTORCTRL_VELOCITY:
+            config->data[config->count].target = pdo_output.target_velocity;
+            break;
+        case TUNING_MOTORCTRL_TORQUE:
+            config->data[config->count].target = pdo_output.target_torque;
+            break;
+        default:
+            config->data[config->count].target = 0;
+            break;
+        }
         config->data[config->count].position = (int32_t)pdo_input.position_value;
         config->data[config->count].velocity = (int32_t)pdo_input.velocity_value;
         config->data[config->count].torque = (int16_t)pdo_input.torque_value;
@@ -527,9 +551,9 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
     } else {
         if (config->data != NULL) { //save to file
             FILE *fd = fopen(filename, "w");
-            fprintf(fd, "count,target value,position,velocity,torque\n");
+            fprintf(fd, "count,target,position,velocity,torque\n");
             for (int i=0 ; i<config->count ; i++) {
-                fprintf(fd, "%d,%d,%d,%d,%d\n", i, config->data[i].target_position, config->data[i].position, config->data[i].velocity, config->data[i].torque);
+                fprintf(fd, "%d,%d,%d,%d,%d\n", i, config->data[i].target, config->data[i].position, config->data[i].velocity, config->data[i].torque);
             }
             fclose(fd);
             free(config->data);
@@ -581,7 +605,7 @@ void tuning(WINDOW *wnd, Cursor *cursor,
     display_tuning(wnd, *pdo_output, *pdo_input, *input, *record_config, 0);
 
     //recorder
-    tuning_record(record_config, *pdo_input, (*pdo_output), record_filename);
+    tuning_record(record_config, *pdo_input, (*pdo_output), *input, record_filename);
 
     //position profile
     tuning_position(profile_config, pdo_output, *pdo_input);

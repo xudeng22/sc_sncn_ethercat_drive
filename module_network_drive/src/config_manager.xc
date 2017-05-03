@@ -207,7 +207,7 @@ int cm_sync_config_motor_control(
     {motorcontrol_config.pole_pairs, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
     motorcontrol_config.commutation_sensor       = sensor_commutation_type;
     {motorcontrol_config.commutation_angle_offset, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
-    {motorcontrol_config.max_torque, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0);
+    {motorcontrol_config.max_torque, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0) * motorcontrol_config.rated_torque) / 1000; // in 1/1000 of rated torque;
     {motorcontrol_config.phase_resistance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE);
     {motorcontrol_config.phase_inductance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE);
     {motorcontrol_config.torque_constant, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
@@ -247,7 +247,8 @@ void cm_sync_config_profiler(
     {profiler.deceleration, void, void} = i_co.od_get_object_value(DICT_PROFILE_DECELERATION, 0);
     {profiler.max_velocity, void, void} = i_co.od_get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
     /* FIXME this profiler is only used for Quick Stop so the max_deceleration is read from the quick stop deceleration */
-    {profiler.max_deceleration, void, void} = i_co.od_get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
+    profiler.max_deceleration =  profiler.deceleration;
+    //{profiler.max_deceleration, void, void} = i_co.od_get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
     {profiler.max_acceleration, void, void} = i_co.od_get_object_value(DICT_PROFILE_ACCELERATION, 0);
     {profiler.velocity, void, void} = i_co.od_get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
 }
@@ -425,7 +426,7 @@ void cm_default_config_motor_control(
     i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT, motorcontrol_config.torque_constant);
     i_co.od_set_object_value(DICT_MOTOR_RATED_CURRENT, 0, motorcontrol_config.rated_current);
     i_co.od_set_object_value(DICT_MOTOR_RATED_TORQUE, 0, motorcontrol_config.rated_torque);
-    i_co.od_set_object_value(DICT_MAX_TORQUE, 0, motorcontrol_config.max_torque);
+    i_co.od_set_object_value(DICT_MAX_TORQUE, 0, (motorcontrol_config.max_torque * 1000) / motorcontrol_config.rated_torque); // in 1/1000 of rated torque
     i_co.od_set_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0, motorcontrol_config.percent_offset_torque);
     /* Write protection limits */
     i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);
@@ -459,8 +460,6 @@ void cm_default_config_profiler(
     i_co.od_set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.acceleration);
     i_co.od_set_object_value(DICT_PROFILE_DECELERATION, 0, profiler.deceleration);
     i_co.od_set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.max_velocity);
-    /* FIXME this profiler is only used for Quick Stop so the max_deceleration is read from the quick stop deceleration */
-    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler.max_deceleration);
     i_co.od_set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.max_acceleration);
     i_co.od_set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.velocity);
 }

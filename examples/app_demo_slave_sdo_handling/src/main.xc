@@ -20,6 +20,9 @@
 #define OBJECT_PRINT              0  /* enable object print with 1 */
 #define MAX_TIME_TO_WAIT_SDO      100000
 
+/* Set to 1 to activate initial read of object dictionary from flash at startup */
+#define STARTUP_READ_FLASH_OBJECTS  0
+
 typedef enum {
     ECC_UNKNOWN       = -1
     ,ECC_IDLE         = 0
@@ -46,6 +49,33 @@ interface i_command {
     int  get_object_value(uint16_t index, uint8_t subindex, uint32_t &user_value);
     int  set_object_value(uint16_t index, uint8_t subindex, uint32_t value);
 };
+
+/* Read most recent values for object dictionary values from flash (if existing) */
+static int initial_od_read(client interface i_co_communication i_co)
+{
+    timer t;
+    unsigned time;
+
+    //printstrln("[DEBUG] start initial update dictionary");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        t :> time;
+        t when timerafter(time+100000) :> void;
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+
+    //printstrln("[DEBUG] finished initial update dictionary");
+
+    return 0;
+}
 
 /* Test application handling pdos from EtherCat */
 static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co, client interface i_command i_cmd)
@@ -378,8 +408,11 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
     unsigned int time;
-
     int read_config = 0;
+
+    initial_od_read(i_co);
+
+    printstrln("Start SDO service");
 
     /*
      *  Wait for initial configuration.
@@ -390,14 +423,14 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
      *  moment to read all necessary configuration parameters from the dictionary.
      */
     while (!i_co.configuration_get());
-    read_od_config(i_co);
+    //read_od_config(i_co);
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
     i_co.configuration_done(); /* clear notification */
 
 
     while (1) {
         read_config = i_co.configuration_get();
-
+#if 0
         select {
         case i_cmd.get_object_value(uint16_t index, uint8_t subindex, uint32_t &value) -> { int err }:
             {value, void, void} = i_co.od_get_object_value(index, subindex);
@@ -412,7 +445,7 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
         default:
             break;
         }
-
+#endif
         if (read_config) {
             read_od_config(i_co);
             printstrln("Re-Configuration finished, ECAT in OP mode - start cyclic operation");
@@ -463,17 +496,16 @@ int main(void)
         {
             par
             {
-                /* Start trivial PDO exchange service */
-                pdo_service(i_pdo, i_co[1], i_cmd);
-
-
-                /* Start the SDO / Object Dictionary test service */
-                sdo_service(i_co[2], i_cmd);
-
                 /* due to serious space problems on tile 0 because of the large object dictionary the command
                  * service is located here.
                  */
                 command_service(i_data_ecat, i_co[3]);
+
+                /* Start trivial PDO exchange service */
+                pdo_service(i_pdo, i_co[1], i_cmd);
+
+                /* Start the SDO / Object Dictionary test service */
+                sdo_service(i_co[2], i_cmd);
             }
         }
     }

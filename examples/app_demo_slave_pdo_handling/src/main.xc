@@ -8,6 +8,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include <command_service.h>
 #include <co_interface.h>
 #include <canopen_interface_service.h>
 #include <pdo_handler.h>
@@ -22,6 +23,37 @@ EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
 /* function declaration of later used functions */
 static void read_od_config(client interface i_co_communication i_co);
+
+/* Read most recent values for object dictionary values from flash (if existing) */
+static int initial_od_read(client interface i_co_communication i_co)
+{
+    timer t;
+    unsigned time;
+
+    /* give the other services some time to start */
+    t :> time;
+    t when timerafter(time+100000000) :> void;
+
+    printstrln("[DEBUG] start initial update dictionary complete\n");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        t :> time;
+        t when timerafter(time+100000) :> void;
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+
+    printstrln("[DEBUG] update dictionary complete");
+
+    return 0;
+}
 
 /* Wait until the EtherCAT enters operation mode. At this point the master
  * should have finished all client configuration. */
@@ -67,6 +99,9 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     pdo_values_t InOut = {0};
     pdo_values_t InOutOld = {0};
     t :> time;
+
+    initial_od_read(i_co);
+    printstrln("[DEBUG] update dictionary complete");
 
     sdo_configuration(i_co);
     device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */

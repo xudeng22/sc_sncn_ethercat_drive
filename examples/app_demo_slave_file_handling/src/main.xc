@@ -57,30 +57,6 @@ static int initial_od_read(client interface i_co_communication i_co)
     return 0;
 }
 
-/* example function to read object dictionary entries */
-static void read_od_config(client interface i_co_communication i_co)
-{
-    /* Read and print the values of all known objects */
-    uint32_t value    = 0;
-
-    size_t object_list_size = sizeof(request_list) / sizeof(request_list[0]);
-
-    for (size_t i = 0; i < object_list_size; i++) {
-        {value, void, void} = i_co.od_get_object_value(request_list[i].index, request_list[i].subindex);
-
-#if OBJECT_PRINT == 1
-        printstr("Object 0x"); printhex(request_list[i].index);
-        printstr(":");         printint(request_list[i].subindex);
-        printstr(" = ");
-        printintln(value);
-#endif
-
-    }
-
-    return;
-}
-
-
 /* currentlly not really necessary maybe */
 static void sdo_service(client interface i_co_communication i_co, server interface i_command i_cmd)
 {
@@ -102,7 +78,6 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
      *  moment to read all necessary configuration parameters from the dictionary.
      */
     while (!i_co.configuration_get());
-    //read_od_config(i_co);
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
     i_co.configuration_done(); /* clear notification */
 
@@ -126,8 +101,7 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
         }
 #endif
         if (read_config) {
-            read_od_config(i_co);
-            printstrln("Re-Configuration finished, ECAT in OP mode - start cyclic operation");
+            printstrln("Re-Configuration signaled and finished, ECAT in OP mode - start cyclic operation");
             i_co.configuration_done(); /* clear notification */
             read_config = 0;
         }

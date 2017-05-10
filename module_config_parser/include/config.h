@@ -41,7 +41,7 @@ typedef struct {
  * \param params   Pointer to a \c SdoConfigParameter_t object
  * \return         0 if no error
  */
-int read_sdo_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs);
-int write_sdo_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs);
+int read_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs);
+int write_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs);
 
 #endif /* READSDOCONFIG_H */

@@ -16,7 +16,7 @@
 #include <xccompat.h>
 #include <flash_service.h>
 #include <spiffs_service.h>
-#include <sdoconfig.h>
+#include <config.h>
 
 
 
@@ -79,7 +79,7 @@ static void parse_token_for_node(struct _token_t *tokens, SdoParam_t *param,
   param->value    = (uint32_t) parse_token(tokens->token[2 + node]);
 }
 
-int read_sdo_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs)
+int read_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs)
 {
 
   int retval = 0;
@@ -159,7 +159,7 @@ int read_sdo_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSI
 
 
 
-int write_sdo_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs)
+int write_config(char path[], SdoConfigParameter_t *parameter, client SPIFFSInterface i_spiffs)
 {
 
   int retval = 0;

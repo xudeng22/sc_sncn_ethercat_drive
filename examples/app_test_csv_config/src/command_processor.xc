@@ -6,7 +6,7 @@
 #include <flash_service.h>
 #include <spiffs_service.h>
 #include <command_processor.h>
-#include <sdoconfig.h>
+#include <сonfig.h>
 #include <syscall.h>
 
 #define BUFFER_SIZE 20*1024

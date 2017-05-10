@@ -1,6 +1,13 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.0.1
+-----
+
+  * Fix issue with a not working Debug/Release build configuration for demo apps
+  * Fix issue with not supported data types 
+
+
 3.0.0
 -----
 

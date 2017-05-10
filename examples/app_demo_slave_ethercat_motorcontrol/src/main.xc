@@ -34,6 +34,9 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
+#include <command_service.h>
+#include <flash_service.h>
+
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
@@ -66,6 +69,8 @@ int main(void)
     interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
+    interface EtherCATFlashDataInterface i_data_ecat;
+
 
     par
     {
@@ -82,6 +87,7 @@ int main(void)
                                     i_foe, ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
+                flash_service_ethercat(p_spi_flash, null, i_data_ecat);
             }
         }
 
@@ -97,6 +103,7 @@ int main(void)
             profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
             profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
+            command_service(i_data_ecat, i_co[3]);
 #if 0
             network_drive_service_debug( profiler_config,
                                     i_pdo,

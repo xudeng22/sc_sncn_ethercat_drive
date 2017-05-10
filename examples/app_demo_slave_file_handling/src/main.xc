@@ -58,7 +58,7 @@ static int initial_od_read(client interface i_co_communication i_co)
 }
 
 /* currentlly not really necessary maybe */
-static void sdo_service(client interface i_co_communication i_co, server interface i_command i_cmd)
+static void sdo_service(client interface i_co_communication i_co)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
@@ -84,22 +84,7 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
 
     while (1) {
         read_config = i_co.configuration_get();
-#if 0
-        select {
-        case i_cmd.get_object_value(uint16_t index, uint8_t subindex, uint32_t &value) -> { int err }:
-            {value, void, void} = i_co.od_get_object_value(index, subindex);
-            err = ECC_OK;
-            break;
 
-        case i_cmd.set_object_value(uint16_t index, uint8_t subindex, uint32_t value) -> { int err }:
-            i_co.od_set_object_value(index, subindex, value);
-            err = 0;
-            break;
-
-        default:
-            break;
-        }
-#endif
         if (read_config) {
             printstrln("Re-Configuration signaled and finished, ECAT in OP mode - start cyclic operation");
             i_co.configuration_done(); /* clear notification */
@@ -113,9 +98,6 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
 
 int main(void)
 {
-    /* EtherCat Communication channels */
-    interface i_command i_cmd;
-
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
     interface i_co_communication i_co[CO_IF_COUNT];
@@ -123,7 +105,6 @@ int main(void)
 
     /* flash interfaces */
     interface EtherCATFlashDataInterface i_data_ecat;
-    interface EtherCATFlashDataInterface i_boot_ecat;
 
     par
     {
@@ -155,7 +136,7 @@ int main(void)
                 file_service(i_data_ecat, i_co[3]);
 
                 /* Start the SDO / Object Dictionary test service */
-                sdo_service(i_co[2], i_cmd);
+                sdo_service(i_co[2]);
             }
         }
     }

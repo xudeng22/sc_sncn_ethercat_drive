@@ -9,7 +9,7 @@ TARGET = SOMANET-C22
 APP_NAME = app_demo_slave_pdo_handling
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = lib_ethercat module_board-support module_canopen_interface module_reboot module_command_service module_flash_service
+USED_MODULES = lib_ethercat module_board-support module_canopen_interface module_reboot module_file_service module_flash_service
 
 ifeq ($(CONFIG),Debug)
 MODULE_LIBRARIES = ethercat_service_standalone

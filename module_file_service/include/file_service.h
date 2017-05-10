@@ -1,6 +1,6 @@
 /**
- * @file flash_service.h
- * @brief Simple flash command service to store configuration parameter
+ * @file file_service.h
+ * @brief Simple flash file service to store configuration parameter
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
@@ -18,11 +18,11 @@ typedef struct {
 
 
 /**
- * @brief This Service stores configuration data from the object dictionary to flash.
+ * @brief This Service stores configuration data from the object dictionary to flash files.
  *
  * @param i_flash_ecat_data   interface for writing ethercat data to flash
  * @param i_canopen           interface to the canopen interface service
  */
-void command_service(
+void file_service(
         client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
         client interface i_co_communication i_canopen);

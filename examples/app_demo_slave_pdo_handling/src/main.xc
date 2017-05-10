@@ -8,7 +8,7 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <command_service.h>
+#include <file_service.h>
 #include <co_interface.h>
 #include <canopen_interface_service.h>
 #include <pdo_handler.h>

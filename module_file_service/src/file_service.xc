@@ -1,5 +1,5 @@
 /**
- * @file command_service.xc
+ * @file file_service.xc
  * @brief Simple flash command service to store object dictionary values to flash memory
  * @author Synapticon GmbH <support@synapticon.com>
  */
@@ -9,7 +9,7 @@
  * Integration of commit 0a13cfd9aa4e98e8d46bb2de42d4648854d31e25 from sc_sncn_ethercatlib
  */
 
-#include <command_service.h>
+#include <file_service.h>
 #include <co_interface.h>
 #include <flash_service.h>
 #include <xs1.h>
@@ -210,7 +210,7 @@ static int flash_read_od_config(
     return 0;
 }
 
-void command_service(
+void file_service(
         client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
         client interface i_co_communication i_canopen)
 {

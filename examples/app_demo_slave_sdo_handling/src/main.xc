@@ -10,7 +10,7 @@
 
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
-#include <command_service.h>
+#include <file_service.h>
 #include <reboot.h>
 #include <pdo_handler.h>
 #include <stdint.h>
@@ -499,7 +499,7 @@ int main(void)
                 /* due to serious space problems on tile 0 because of the large object dictionary the command
                  * service is located here.
                  */
-                command_service(i_data_ecat, i_co[3]);
+                file_service(i_data_ecat, i_co[3]);
 
                 /* Start trivial PDO exchange service */
                 pdo_service(i_pdo, i_co[1], i_cmd);

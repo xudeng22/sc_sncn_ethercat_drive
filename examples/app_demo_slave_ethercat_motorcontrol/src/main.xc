@@ -34,7 +34,7 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
-#include <command_service.h>
+#include <file_service.h>
 #include <flash_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
@@ -103,7 +103,7 @@ int main(void)
             profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
             profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
-            command_service(i_data_ecat, i_co[3]);
+            file_service(i_data_ecat, i_co[3]);
 #if 0
             network_drive_service_debug( profiler_config,
                                     i_pdo,

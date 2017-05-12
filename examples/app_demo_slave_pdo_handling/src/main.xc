@@ -221,11 +221,9 @@ int main(void) {
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(null, i_coe, null,
+                ethercat_service(i_ecat_reboot, i_coe, null,
                         i_foe, i_pdo, ethercat_ports);
-#if 0 /* reboot service does not work here since one task is marked [[distributeable]] and the XTC fails here */
                 reboot_service_ethercat(i_ecat_reboot);
-#endif
             }
         }
 #if 0 /* Experiment with watchdog trigger */

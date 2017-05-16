@@ -170,29 +170,34 @@ void file_service(
     unsigned int time;
     t :> time;
 
-    while (1) {
-        enum eSdoCommand command = i_canopen.command_ready();
-        int command_result = 0;
+    select {
+        case i_spiffs.service_ready():
+            while (1) {
+                enum eSdoCommand command = i_canopen.command_ready();
+                int command_result = 0;
 
-        switch (command) {
-        case OD_COMMAND_WRITE_CONFIG:
-            command_result = flash_write_od_config(i_spiffs, i_canopen);
-            i_canopen.command_set_result(command_result);
-            command_result = 0;
-            break;
+                switch (command) {
+                case OD_COMMAND_WRITE_CONFIG:
+                    command_result = flash_write_od_config(i_spiffs, i_canopen);
+                    i_canopen.command_set_result(command_result);
+                    command_result = 0;
+                    break;
 
-        case OD_COMMAND_READ_CONFIG:
-            command_result = flash_read_od_config(i_spiffs, i_canopen);
-            i_canopen.command_set_result(command_result);
-            command_result = 0;
-            break;
+                case OD_COMMAND_READ_CONFIG:
+                    command_result = flash_read_od_config(i_spiffs, i_canopen);
+                    i_canopen.command_set_result(command_result);
+                    command_result = 0;
+                    break;
 
-        case OD_COMMAND_NONE:
-            break;
-        default:
-            break;
-        }
+                case OD_COMMAND_NONE:
+                    break;
+                default:
+                    break;
+                }
+           }
+        break;
+    }
 
         t when timerafter(time + TIME_FOR_LOOP) :> time;
-    }
 }
+

@@ -1,24 +1,22 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <print.h>
-#include <xccompat.h>
 #include <flash_service.h>
 #include <spiffs_service.h>
 #include <command_processor.h>
-#include <сonfig.h>
+//#include <config_parser.h>
 #include <syscall.h>
 
-#define BUFFER_SIZE 20*1024
-
+#define BUFFER_SIZE 1024
 
 
 void spiffs_console(client SPIFFSInterface i_spiffs)
 {
-    SdoConfigParameter_t SdoConfig;
+    //ConfigParameter_t Config;
 
     unsigned char buf[BUFFER_SIZE];
-    char par1[MAX_FILENAME_SIZE], par2[1024], par3[MAX_FILENAME_SIZE];
+    char par1[MAX_FILENAME_SIZE], par2[MAX_FILENAME_SIZE], par3[MAX_FILENAME_SIZE];
     int par_num, res;
     unsigned short fd = 0;
     unsigned short flags = 0;
@@ -26,11 +24,11 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
     select {
         case i_spiffs.service_ready():
 
-            printstrln(">>   COMMAND SERVICE STARTING...\n");
+            printf(">>   COMMAND SERVICE STARTING...\n");
 
             while(1)
             {
-            printstr(">");
+            printf(">");
             gets(buf);
             par_num = sscanf(buf, "%s %s %s", par1, par2, par3);
             if (par_num > 0)
@@ -111,17 +109,18 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
                     if (par_num > 1)
                     {
                         fd  = i_spiffs.open_file(par2, strlen(par2), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-                        if ((fd > 0)&&(fd < 255)) printf("File opened with file descriptor %i\n", fd);
-                        else
+                        if ((fd < 0)&&(fd > 255))
                         {
-                            printf("Error opening file \n");
+                            printf("Error\n");
                             continue;
                         }
+                        else
+                            printf("File opened with file descriptor %i\n", fd);
 
                         int cfd = _open(par2, O_RDONLY, 0);
                         if (cfd == -1)
                         {
-                            printstrln("Error: file open failed");
+                            printf("Error\n");
                             continue;
                         }
 
@@ -141,7 +140,7 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
 
                         if (_close(cfd) != 0)
                         {
-                            printstrln("Error: file close failed.");
+                            printf("Error\n");
                             continue;
                         }
 
@@ -151,7 +150,7 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
                           printf("Success...\n");
                     }
                     else
-                        printf("Missing parameter \n");
+                        printf("Missing param \n");
 
                 }
                 else
@@ -166,17 +165,16 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
                         unsigned char name[MAX_FILENAME_SIZE];
 
                         fd  = i_spiffs.open_file(par2, strlen(par2), SPIFFS_RDONLY);
-                        if ((fd > 0)&&(fd < 255)) printf("File opened with file descriptor %i\n", fd);
-                        else
+                        if ((fd < 0)&&(fd > 255))
                         {
-                            printf("Error opening file \n");
+                            printf("Error\n");
                             continue;
                         }
 
                         int cfd = _open(par2, O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE);
                         if (cfd == -1)
                         {
-                             printstrln("Error: file open failed");
+                             printf("Error\n");
                              continue;
                         }
 
@@ -204,7 +202,7 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
 
                         if (_close(cfd) != 0)
                         {
-                            printstrln("Error: file close failed.");
+                            printf("Error\n");
                             continue;
                         }
 
@@ -214,23 +212,23 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
                            printf("Success...\n");
                     }
                     else
-                        printf("Missing parameter \n");
+                        printf("Missing paramn");
 
                 }
-                else
+                /*else
                 if (strcmp(par1, "confdown") == 0)
                 {
                     if (par_num > 1)
                     {
                         printf("Parsing... \n");
-                        if (read_sdo_config(par2, &SdoConfig, i_spiffs) >= 0)
+                        if (read_config(par2, &Config, i_spiffs) >= 0)
                             printf("Success... \n");
                         else
                             printf("Error... \n");
 
                     }
                     else
-                        printf("Missing parameter \n");
+                        printf("Missing param\n");
                 }
                 else
                 if (strcmp(par1, "confup") == 0)
@@ -238,14 +236,14 @@ void spiffs_console(client SPIFFSInterface i_spiffs)
                     if (par_num > 1)
                     {
                         printf("Generating... \n");
-                        if (write_sdo_config(par2, &SdoConfig, i_spiffs) >= 0)
+                        if (write_config(par2, &Config, i_spiffs) >= 0)
                             printf("Success... \n");
                         else
                             printf("Error... \n");
                     }
                     else
-                        printf("Missing parameter \n");
-                }
+                        printf("Missing param\n");
+                }*/
                 else
                 if (strcmp(par1, "remove") == 0)
                 {

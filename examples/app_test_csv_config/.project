@@ -3,6 +3,9 @@
 	<name>app_test_spiffs_console</name>
 	<comment></comment>
 	<projects>
+		<project>module_config_parser</project>
+		<project>module_flash_service</project>
+		<project>module_spiffs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

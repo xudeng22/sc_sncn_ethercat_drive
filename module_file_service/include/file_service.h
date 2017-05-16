@@ -8,15 +8,7 @@
 
 #include <co_interface.h>
 #include <stdint.h>
-
-#define MAX_FLASH_PACKET_SIZE   (1024 + 512)
-
-typedef struct {
-    uint8_t index;
-    unsigned char data[MAX_FLASH_PACKET_SIZE];
-} DriveConfiguration;
-
-
+#include <spiffs_service.h>
 /**
  * @brief This Service stores configuration data from the object dictionary to flash files.
  *
@@ -24,5 +16,5 @@ typedef struct {
  * @param i_canopen           interface to the canopen interface service
  */
 void file_service(
-        client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen);

@@ -9,12 +9,13 @@
  * Integration of commit 0a13cfd9aa4e98e8d46bb2de42d4648854d31e25 from sc_sncn_ethercatlib
  */
 
+#include <flash_service.h>
 #include <file_service.h>
 #include <co_interface.h>
-#include <flash_service.h>
 #include <xs1.h>
 #include <print.h>
 #include <string.h>
+#include <config_parser.h>
 
 #ifndef MSEC_STD
 #define MSEC_STD 100000
@@ -36,44 +37,15 @@ typedef struct _sdoinfo_configuration_paramater {
 
 static Configuration configuration[MAX_CONFIG_SDO_ENTRIES];
 
-/**
- * @brief Get the position of a drive configuration in the flash memory
- *
- * @param drive_index                   configuration of the drive to find
- * @param drive_configuration           populated with the found configuration
- * @param drive_configuration_size      populated with the size of the found configuration in bytes
- *
- * @return  position inside the flash memory
- */
-int get_drive_configuration(client interface EtherCATFlashDataInterface i_data_ecat,
-                            uint8_t drive_index, DriveConfiguration &drive_configuration,
-                            unsigned &drive_configuration_size) {
-    int8_t position = 0;
-    while (1) {
-        i_data_ecat.get_object(position, (unsigned char*)&drive_configuration, drive_configuration_size);
 
-        if (drive_configuration_size == 0) {
-            return -1;
-        }
-
-        if (drive_configuration.index == drive_index) {
-            break;
-        }
-
-        position++;
-    }
-
-    return position;
-}
 
 static void set_configuration_to_dictionary(
         client interface i_co_communication i_canopen,
-        unsigned char data[], unsigned size)
+        ConfigParameter_t* Config)
 {
-    memcpy(configuration, data, size);
 
-    for (unsigned i = 0; i < size/sizeof(Configuration); i++) {
-        i_canopen.od_set_object_value(configuration[i].index, configuration[i].subindex, configuration[i].value);
+    for (unsigned i = 0; i < Config->param_count; i++) {
+        i_canopen.od_set_object_value(Config->parameter[i][0].index, Config->parameter[i][0].subindex, Config->parameter[i][0].value);
     }
 }
 
@@ -95,7 +67,7 @@ static int exclude_object(uint16_t index)
 
 static unsigned get_configuration_from_dictionary(
         client interface i_co_communication i_canopen,
-        unsigned char data[])
+        ConfigParameter_t* Config)
 {
     uint32_t list_lengths[5];
     i_canopen.od_get_all_list_length(list_lengths);
@@ -131,87 +103,67 @@ static unsigned get_configuration_from_dictionary(
                 //...
                 {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], k);
 
-                configuration[count].index    = all_od_objects[i];
-                configuration[count].subindex = k;
-                configuration[count].value    = value;
+                Config->parameter[count][0].index    = all_od_objects[i];
+                Config->parameter[count][0].subindex = k;
+                Config->parameter[count][0].value    = value;
                 count++;
             }
         } else { /* simple variable object */
-            configuration[count].index    = od_entry.index;
-            configuration[count].subindex = od_entry.subindex;
-            configuration[count].value    = od_entry.value;
+            Config->parameter[count][0].index    = od_entry.index;
+            Config->parameter[count][0].subindex    = od_entry.subindex;
+            Config->parameter[count][0].value    = od_entry.value;
             count++;
         }
     }
 
-    unsigned bytes_of_data = count * sizeof(Configuration);
-    memcpy(data, configuration, bytes_of_data);
-
-    return bytes_of_data;
+    return count;
 }
 
 static int flash_write_od_config(
-        client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
 {
-    /* read object dictionsry values and write to flash */
+    int result;
+    ConfigParameter_t Config;
 
-    printstrln("Command scheduled - notthing to do now");
+    get_configuration_from_dictionary(i_canopen, &Config);
 
-    if (isnull(i_flash_ecat_data)) {
-        return 1; /* failed because of the lack of the flash interface */
+    printstrln("Generating... \n");
+    if ((result = write_config("config.csv", &Config, i_spiffs)) >= 0)
+        printstrln("Success... \n");
+    else
+    {
+         printstrln("Error... \n");
+         return result;
     }
-
-    int result = 0;
-
-    // Function previously in i_coe.save_configuration_to_flash(uint8_t drive_index)
-
-    /* Get the current position of the object dictionary in flash (if any) */
-    uint8_t drive_index = CMD_DRIVE_INDEX;
-    DriveConfiguration drive_configuration;
-    unsigned drive_configuration_size = 0;
-
-    int configuration_position = get_drive_configuration(i_flash_ecat_data, drive_index, drive_configuration, drive_configuration_size);
-
-    if (configuration_position != -1) {
-        result = i_flash_ecat_data.remove_object(configuration_position);
-        if (result != 0) {
-           return 1;
-        }
-    }
-    drive_configuration.index = drive_index;
-
-    /* read index/subindex/value from object dictionary */
-    drive_configuration_size = get_configuration_from_dictionary(i_canopen, drive_configuration.data);
-    drive_configuration_size += sizeof(drive_configuration.index);
-
-    // Save the drive configuration together with the drive index
-    result = i_flash_ecat_data.add_object((unsigned char*)&drive_configuration, drive_configuration_size);
 
     return result;
 }
 
 static int flash_read_od_config(
-        client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
 {
-    uint8_t drive_index = CMD_DRIVE_INDEX;
-    DriveConfiguration drive_configuration;
-    unsigned drive_configuration_size = 0;
+    int result;
+    ConfigParameter_t Config;
 
-    int configuration_position = get_drive_configuration(i_flash_ecat_data, drive_index, drive_configuration, drive_configuration_size);
-    if (configuration_position < 0) {
-        return 1;
+    printstrln("Parsing... \n");
+    if ((result = read_config("config.csv", &Config, i_spiffs)) >= 0)
+        printstrln("Success... \n");
+    else
+    {
+        printstrln("Error... \n");
+        return result;
     }
 
     // put the flash configuration into the dictionary
-    set_configuration_to_dictionary(i_canopen, drive_configuration.data, drive_configuration_size);
+    set_configuration_to_dictionary(i_canopen, &Config);
 
-    return 0;
+    return result;
 }
 
 void file_service(
-        client interface EtherCATFlashDataInterface ?i_flash_ecat_data,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
 {
     timer t;
@@ -224,13 +176,13 @@ void file_service(
 
         switch (command) {
         case OD_COMMAND_WRITE_CONFIG:
-            command_result = flash_write_od_config(i_flash_ecat_data, i_canopen);
+            command_result = flash_write_od_config(i_spiffs, i_canopen);
             i_canopen.command_set_result(command_result);
             command_result = 0;
             break;
 
         case OD_COMMAND_READ_CONFIG:
-            command_result = flash_read_od_config(i_flash_ecat_data, i_canopen);
+            command_result = flash_read_od_config(i_spiffs, i_canopen);
             i_canopen.command_set_result(command_result);
             command_result = 0;
             break;

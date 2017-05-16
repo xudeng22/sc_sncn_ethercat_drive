@@ -10,15 +10,21 @@
 
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
+#include <flash_service.h>
+#include <spiffs_service.h>
 #include <file_service.h>
 #include <reboot.h>
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
-#include <flash_service.h>
+
 
 #define OBJECT_PRINT              0  /* enable object print with 1 */
 #define MAX_TIME_TO_WAIT_SDO      100000
+
+#define MAX_SPIFFS_INTERFACES 2
+#define MAX_FLASH_DATA_INTERFACES 1
+
 
 /* Set to 1 to activate initial read of object dictionary from flash at startup */
 #define STARTUP_READ_FLASH_OBJECTS  0
@@ -103,6 +109,11 @@ int main(void)
     interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
 
+    FlashDataInterface i_data[MAX_FLASH_DATA_INTERFACES];
+    FlashBootInterface i_boot;
+    SPIFFSInterface i_spiffs[MAX_SPIFFS_INTERFACES];
+
+
     /* flash interfaces */
     interface EtherCATFlashDataInterface i_data_ecat;
 
@@ -113,15 +124,23 @@ int main(void)
         {
             par
             {
-                ethercat_service(i_ecat_reboot,
+#if 0
+                ethercat_service(null,
                                    i_pdo,
                                    i_co,
                                    null,
                                    i_foe,
                                    ethercat_ports);
+#endif
+                _ethercat_service(null,
+                                 i_co[0],
+                                 null,
+                                 i_foe,
+                                 ethercat_ports);
 
-                reboot_service_ethercat(i_ecat_reboot);
-                flash_service_ethercat(p_spi_flash, null, i_data_ecat); /* FIXME no longer used replace with spiffs service */
+                //reboot_service_ethercat(i_ecat_reboot);
+
+                flash_service(p_spi_flash, i_boot, i_data, 1);
             }
         }
 
@@ -133,12 +152,18 @@ int main(void)
                 /* due to serious space problems on tile 0 because of the large object dictionary the command
                  * service is located here.
                  */
-                file_service(i_data_ecat, i_co[3]);
+                file_service(i_spiffs[0], i_co[3]);
 
                 /* Start the SDO / Object Dictionary test service */
                 sdo_service(i_co[2]);
+                canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
             }
         }
+       on tile[APP_TILE_2] :
+       {
+           spiffs_service(i_data[0], i_spiffs, 1);
+       }
+
     }
 
     return 0;

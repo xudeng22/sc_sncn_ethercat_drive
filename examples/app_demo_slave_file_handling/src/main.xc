@@ -138,7 +138,7 @@ int main(void)
                                  i_foe,
                                  ethercat_ports);
 
-                //reboot_service_ethercat(i_ecat_reboot);
+                reboot_service_ethercat(i_ecat_reboot);
 
                 flash_service(p_spi_flash, i_boot, i_data, 1);
             }
@@ -152,7 +152,6 @@ int main(void)
                 /* due to serious space problems on tile 0 because of the large object dictionary the command
                  * service is located here.
                  */
-                file_service(i_spiffs[0], i_co[3]);
 
                 /* Start the SDO / Object Dictionary test service */
                 sdo_service(i_co[2]);
@@ -162,6 +161,11 @@ int main(void)
        on tile[APP_TILE_2] :
        {
            spiffs_service(i_data[0], i_spiffs, 1);
+       }
+
+       on tile[IFM_TILE] :
+       {
+           file_service(i_spiffs[0], i_co[3]);
        }
 
     }

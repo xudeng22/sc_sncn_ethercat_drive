@@ -39,14 +39,16 @@ static Configuration configuration[MAX_CONFIG_SDO_ENTRIES];
 
 
 
-static void set_configuration_to_dictionary(
+static unsigned int set_configuration_to_dictionary(
         client interface i_co_communication i_canopen,
         ConfigParameter_t* Config)
 {
+    unsigned int i;
 
-    for (unsigned i = 0; i < Config->param_count; i++) {
+    for (i = 0; i < Config->param_count; i++) {
         i_canopen.od_set_object_value(Config->parameter[i][0].index, Config->parameter[i][0].subindex, Config->parameter[i][0].value);
     }
+    return i;
 }
 
 static int exclude_object(uint16_t index)
@@ -102,7 +104,6 @@ static unsigned get_configuration_from_dictionary(
             for (unsigned k = 1; k <= od_entry.value; k++) {
                 //...
                 {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], k);
-
                 Config->parameter[count][0].index    = all_od_objects[i];
                 Config->parameter[count][0].subindex = k;
                 Config->parameter[count][0].value    = value;
@@ -116,6 +117,9 @@ static unsigned get_configuration_from_dictionary(
         }
     }
 
+    Config->param_count = count;
+    Config->node_count = 1;
+
     return count;
 }
 
@@ -126,9 +130,10 @@ static int flash_write_od_config(
     int result;
     ConfigParameter_t Config;
 
+
+    printstrln("\nGenerating... \n");
     get_configuration_from_dictionary(i_canopen, &Config);
 
-    printstrln("Generating... \n");
     if ((result = write_config("config.csv", &Config, i_spiffs)) >= 0)
         printstrln("Success... \n");
     else
@@ -147,7 +152,7 @@ static int flash_read_od_config(
     int result;
     ConfigParameter_t Config;
 
-    printstrln("Parsing... \n");
+    printstrln("\nParsing... \n");
     if ((result = read_config("config.csv", &Config, i_spiffs)) >= 0)
         printstrln("Success... \n");
     else
@@ -157,7 +162,9 @@ static int flash_read_od_config(
     }
 
     // put the flash configuration into the dictionary
-    set_configuration_to_dictionary(i_canopen, &Config);
+    printstr("Readed: ");
+    printuint(set_configuration_to_dictionary(i_canopen, &Config));
+    printstrln(" params");
 
     return result;
 }
@@ -172,31 +179,33 @@ void file_service(
 
     select {
         case i_spiffs.service_ready():
-            while (1) {
-                enum eSdoCommand command = i_canopen.command_ready();
-                int command_result = 0;
 
-                switch (command) {
-                case OD_COMMAND_WRITE_CONFIG:
-                    command_result = flash_write_od_config(i_spiffs, i_canopen);
-                    i_canopen.command_set_result(command_result);
-                    command_result = 0;
-                    break;
-
-                case OD_COMMAND_READ_CONFIG:
-                    command_result = flash_read_od_config(i_spiffs, i_canopen);
-                    i_canopen.command_set_result(command_result);
-                    command_result = 0;
-                    break;
-
-                case OD_COMMAND_NONE:
-                    break;
-                default:
-                    break;
-                }
-           }
         break;
     }
+
+        while (1) {
+               enum eSdoCommand command = i_canopen.command_ready();
+               int command_result = 0;
+               switch (command) {
+               case OD_COMMAND_WRITE_CONFIG:
+                   command_result = flash_write_od_config(i_spiffs, i_canopen);
+                   i_canopen.command_set_result(command_result);
+                   command_result = 0;
+                   break;
+
+               case OD_COMMAND_READ_CONFIG:
+                   command_result = flash_read_od_config(i_spiffs, i_canopen);
+                   i_canopen.command_set_result(command_result);
+                   command_result = 0;
+                   break;
+
+               case OD_COMMAND_NONE:
+                   break;
+               default:
+                   break;
+               }
+          }
+
 
         t when timerafter(time + TIME_FOR_LOOP) :> time;
 }

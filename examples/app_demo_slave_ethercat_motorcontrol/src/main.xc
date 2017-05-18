@@ -34,8 +34,10 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
-#include <file_service.h>
+//#include <file_service.h>
 #include <flash_service.h>
+#include <spiffs_service.h>
+#include <file_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -69,7 +71,9 @@ int main(void)
     interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
-    interface EtherCATFlashDataInterface i_data_ecat;
+
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
 
 
     par
@@ -83,39 +87,60 @@ int main(void)
         {
             par
             {
-                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
-                                    i_foe, ethercat_ports);
+//                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+//                                    i_foe, ethercat_ports);
+                _ethercat_service(i_ecat_reboot,
+                                 i_co[0],
+                                 null,
+                                 i_foe,
+                                 ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
-                flash_service_ethercat(p_spi_flash, null, i_data_ecat);
+
+                flash_service(p_spi_flash, null, i_data, 1);
+
+            }
+        }
+
+        on tile[APP_TILE_1] :
+        {
+            par {
+                canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
+
+                file_service(i_spiffs[0], i_co[3]);
             }
         }
 
         /* EtherCAT Motor Drive Loop */
-        on tile[APP_TILE_1] :
+        on tile[APP_TILE_2] :
         {
-            ProfilerConfig profiler_config;
+            par {
+                {
+                    ProfilerConfig profiler_config;
 
-            profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-            profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
 
-            profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
+                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
+                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
-            file_service(i_data_ecat, i_co[3]);
 #if 0
-            network_drive_service_debug( profiler_config,
-                                    i_pdo,
-                                    i_co[1],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0]);
+                    network_drive_service_debug( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0]);
 #else
-            network_drive_service( profiler_config,
-                                    i_pdo,
-                                    i_co[1],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+                    network_drive_service( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+                }
+
+
+            }
 #endif
         }
 

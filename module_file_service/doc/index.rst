@@ -6,7 +6,10 @@ Flash File Service Module
 
 This module provides a service to store configuration parameters from the object dictionary permanently into flash.
 
-.. important:: This module is a (temporary) solution until the flash filesystem is integrated.
+Dependent modules:
+- ``module_spiffs``
+
+.. important:: This module is a solution until the flash filesystem is integrated.
 
 .. contents:: In this document
     :backlinks: none
@@ -14,8 +17,7 @@ This module provides a service to store configuration parameters from the object
 
 .. cssclass:: github
 
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_flash>`_ *obsolete*
-  New is ``module_spiffs``
+  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_file_service>`_
 
 **The service takes as parameters:**
  - interface for writing ethercat data to flash
@@ -24,7 +26,6 @@ This module provides a service to store configuration parameters from the object
 The service starts after receiving notification from the SPIFFS service "spiffs_reday", This notification indicates, that file service initialized and mounted.
 The service requires modules:
 
- 
 How to use
 ==========
 1. Pass options to xCORE build tools from makefile::

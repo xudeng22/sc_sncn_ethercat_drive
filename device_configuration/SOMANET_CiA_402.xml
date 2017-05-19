@@ -779,7 +779,7 @@
               </DataType>
               <DataType>
                 <Name>DT2003</Name>
-                <BitSize>121</BitSize>
+                <BitSize>128</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>Number of entries</Name>
@@ -838,11 +838,11 @@
                 <SubItem>
                   <SubIdx>5</SubIdx>
                   <Name>Motor phases inverted</Name>
-                  <Type>BOOL</Type>
-                  <BitSize>1</BitSize>
+                  <Type>USINT</Type>
+                  <BitSize>8</BitSize>
                   <BitOffs>120</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -868,7 +868,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -879,7 +879,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -890,7 +890,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -901,7 +901,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>96</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -912,7 +912,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>104</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -923,7 +923,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>120</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -957,14 +957,14 @@
                   <BitSize>48</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>m</Category>
                   </Flags>
                 </SubItem>
               </DataType>
               <DataType>
                 <Name>DT2005</Name>
-                <BitSize>113</BitSize>
+                <BitSize>120</BitSize>
                 <SubItem>
                   <SubIdx>0</SubIdx>
                   <Name>Number of entries</Name>
@@ -979,8 +979,8 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Recuperation enabled</Name>
-                  <Type>BOOL</Type>
-                  <BitSize>1</BitSize>
+                  <Type>USINT</Type>
+                  <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
                     <Access>rw</Access>
@@ -992,7 +992,7 @@
                   <Name>Min battery energy</Name>
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
-                  <BitOffs>17</BitOffs>
+                  <BitOffs>24</BitOffs>
                   <Flags>
                     <Access>rw</Access>
                     <Category>m</Category>
@@ -1003,7 +1003,7 @@
                   <Name>Max battery energy</Name>
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
-                  <BitOffs>33</BitOffs>
+                  <BitOffs>40</BitOffs>
                   <Flags>
                     <Access>rw</Access>
                     <Category>m</Category>
@@ -1014,7 +1014,7 @@
                   <Name>Min recuperation power</Name>
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
-                  <BitOffs>49</BitOffs>
+                  <BitOffs>56</BitOffs>
                   <Flags>
                     <Access>rw</Access>
                     <Category>m</Category>
@@ -1025,7 +1025,7 @@
                   <Name>Max recuperation power</Name>
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
-                  <BitOffs>65</BitOffs>
+                  <BitOffs>72</BitOffs>
                   <Flags>
                     <Access>rw</Access>
                     <Category>m</Category>
@@ -1036,7 +1036,7 @@
                   <Name>Minimum recuperation speed</Name>
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
-                  <BitOffs>81</BitOffs>
+                  <BitOffs>88</BitOffs>
                   <Flags>
                     <Access>rw</Access>
                     <Category>m</Category>
@@ -1047,7 +1047,7 @@
                   <Name>Maximum recuperation speed</Name>
                   <Type>UINT</Type>
                   <BitSize>16</BitSize>
-                  <BitOffs>97</BitOffs>
+                  <BitOffs>104</BitOffs>
                   <Flags>
                     <Access>rw</Access>
                     <Category>m</Category>
@@ -1086,7 +1086,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>m</Category>
                   </Flags>
                 </SubItem>
@@ -1097,7 +1097,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1172,7 +1172,7 @@
                   <BitSize>96</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>m</Category>
                   </Flags>
                 </SubItem>
@@ -1198,7 +1198,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1209,7 +1209,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1220,7 +1220,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1231,7 +1231,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>112</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1257,7 +1257,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1268,7 +1268,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1279,7 +1279,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1290,7 +1290,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>112</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1448,7 +1448,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>216</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1474,7 +1474,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1485,7 +1485,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>24</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1496,7 +1496,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>32</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1507,7 +1507,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>64</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1518,7 +1518,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1529,7 +1529,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>88</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1555,7 +1555,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1566,7 +1566,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>24</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1577,7 +1577,7 @@
                   <BitSize>32</BitSize>
                   <BitOffs>32</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1588,7 +1588,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>64</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1599,7 +1599,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1610,7 +1610,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>88</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1621,7 +1621,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>96</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1632,7 +1632,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>104</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1643,7 +1643,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>112</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1735,7 +1735,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>96</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1827,7 +1827,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>96</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -1963,7 +1963,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>168</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -2099,7 +2099,7 @@
                   <BitSize>16</BitSize>
                   <BitOffs>168</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -2125,7 +2125,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -2136,7 +2136,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>24</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -2147,7 +2147,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>32</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -2158,7 +2158,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>40</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -2316,7 +2316,7 @@
                   <BitSize>8</BitSize>
                   <BitOffs>216</BitOffs>
                   <Flags>
-                    <Access>ro</Access>
+                    <Access>rw</Access>
                     <Category>o</Category>
                   </Flags>
                 </SubItem>
@@ -3178,7 +3178,7 @@
                 <Name>Motor Specific Settings</Name>
                 <Comment></Comment>
                 <Type>DT2003</Type>
-                <BitSize>121</BitSize>
+                <BitSize>128</BitSize>
                 <Info>
                   <SubItem>
                     <Name>Number of entries</Name>
@@ -3339,7 +3339,7 @@
                 <Name>Recuperation</Name>
                 <Comment></Comment>
                 <Type>DT2005</Type>
-                <BitSize>113</BitSize>
+                <BitSize>120</BitSize>
                 <Info>
                   <SubItem>
                     <Name>Number of entries</Name>
@@ -3812,7 +3812,7 @@
                 <Name>BISS Encoder 2</Name>
                 <Comment></Comment>
                 <Type>DT2202</Type>
-                <BitSize>216</BitSize>
+                <BitSize>224</BitSize>
                 <Info>
                   <SubItem>
                     <Name>BISS Encoder 2</Name>
@@ -4701,7 +4701,7 @@
         <Sm DefaultSize="1024" StartAddress="#x1000" ControlByte="#x26" Enable="1">MBoxOut</Sm>
         <Sm DefaultSize="1024" StartAddress="#x1400" ControlByte="#x22" Enable="1">MBoxIn</Sm>
         <Sm DefaultSize="29" StartAddress="#x1800" ControlByte="#x24" Enable="1">Outputs</Sm>
-        <Sm DefaultSize="29" StartAddress="#x2400" ControlByte="#x20" Enable="1">Inputs</Sm>
+        <Sm DefaultSize="45" StartAddress="#x2400" ControlByte="#x20" Enable="1">Inputs</Sm>
         <RxPdo Fixed="true" Sm="2">
           <Index>#x1600</Index>
           <Name>Outputs</Name>

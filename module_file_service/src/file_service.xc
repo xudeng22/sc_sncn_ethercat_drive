@@ -127,19 +127,16 @@ static int flash_write_od_config(
         client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
 {
-    int result;
+    int result = 0;
     ConfigParameter_t Config;
 
-
-    printstrln("\nGenerating... \n");
     get_configuration_from_dictionary(i_canopen, &Config);
 
     if ((result = write_config("config.csv", &Config, i_spiffs)) >= 0)
-        printstrln("Success... \n");
-    else
-    {
-         printstrln("Error... \n");
-         return result;
+
+    if (result == 0) {
+    // put the flash configuration into the dictionary
+            set_configuration_to_dictionary(i_canopen, &Config);
     }
 
     return result;
@@ -149,23 +146,15 @@ static int flash_read_od_config(
         client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
 {
-    int result;
+    int result = 0;
     ConfigParameter_t Config;
 
-    printstrln("\nParsing... \n");
     if ((result = read_config("config.csv", &Config, i_spiffs)) >= 0)
-        printstrln("Success... \n");
-    else
-    {
-        printstrln("Error... \n");
-        return result;
-    }
 
+    if (result == 0) {
     // put the flash configuration into the dictionary
-    printstr("Readed: ");
-    printuint(set_configuration_to_dictionary(i_canopen, &Config));
-    printstrln(" params");
-
+        set_configuration_to_dictionary(i_canopen, &Config);
+    }
     return result;
 }
 
@@ -179,10 +168,8 @@ void file_service(
 
     select {
         case i_spiffs.service_ready():
-
         break;
     }
-
         while (1) {
                enum eSdoCommand command = i_canopen.command_ready();
                int command_result = 0;

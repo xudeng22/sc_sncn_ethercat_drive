@@ -180,20 +180,21 @@ void file_service(
                    command_result = 0;
                    break;
 
-               case OD_COMMAND_READ_CONFIG:
-                   command_result = flash_read_od_config(i_spiffs, i_canopen);
-                   i_canopen.command_set_result(command_result);
-                   command_result = 0;
-                   break;
+       case OD_COMMAND_READ_CONFIG:
+           command_result = flash_read_od_config(i_spiffs, i_canopen);
+           i_canopen.command_set_result(command_result);
+           command_result = 0;
+           break;
 
-               case OD_COMMAND_NONE:
-                   break;
-               default:
-                   break;
-               }
-          }
+       case OD_COMMAND_NONE:
+           break;
+
+       default:
+           break;
+       }
+    }
 
 
-        t when timerafter(time + TIME_FOR_LOOP) :> time;
+    t when timerafter(time + TIME_FOR_LOOP) :> time;
 }
 

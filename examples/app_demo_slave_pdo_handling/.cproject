@@ -16,7 +16,7 @@
 					<folderInfo id="com.xmos.cdt.toolchain.1891691291.1897519020" name="/" resourcePath="">
 						<toolChain id="com.xmos.cdt.toolchain.1534517587" name="com.xmos.cdt.toolchain" superClass="com.xmos.cdt.toolchain">
 							<targetPlatform archList="all" binaryParser="com.xmos.cdt.core.XEBinaryParser;org.eclipse.cdt.core.GNU_ELF" id="com.xmos.cdt.core.platform.1014972662" isAbstract="false" osList="linux,win32,macosx" superClass="com.xmos.cdt.core.platform"/>
-							<builder id="com.xmos.cdt.builder.base.113487625" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.xmos.cdt.builder.base"/>
+							<builder arguments="CONFIG=Debug" command="xmake" id="com.xmos.cdt.builder.base.113487625" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.xmos.cdt.builder.base"/>
 							<tool id="com.xmos.cdt.xc.compiler.1747485902" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler">
 								<inputType id="com.xmos.cdt.xc.compiler.input.1450178192" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -47,7 +47,7 @@
 					<folderInfo id="com.xmos.cdt.toolchain.1891691291.484453969." name="/" resourcePath="">
 						<toolChain id="com.xmos.cdt.toolchain.228745736" name="com.xmos.cdt.toolchain" superClass="com.xmos.cdt.toolchain">
 							<targetPlatform archList="all" binaryParser="com.xmos.cdt.core.XEBinaryParser;org.eclipse.cdt.core.GNU_ELF" id="com.xmos.cdt.core.platform.1459345340" isAbstract="false" osList="linux,win32,macosx" superClass="com.xmos.cdt.core.platform"/>
-							<builder id="com.xmos.cdt.builder.base.111682574" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.xmos.cdt.builder.base"/>
+							<builder arguments="CONFIG=Release" command="xmake" id="com.xmos.cdt.builder.base.111682574" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.xmos.cdt.builder.base"/>
 							<tool id="com.xmos.cdt.xc.compiler.1511245103" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler">
 								<inputType id="com.xmos.cdt.xc.compiler.input.1067281264" name="XC" superClass="com.xmos.cdt.xc.compiler.input"/>
 							</tool>
@@ -75,5 +75,7 @@
 		<configuration configurationName="Default">
 			<resource resourceType="PROJECT" workspacePath="/app_demo_slave_pdo_handling"/>
 		</configuration>
+		<configuration configurationName="Debug"/>
+		<configuration configurationName="Release"/>
 	</storageModule>
 </cproject>

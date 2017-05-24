@@ -135,8 +135,8 @@ static int flash_write_od_config(
     if ((result = write_config("config.csv", &Config, i_spiffs)) >= 0)
 
     if (result == 0) {
-    // put the flash configuration into the dictionary
-            set_configuration_to_dictionary(i_canopen, &Config);
+        // put the flash configuration into the dictionary
+        set_configuration_to_dictionary(i_canopen, &Config);
     }
 
     return result;
@@ -152,7 +152,7 @@ static int flash_read_od_config(
     if ((result = read_config("config.csv", &Config, i_spiffs)) >= 0)
 
     if (result == 0) {
-    // put the flash configuration into the dictionary
+        // put the flash configuration into the dictionary
         set_configuration_to_dictionary(i_canopen, &Config);
     }
     return result;
@@ -170,28 +170,29 @@ void file_service(
         case i_spiffs.service_ready():
         break;
     }
-        while (1) {
-               enum eSdoCommand command = i_canopen.command_ready();
-               int command_result = 0;
-               switch (command) {
-               case OD_COMMAND_WRITE_CONFIG:
-                   command_result = flash_write_od_config(i_spiffs, i_canopen);
-                   i_canopen.command_set_result(command_result);
-                   command_result = 0;
-                   break;
 
-       case OD_COMMAND_READ_CONFIG:
-           command_result = flash_read_od_config(i_spiffs, i_canopen);
-           i_canopen.command_set_result(command_result);
-           command_result = 0;
-           break;
+    while (1) {
+        enum eSdoCommand command = i_canopen.command_ready();
+        int command_result = 0;
+        switch (command) {
+        case OD_COMMAND_WRITE_CONFIG:
+            command_result = flash_write_od_config(i_spiffs, i_canopen);
+            i_canopen.command_set_result(command_result);
+            command_result = 0;
+            break;
 
-       case OD_COMMAND_NONE:
-           break;
+        case OD_COMMAND_READ_CONFIG:
+            command_result = flash_read_od_config(i_spiffs, i_canopen);
+            i_canopen.command_set_result(command_result);
+            command_result = 0;
+            break;
 
-       default:
-           break;
-       }
+        case OD_COMMAND_NONE:
+            break;
+
+        default:
+            break;
+        }
     }
 
 

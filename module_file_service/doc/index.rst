@@ -27,13 +27,13 @@ The service requires modules:
  
 How to use
 ==========
-  1. Pass options to xCORE build tools from makefile::
+1. Pass options to xCORE build tools from makefile::
   
   XCC_FLAGS = -g -O3 -DCOM_ETHERCAT -lflash
 
- 2. Add the following modules to your app Makefile.
+2. Add the following modules to your app Makefile::
 
-USED_MODULES = module_board-support module_canopen_interface lib_ethercat module_file_service module_flash_service module_spiffs module_config_parser
+  USED_MODULES = module_board-support module_canopen_interface lib_ethercat module_file_service module_flash_service  module_spiffs module_config_parser
 
  3. Include the following headers in your app ::
   

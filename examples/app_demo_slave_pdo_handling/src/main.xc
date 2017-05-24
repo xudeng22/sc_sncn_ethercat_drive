@@ -1,5 +1,5 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 #include <COM_ECAT-rev-a.bsp>
 
 /**
@@ -8,18 +8,24 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <file_service.h>
 #include <co_interface.h>
 #include <canopen_interface_service.h>
 #include <pdo_handler.h>
 #include <ethercat_service.h>
-
 #include <reboot.h>
+#include <file_service.h>
+#include <spiffs_service.h>
+#include <flash_service.h>
 
 #define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
+
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+port c21watchdog = WD_PORT_TICK;
+port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
 
 /* function declaration of later used functions */
 static void read_od_config(client interface i_co_communication i_co);
@@ -34,7 +40,7 @@ static int initial_od_read(client interface i_co_communication i_co)
     t :> time;
     t when timerafter(time+100000000) :> void;
 
-    printstrln("[DEBUG] start initial update dictionary complete\n");
+    printstrln("[DEBUG] start initial update dictionary");
     i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
     enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
 
@@ -247,6 +253,10 @@ int main(void) {
     interface i_co_communication i_co[CO_IF_COUNT];
     interface EtherCATRebootInterface i_ecat_reboot;
 
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot; /* FIXME necessary? */
+
     par
     {
         /* EtherCAT Communication Handler Loop */
@@ -256,6 +266,9 @@ int main(void) {
                 ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
                         i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
+
+                flash_service(ports, i_boot, i_data, 1);
+                file_service(i_spiffs[0], i_co[3]);
             }
         }
 
@@ -263,6 +276,11 @@ int main(void) {
         on tile[APP_TILE] :
         {
             pdo_service(i_pdo, i_co[1]);
+        }
+
+        on tile[IFM_TILE] :
+        {
+            spiffs_service(i_data[0], i_spiffs, 1);
         }
     }
 

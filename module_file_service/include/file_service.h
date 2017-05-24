@@ -7,8 +7,10 @@
 #pragma once
 
 #include <co_interface.h>
-#include <stdint.h>
 #include <spiffs_service.h>
+
+#include <stdint.h>
+
 /**
  * @brief This Service stores configuration data from the object dictionary to flash files.
  *

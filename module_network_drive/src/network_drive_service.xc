@@ -454,7 +454,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
-#if 0
     //read objects from flash filesystem
     printstrln("Read Object dict from file");
     i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG); //send read file command
@@ -475,7 +474,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
     } else {
         printstrln("ERROR: reading file from flash");
     }
-#endif
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.

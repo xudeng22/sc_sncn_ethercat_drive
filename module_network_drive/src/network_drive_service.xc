@@ -454,6 +454,29 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
+#if 0
+    //read objects from flash filesystem
+    printstrln("Read Object dict from file");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG); //send read file command
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+    //wait processing
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        delay_ticks(1000*tile_usec);
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+    if (command_state == OD_COMMAND_STATE_SUCCESS) {
+        printstrln("Object dict read from file");
+    } else {
+        printstrln("ERROR: reading file from flash");
+    }
+#endif
+
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
      *

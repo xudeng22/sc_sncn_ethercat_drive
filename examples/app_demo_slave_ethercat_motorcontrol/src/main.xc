@@ -1,7 +1,9 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
-#include <CORE_C22-rev-a.bsp>
-#include <IFM_BOARD_REQUIRED>
+//#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
+#include <IFM_DC1K-rev-c4.bsp>
+//#include <IFM_DC100-rev-b.bsp>
 
 
 /**
@@ -34,8 +36,10 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
-#include <file_service.h>
+//#include <file_service.h>
 #include <flash_service.h>
+#include <spiffs_service.h>
+#include <file_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -50,6 +54,11 @@ port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
 port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
 port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
 port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
+
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+port c21watchdog = WD_PORT_TICK;
+port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
 
 int main(void)
 {
@@ -69,7 +78,10 @@ int main(void)
     interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
-    interface EtherCATFlashDataInterface i_data_ecat;
+
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot;
 
 
     par
@@ -83,41 +95,60 @@ int main(void)
         {
             par
             {
-                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
-                                    i_foe, ethercat_ports);
+//                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+//                                    i_foe, ethercat_ports);
+                _ethercat_service(i_ecat_reboot,
+                                 i_co[0],
+                                 null,
+                                 i_foe,
+                                 ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
-                flash_service_ethercat(p_spi_flash, null, i_data_ecat);
+
+#ifdef CORE_C21_DX_G2
+                flash_service(ports, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
+
+
+                {
+                    ProfilerConfig profiler_config;
+
+                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+
+                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
+                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
+
+#if 0
+                    network_drive_service_debug( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0]);
+#else
+                    network_drive_service( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+#endif
+                }
+
             }
         }
 
-        /* EtherCAT Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-            ProfilerConfig profiler_config;
+            par
+            {
 
-            profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-            profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-
-            profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
-
-            file_service(i_data_ecat, i_co[3]);
-#if 0
-            network_drive_service_debug( profiler_config,
-                                    i_pdo,
-                                    i_co[1],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0]);
-#else
-            network_drive_service( profiler_config,
-                                    i_pdo,
-                                    i_co[1],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
-#endif
+                file_service(i_spiffs[0], i_co[3]);
+            }
         }
+
 
         on tile[APP_TILE_2]:
         {
@@ -169,6 +200,11 @@ int main(void)
 
                     motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
                 }
+
+
+                canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
+
+
             }
         }
 
@@ -179,6 +215,8 @@ int main(void)
         {
             par
             {
+                spiffs_service(i_data[0], i_spiffs, 1);
+
                 /* PWM Service */
                 {
                     pwm_config(pwm_ports);

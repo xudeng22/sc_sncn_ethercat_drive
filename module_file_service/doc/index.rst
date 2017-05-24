@@ -27,20 +27,22 @@ The service requires modules:
  
 How to use
 ==========
-  1. Pass options to xCORE build tools from makefile:
-XCC_FLAGS = -g -O3 -DCOM_ETHERCAT -lflash
+  1. Pass options to xCORE build tools from makefile::
+  
+  XCC_FLAGS = -g -O3 -DCOM_ETHERCAT -lflash
 
  2. Add the following modules to your app Makefile.
 
 USED_MODULES = module_board-support module_canopen_interface lib_ethercat module_file_service module_flash_service module_spiffs module_config_parser
 
- 3. Include the following headers in your app.
-#include <canopen_interface_service.h>
-#include <ethercat_service.h>
-#include <flash_service.h>
-#include <spiffs_service.h>
-#include <file_service.h>
-#include <pdo_handler.h>
+ 3. Include the following headers in your app ::
+  
+  #include <canopen_interface_service.h>
+  #include <ethercat_service.h>
+  #include <flash_service.h>
+  #include <spiffs_service.h>
+  #include <file_service.h>
+  #include <pdo_handler.h>
 
  4. Inside your main function, instantiate the interfaces array for the Service-Clients communication.
 

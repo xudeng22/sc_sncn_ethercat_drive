@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 
 /**
  * @file main.xc
@@ -15,6 +15,8 @@
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
+#include <flash_service.h>
+#include <spiffs_service.h>
 #include <flash_service.h>
 
 #define OBJECT_PRINT              0  /* enable object print with 1 */
@@ -41,6 +43,11 @@ struct _object_dictionary_request {
     uint16_t index;
     uint8_t  subindex;
 };
+
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+port c21watchdog = WD_PORT_TICK;
+port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
@@ -468,9 +475,9 @@ int main(void)
     interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
 
-    /* flash interfaces */
-    interface EtherCATFlashDataInterface i_data_ecat;
-    interface EtherCATFlashDataInterface i_boot_ecat;
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot; /* FIXME necessary? */
 
 	par
 	{
@@ -487,7 +494,13 @@ int main(void)
                                    ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
-                flash_service_ethercat(p_spi_flash, null, i_data_ecat);
+
+#ifdef XCORE200
+                flash_service(ports, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
+                file_service(i_spiffs[0], i_co[3]);
             }
         }
 
@@ -496,16 +509,19 @@ int main(void)
         {
             par
             {
-                /* due to serious space problems on tile 0 because of the large object dictionary the command
-                 * service is located here.
-                 */
-                file_service(i_data_ecat, i_co[3]);
-
                 /* Start trivial PDO exchange service */
                 pdo_service(i_pdo, i_co[1], i_cmd);
 
                 /* Start the SDO / Object Dictionary test service */
                 sdo_service(i_co[2], i_cmd);
+            }
+        }
+
+        on tile[IFM_TILE] :
+        {
+            par
+            {
+                spiffs_service(i_data[0], i_spiffs, 1);
             }
         }
     }

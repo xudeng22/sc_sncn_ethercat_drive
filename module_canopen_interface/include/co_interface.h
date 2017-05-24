@@ -58,15 +58,6 @@ enum eAccessRights {
 typedef uint8_t pdo_size_t;
 
 /**
- * @brief Forward declaration for flash data interface
- */
-interface EtherCATFlashDataInterface {
-    uint8_t get_object(uint8_t position, unsigned char data[], unsigned &object_size);
-    uint8_t add_object(unsigned char data[], unsigned object_size);
-    uint8_t remove_object(uint8_t position);
-};
-
-/**
  * @brief Communication interface for OD service request to network service
  */
 interface i_co_communication

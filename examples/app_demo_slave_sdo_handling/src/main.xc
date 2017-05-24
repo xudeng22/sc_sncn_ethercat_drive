@@ -496,7 +496,7 @@ int main(void)
                 reboot_service_ethercat(i_ecat_reboot);
 
 #ifdef XCORE200
-                flash_service(ports, i_boot, i_data, 1);
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
 #else
                 flash_service(p_spi_flash, i_boot, i_data, 1);
 #endif

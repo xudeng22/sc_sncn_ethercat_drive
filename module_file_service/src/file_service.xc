@@ -159,12 +159,17 @@ static int flash_read_od_config(
 }
 
 void file_service(
-        client SPIFFSInterface i_spiffs,
+        client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen)
 {
     timer t;
     unsigned int time;
     t :> time;
+
+    if (isnull(i_spiffs)) {
+        i_canopen.command_set_result(OD_COMMAND_STATE_ERROR);
+        return;
+    }
 
     select {
         case i_spiffs.service_ready():

@@ -18,5 +18,5 @@
  * @param i_canopen           interface to the canopen interface service
  */
 void file_service(
-        client SPIFFSInterface i_spiffs,
+        client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen);

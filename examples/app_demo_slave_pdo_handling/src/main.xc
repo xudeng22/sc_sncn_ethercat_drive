@@ -267,8 +267,16 @@ int main(void) {
                         i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
 
+#ifdef NO_SPIFFS_SERVICE
+                file_service(null, i_co[3]);
+#else
+#ifdef XCORE200
                 flash_service(ports, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
                 file_service(i_spiffs[0], i_co[3]);
+#endif
             }
         }
 
@@ -280,7 +288,9 @@ int main(void) {
 
         on tile[IFM_TILE] :
         {
+#ifndef NO_SPIFFS_SERIVCE
             spiffs_service(i_data[0], i_spiffs, 1);
+#endif
         }
     }
 

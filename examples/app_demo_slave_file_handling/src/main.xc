@@ -115,7 +115,7 @@ int main(void)
 
 
     /* flash interfaces */
-    interface EtherCATFlashDataInterface i_data_ecat;
+    //interface EtherCATFlashDataInterface i_data_ecat;
 
     par
     {

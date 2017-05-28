@@ -29,15 +29,6 @@
 #define MAX_CONFIG_SDO_ENTRIES   250
 #define CMD_DRIVE_INDEX          5
 
-typedef struct _sdoinfo_configuration_paramater {
-    uint16_t index;
-    uint8_t subindex;
-    unsigned value;
-} Configuration;
-
-static Configuration configuration[MAX_CONFIG_SDO_ENTRIES];
-
-
 
 static unsigned int set_configuration_to_dictionary(
         client interface i_co_communication i_canopen,
@@ -66,6 +57,10 @@ static int exclude_object(uint16_t index)
 
     return 0;
 }
+
+
+
+
 
 static unsigned get_configuration_from_dictionary(
         client interface i_co_communication i_canopen,
@@ -160,7 +155,8 @@ static int flash_read_od_config(
 
 void file_service(
         client SPIFFSInterface ?i_spiffs,
-        client interface i_co_communication i_canopen)
+        client interface i_co_communication i_canopen,
+        client interface i_foe_communication i_foe)
 {
     timer t;
     unsigned int time;

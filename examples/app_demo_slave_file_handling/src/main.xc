@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 
 /**
  * @file main.xc
@@ -129,7 +129,7 @@ int main(void)
 
                 reboot_service_ethercat(i_ecat_reboot);
 
-                flash_service(p_spi_flash, i_boot, i_data, 1);
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
             }
         }
 

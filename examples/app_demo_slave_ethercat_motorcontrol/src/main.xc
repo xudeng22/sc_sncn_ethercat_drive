@@ -129,7 +129,7 @@ int main(void)
                         motion_ctrl_config.resolution  =                      SENSOR_1_RESOLUTION;
                     }
 
-                    motion_ctrl_config.position_control_strategy =            NL_POSITION_CONTROLLER;
+                    motion_ctrl_config.position_control_strategy =            POSITION_CONTROL_STRATEGY;
 
                     motion_ctrl_config.position_kp =                          POSITION_Kp;
                     motion_ctrl_config.position_ki =                          POSITION_Ki;

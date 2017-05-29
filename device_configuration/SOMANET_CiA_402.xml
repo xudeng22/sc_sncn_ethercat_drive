@@ -1145,7 +1145,7 @@
               </DataType>
               <DataType>
                 <Name>DT2010ARR</Name>
-                <BaseType>REAL</BaseType>
+                <BaseType>DINT</BaseType>
                 <BitSize>96</BitSize>
                 <ArrayInfo>
                   <LBound>1</LBound>
@@ -1194,7 +1194,7 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Controller Kp</Name>
-                  <Type>REAL</Type>
+                  <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
@@ -1205,7 +1205,7 @@
                 <SubItem>
                   <SubIdx>2</SubIdx>
                   <Name>Controller Ki</Name>
-                  <Type>REAL</Type>
+                  <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
@@ -1216,7 +1216,7 @@
                 <SubItem>
                   <SubIdx>3</SubIdx>
                   <Name>Controller Kd</Name>
-                  <Type>REAL</Type>
+                  <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
@@ -1253,7 +1253,7 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Controller Kp</Name>
-                  <Type>REAL</Type>
+                  <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
@@ -1264,7 +1264,7 @@
                 <SubItem>
                   <SubIdx>2</SubIdx>
                   <Name>Controller Ki</Name>
-                  <Type>REAL</Type>
+                  <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
@@ -1275,7 +1275,7 @@
                 <SubItem>
                   <SubIdx>3</SubIdx>
                   <Name>Controller Kd</Name>
-                  <Type>REAL</Type>
+                  <Type>DINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>

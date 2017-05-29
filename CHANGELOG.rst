@@ -1,6 +1,12 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.0.2
+-----
+
+  * Fix issue with a the value of position control strategy
+
+
 3.0.1
 -----
 

@@ -180,7 +180,7 @@ int cm_sync_config_motor_control(
     motorcontrol_config = i_torque_control.get_config();
 
     motorcontrol_config.dc_bus_voltage           = i_coe.get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
-    motorcontrol_config.phases_inverted          = sext(i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED), 8);
+    motorcontrol_config.phases_inverted          = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
     motorcontrol_config.torque_P_gain            = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
     motorcontrol_config.torque_I_gain            = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
     motorcontrol_config.torque_D_gain            = i_coe.get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);

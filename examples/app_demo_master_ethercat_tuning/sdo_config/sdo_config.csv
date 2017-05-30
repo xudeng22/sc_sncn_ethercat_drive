@@ -10,7 +10,7 @@
 0x2003,        2,       60000,       60000,       60000,       60000,       60000,       60000 # DICT_MOTOR_SPECIFIC_SETTINGS TORQUE_CONSTANT
 0x2003,        3,      552000,      552000,      552000,      552000,      552000,      552000 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_RESISTANCE
 0x2003,        4,         720,         720,         720,         720,         720,         720 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_INDUCTANCE     
-0x2003,        5,           1,           1,           1,           1,           1,           1 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED (1 normal, -1 inverted)
+0x2003,        5,           0,           0,           0,           0,           0,           0 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED (0 normal, 1 inverted)
 
 #brake config
 0x2004,        1,       13000,       13000,       13000,       13000,       13000,       13000 # DICT_BREAK_RELEASE PULL_BRAKE_VOLTAGE
@@ -32,7 +32,7 @@
 #protection
 0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
 0x2006,        2,          60,          60,          60,          60,          60,          60 # DICT_PROTECTION MAX_DC_VOLTAGE
-0x2006,        3,         100,         100,         100,         100,         100,         100 # DICT_PROTECTION MAX_CURRENT 
+0x2006,        3,      100000,      100000,      100000,      100000,      100000,      100000 # DICT_PROTECTION MAX_CURRENT 
 
 #torque position velocity control
 #main parameters

@@ -5,6 +5,8 @@ sc_sncn_ethercat_drive Change Log
 -----
 
   * Fix issue with a the value of position control strategy
+  * Rename MOTOR_PHASES_CONFIGURATION in user_config.h and main.xc files
+  * Change phase inverted parameter to 0 normal and 1 inverted
 
 
 3.0.1

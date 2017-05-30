@@ -102,6 +102,12 @@ static void sdo_service(client interface i_co_communication i_co)
 }
 
 
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+    port c21watchdog = WD_PORT_TICK;
+    port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
+
+
 int main(void)
 {
     interface i_foe_communication i_foe;
@@ -148,12 +154,12 @@ int main(void)
         }
        on tile[APP_TILE_2] :
        {
-           spiffs_service(i_data[0], i_spiffs, 1);
+           file_service(i_spiffs[0], i_co[3], i_foe);
        }
 
        on tile[IFM_TILE] :
        {
-           file_service(i_spiffs[0], i_co[3], i_foe);
+           spiffs_service(i_data[0], i_spiffs, 1);
        }
 
     }

@@ -135,10 +135,12 @@ int cm_sync_config_position_feedback(
             break;
 
         case BISS_SENSOR:
+        case SSI_SENSOR:
             BISSClockPortConfig old_biss_clock_port_config = config.biss_config.clock_port_config;
             int old_biss_clock_frequency = config.biss_config.clock_frequency;
             {config.biss_config.clock_port_config, void, void}    = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG); /* FIXME add check for valid enum data of clock_port_config */
             {config.biss_config.clock_frequency, void, void}      = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY);
+            {encoder_port_number, void, void}                     = i_co.od_get_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG);
             if (config.biss_config.clock_port_config != old_biss_clock_port_config ||
                     config.biss_config.clock_frequency != old_biss_clock_frequency ||
                     config.biss_config.data_port_number != encoder_port_number)
@@ -322,10 +324,14 @@ void cm_default_config_position_feedback(
         }
         break;
     case BISS_SENSOR:
+    case SSI_SENSOR:
         if (config.biss_config.data_port_number == ENCODER_PORT_1) {
             feedback_sensor_object = DICT_BISS_ENCODER_1;
-        } else {
+        } else if (config.biss_config.data_port_number == ENCODER_PORT_2) {
             port_index = 2;
+            feedback_sensor_object = DICT_BISS_ENCODER_2;
+        } else {
+            port_index = 3;
             feedback_sensor_object = DICT_BISS_ENCODER_2;
         }
         break;
@@ -367,12 +373,14 @@ void cm_default_config_position_feedback(
             break;
 
         case BISS_SENSOR:
-            i_co.od_set_object_value(feedback_sensor_object, 1, BISS_SENSOR);
+        case SSI_SENSOR:
+            i_co.od_set_object_value(feedback_sensor_object, 1, config.sensor_type);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_MULTITURN_RESOLUTION, config.biss_config.multiturn_resolution);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_FREQUENCY, config.biss_config.clock_frequency);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_TIMEOUT, config.biss_config.timeout);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CRC_POLYNOM, config.biss_config.crc_poly);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_CLOCK_PORT_CONFIG, config.biss_config.clock_port_config); /* FIXME add check for valid enum data of clock_port_config */
+            i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_DATA_PORT_CONFIG, config.biss_config.data_port_number);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS,config.biss_config.filling_bits);
             i_co.od_set_object_value(feedback_sensor_object, SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY,config.biss_config.busy);
             break;

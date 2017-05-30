@@ -175,7 +175,7 @@ int main(void)
                         motion_ctrl_config.resolution  =                      SENSOR_1_RESOLUTION;
                     }
 
-                    motion_ctrl_config.position_control_strategy =            NL_POSITION_CONTROLLER;
+                    motion_ctrl_config.position_control_strategy =            POSITION_CONTROL_STRATEGY;
 
                     motion_ctrl_config.position_kp =                          POSITION_Kp;
                     motion_ctrl_config.position_ki =                          POSITION_Ki;
@@ -245,7 +245,7 @@ int main(void)
                     MotorcontrolConfig motorcontrol_config;
 
                     motorcontrol_config.dc_bus_voltage =  DC_BUS_VOLTAGE;
-                    motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
+                    motorcontrol_config.phases_inverted = MOTOR_PHASES_CONFIGURATION;
                     motorcontrol_config.torque_P_gain =  TORQUE_Kp;
                     motorcontrol_config.torque_I_gain =  TORQUE_Ki;
                     motorcontrol_config.torque_D_gain =  TORQUE_Kd;

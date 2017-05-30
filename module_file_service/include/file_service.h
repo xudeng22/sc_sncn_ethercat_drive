@@ -13,8 +13,23 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define FOE_MAX_SIM_FILE_SIZE    2048
+#ifndef MSEC_STD
+#define MSEC_STD 100000
+#endif
+
+#ifndef CANOD_TYPE_VAR
+#define CANOD_TYPE_VAR        0x7
+#endif
+
+#define TIME_FOR_LOOP            (500 * MSEC_STD)
+#define MAX_CONFIG_SDO_ENTRIES   250
+#define CMD_DRIVE_INDEX          5
+
+
+#define FOE_MAX_SIM_FILE_SIZE    11 * 1024
 #define FOE_MAX_FILENAME_SIZE    128
+/* This is basically the same as FOE_DATA_SIZE in foe.h */
+#define MAX_FOE_DATA     (1024 - 6 - 6)
 
 enum eRequestType {
     REQUEST_IDLE = 0
@@ -22,11 +37,12 @@ enum eRequestType {
     ,REQUEST_WRITE
 };
 
+
 struct _file_t {
-    char store[FOE_MAX_SIM_FILE_SIZE];
     char filename[FOE_MAX_FILENAME_SIZE];
     size_t length;
     size_t current;
+    char opened;
 };
 
 

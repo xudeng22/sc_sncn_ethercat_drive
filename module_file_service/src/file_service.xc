@@ -15,19 +15,10 @@
 #include <xs1.h>
 #include <print.h>
 #include <string.h>
+#include <safestring.h>
 #include <config_parser.h>
 
-#ifndef MSEC_STD
-#define MSEC_STD 100000
-#endif
-
-#ifndef CANOD_TYPE_VAR
-#define CANOD_TYPE_VAR        0x7
-#endif
-
-#define TIME_FOR_LOOP            (500 * MSEC_STD)
-#define MAX_CONFIG_SDO_ENTRIES   250
-#define CMD_DRIVE_INDEX          5
+static int8_t foedata[FOE_MAX_SIM_FILE_SIZE];
 
 
 static unsigned int set_configuration_to_dictionary(
@@ -153,12 +144,140 @@ static int flash_read_od_config(
     return result;
 }
 
+
+static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
+{
+    int wait_for_reply = 0;
+    size_t size = 0;
+    unsigned packetnumber = 0;
+    enum eFoeStat stat = FOE_STAT_EOF;
+    enum eFoeError foe_error = FOE_ERROR_NONE;
+
+    {size, packetnumber, stat} = i_foe.read_data(foedata);
+
+    int cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+    if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR)) {
+        printstrln("Error opening file");
+        return -1;
+    }
+    else
+    {
+        file.opened = 1;
+        printstr("File opened: ");
+        printintln(cfd);
+    }
+
+    printstr("Received packet: "); printint(packetnumber);
+    printstr(" of size: "); printintln(size);
+
+    if (stat == FOE_STAT_ERROR) {
+        printstrln("Error Transmission - Aborting!");
+        file.current = 0;
+        memset(foedata, 0, MAX_FOE_DATA);
+    }
+
+    if ((file.length + size) > FOE_MAX_SIM_FILE_SIZE) {
+        foe_error = FOE_ERROR_DISK_FULL;
+        file.current = 0;
+        file.length = 0;
+       // memset(file.store, 0, MAX_FOE_DATA);
+        stat = FOE_STAT_EOF;
+    } else {
+        /*for (size_t i = 0; i < size; i++) {
+            file.store[file.current + i] = foedata[i];
+        }*/
+
+        file.current += size;
+        file.length += size;
+
+        if (stat == FOE_STAT_EOF) {
+            printstrln("Read Transmission finished!");
+            file.current = 0;
+        }
+
+        foe_error = FOE_ERROR_NONE;
+    }
+
+    i_foe.result(packetnumber, foe_error);
+    wait_for_reply = (stat == FOE_STAT_EOF) ? 0 : 1;
+
+    return wait_for_reply;
+}
+
+
+static int send_filechunk_to_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
+{
+    int wait_for_reply = 0;
+    size_t size = 0;
+    size_t wsize = 0;
+    unsigned packetnumber = 0;
+    enum eFoeStat stat = FOE_STAT_EOF;
+    enum eFoeError foe_error = FOE_ERROR_NONE;
+    static int cfd;
+
+    //just to read opened file size
+    unsigned short obj_id;
+    unsigned char type;
+    unsigned short pix;
+
+    foe_error = FOE_ERROR_NONE;
+
+    if (file.opened == 0)
+    {
+        cfd = i_spiffs.open_file(file.filename, strlen(file.filename), SPIFFS_RDONLY);
+        if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR)) {
+            printstrln("Error opening file");
+            return -1;
+        }
+        else
+        {
+            file.opened = 1;
+            printstr("File opened: ");
+            printintln(cfd);
+            i_spiffs.status(cfd, obj_id, file.length, type, pix, file.filename);
+        }
+    }
+
+    size = file.length - file.current;
+    size = (size > MAX_FOE_DATA ? MAX_FOE_DATA : size);
+    size = i_spiffs.read(cfd, (uint8_t *)foedata, size);
+    if ((size == SPIFFS_EOF)||(size==0))
+        stat == FOE_STAT_EOF;
+    else
+        {wsize, stat} = i_foe.write_data(foedata, size, FOE_ERROR_NONE);
+
+    file.current += wsize; /* enable the possibility to resend the same chunk, FIXME what about packet_number? */
+
+    if (stat == FOE_STAT_EOF) {
+        printstrln("Write Transmission finished!");
+        file.current = 0;
+        i_spiffs.close_file(cfd);
+        file.opened = 0;
+    }
+
+    if (stat == FOE_STAT_ERROR) {
+        printstrln("Error Write Transmission!");
+        file.current = 0;
+        file.length = 0;
+        i_spiffs.close_file(cfd);
+        file.opened = 0;
+    }
+
+    printstr("Send packet of size: ");
+    printintln(size);
+
+    wait_for_reply = (stat == FOE_STAT_EOF) ? 0 : 1;
+
+    return wait_for_reply;
+}
+
+
 void file_service(
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
         client interface i_foe_communication i_foe)
 {
-    timer t;
+    /*timer t;
     unsigned int time;
     t :> time;
 
@@ -181,7 +300,6 @@ void file_service(
             i_canopen.command_set_result(command_result);
             command_result = 0;
             break;
-
         case OD_COMMAND_READ_CONFIG:
             command_result = flash_read_od_config(i_spiffs, i_canopen);
             i_canopen.command_set_result(command_result);
@@ -197,6 +315,107 @@ void file_service(
     }
 
 
-    t when timerafter(time + TIME_FOR_LOOP) :> time;
+    t when timerafter(time + TIME_FOR_LOOP) :> time;*/
+
+    timer t;
+        unsigned time = 0;
+        unsigned delay = 100000;
+        char name[] = "test";
+        unsigned i=0;
+        int ctmp=0;
+        int notification=0;
+
+        struct _file_t file;
+        file.length = 0;
+        file.opened = 0;
+        file.current = 0;
+        memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
+
+        /* wait some time until ethercat handler is ready */
+        t :> time;
+        t when timerafter(time+delay) :> void;
+
+        //int8_t   foedata[MAX_FOE_DATA]; /* max mailbox - mailbox header - foe header */
+        uint32_t packetnumber = 0;
+        size_t   size = 0;
+        size_t   wsize = 0;
+        enum eFoeStat stat;
+
+        enum eFoeNotificationType notify = FOE_NTYPE_UNDEF;
+        enum eFoeError foe_error = FOE_ERROR_NONE;
+
+        enum eRequestType request = REQUEST_IDLE;
+        char filename[FOE_MAX_FILENAME_SIZE] = { '\0' };
+
+        const unsigned delay_timeout = 500000000; /* 5s */
+        int wait_for_reply = 0;
+
+
+        while (1) {
+            select {
+                case i_foe.data_ready():
+                    notify = i_foe.get_notification_type();
+                    switch (notify) {
+                    case FOE_NTYPE_DATA:
+                        request = REQUEST_READ;
+                        stat = FOE_STAT_DATA;
+
+                        /* FIXME avoid setting the filename every time a data request happens. */
+                        memset(filename, '\0', FOE_MAX_FILENAME_SIZE);
+                        i_foe.requested_filename(filename);
+                        memcpy(file.filename, filename, FOE_MAX_FILENAME_SIZE);
+
+                        /* FIXME need to handle somehow to cleanly overwrite the pseudo test file */
+
+                        wait_for_reply = received_filechunk_from_master(file, i_foe, i_spiffs);
+
+                        t :> time;
+                        break;
+
+                    case FOE_NTYPE_DATA_REQUEST: /* FIXME this is the initial request, but what is with subsequent ack's? */
+                        request = REQUEST_WRITE;
+                        stat = FOE_STAT_DATA;
+                        memset(filename, '\0', FOE_MAX_FILENAME_SIZE);
+                        i_foe.requested_filename(filename);
+                        memcpy(file.filename, filename, FOE_MAX_FILENAME_SIZE);
+                       /* if (safestrncmp(testfilefs.filename, filename, FOE_MAX_FILENAME_SIZE) == 0) {
+                            // FIXME think about to make NOT_FOUND error here
+
+                            printstr("[foe_testing] requesting file name: ");
+                            printstrln(filename);*/
+
+                            wait_for_reply = send_filechunk_to_master(file, i_foe, i_spiffs);
+                     /*   } else {
+                            foe_error = FOE_ERROR_NOT_FOUND;
+                            char errormsg[] = "File not found";*/
+
+                           // {wsize, stat} = i_foe.write_data((errormsg, int8_t[]), safestrlen(errormsg), foe_error);
+                       // }
+
+                        t :> time;
+                        break;
+
+                    default:
+                        request = REQUEST_IDLE;
+                        printstrln("[foe_testing()] unhandled here");
+                        break;
+                    }
+                    break;
+
+                case t when timerafter(time + delay_timeout) :> void :
+                    if (wait_for_reply) {
+                        printstrln("[foe_testing()] Timeout catched");
+                        /* FIXME reset FoE stuff */
+                        wait_for_reply = 0;
+                    } else {
+                        t :> time;
+                        request = REQUEST_IDLE;
+                    }
+                    break;
+            }
+
+            t :> time;
+            t when timerafter(time+delay) :> void;
+        }
 }
 

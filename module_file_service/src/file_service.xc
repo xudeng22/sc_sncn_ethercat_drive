@@ -149,43 +149,48 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
 {
     int wait_for_reply = 0;
     size_t size = 0;
+    size_t wsize = 0;
     unsigned packetnumber = 0;
     enum eFoeStat stat = FOE_STAT_EOF;
     enum eFoeError foe_error = FOE_ERROR_NONE;
+    static int cfd;
 
     {size, packetnumber, stat} = i_foe.read_data(foedata);
-
-    int cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-    if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR)) {
-        printstrln("Error opening file");
-        return -1;
-    }
-    else
-    {
-        file.opened = 1;
-        printstr("File opened: ");
-        printintln(cfd);
-    }
 
     printstr("Received packet: "); printint(packetnumber);
     printstr(" of size: "); printintln(size);
 
-    if (stat == FOE_STAT_ERROR) {
-        printstrln("Error Transmission - Aborting!");
-        file.current = 0;
-        memset(foedata, 0, MAX_FOE_DATA);
-    }
 
-    if ((file.length + size) > FOE_MAX_SIM_FILE_SIZE) {
+    if (file.opened == 0)
+    {
+        cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+        if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR)) {
+            printstrln("Error opening file");
+            return -1;
+        }
+        else
+        {
+            printstr("File created: ");
+            printintln(cfd);
+            file.opened = 1;
+        }
+
+        if (stat == FOE_STAT_ERROR) {
+            printstrln("Error Transmission - Aborting!");
+            file.current = 0;
+            memset(foedata, 0, MAX_FOE_DATA);
+        }
+    }
+    /*if ((file.length + size) > FOE_MAX_SIM_FILE_SIZE) {
         foe_error = FOE_ERROR_DISK_FULL;
         file.current = 0;
         file.length = 0;
-       // memset(file.store, 0, MAX_FOE_DATA);
+
         stat = FOE_STAT_EOF;
-    } else {
-        /*for (size_t i = 0; i < size; i++) {
-            file.store[file.current + i] = foedata[i];
-        }*/
+    } else {  */
+        wsize = i_spiffs.write(cfd, (uint8_t *)foedata, size);
+        printstr("Writed: ");
+        printintln(wsize);
 
         file.current += size;
         file.length += size;
@@ -193,10 +198,12 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         if (stat == FOE_STAT_EOF) {
             printstrln("Read Transmission finished!");
             file.current = 0;
+            i_spiffs.close_file(cfd);
+            file.opened = 0;
         }
 
         foe_error = FOE_ERROR_NONE;
-    }
+    //}
 
     i_foe.result(packetnumber, foe_error);
     wait_for_reply = (stat == FOE_STAT_EOF) ? 0 : 1;

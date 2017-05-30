@@ -125,7 +125,7 @@ int cm_sync_config_position_feedback(
         }
         switch (config.sensor_type) {
         case QEI_SENSOR:
-            QEI_SignalType old_qei_signal_type = config.qei_config.signal_type;
+            EncoderPortSignalType old_qei_signal_type = config.qei_config.signal_type;
             {config.qei_config.signal_type, void, void}        = i_co.od_get_object_value(feedback_sensor_object, SUB_INCREMENTAL_ENCODER_ACCESS_SIGNAL_TYPE);
             if (config.qei_config.signal_type != old_qei_signal_type || config.qei_config.port_number != encoder_port_number) {
                 restart = 1;

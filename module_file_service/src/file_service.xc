@@ -408,7 +408,7 @@ void file_service(
         }
 
         t :> time;
-        t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void;
+        t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
     }
 }
 

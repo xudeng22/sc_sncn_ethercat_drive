@@ -118,7 +118,7 @@ static int flash_write_od_config(
 
     get_configuration_from_dictionary(i_canopen, &Config);
 
-    if ((result = write_config("config.csv", &Config, i_spiffs)) >= 0)
+    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -135,7 +135,7 @@ static int flash_read_od_config(
     int result = 0;
     ConfigParameter_t Config;
 
-    if ((result = read_config("config.csv", &Config, i_spiffs)) >= 0)
+    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -149,7 +149,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
 {
     int wait_for_reply = 0;
     size_t size = 0;
-    size_t wsize = 0;
+    int write_result = 0;
     unsigned packetnumber = 0;
     enum eFoeStat stat = FOE_STAT_EOF;
     enum eFoeError foe_error = FOE_ERROR_NONE;
@@ -160,13 +160,31 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     printstr("Received packet: "); printint(packetnumber);
     printstr(" of size: "); printintln(size);
 
+    if (stat == FOE_STAT_ERROR) {
+        printstrln("Error Transmission - Aborting!");
+        if (file.opened)
+        {
+            file.opened = 0;
+            i_spiffs.close_file(cfd);
+        }
 
-    if (file.opened == 0)
+        memset(foedata, 0, MAX_FOE_DATA);
+    }
+
+
+    if (!file.opened)
     {
         cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-        if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR)) {
+        if (cfd < 0)
+        {
             printstrln("Error opening file");
-            return -1;
+            foe_error = FOE_ERROR_PROGRAM_ERROR;
+        }
+        else
+        if (cfd > SPIFFS_MAX_FILE_DESCRIPTOR)
+        {
+            printstrln("Error opening file: not found");
+            foe_error = FOE_ERROR_NOT_FOUND;
         }
         else
         {
@@ -174,36 +192,35 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
             printintln(cfd);
             file.opened = 1;
         }
+    }
 
-        if (stat == FOE_STAT_ERROR) {
-            printstrln("Error Transmission - Aborting!");
-            file.current = 0;
-            memset(foedata, 0, MAX_FOE_DATA);
+    if (file.opened)
+    {
+        write_result = i_spiffs.write(cfd, (uint8_t *)foedata, size);
+        if (write_result < 0)
+        {
+            if (write_result == SPIFFS_ERR_FULL)
+                foe_error = FOE_ERROR_DISK_FULL;
+            else
+                foe_error = FOE_ERROR_PROGRAM_ERROR;
+
+            file.opened = 0;
+            i_spiffs.close_file(cfd);
+            stat = FOE_STAT_EOF;
+        }
+        else
+        {
+            printstr("Writed: ");
+            printintln(write_result);
+
+            if (stat == FOE_STAT_EOF) {
+                printstrln("Read Transmission finished!");
+                file.opened = 0;
+                i_spiffs.close_file(cfd);
+            }
+            foe_error = FOE_ERROR_NONE;
         }
     }
-    /*if ((file.length + size) > FOE_MAX_SIM_FILE_SIZE) {
-        foe_error = FOE_ERROR_DISK_FULL;
-        file.current = 0;
-        file.length = 0;
-
-        stat = FOE_STAT_EOF;
-    } else {  */
-        wsize = i_spiffs.write(cfd, (uint8_t *)foedata, size);
-        printstr("Writed: ");
-        printintln(wsize);
-
-        file.current += size;
-        file.length += size;
-
-        if (stat == FOE_STAT_EOF) {
-            printstrln("Read Transmission finished!");
-            file.current = 0;
-            i_spiffs.close_file(cfd);
-            file.opened = 0;
-        }
-
-        foe_error = FOE_ERROR_NONE;
-    //}
 
     i_foe.result(packetnumber, foe_error);
     wait_for_reply = (stat == FOE_STAT_EOF) ? 0 : 1;

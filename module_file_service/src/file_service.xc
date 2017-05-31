@@ -314,7 +314,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     i_foe.result(packetnumber, foe_error);
     wait_for_reply = ((stat == FOE_STAT_EOF)||(stat == FOE_STAT_ERROR)) ? 0 : 1;
 
-   return wait_for_reply;
+    return wait_for_reply;
 }
 
 
@@ -323,47 +323,8 @@ void file_service(
         client interface i_co_communication i_canopen,
         client interface i_foe_communication i_foe)
 {
-
-/*
-    if (isnull(i_spiffs)) {
-        i_canopen.command_set_result(OD_COMMAND_STATE_ERROR);
-        return;
-    }
-
-    select {
-        case i_spiffs.service_ready():
-        break;
-    }
-
-    while (1) {
-        enum eSdoCommand command = i_canopen.command_ready();
-        int command_result = 0;
-        switch (command) {
-        case OD_COMMAND_WRITE_CONFIG:
-            command_result = flash_write_od_config(i_spiffs, i_canopen);
-            i_canopen.command_set_result(command_result);
-            command_result = 0;
-            break;
-        case OD_COMMAND_READ_CONFIG:
-            command_result = flash_read_od_config(i_spiffs, i_canopen);
-            i_canopen.command_set_result(command_result);
-            command_result = 0;
-            break;
-
-        case OD_COMMAND_NONE:
-            break;
-
-        default:
-            break;
-        }
-    }
-
-
-   */
-
     timer t;
     unsigned time = 0;
-    unsigned delay = 100000;
 
     struct _file_t file;
     file.length = 0;
@@ -373,11 +334,10 @@ void file_service(
 
     /* wait some time until ethercat handler is ready */
     t :> time;
-    t when timerafter(time+delay) :> void;
+    t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
 
     enum eFoeNotificationType notify = FOE_NTYPE_UNDEF;
 
-    const unsigned delay_timeout = 500000000; /* 5s */
     int wait_for_reply = 0;
 
     if (isnull(i_spiffs)) {
@@ -436,7 +396,7 @@ void file_service(
                 }
                 break;
 
-            case t when timerafter(time + delay_timeout) :> void :
+            case t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void :
                 if (wait_for_reply) {
                     printstrln("[foe_testing()] Timeout catched");
                     /* FIXME reset FoE stuff */
@@ -448,7 +408,7 @@ void file_service(
         }
 
         t :> time;
-        t when timerafter(time+delay) :> void;
+        t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void;
     }
 }
 

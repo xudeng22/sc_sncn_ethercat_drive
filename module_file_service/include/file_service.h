@@ -33,6 +33,9 @@
 
 #define CONFIG_FILE_NAME "config.csv"
 
+#define FILE_SERVICE_DELAY_TIMEOUT 500000000
+#define FILE_SERVICE_INITIAL_DELAY 100000
+
 enum eRequestType {
     REQUEST_IDLE = 0
     ,REQUEST_READ

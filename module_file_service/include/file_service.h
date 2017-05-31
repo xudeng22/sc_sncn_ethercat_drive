@@ -31,6 +31,8 @@
 /* This is basically the same as FOE_DATA_SIZE in foe.h */
 #define MAX_FOE_DATA     (1024 - 6 - 6)
 
+#define CONFIG_FILE_NAME "config.csv"
+
 enum eRequestType {
     REQUEST_IDLE = 0
     ,REQUEST_READ

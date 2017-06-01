@@ -19,6 +19,7 @@
 #include <config_parser.h>
 
 static int8_t foedata[FOE_MAX_SIM_FILE_SIZE];
+char errormsg[] = "error";
 
 
 static unsigned int set_configuration_to_dictionary(
@@ -218,7 +219,10 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         }
     }
 
-    i_foe.result(packetnumber, foe_error);
+    //i_foe.result(packetnumber, foe_error);
+    if (foe_error != FOE_ERROR_NONE)
+        i_foe.write_data((int8_t *)errormsg, strlen(errormsg), foe_error);
+
     wait_for_reply = ((stat == FOE_STAT_EOF)||(stat == FOE_STAT_ERROR)) ? 0 : 1;
 
     return wait_for_reply;
@@ -319,7 +323,10 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         }
     }
 
-    i_foe.result(packetnumber, foe_error);
+    //i_foe.result(packetnumber, foe_error);
+    if (foe_error != FOE_ERROR_NONE)
+        i_foe.write_data((int8_t *)errormsg, strlen(errormsg), foe_error);
+
     wait_for_reply = ((stat == FOE_STAT_EOF)||(stat == FOE_STAT_ERROR)) ? 0 : 1;
 
     return wait_for_reply;
@@ -412,6 +419,8 @@ void file_service(
                     file.opened = 0;
                     file.current = 0;
                     memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
+
+                    i_foe.write_data((int8_t *)errormsg, strlen(errormsg), FOE_ERROR_PROGRAM_ERROR);
 
                     wait_for_reply = 0;
                 } else {

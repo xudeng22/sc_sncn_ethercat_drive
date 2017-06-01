@@ -173,7 +173,6 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
 
     if (!file.opened)
     {
-        //i_spiffs.unmount();
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
         cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
@@ -418,6 +417,9 @@ void file_service(
                 } else {
                     t :> time;
                 }
+                break;
+
+            default:
                 break;
         }
 

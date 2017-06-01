@@ -155,6 +155,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     enum eFoeError foe_error = FOE_ERROR_NONE;
     static int cfd;
 
+    memset(foedata, '\0', MAX_FOE_DATA);
     {size, packetnumber, stat} = i_foe.read_data(foedata);
 
     printstr("Received packet: "); printint(packetnumber);
@@ -167,13 +168,12 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
             file.opened = 0;
             i_spiffs.close_file(cfd);
         }
-
-        memset(foedata, 0, MAX_FOE_DATA);
     }
 
 
     if (!file.opened)
     {
+        //i_spiffs.unmount();
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
         cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
@@ -268,6 +268,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
              printstr("File opened: ");
              printintln(cfd);
              i_spiffs.status(cfd, obj_id, file.length, type, pix, file.filename);
+             file.length--;
          }
     }
 
@@ -277,7 +278,10 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         size = (size > MAX_FOE_DATA ? MAX_FOE_DATA : size);
 
         if (size > 0)
+        {
+            memset(foedata, '\0', MAX_FOE_DATA);
             size = i_spiffs.read(cfd, (uint8_t *)foedata, size);
+        }
 
         if ((size == SPIFFS_EOF)||(size == 0))
             stat = FOE_STAT_EOF;
@@ -287,7 +291,11 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         else
         {
             {wsize, stat} = i_foe.write_data(foedata, size, FOE_ERROR_NONE);
-            file.current += wsize; /*TODO enable the possibility to resend the same chunk */
+            file.current += wsize;
+
+            /* If writed data size less than readed (from file) data size , we are seeking back and trying to send lost data again */
+            if (wsize < size) i_spiffs.seek(cfd, wsize , SPIFFS_SEEK_SET);
+
             packetnumber++;
             printstr("Send packet of size: ");
             printintln(size);
@@ -401,7 +409,12 @@ void file_service(
             case t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void :
                 if (wait_for_reply) {
                     printstrln("[foe_testing()] Timeout catched");
-                    /* FIXME reset FoE stuff */
+
+                    file.length = 0;
+                    file.opened = 0;
+                    file.current = 0;
+                    memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
+
                     wait_for_reply = 0;
                 } else {
                     t :> time;

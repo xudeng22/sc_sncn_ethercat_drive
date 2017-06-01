@@ -40,6 +40,10 @@ struct _object_dictionary_request {
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+port c21watchdog = WD_PORT_TICK;
+port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
 
 interface i_command {
     int  get_object_value(uint16_t index, uint8_t subindex, uint32_t &user_value);
@@ -431,7 +435,7 @@ int main(void)
 
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
-    interface i_co_communication i_co[3];
+    interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
 
 	par

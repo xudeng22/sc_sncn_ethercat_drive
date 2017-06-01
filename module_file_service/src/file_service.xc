@@ -268,7 +268,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
              printstr("File opened: ");
              printintln(cfd);
              i_spiffs.status(cfd, obj_id, file.length, type, pix, file.filename);
-             file.length--;
          }
     }
 

@@ -173,6 +173,16 @@ void canopen_interface_service(
             case i_co[int j].configuration_done(void):
                     configuration_done = 0;
                     break;
+
+            case i_co[int j].command_ready(void) -> enum eSdoCommand sdo_command:
+                    /* nothing to do */
+                    sdo_command = OD_COMMAND_NONE;
+                    break;
+
+            case i_co[int j].command_set_result(int result):
+                    (void)result;
+                    /* nothing to do */
+                    break;
         }
     }
 }

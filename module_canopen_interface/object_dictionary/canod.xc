@@ -142,7 +142,7 @@ static unsigned get_object_count(void)
     unsigned od_index, error;
     {od_index, error} = canod_find_index(index, subindex);
 
-    return {SDO_Info_Entries[od_index].objectAccess, error};
+    return {SDO_Info_Entries[od_index].objectAccess & 0x3f, error};
 }
 
 int canod_get_all_list_length(unsigned length[])

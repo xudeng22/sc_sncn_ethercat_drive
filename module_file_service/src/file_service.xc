@@ -174,6 +174,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
 
     if (!file.opened)
     {
+        memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
         cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
         if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR))
@@ -244,6 +245,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
     if (!file.opened)
     {
+        memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
         cfd = i_spiffs.open_file(file.filename, strlen(file.filename), SPIFFS_RDONLY);
         if (cfd < 0)
@@ -285,7 +287,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         else
         {
             {wsize, stat} = i_foe.write_data(foedata, size, FOE_ERROR_NONE);
-            file.current += wsize; /* enable the possibility to resend the same chunk, FIXME what about packet_number? */
+            file.current += wsize; /*TODO enable the possibility to resend the same chunk */
             packetnumber++;
             printstr("Send packet of size: ");
             printintln(size);
@@ -345,10 +347,10 @@ void file_service(
             return;
         }
 
-        select {
-            case i_spiffs.service_ready():
-            break;
-        }
+    select {
+        case i_spiffs.service_ready():
+        break;
+    }
 
     while (1) {
 

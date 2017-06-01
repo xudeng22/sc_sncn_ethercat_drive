@@ -106,7 +106,7 @@ int main(void)
                 reboot_service_ethercat(i_ecat_reboot);
 
 #ifdef CORE_C21_DX_G2
-                flash_service(ports, i_boot, i_data, 1);
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
 #else
                 flash_service(p_spi_flash, i_boot, i_data, 1);
 #endif
@@ -145,7 +145,7 @@ int main(void)
             par
             {
 
-                file_service(i_spiffs[0], i_co[3]);
+                file_service(i_spiffs[0], i_co[3], i_foe);
             }
         }
 

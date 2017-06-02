@@ -32,7 +32,7 @@
 #protection
 0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
 0x2006,        2,          60,          60,          60,          60,          60,          60 # DICT_PROTECTION MAX_DC_VOLTAGE
-0x2006,        3,      100000,      100000,      100000,      100000,      100000,      100000 # DICT_PROTECTION MAX_CURRENT 
+0x2006,        3,       40000,       40000,       40000,       40000,       40000,       40000 # DICT_PROTECTION MAX_CURRENT 
 
 #torque position velocity control
 #main parameters

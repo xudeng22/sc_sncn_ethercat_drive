@@ -4,9 +4,11 @@ sc_sncn_ethercat_drive Change Log
 3.0.2
 -----
 
-  * Fix issue with a the value of position control strategy
+  * Fix issue with the value of position control strategy
   * Rename MOTOR_PHASES_CONFIGURATION in user_config.h and main.xc files
-  * Change phase inverted parameter to 0 normal and 1 inverted
+  * Change phase inverted parameter to 0 - normal and 1 - inverted
+  * Fix bitsize and access rights in device configuration XML
+  * Fix datatypes of PID controller
 
 
 3.0.1

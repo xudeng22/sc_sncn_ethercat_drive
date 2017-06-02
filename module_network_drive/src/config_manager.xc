@@ -471,6 +471,7 @@ void cm_default_config_profiler(
     i_co.od_set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.max_velocity);
     i_co.od_set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.max_acceleration);
     i_co.od_set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.velocity);
+    i_co.od_set_object_value(DICT_MAX_ACCELERATION, 0, profiler.max_acceleration);
 }
 
 void cm_default_config_pos_velocity_control(

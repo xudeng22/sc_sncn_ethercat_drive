@@ -127,12 +127,9 @@ dataTypes = (esi['EtherCATInfo']['Descriptions']['Devices']['Device']
 dictionary_objects = []
 
 for obj in objdict:
-    print "Processing Object: {}".format(obj['Index'])
-
     o = object(obj['Index'], obj['Name'])
 
     if 'DefaultData' in obj['Info']:
-        print "create single element entry"
         e = entry(0)
         e.value = obj['Info']['DefaultData']
         e.name = o.name
@@ -141,27 +138,21 @@ for obj in objdict:
         o.otype = ObjectType.VAR
 
     else:
-        print "iterate through <SubItems> and create entry each"
-
         i = 0
         if type(obj['Info']['SubItem']) is list:
             for sub in obj['Info']['SubItem']:
-                print "Add subindex {} '{}'".format(i, sub['Name'])
                 e = entry(i)
-                e.name = sub['Name']
                 e.value = sub['Info']['DefaultData']
                 # FIXME: for e.type I need to sync with DataType-Area
                 o.add_entry(e)
                 i = i + 1
         else:
             sub = obj['Info']['SubItem']
-            print "Add subindex {} '{}'".format(i, sub['Name'])
             e = entry(i)
-            e.name = sub['Name']
             e.value = sub['Info']['DefaultData']
             # FIXME: for e.type I need to sync with DataType-Area
             o.add_entry(e)
-            i = i + 1
+            # i = i + 1
 
     dictionary_objects.append(o)
 

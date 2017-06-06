@@ -40,19 +40,18 @@ class DataType(Enum):
 
 
 class entry(object):
-    subindex = 0  # kind of redundant
-    value = 0
-    max_value = 0
-    min_value = 0
-    default = 0
-    dataType = DataType.UNKNOWN
-    accessRights = Access.RW
-    pdoMappable = PdoMap.NONE
-    bitsize = 0
-    name = ""
 
     def __init__(self, subindex):
-        self.subindex = subindex
+        self.subindex = subindex  # subindex is kind of redundant
+        self.value = 0
+        self.max_value = 0
+        self.min_value = 0
+        self.default = 0
+        self.accessRights = Access.RW
+        self.pdoMappable = PdoMap.NONE
+        self.bitsize = 0
+        self.name = ""
+        self.etype = DataType.UNKNOWN
 
     @staticmethod
     def getType(tdesc):
@@ -69,16 +68,14 @@ class entry(object):
 
 
 class object(object):
-    index = 0
-    otype = ObjectType.UNKNOWN
-    entry_count = 0
-    entry = []
-    name = ""
 
     def __init__(self, index, name, otype=ObjectType.UNKNOWN):
         self.name = name
         self.index = index
         self.otype = otype
+        entry_count = 0
+        entry = []
+        name = ""
 
     def add_entry(self, entries):
         entry.append(entries)          # list of class entries

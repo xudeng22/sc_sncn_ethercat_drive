@@ -1,15 +1,27 @@
 # vim: set ts=4 set expandtab:
 import xmltodict
 
+from enum import Enum
+
 EsiFile = './SOMANET_CiA_402.xml'
+
+
+# object type enumeration
+class ObjectType(Enum):
+    UNKNOWN = 0
+    VAR = 1
+    ARRAY = 2
+    RECORD = 3
+
 
 class object(object):
     index = 0
-    otype = NONE
+    otype = ObjectType.UNKNOWN
 
-    def __init__(self, index, name)
+    def __init__(self, index, name, otype):
         self.name = name
-	self.index = index
+        self.index = index
+        self.otype = otype
 
     def print_ccode():
 	print "struct _object object_"

@@ -66,28 +66,41 @@ class entry(object):
             'UDINT': DataType.UDINT,
         }.get(tdesc, DataType.UNKNOWN)
 
+    @staticmethod
+    def getTypeString(t):
+        return {
+            DataType.SINT: "SINT",
+            DataType.USINT: "USINT",
+            DataType.INT: "INT",
+            DataType.UINT: "UINT",
+            DataType.DINT: "DINT",
+            DataType.UDINT: "UDINT",
+        }.get(t, "Unknown")
+
 
 class object(object):
 
     def __init__(self, index, name, otype=ObjectType.UNKNOWN):
-        self.name = name
         self.index = index
+        self.name = name
         self.otype = otype
-        entry_count = 0
-        entry = []
-        name = ""
+        self.entry_count = 0
+        self.entry = []
 
     def add_entry(self, entries):
-        entry.append(entries)          # list of class entries
-        entry_count = entries.length
+        self.entry.append(entries)          # list of class entries
+        self.entry_count = self.entry_count + 1
 
     def print_ccode(self):
         # print "struct _object object_"
         print "Object Index: {} Name: {}".format(self.index, self.name)
 
+        i = 0
         for e in self.entry:
-            print "Entry: {} ({}) with type {}".format(
-                                                e.subindex, e.name, e.etype)
+            print "| Entry: {} ({}) with type {}".format(
+                                                e.subindex, i,
+                                                entry.getTypeString(e.etype))
+            i = i + 1
 
 #
 # parse the ESI
@@ -124,11 +137,31 @@ for obj in objdict:
         e.value = obj['Info']['DefaultData']
         e.name = o.name
         e.etype = entry.getType(obj['Type'])
-        o.entry.append(e)
+        o.add_entry(e)
         o.otype = ObjectType.VAR
 
     else:
         print "iterate through <SubItems> and create entry each"
+
+        i = 0
+        if type(obj['Info']['SubItem']) is list:
+            for sub in obj['Info']['SubItem']:
+                print "Add subindex {} '{}'".format(i, sub['Name'])
+                e = entry(i)
+                e.name = sub['Name']
+                e.value = sub['Info']['DefaultData']
+                # FIXME: for e.type I need to sync with DataType-Area
+                o.add_entry(e)
+                i = i + 1
+        else:
+            sub = obj['Info']['SubItem']
+            print "Add subindex {} '{}'".format(i, sub['Name'])
+            e = entry(i)
+            e.name = sub['Name']
+            e.value = sub['Info']['DefaultData']
+            # FIXME: for e.type I need to sync with DataType-Area
+            o.add_entry(e)
+            i = i + 1
 
     dictionary_objects.append(o)
 

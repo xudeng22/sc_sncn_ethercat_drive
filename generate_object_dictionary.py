@@ -37,6 +37,7 @@ class DataType(Enum):
     UINT = 3
     DINT = 4
     UDINT = 5
+    REAL = 6
 
 
 class entry(object):
@@ -64,6 +65,7 @@ class entry(object):
             'UINT': DataType.UINT,
             'DINT': DataType.DINT,
             'UDINT': DataType.UDINT,
+            'REAL': DataType.REAL,
         }.get(tdesc, DataType.UNKNOWN)
 
     @staticmethod
@@ -75,6 +77,7 @@ class entry(object):
             DataType.UINT: "UINT",
             DataType.DINT: "DINT",
             DataType.UDINT: "UDINT",
+            DataType.REAL: "REAL",
         }.get(t, "Unknown")
 
 
@@ -101,6 +104,58 @@ class object(object):
                                                 e.subindex, i,
                                                 entry.getTypeString(e.etype))
             i = i + 1
+
+
+# check for data type if it's of array type
+def data_type_is_array(data_type_description, max_subindex):
+    list_items = len(data_type_description['SubItem'])
+
+    if 'SubIdx' in data_type_description['SubItem'][1]:
+        return False
+
+    if list_items <= max_subindex:
+        return True
+
+    else:
+        return False
+
+
+def data_type_subitem(data_type, idx):
+    if 'SubItem' in data_type:
+        for item in data_type['SubItem']:
+            print item['Name']
+            if item['SubIdx'] == idx:
+                return item
+
+
+# Find a specific entry in the data_type area
+# The DataType for RECORD and ARRAY is determined by DTxxxx
+def find_data_type_entry(objtype, data_type):
+    for t in data_type:
+        if objtype == t['Name']:
+            return t
+
+    return None
+
+
+# FIXME add access rights for the entry!
+def get_entry_data_type(data_type, objtype, entry):
+    dt_entry = find_data_type_entry(objtype, data_type)
+    if dt_entry is None:
+        raise Exception("dt_entry {} not found".format(dt_entry))
+
+    if len(dt_entry['SubItem']) > entry.subindex:
+        dt = dt_entry['SubItem'][entry.subindex]
+    else:
+        dt = dt_entry['SubItem'][1]
+
+    basetype = entry.getType(dt['Type'])
+    if basetype == DataType.UNKNOWN:
+        dte = find_data_type_entry(dt['Type'], data_type)
+        entry.etype = entry.getType(dte['BaseType'])
+    else:
+        entry.etype = entry.getType(dt['Type'])
+        # e.accessRights = dt['
 
 #
 # parse the ESI
@@ -129,6 +184,9 @@ dictionary_objects = []
 for obj in objdict:
     o = object(obj['Index'], obj['Name'])
 
+    max_subindex = 0
+
+    # VAR is a simple object
     if 'DefaultData' in obj['Info']:
         e = entry(0)
         e.value = obj['Info']['DefaultData']
@@ -137,24 +195,54 @@ for obj in objdict:
         o.add_entry(e)
         o.otype = ObjectType.VAR
 
+    # Complex objects ARRAY and RECORD
     else:
-        i = 0
+        t = find_data_type_entry(obj['Type'], dataTypes)
+
+        if t is None:
+            raise Exception("No matching data type found {}".format(
+                                    obj['Type']))
+
         if type(obj['Info']['SubItem']) is list:
+            max_subindex = obj['Info']['SubItem'][0]['Info']['DefaultData']
+        else:
+            max_subindex = obj['Info']['SubItem']['Info']['DefaultData']
+
+        print "Object {}".format(o.index)
+        if data_type_is_array(t, max_subindex):
+            # print "Object {} is ARRAY".format(o.index)
+            o.otype = ObjectType.ARRAY
+
+        else:
+            # print "Object {} is RECORD".format(o.index)
+            o.otype = ObjectType.RECORD
+
+        if type(obj['Info']['SubItem']) is list:
+            i = 0
             for sub in obj['Info']['SubItem']:
                 e = entry(i)
+                e.name = sub['Name']
                 e.value = sub['Info']['DefaultData']
-                # FIXME: for e.type I need to sync with DataType-Area
+
+                # update this entry with type informations
+                get_entry_data_type(dataTypes, obj['Type'], e)
+
                 o.add_entry(e)
                 i = i + 1
-        else:
+
+        else:   # Empty Array
+            print "*** Empty SubItem List - i.e. only one element"
             sub = obj['Info']['SubItem']
-            e = entry(i)
+            e = entry(0)
             e.value = sub['Info']['DefaultData']
-            # FIXME: for e.type I need to sync with DataType-Area
+
+            # update this entry with type informations
+            get_entry_data_type(dataTypes, obj['Type'], e)
+
             o.add_entry(e)
-            # i = i + 1
 
     dictionary_objects.append(o)
 
+# Debug output of the parsed dictionary
 for o in dictionary_objects:
     o.print_ccode()

@@ -51,6 +51,22 @@ class entry(object):
     bitsize = 0
     name = ""
 
+    def __init__(self, subindex):
+        self.subindex = subindex
+
+    @staticmethod
+    def getType(tdesc):
+        # dictionary access, second argument is the default if first is not
+        # found
+        return {
+            'SINT': DataType.SINT,
+            'USINT': DataType.USINT,
+            'INT': DataType.INT,
+            'UINT': DataType.UINT,
+            'DINT': DataType.DINT,
+            'UDINT': DataType.UDINT,
+        }.get(tdesc, DataType.UNKNOWN)
+
 
 class object(object):
     index = 0
@@ -59,19 +75,26 @@ class object(object):
     entry = []
     name = ""
 
-    def __init__(self, index, name, otype):
+    def __init__(self, index, name, otype=ObjectType.UNKNOWN):
         self.name = name
         self.index = index
         self.otype = otype
 
-    def add_entry(entries):
-        entry.append(entries)          # list of entries of class entries
+    def add_entry(self, entries):
+        entry.append(entries)          # list of class entries
         entry_count = entries.length
 
-    def print_ccode():
-        print "struct _object object_"
+    def print_ccode(self):
+        # print "struct _object object_"
+        print "Object Index: {} Name: {}".format(self.index, self.name)
 
+        for e in self.entry:
+            print "Entry: {} ({}) with type {}".format(
+                                                e.subindex, e.name, e.etype)
+
+#
 # parse the ESI
+#
 
 with open(EsiFile) as fd:
     esi = xmltodict.parse(fd.read())
@@ -90,5 +113,27 @@ dataTypes = (esi['EtherCATInfo']['Descriptions']['Devices']['Device']
 
 # print objdict['Object'][0]['Index']
 
+# list all the objects in the dictionary
+dictionary_objects = []
+
 for obj in objdict:
-    print obj['Index']
+    print "Processing Object: {}".format(obj['Index'])
+
+    o = object(obj['Index'], obj['Name'])
+
+    if 'DefaultData' in obj['Info']:
+        print "create single element entry"
+        e = entry(0)
+        e.value = obj['Info']['DefaultData']
+        e.name = o.name
+        e.etype = entry.getType(obj['Type'])
+        o.entry.append(e)
+        o.otype = ObjectType.VAR
+
+    else:
+        print "iterate through <SubItems> and create entry each"
+
+    dictionary_objects.append(o)
+
+for o in dictionary_objects:
+    o.print_ccode()

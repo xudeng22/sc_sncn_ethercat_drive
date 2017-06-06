@@ -1,3 +1,4 @@
+# vim: set ts=4 set expandtab:
 import xmltodict
 
 EsiFile = './SOMANET_CiA_402.xml'

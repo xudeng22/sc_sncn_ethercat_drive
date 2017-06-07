@@ -257,6 +257,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
     { 0x6081, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x003f | TXRX_MAPABLE, 0x00, "Profile velocity" },
     { 0x603F, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x0007 | TXRX_MAPABLE, 0x00, "Error code" },
     { 0x2FFD, 0, 0, DEFTYPE_UNSIGNED32, CANOD_TYPE_VAR, 32, 0x0007 | TX_MAPABLE, 0x00, "Timestamp" },
+    { 0x3000, 0, 0, DEFTYPE_UNSIGNED16, CANOD_TYPE_VAR, 16, 0x003f, 0x00, "Command" },
     { 0, 0, 0, 0, 0, 0, 0, 0, "" }
 };
 

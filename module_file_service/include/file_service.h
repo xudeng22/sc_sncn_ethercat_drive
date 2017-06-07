@@ -63,4 +63,4 @@ struct _file_t {
 void file_service(
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
-        client interface i_foe_communication i_foe);
+        client interface i_foe_communication ?i_foe);

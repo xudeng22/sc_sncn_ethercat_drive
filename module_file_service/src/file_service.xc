@@ -336,7 +336,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 void file_service(
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
-        client interface i_foe_communication i_foe)
+        client interface i_foe_communication ?i_foe)
 {
     timer t;
     unsigned time = 0;
@@ -389,7 +389,7 @@ void file_service(
         }
 
         select {
-            case i_foe.data_ready():
+            case !isnull(i_foe) => i_foe.data_ready():
                 notify = i_foe.get_notification_type();
                 switch (notify) {
                 case FOE_NTYPE_DATA:

@@ -29,7 +29,7 @@ endif
 #XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -DSTARTUP_READ_FLASH_OBJECTS=1 -lflash -report
 #XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lflash -report -save-temps
 XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lquadflash -report -save-temps -DXCORE200=1
-XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT  -lflash
+XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lquadflash -DXCORE200=1
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
 VERBOSE = 1

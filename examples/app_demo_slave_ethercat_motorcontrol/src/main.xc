@@ -94,12 +94,6 @@ int main(void)
             {
                 ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
                                     i_foe, ethercat_ports);
-//                _ethercat_service(i_ecat_reboot,
-//                                 i_co[0],
-//                                 null,
-//                                 i_foe,
-//                                 ethercat_ports);
-//
                 reboot_service_ethercat(i_ecat_reboot);
 
 #ifdef CORE_C21_DX_G2
@@ -141,8 +135,8 @@ int main(void)
         {
             par
             {
-
                 file_service(i_spiffs[0], i_co[3], i_foe);
+                spiffs_service(i_data[0], i_spiffs, 1);
             }
         }
 
@@ -197,11 +191,6 @@ int main(void)
 
                     motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
                 }
-
-
-                //canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
-
-
             }
         }
 
@@ -212,8 +201,6 @@ int main(void)
         {
             par
             {
-                spiffs_service(i_data[0], i_spiffs, 1);
-
                 /* PWM Service */
                 {
                     pwm_config(pwm_ports);

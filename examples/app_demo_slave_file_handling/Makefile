@@ -23,7 +23,7 @@ endif
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to
 # xcc for the final link (mapping) stage.
 XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lquadflash -report -DXCORE200=1
-XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lquadflash
+XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lquadflash -DXCORE200=1
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
 VERBOSE = 1

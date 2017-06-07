@@ -15,7 +15,6 @@
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
-#include <flash_service.h>
 #include <spiffs_service.h>
 #include <flash_service.h>
 
@@ -50,11 +49,6 @@ port c21led = LED_PORT_4BIT_X_nG_nB_nR;
 #endif
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
-
-#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
-port c21watchdog = WD_PORT_TICK;
-port c21led = LED_PORT_4BIT_X_nG_nB_nR;
-#endif
 
 interface i_command {
     int  get_object_value(uint16_t index, uint8_t subindex, uint32_t &user_value);
@@ -504,7 +498,7 @@ int main(void)
 #else
                 flash_service(p_spi_flash, i_boot, i_data, 1);
 #endif
-                file_service(i_spiffs[0], i_co[3]);
+                file_service(i_spiffs[0], i_co[3], null);
             }
         }
 

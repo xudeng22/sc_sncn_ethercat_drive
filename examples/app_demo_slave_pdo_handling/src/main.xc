@@ -275,7 +275,7 @@ int main(void) {
 #else
                 flash_service(p_spi_flash, i_boot, i_data, 1);
 #endif
-                file_service(i_spiffs[0], i_co[3]);
+                file_service(i_spiffs[0], i_co[3], null);
 #endif
             }
         }

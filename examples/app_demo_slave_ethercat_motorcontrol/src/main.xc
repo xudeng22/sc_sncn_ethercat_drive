@@ -34,6 +34,11 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
+//#include <file_service.h>
+#include <flash_service.h>
+#include <spiffs_service.h>
+#include <file_service.h>
+
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
 WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
@@ -72,6 +77,11 @@ int main(void)
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
 
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot;
+
+
     par
     {
         /************************************************************
@@ -83,39 +93,60 @@ int main(void)
         {
             par
             {
-                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
-                                    i_foe, ethercat_ports);
+//                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+//                                    i_foe, ethercat_ports);
+                _ethercat_service(i_ecat_reboot,
+                                 i_co[0],
+                                 null,
+                                 i_foe,
+                                 ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
+
+#ifdef CORE_C21_DX_G2
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
+
+
+                {
+                    ProfilerConfig profiler_config;
+
+                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+
+                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
+                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
+
+#if 0
+                    network_drive_service_debug( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0]);
+#else
+                    network_drive_service( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+#endif
+                }
+
             }
         }
 
-        /* EtherCAT Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-            ProfilerConfig profiler_config;
+            par
+            {
 
-            profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-            profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-
-            profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
-
-#if 0
-            network_drive_service_debug( profiler_config,
-                                    i_pdo,
-                                    i_co[1],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0]);
-#else
-            network_drive_service( profiler_config,
-                                    i_pdo,
-                                    i_co[1],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
-#endif
+                file_service(i_spiffs[0], i_co[3], i_foe);
+            }
         }
+
 
         on tile[APP_TILE_2]:
         {
@@ -167,6 +198,11 @@ int main(void)
 
                     motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
                 }
+
+
+                canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
+
+
             }
         }
 
@@ -177,6 +213,8 @@ int main(void)
         {
             par
             {
+                spiffs_service(i_data[0], i_spiffs, 1);
+
                 /* PWM Service */
                 {
                     pwm_config(pwm_ports);

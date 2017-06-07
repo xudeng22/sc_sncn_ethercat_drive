@@ -26,6 +26,8 @@ void canopen_interface_service(
     pdo_size_t pdo_buffer[MAX_PDO_SIZE];
     char comm_state = 0;
 
+    struct _sdo_command_object sdo_command_object = { OD_COMMAND_NONE, OD_COMMAND_STATE_IDLE };
+
     int configuration_done = 0;
     int drive_operational = 0;
 
@@ -75,9 +77,22 @@ void canopen_interface_service(
                     error_out = canod_get_entry(index_, subindex, value, bitlength);
                     bitlength_out = bitlength;
                     value_out = value;
+
+                    /* After command is finished processing and the result is read by the master reset
+                     * the command to allow the next command to be scheduled for execution. */
+                    if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
+                        canod_set_entry(index_, subindex, OD_COMMAND_STATE_IDLE, 1);
+                        sdo_command_object.command = OD_COMMAND_NONE;
+                        sdo_command_object.state = OD_COMMAND_STATE_IDLE;
+                    }
                     break;
 
             case i_co[int j].od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value) -> { uint8_t error_out }:
+                    if (index_ == DICT_COMMAND_OBJECT && sdo_command_object.state == OD_COMMAND_STATE_IDLE) {
+                        sdo_command_object.command = (uint16_t)(value & 0xffff);
+                        value = OD_COMMAND_STATE_IDLE;
+                    }
+
                     error_out = canod_set_entry(index_, subindex, value, 1);
                     break;
 
@@ -174,14 +189,21 @@ void canopen_interface_service(
                     configuration_done = 0;
                     break;
 
-            case i_co[int j].command_ready(void) -> enum eSdoCommand sdo_command:
-                    /* nothing to do */
-                    sdo_command = OD_COMMAND_NONE;
+            /* command handling interface methods */
+
+            case i_co[int j].command_ready(void) -> { enum eSdoCommand command }:
+                    //canod_set_entry(0, 0, 0, 1);
+                    command = sdo_command_object.command;
+                    if (command != OD_COMMAND_NONE) {
+                        sdo_command_object.state = OD_COMMAND_STATE_PROCESSING;
+                    }
+                    canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
                     break;
 
             case i_co[int j].command_set_result(int result):
-                    (void)result;
-                    /* nothing to do */
+                    sdo_command_object.command = OD_COMMAND_NONE;
+                    sdo_command_object.state = result ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
+                    canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
                     break;
         }
     }

@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 
 /**
  * @file main.xc
@@ -10,14 +10,20 @@
 
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
-
+#include <file_service.h>
 #include <reboot.h>
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
+#include <flash_service.h>
+#include <spiffs_service.h>
+#include <flash_service.h>
 
 #define OBJECT_PRINT              0  /* enable object print with 1 */
 #define MAX_TIME_TO_WAIT_SDO      100000
+
+/* Set to 1 to activate initial read of object dictionary from flash at startup */
+#define STARTUP_READ_FLASH_OBJECTS  0
 
 typedef enum {
     ECC_UNKNOWN       = -1
@@ -38,6 +44,11 @@ struct _object_dictionary_request {
     uint8_t  subindex;
 };
 
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+port c21watchdog = WD_PORT_TICK;
+port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
+
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
 #ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
@@ -49,6 +60,33 @@ interface i_command {
     int  get_object_value(uint16_t index, uint8_t subindex, uint32_t &user_value);
     int  set_object_value(uint16_t index, uint8_t subindex, uint32_t value);
 };
+
+/* Read most recent values for object dictionary values from flash (if existing) */
+static int initial_od_read(client interface i_co_communication i_co)
+{
+    timer t;
+    unsigned time;
+
+    //printstrln("[DEBUG] start initial update dictionary");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        t :> time;
+        t when timerafter(time+100000) :> void;
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+
+    //printstrln("[DEBUG] finished initial update dictionary");
+
+    return 0;
+}
 
 /* Test application handling pdos from EtherCat */
 static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co, client interface i_command i_cmd)
@@ -381,8 +419,11 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
     unsigned int time;
-
     int read_config = 0;
+
+    initial_od_read(i_co);
+
+    printstrln("Start SDO service");
 
     /*
      *  Wait for initial configuration.
@@ -393,14 +434,14 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
      *  moment to read all necessary configuration parameters from the dictionary.
      */
     while (!i_co.configuration_get());
-    read_od_config(i_co);
+    //read_od_config(i_co);
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
     i_co.configuration_done(); /* clear notification */
 
 
     while (1) {
         read_config = i_co.configuration_get();
-
+#if 0
         select {
         case i_cmd.get_object_value(uint16_t index, uint8_t subindex, uint32_t &value) -> { int err }:
             {value, void, void} = i_co.od_get_object_value(index, subindex);
@@ -415,7 +456,7 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
         default:
             break;
         }
-
+#endif
         if (read_config) {
             read_od_config(i_co);
             printstrln("Re-Configuration finished, ECAT in OP mode - start cyclic operation");
@@ -438,6 +479,10 @@ int main(void)
     interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
 
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot; /* FIXME necessary? */
+
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
@@ -453,6 +498,13 @@ int main(void)
                                    ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
+
+#ifdef XCORE200
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
+                file_service(i_spiffs[0], i_co[3]);
             }
         }
 
@@ -464,9 +516,16 @@ int main(void)
                 /* Start trivial PDO exchange service */
                 pdo_service(i_pdo, i_co[1], i_cmd);
 
-
                 /* Start the SDO / Object Dictionary test service */
                 sdo_service(i_co[2], i_cmd);
+            }
+        }
+
+        on tile[IFM_TILE] :
+        {
+            par
+            {
+                spiffs_service(i_data[0], i_spiffs, 1);
             }
         }
     }

@@ -1,0 +1,94 @@
+/**************
+ * Core-C22
+ * Rev. A
+ **************/
+
+#pragma once
+
+#include <xs1.h>
+#include <platform.h>
+#include <flash.h>
+#include <print.h>
+#include <stdio.h>
+#include <xscope.h>
+
+/* Standard Tile definitions for demo/test apps */
+#define COM_TILE 0
+#define APP_TILE 1
+#define APP_TILE_1 1
+#define APP_TILE_2 2
+#define IFM_TILE 3
+
+/* CORE LED PORTS*/
+#define CORE_LED_PORT_RED on tile[APP_TILE_1]: XS1_PORT_1M
+#define CORE_LED_PORT_GREEN on tile[APP_TILE_1]: XS1_PORT_1L
+#define CORE_LED_PORT_BLUE on tile[APP_TILE_1]: XS1_PORT_1K
+
+/* CLOCKS */
+#define IFM_TILE_CLOCK_0 on tile[IFM_TILE]: XS1_CLKBLK_REF
+#define IFM_TILE_CLOCK_1 on tile[IFM_TILE]: XS1_CLKBLK_1
+#define IFM_TILE_CLOCK_2 on tile[IFM_TILE]: XS1_CLKBLK_2
+#define IFM_TILE_CLOCK_3 on tile[IFM_TILE]: XS1_CLKBLK_3
+#define IFM_TILE_CLOCK_4 on tile[IFM_TILE]: XS1_CLKBLK_4
+#define IFM_TILE_CLOCK_5 on tile[IFM_TILE]: XS1_CLKBLK_5
+
+
+/* COM PORTS */
+#define COM_PORT_1BIT_18 on tile[COM_TILE]: XS1_PORT_1F
+#define COM_PORT_1BIT_14 on tile[COM_TILE]: XS1_PORT_1G
+#define COM_PORT_1BIT_58 on tile[COM_TILE]: XS1_PORT_1H
+#define COM_PORT_1BIT_10 on tile[COM_TILE]: XS1_PORT_1I
+#define COM_PORT_1BIT_34 on tile[COM_TILE]: XS1_PORT_1J
+#define COM_PORT_1BIT_50 on tile[COM_TILE]: XS1_PORT_1K
+#define COM_PORT_1BIT_40 on tile[COM_TILE]: XS1_PORT_1L
+#define COM_PORT_1BIT_70 on tile[COM_TILE]: XS1_PORT_1M
+#define COM_PORT_1BIT_12 on tile[COM_TILE]: XS1_PORT_1N
+#define COM_PORT_1BIT_68 on tile[COM_TILE]: XS1_PORT_1O
+#define COM_PORT_1BIT_66 on tile[COM_TILE]: XS1_PORT_1P
+#define COM_PORT_4BIT_48_52_28_32 on tile[COM_TILE]: XS1_PORT_4A
+#define COM_PORT_4BIT_46_42_38_36 on tile[COM_TILE]: XS1_PORT_4B
+#define COM_PORT_4BIT_22_26_54_30 on tile[COM_TILE]: XS1_PORT_4C
+#define COM_PORT_4BIT_60_20_56_24 on tile[COM_TILE]: XS1_PORT_4D
+#define COM_PORT_4BIT_76_78_8_72 on tile[COM_TILE]: XS1_PORT_4E
+#define COM_PORT_4BIT_4_2_6_74 on tile[COM_TILE]: XS1_PORT_4F
+#define COM_PORT_16BIT_48_52_46_42_38_36_28_32_22_26_60_20_56_24_54_30 on tile[COM_TILE]: XS1_PORT_16A
+#define COM_PORT_16BIT_76_78_4_2_6_74_8_72_70_12_68_66_16_64_62_44 on tile[COM_TILE]: XS1_PORT_16B
+
+/* IFM PORTS */
+#define IFM_PORT_1BIT_28 on tile[IFM_TILE]: XS1_PORT_1A
+#define IFM_PORT_1BIT_32 on tile[IFM_TILE]: XS1_PORT_1B
+#define IFM_PORT_1BIT_40 on tile[IFM_TILE]: XS1_PORT_1C
+#define IFM_PORT_1BIT_42 on tile[IFM_TILE]: XS1_PORT_1D
+#define IFM_PORT_1BIT_2 on tile[IFM_TILE]: XS1_PORT_1E
+#define IFM_PORT_1BIT_6 on tile[IFM_TILE]: XS1_PORT_1F
+#define IFM_PORT_1BIT_4 on tile[IFM_TILE]: XS1_PORT_1G
+#define IFM_PORT_1BIT_16 on tile[IFM_TILE]: XS1_PORT_1H
+#define IFM_PORT_1BIT_78 on tile[IFM_TILE]: XS1_PORT_1I
+#define IFM_PORT_1BIT_22 on tile[IFM_TILE]: XS1_PORT_1J
+#define IFM_PORT_1BIT_62 on tile[IFM_TILE]: XS1_PORT_1K
+#define IFM_PORT_1BIT_56 on tile[IFM_TILE]: XS1_PORT_1L
+#define IFM_PORT_1BIT_54 on tile[IFM_TILE]: XS1_PORT_1M
+#define IFM_PORT_1BIT_24 on tile[IFM_TILE]: XS1_PORT_1N
+#define IFM_PORT_1BIT_26 on tile[IFM_TILE]: XS1_PORT_1O
+#define IFM_PORT_1BIT_52 on tile[IFM_TILE]: XS1_PORT_1P
+
+#define IFM_PORT_4BIT_38_44_30_34 on tile[IFM_TILE]: XS1_PORT_4A
+#define IFM_PORT_4BIT_36_46_48_50 on tile[IFM_TILE]: XS1_PORT_4B
+#define IFM_PORT_4BIT_20_58_10_8 on tile[IFM_TILE]: XS1_PORT_4C
+#define IFM_PORT_4BIT_64_66_76_80 on tile[IFM_TILE]: XS1_PORT_4E
+#define IFM_PORT_4BIT_68_70_72_74 on tile[IFM_TILE]: XS1_PORT_4F
+
+
+/* INTERNAL PORTS */
+#define INTERNAL_PORT_1BIT_NOT_CONNECTED_0 on tile[COM_TILE]: XS1_PORT_1E
+#define INTERNAL_PORT_8BIT_NOT_CONNECTED_0 on tile[COM_TILE]: XS1_PORT_8A
+#define INTERNAL_PORT_8BIT_NOT_CONNECTED_1 on tile[COM_TILE]: XS1_PORT_8B
+#define INTERNAL_PORT_16BIT_NOT_CONNECTED_0 on tile[IFM_TILE]: XS1_PORT_16A
+
+/* SPI port definitions */ 
+on tile[COM_TILE]: fl_SPIPorts p_spi_flash = { PORT_SPI_MISO,
+ 					       PORT_SPI_SS,
+ 					       PORT_SPI_CLK,
+ 					       PORT_SPI_MOSI,
+ 					       XS1_CLKBLK_2 };
+

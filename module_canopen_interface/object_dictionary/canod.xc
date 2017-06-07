@@ -278,6 +278,7 @@ int canod_get_entry_description(uint16_t index, uint8_t subindex, unsigned value
 	desc.subindex = SDO_Info_Entries[od_index].subindex;
 
 	desc.dataType = SDO_Info_Entries[od_index].dataType;
+	desc.objectCode = SDO_Info_Entries[od_index].objectCode;
 	desc.bitLength = SDO_Info_Entries[od_index].bitLength;
 	desc.objectAccess = SDO_Info_Entries[od_index].objectAccess;
 

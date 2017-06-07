@@ -100,6 +100,30 @@ static void sdo_wait_first_config(client interface i_co_communication i_co)
     i_co.configuration_done();
 }
 
+static int initial_od_read(client interface i_co_communication i_co)
+{
+    timer t;
+    unsigned time;
+
+    printstrln("Start reading OD from flash");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        t :> time;
+        t when timerafter(time+100000) :> void;
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+
+    return 0;
+}
+
 static int quick_stop_perform(int opmode, int &step)
 {
     int target = 0;
@@ -408,6 +432,12 @@ void network_drive_service(ProfilerConfig &profiler_config,
         tile_usec = USEC_FAST;
     }
 
+#if STARTUP_READ_FLASH_OBJECTS == 1
+#warning Build with initial read from flash
+    /* Before anything else, read the object data values from flash - if existing. */
+    initial_od_read(i_co);
+#endif /* FLASH_OBJECTS */
+
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
@@ -423,6 +453,27 @@ void network_drive_service(ProfilerConfig &profiler_config,
     cm_default_config_pos_velocity_control(i_co, i_motion_control);
 
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+
+    //read objects from flash filesystem
+    printstrln("Read Object dict from file");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG); //send read file command
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+    //wait processing
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        delay_ticks(1000*tile_usec);
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+    if (command_state == OD_COMMAND_STATE_SUCCESS) {
+        printstrln("Object dict read from file");
+    } else {
+        printstrln("ERROR: reading file from flash");
+    }
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.

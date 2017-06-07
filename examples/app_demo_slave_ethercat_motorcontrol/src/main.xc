@@ -34,7 +34,6 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
-//#include <file_service.h>
 #include <flash_service.h>
 #include <spiffs_service.h>
 #include <file_service.h>
@@ -93,14 +92,14 @@ int main(void)
         {
             par
             {
-//                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
-//                                    i_foe, ethercat_ports);
-                _ethercat_service(i_ecat_reboot,
-                                 i_co[0],
-                                 null,
-                                 i_foe,
-                                 ethercat_ports);
-
+                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+                                    i_foe, ethercat_ports);
+//                _ethercat_service(i_ecat_reboot,
+//                                 i_co[0],
+//                                 null,
+//                                 i_foe,
+//                                 ethercat_ports);
+//
                 reboot_service_ethercat(i_ecat_reboot);
 
 #ifdef CORE_C21_DX_G2
@@ -200,7 +199,7 @@ int main(void)
                 }
 
 
-                canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
+                //canopen_interface_service(i_pdo, i_co, CO_IF_COUNT);
 
 
             }

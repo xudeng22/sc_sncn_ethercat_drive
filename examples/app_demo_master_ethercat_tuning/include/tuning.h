@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 27
+#define DISPLAY_LINE 28
 #define HELP_ROW_COUNT 12
 
 
@@ -55,6 +55,7 @@ typedef enum {
     TUNING_CMD_CONTROL_POSITION           = 0x08,
     TUNING_CMD_CONTROL_VELOCITY           = 0x09,
     TUNING_CMD_CONTROL_TORQUE             = 0x0A,
+    TUNING_CMD_COGGING_TORQUE             = 0x0B,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,
@@ -105,7 +106,8 @@ typedef enum {
     TUNING_FLAG_MOTION_POLARITY     = 1,
     TUNING_FLAG_SENSOR_POLARITY     = 2,
     TUNING_FLAG_PHASES_INVERTED     = 3,
-    TUNING_FLAG_INTEGRATED_PROFILER = 4
+    TUNING_FLAG_INTEGRATED_PROFILER = 4,
+    TUNING_FLAG_COGGING_TORQUE      = 5
 } TuningFlagsBit;
 
 typedef enum {
@@ -134,6 +136,7 @@ typedef struct {
     int phases_inverted;
     int brake_release_strategy;
     int brake_flag;
+    int cogging_torque_flag;
     int error_status;
     int sensor_error;
     int motion_control_error;

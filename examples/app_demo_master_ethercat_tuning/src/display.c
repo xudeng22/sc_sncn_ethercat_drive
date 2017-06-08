@@ -177,6 +177,13 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 13
     wmoveclr(wnd, &row);
+    if (input.cogging_torque_flag == 1) {
+        wprintw(wnd, "Cogging torque compensation ON");
+    } else {
+        wprintw(wnd, "Cogging torque compensation OFF");
+    }
+    //row 14
+    wmoveclr(wnd, &row);
     //motorcontrol fault
     if (input.error_status != 0) {
         wprintw(wnd, "* Motor Fault ");

@@ -369,6 +369,14 @@ void tuning_command_handler(
             }
             break;
 
+        //set cogging torque
+        case TUNING_CMD_COGGING_TORQUE:
+            if (tuning_mode_state.value == 1 || tuning_mode_state.value == 0) {
+                i_motion_control.enable_cogging_compensation(tuning_mode_state.value);
+                tuning_mode_state.cogging_torque_flag = tuning_mode_state.value;
+            }
+            break;
+
         } /* end switch action command*/
     } /* end if setting/action command */
 }
@@ -401,5 +409,5 @@ uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
     if (motion_ctrl_config.enable_profiler) {
         integrated_profiler = 1;
     }
-    return (uint8_t)( (integrated_profiler<<TUNING_FLAG_INTEGRATED_PROFILER) | (phases_inverted<<TUNING_FLAG_PHASES_INVERTED) | (sensor_polarity<<TUNING_FLAG_SENSOR_POLARITY) | (motion_polarity<<TUNING_FLAG_MOTION_POLARITY) | (tuning_mode_state.brake_flag<<TUNING_FLAG_BRAKE) );
+    return (uint8_t)( (tuning_mode_state.cogging_torque_flag<<TUNING_FLAG_COGGING_TORQUE) | (integrated_profiler<<TUNING_FLAG_INTEGRATED_PROFILER) | (phases_inverted<<TUNING_FLAG_PHASES_INVERTED) | (sensor_polarity<<TUNING_FLAG_SENSOR_POLARITY) | (motion_polarity<<TUNING_FLAG_MOTION_POLARITY) | (tuning_mode_state.brake_flag<<TUNING_FLAG_BRAKE) );
 }

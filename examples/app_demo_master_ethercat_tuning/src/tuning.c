@@ -193,9 +193,19 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             output->value *= output->sign;
             switch(output->mode_1) {
 
-            //auto offset
-            case 'a': //auto offset
-                pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+
+
+            // enable/disable motorcontrol commands
+            case 'a':
+                switch(output->mode_2) {
+                case 'o':
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+                    break;
+                case 'p':
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_POS_CONTROLLER_TUNE;
+                    pdo_output->target_position = pdo_input.position_value;
+                    break;
+                }
                 break;
 
             //brake

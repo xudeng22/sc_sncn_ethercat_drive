@@ -36,6 +36,8 @@ int tuning_handler_ethercat(
 {
     uint8_t status_mux     = (tuning_status >> 16) & 0xff;
 
+    motion_ctrl_config = i_motion_control.get_motion_control_config();
+
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
     if (status_mux > TUNING_STATUS_MUX_RATED_TORQUE) {
@@ -311,6 +313,30 @@ void tuning_command_handler(
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             tuning_mode_state.brake_flag = 0;
             motorcontrol_config = i_motion_control.set_offset_detection_enabled();
+            break;
+
+        case TUNING_CMD_AUTO_POS_CONTROLLER_TUNE:
+            tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_NL;
+            tuning_mode_state.brake_flag = 1;
+
+            // set kp, ki and kd equal to 0 for velocity controller:
+            motion_ctrl_config = i_motion_control.get_motion_control_config();
+
+            motion_ctrl_config.position_kp = 0;
+            motion_ctrl_config.position_ki = 0;
+            motion_ctrl_config.position_kd = 0;
+            motion_ctrl_config.position_integral_limit = 1000;
+            motion_ctrl_config.moment_of_inertia       = 0;
+
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
+
+            i_motion_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+
+            // set the velocity pid tuning flag to 1
+            motion_ctrl_config = i_motion_control.get_motion_control_config();
+            motion_ctrl_config.position_control_autotune = 1;
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
+
             break;
 
         //set brake

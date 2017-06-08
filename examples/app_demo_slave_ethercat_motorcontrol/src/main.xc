@@ -131,6 +131,8 @@ int main(void)
 
                     motion_ctrl_config.position_control_strategy =            POSITION_CONTROL_STRATEGY;
 
+                    motion_ctrl_config.filter =                               0;
+
                     motion_ctrl_config.position_kp =                          POSITION_Kp;
                     motion_ctrl_config.position_ki =                          POSITION_Ki;
                     motion_ctrl_config.position_kd =                          POSITION_Kd;

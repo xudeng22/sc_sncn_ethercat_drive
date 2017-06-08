@@ -38,7 +38,7 @@ int tuning_handler_ethercat(
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
     status_mux++;
-    if (status_mux > TUNING_STATUS_MUX_RATED_TORQUE) {
+    if (status_mux > TUNING_STATUS_MUX_FILTER) {
         status_mux = 1;
     }
     switch(status_mux) {
@@ -98,6 +98,9 @@ int tuning_handler_ethercat(
         break;
     case TUNING_STATUS_MUX_RATED_TORQUE:// motion control error
         user_miso = motorcontrol_config.rated_torque;
+        break;
+    case TUNING_STATUS_MUX_FILTER:// filter
+        user_miso = motion_ctrl_config.filter;
         break;
     }
 
@@ -195,6 +198,9 @@ void tuning_command_handler(
             break;
         case TUNING_CMD_POLARITY_MOTION:
             motion_ctrl_config.polarity = tuning_mode_state.value;
+            break;
+        case TUNING_CMD_FILTER:
+            motion_ctrl_config.filter = tuning_mode_state.value;
             break;
         case TUNING_CMD_POLARITY_SENSOR:
             if (sensor_commutation == 2) {

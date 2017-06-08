@@ -70,6 +70,9 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case TUNING_STATUS_MUX_RATED_TORQUE://rated torque
         (*input).rated_torque = pdo_input.user_miso;
         break;
+    case TUNING_STATUS_MUX_FILTER://filter
+        (*input).filter = pdo_input.user_miso;
+        break;
     }
 
     //tuning state
@@ -365,29 +368,32 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                         break;
                     }
                     break;
-                    case 'v': //velocity
-                        switch(output->mode_3) {
-                        case 'p':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_KP;
-                            break;
-                        case 'i':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_KI;
-                            break;
-                        case 'd':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_KD;
-                            break;
-                        case 'l':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_I_LIM;
-                            break;
-                        }
+                case 'v': //velocity
+                    switch(output->mode_3) {
+                    case 'p':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_KP;
                         break;
-                    case 't': //torque
-                        switch(output->mode_3) {
-                        case 'r':
-                            pdo_output->tuning_command = TUNING_CMD_RATED_TORQUE;
-                            break;
-                        }
+                    case 'i':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_KI;
                         break;
+                    case 'd':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_KD;
+                        break;
+                    case 'l':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_I_LIM;
+                        break;
+                    }
+                    break;
+                case 't': //torque
+                    switch(output->mode_3) {
+                    case 'r':
+                        pdo_output->tuning_command = TUNING_CMD_RATED_TORQUE;
+                        break;
+                    }
+                    break;
+                case 'f': //filter
+                    pdo_output->tuning_command = TUNING_CMD_FILTER;
+                    break;
                 } /* end mode_2 */
                 break;
 

@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 27
+#define DISPLAY_LINE 28
 #define HELP_ROW_COUNT 12
 
 
@@ -70,6 +70,7 @@ typedef enum {
     TUNING_CMD_MIN_POSITION               = 0xCC,
     TUNING_CMD_BRAKE_RELEASE_STRATEGY     = 0xCD,
     TUNING_CMD_POLARITY_MOTION            = 0xCE,
+    TUNING_CMD_FILTER                     = 0xCF,
     TUNING_CMD_MAX_TORQUE                 = 0xE0,
     TUNING_CMD_POLARITY_SENSOR            = 0x90,
     TUNING_CMD_POLE_PAIRS                 = 0xB0,
@@ -97,7 +98,8 @@ typedef enum {
     TUNING_STATUS_MUX_BRAKE_STRAT       = 16,
     TUNING_STATUS_MUX_SENSOR_ERROR      = 17,
     TUNING_STATUS_MUX_MOTION_CTRL_ERROR = 18,
-    TUNING_STATUS_MUX_RATED_TORQUE      = 19
+    TUNING_STATUS_MUX_RATED_TORQUE      = 19,
+    TUNING_STATUS_MUX_FILTER            = 20
 } TuningStatusMux;
 
 typedef enum {
@@ -150,6 +152,7 @@ typedef struct {
     int I_velocity;
     int D_velocity;
     int integral_limit_velocity;
+    int filter;
 } InputValues;
 
 typedef struct {

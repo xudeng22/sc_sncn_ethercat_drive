@@ -541,7 +541,7 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
         switch(input.motorctrl_status) {
         case TUNING_MOTORCTRL_POSITION_PID:
         case TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED:
-        case TUNING_MOTORCTRL_POSITION_NL:
+        case TUNING_MOTORCTRL_POSITION_LT:
             config->data[config->count].target = pdo_output.target_position;
             break;
         case TUNING_MOTORCTRL_VELOCITY:

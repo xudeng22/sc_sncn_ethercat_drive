@@ -113,7 +113,7 @@ typedef enum {
     TUNING_MOTORCTRL_OFF                            = 0,
     TUNING_MOTORCTRL_POSITION_PID                   = 1,
     TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED = 2,
-    TUNING_MOTORCTRL_POSITION_NL                    = 3,
+    TUNING_MOTORCTRL_POSITION_LT                    = 3,
     TUNING_MOTORCTRL_VELOCITY                       = 4,
     TUNING_MOTORCTRL_TORQUE                         = 5
 } TuningMotorCtrlStatus;

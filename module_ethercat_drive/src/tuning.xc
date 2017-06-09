@@ -273,7 +273,7 @@ void tuning_command_handler(
                 position_control_strategy = POS_PID_VELOCITY_CASCADED_CONTROLLER;
                 break;
             case 3:
-                position_control_strategy = NL_POSITION_CONTROLLER;
+                position_control_strategy = LT_POSITION_CONTROLLER;
                 break;
             }
             i_motion_control.enable_position_ctrl(position_control_strategy);
@@ -286,8 +286,8 @@ void tuning_command_handler(
             case POS_PID_VELOCITY_CASCADED_CONTROLLER:
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED;
                 break;
-            case NL_POSITION_CONTROLLER:
-                tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_NL;
+            case LT_POSITION_CONTROLLER:
+                tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_LT;
                 break;
             }
             tuning_mode_state.brake_flag = 1;
@@ -316,7 +316,7 @@ void tuning_command_handler(
             break;
 
         case TUNING_CMD_AUTO_POS_CONTROLLER_TUNE:
-            tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_NL;
+            tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_LT;
             tuning_mode_state.brake_flag = 1;
 
             // set kp, ki and kd equal to 0 for velocity controller:
@@ -330,7 +330,7 @@ void tuning_command_handler(
 
             i_motion_control.set_motion_control_config(motion_ctrl_config);
 
-            i_motion_control.enable_position_ctrl(NL_POSITION_CONTROLLER);
+            i_motion_control.enable_position_ctrl(LT_POSITION_CONTROLLER);
 
             // set the velocity pid tuning flag to 1
             motion_ctrl_config = i_motion_control.get_motion_control_config();

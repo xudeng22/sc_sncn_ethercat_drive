@@ -1,3 +1,9 @@
+/*
+ * **DEPRECATED** This file will be removed soon!
+ *
+ * This dictionary is superseeded by the new structure and compatibiliy is no design goal!
+ */
+
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 

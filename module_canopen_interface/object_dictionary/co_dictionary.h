@@ -1,6 +1,8 @@
 /**
  * \file co_dictionary.h
  * \brief Main implementation of the CANopen object dictionary
+ *
+ * Copyright 2017 Synapticon GmbH <support@synapticon.com>
  */
 
 #include <stdlib.h>
@@ -13,38 +15,49 @@
  * Definitions of bit fields for object access
  */
 
-#define OBJECT_ACCESS_PO_RD     0x01
-#define OBJECT_ACCESS_SO_RD     0x02
-#define OBJECT_ACCESS_OP_RD     0x04
-#define OBJECT_ACCESS_ALL_RD      (OBJECT_ACCESS_PO_RD | OBJECT_ACCESS_SO_RD | OBJECT_ACCESS_OP_RD)
+#define ACCESS_PO_RD       0x0001
+#define ACCESS_SO_RD       0x0002
+#define ACCESS_OP_RD       0x0004
+#define ACCESS_ALL_RD      (ACCESS_PO_RD | ACCESS_SO_RD | ACCESS_OP_RD)
 
-#define OBJECT_ACCESS_PO_WR     0x08
-#define OBJECT_ACCESS_SO_WR     0x10
-#define OBJECT_ACCESS_OP_WR     0x20
-#define OBJECT_ACCESS_ALL_WR      (OBJECT_ACCESS_PO_WR | OBJECT_ACCESS_SO_WR | OBJECT_ACCESS_OD_WR)
+#define ACCESS_PO_WR       0x0008
+#define ACCESS_SO_WR       0x0010
+#define ACCESS_OP_WR       0x0020
+#define ACCESS_ALL_WR      (ACCESS_PO_WR | ACCESS_SO_WR | ACCESS_OP_WR)
 
-#define OBJECT_ACCESS_RXPDO_MAP   0x40
-#define OBJECT_ACCESS_TXPDO_MAP   0x80
+#define ACCESS_PO_RDWR       (ACCESS_PO_RD | ACCESS_PO_WR)
+#define ACCESS_SO_RDWR       (ACCESS_SO_RD | ACCESS_SO_WR)
+#define ACCESS_OP_RDWR       (ACCESS_OP_RD | ACCESS_OP_WR)
+#define ACCESS_ALL_RDWR      (ACCESS_PO_RDWR | ACCESS_SO_RDWR | ACCESS_OP_RDWR)
+
+#define ACCESS_RXPDO_MAP   0x0040
+#define ACCESS_TXPDO_MAP   0x0080
+#define ACCESS_RXTXPDO_MAP 0x00C0
+
+#define ACCESS_BACKUP      0x0100
+#define ACCESS_SETTING     0x0200
+
+#define ACCESS_SET_FLAGS(b, s, p,a)    (b | s | p | a)
 
 /*
  * Value info
  */
 
-#define OBJECT_VALUEINFO_UNIT_TYPE      0x08
-#define OBJECT_VALUEINFO_DEFAULT_VALUE  0x10
-#define OBJECT_VALUEINFO_MIN_VALUE      0x20
-#define OBJECT_VALUEINFO_MAX_VALUE      0x40
+#define VALUEINFO_UNIT_TYPE      0x08
+#define VALUEINFO_DEFAULT_VALUE  0x10
+#define VALUEINFO_MIN_VALUE      0x20
+#define VALUEINFO_MAX_VALUE      0x40
 
 /*
  * list of dictionary lists identifiers
  */
 
-#define OBJECT_LIST_ALL_LISTS               0x00
-#define OBJECT_LIST_ALL_OBJECTS             0x01
-#define OBJECT_LIST_RXPDO_MAPABLE           0x02
-#define OBJECT_LIST_TXPDO_MAPABLE           0x03
-#define OBJECT_LIST_DEVICE_REPLACEMENT      0x04
-#define OBJECT_LIST_STARTUP_PARAMETER       0x05
+#define LIST_ALL_LIST_LENGTH         0x00
+#define LIST_ALL_OBJECTS             0x01
+#define LIST_RXPDO_MAPABLE           0x02
+#define LIST_TXPDO_MAPABLE           0x03
+#define LIST_DEVICE_REPLACEMENT      0x04
+#define LIST_STARTUP_PARAMETER       0x05
 
 /*
  * possible object types of dictionary objects
@@ -59,16 +72,6 @@
 #define OBJECT_TYPE_VAR        0x7
 #define OBJECT_TYPE_ARRAY      0x8
 #define OBJECT_TYPE_RECORD     0x9
-
-/*
- * value info values
- */
-
-#define CANOD_VALUEINFO_UNIT      0x08
-#define CANOD_VALUEINFO_DEFAULT   0x10
-#define CANOD_VALUEINFO_MIN       0x20
-#define CANOD_VALUEINFO_MAX       0x40
-
 
 /*
  * Index of Basic Data Types
@@ -95,7 +98,16 @@
 #define DEFSTRUCT_IDENTITY       0x0023
 #define DEFSTRUCT_VENDOR_MOTOR   0x0040
 
+#define CODE_GET_INDEX(a)        ((a >> 16) & 0xffff)
+#define CODE_GET_SUBINDEX(a)     ((a >> 8)  & 0xff)
+#define CODE_GET_FLAGS(a)        (a         & 0xff)
+#define CODE_SET_ENTRY_INDEX(i,s,f)   (((i & 0xffff) << 16) | ((s & 0xff) << 8) | (f & 0xff))
+
+#define CODE_SET_ENTRY_FLAG(i)    (i | 1)
+#define CODE_CLR_ENTRY_FLAG(i)    (i & ~1)
+
 #ifdef __XC__
+#warning co_dictionary is not intended to be accessed directly from XC!
 extern "C" {
 #endif
 
@@ -104,40 +116,66 @@ typedef struct _cod_entry COD_Entry;
 
 struct _cod_object {
     uint16_t index;
-    uint8_t type;                   /* VAR, RECORD, ARRAY */
+    uint8_t type;                   /* object code: VAR, RECORD, ARRAY */
     uint16_t access;                 /* Read/Write access flags */
-    uint8_t entry_count;         /* Number of entries (including subindex 0) */
-    char *name;                 /* pointer to element in \c *entry_name ??? */
-    OD_Entry *entry;            /* pointer to entry */
+    uint8_t max_subindex;         /* number of the largest subindex */
+    const char **name;                 /* pointer to element in \c *entry_name ??? */
+    COD_Entry *entry;            /* pointer to entry */
 } __attribute__((packed));
 
 struct _cod_entry {
-    uint8_t subindex;
+    uint32_t index;             /* := | obj_index:16 | sub_index:8 | flags:8 */
     uint16_t data_type;         /* index of data type */
     size_t bitlength;
     uint16_t access;     /* object access flags, see also R/W flags and PDO Mapping above */
-    uint8_t dirty;              /* 1: recently updated by EACT, 0: read by firmware client */
-    char *name;                 /* pointer to element in \see *entry_name */
-    void *value;                /* pointer to start in \see *entry_values - type is determined by `data_type` */
-    void *default_value;        /* TODO pointer to start in default values field */
-    void *min_value;            /* TODO pointer to start in default values field */
-    void *max_value;            /* TODO pointer to start in default values field */
+    uint32_t unit;
+    const char **name;                 /* pointer to element in \see *entry_name */
+    uint8_t *value;                /* pointer to start in \see *entry_values - type is determined by `data_type` */
+    const uint8_t *default_value;        /* TODO pointer to start in default values field */
+    const uint8_t *min_value;            /* TODO pointer to start in default values field */
+    const uint8_t *max_value;            /* TODO pointer to start in default values field */
 } __attribute__((packed));
 
 typedef struct _object_index OD_Index;
 struct _object_index {
     uint16_t index;
-    OD_Object *object;
-    OD_Entry *entry;            /* list of entries, even for deftype VAR, then only 1 element */
+    COD_Object *object;
+    COD_Entry *entry;            /* list of entries, even for deftype VAR, then only 1 element */
 } __attribute__((packed));
 
-typedef struct _object_entry_index OD_Entry_Index;
-
+typedef struct _object_entry_index COD_Entry_Index;
 struct _object_entry_index {
     uint16_t index;
     uint8_t subindex;
-    OD_Entry *entry;
+    COD_Entry *entry;
 } __attribute__((packed));
+
+/* FIXME redundant with entry in OD_Object! */
+struct _entry_index {
+    uint16_t index;
+    unsigned *start_entry;
+};
+
+/*
+ * please see table 64 in ETG1000.6
+ * Complex types like DEFSTRUCT needs further specification, but the rest is normal.
+ * This is basically a static list.
+ *
+ * \see DEFTYPE_* above
+ */
+struct _base_type {
+    uint16_t index;
+    uint16_t type;
+    char *name;
+};
+
+extern uint8_t        entry_values[];
+extern const uint8_t  entry_default_values[];
+extern const uint8_t  entry_min_values[];
+extern const uint8_t  entry_max_values[];
+extern const char     *string[];
+extern COD_Entry      object_entries[];
+extern COD_Object     object_dictionary[];
 
 #ifdef __XC__
 }

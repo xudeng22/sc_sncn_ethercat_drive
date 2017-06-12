@@ -1,6 +1,7 @@
 # vim: set ts=4 set expandtab:
-import xmltodict
+import output_strings
 
+import xmltodict
 from enum import Enum
 
 EsiFile = './SOMANET_CiA_402.xml'
@@ -156,6 +157,14 @@ def get_entry_data_type(data_type, objtype, entry):
     else:
         entry.etype = entry.getType(dt['Type'])
         # e.accessRights = dt['
+
+def write_dictionary(objects)
+    dictionary_source = "co_dictionary.c"
+    dictionary_header = "co_dictionary.h"
+    # may add defines for dictionary symbols? dictionary_symbols = "dictionary_symbols.h"
+
+    open(dictionary_source) as dsrc_fd
+    open(dictionary_header) as dhead_fd
 
 #
 # parse the ESI

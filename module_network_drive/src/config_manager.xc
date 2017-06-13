@@ -30,31 +30,6 @@ static int tick2bits(int tick_resolution)
     return r;
 }
 
-void cm_sync_config_hall_states(
-        client interface i_co_communication i_co,
-        client interface PositionFeedbackInterface i_pos_feedback,
-        client interface TorqueControlInterface ?i_torque_control,
-        PositionFeedbackConfig &feedback_config,
-        MotorcontrolConfig &motorcontrol_config,
-        int sensor_index)
-{
-    if (feedback_config.sensor_type != HALL_SENSOR) {
-        return;
-    }
-    uint16_t feedback_sensor_object;
-    {feedback_sensor_object, void, void} = i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index);
-
-    /* See Wrike https://www.wrike.com/workspace.htm#path=folder&id=127649023&a=1384194&c=list&t=135832278&ot=135832278&so=5&sd=0
-     * for more information.
-     */
-    motorcontrol_config.commutation_sensor  = feedback_config.sensor_type;
-    {motorcontrol_config.hall_state_angle[0], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
-    {motorcontrol_config.hall_state_angle[1], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
-    {motorcontrol_config.hall_state_angle[2], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
-    {motorcontrol_config.hall_state_angle[3], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
-    {motorcontrol_config.hall_state_angle[4], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
-    {motorcontrol_config.hall_state_angle[5], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
-}
 
 int cm_sync_config_position_feedback(
         client interface i_co_communication i_co,
@@ -160,6 +135,12 @@ int cm_sync_config_position_feedback(
                 restart = 1;
             }
             config.hall_config.port_number = encoder_port_number;
+            {config.hall_config.hall_state_angle[0], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
+            {config.hall_config.hall_state_angle[1], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
+            {config.hall_config.hall_state_angle[2], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
+            {config.hall_config.hall_state_angle[3], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
+            {config.hall_config.hall_state_angle[4], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
+            {config.hall_config.hall_state_angle[5], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
             break;
 
         case REM_14_SENSOR:
@@ -192,11 +173,10 @@ int cm_sync_config_motor_control(
         client interface i_co_communication i_co,
         interface TorqueControlInterface client ?i_torque_control,
         MotorcontrolConfig &motorcontrol_config,
-        int sensor_commutation,
         int sensor_commutation_type)
 {
     if (isnull(i_torque_control))
-        return;
+        return motorcontrol_config.max_torque;
 
     motorcontrol_config = i_torque_control.get_config();
 
@@ -222,17 +202,6 @@ int cm_sync_config_motor_control(
     {motorcontrol_config.protection_limit_under_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE);
     {motorcontrol_config.protection_limit_over_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
     //FIXME: missing motorcontrol_config.protection_limit_over_temperature
-
-    uint16_t feedback_sensor_object = 0;
-    {feedback_sensor_object, void, void} = i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_commutation); //select which hall config to read
-    if (feedback_sensor_object == DICT_HALL_SENSOR_1 || feedback_sensor_object == DICT_HALL_SENSOR_2) {
-        {motorcontrol_config.hall_state_angle[0], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
-        {motorcontrol_config.hall_state_angle[1], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
-        {motorcontrol_config.hall_state_angle[2], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
-        {motorcontrol_config.hall_state_angle[3], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
-        {motorcontrol_config.hall_state_angle[4], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
-        {motorcontrol_config.hall_state_angle[5], void, void} = i_co.od_get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
-    }
 
     i_torque_control.set_config(motorcontrol_config);
 
@@ -387,6 +356,12 @@ void cm_default_config_position_feedback(
 
         case HALL_SENSOR:
             i_co.od_set_object_value(feedback_sensor_object, 1, HALL_SENSOR);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0, config.hall_config.hall_state_angle[0]);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1, config.hall_config.hall_state_angle[1]);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2, config.hall_config.hall_state_angle[2]);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3, config.hall_config.hall_state_angle[3]);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4, config.hall_config.hall_state_angle[4]);
+            i_co.od_set_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5, config.hall_config.hall_state_angle[5]);
             break;
 
         case REM_14_SENSOR:
@@ -441,21 +416,6 @@ void cm_default_config_motor_control(
     i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);
     i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE, motorcontrol_config.protection_limit_under_voltage);
     i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE, motorcontrol_config.protection_limit_over_voltage);
-
-
-    i_co.od_set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_0, motorcontrol_config.hall_state_angle[0]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_1, motorcontrol_config.hall_state_angle[1]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_2, motorcontrol_config.hall_state_angle[2]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_3, motorcontrol_config.hall_state_angle[3]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_4, motorcontrol_config.hall_state_angle[4]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_1, SUB_HALL_SENSOR_STATE_ANGLE_5, motorcontrol_config.hall_state_angle[5]);
-
-    i_co.od_set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_0, motorcontrol_config.hall_state_angle[0]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_1, motorcontrol_config.hall_state_angle[1]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_2, motorcontrol_config.hall_state_angle[2]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_3, motorcontrol_config.hall_state_angle[3]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_4, motorcontrol_config.hall_state_angle[4]);
-    i_co.od_set_object_value(DICT_HALL_SENSOR_2, SUB_HALL_SENSOR_STATE_ANGLE_5, motorcontrol_config.hall_state_angle[5]);
 
     //FIXME: missing motorcontrol_config.protection_limit_over_temperature
 }

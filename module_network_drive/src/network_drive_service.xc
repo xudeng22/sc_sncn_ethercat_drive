@@ -253,11 +253,8 @@ static void inline update_configuration(
     }
 
     cm_sync_config_profiler(i_co, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
-    int max_torque = cm_sync_config_motor_control(i_co, i_torque_control, motorcontrol_config, sensor_commutation, sensor_commutation_type);
+    int max_torque = cm_sync_config_motor_control(i_co, i_torque_control, motorcontrol_config, sensor_commutation_type);
     cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution, max_torque);
-
-    //FIXME: as the hall_states params are still in the motorcontrol config they are set in cm_sync_config_motor_control
-//    cm_sync_config_hall_states(i_co, i_pos_feedback_1, i_torque_control, position_feedback_config_1, motorcontrol_config, 1);
 
     /* Update values with current configuration */
     profiler_config.ticks_per_turn = sensor_resolution;

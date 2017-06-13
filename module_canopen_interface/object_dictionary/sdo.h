@@ -30,9 +30,86 @@ enum eListType {
     ,LT_STARTUP_OJBECTS
 };
 
-int sdo_entry_set_value(uint16_t index, uint8_t subindex, void *value);
+/* FIXME or make as return value for the sdo_entry_{get,set}_value() ??? */
+extern SDO_Error sdo_error;
 
-int sdo_entry_get_value(uint16_t index, uint8_t subindex, void *value);
+/**
+ * \brief Store value at index in object dictionary
+ *
+ * **WARINING** `void *value` needs to be big enough to hold the complete
+ * values!
+ *
+ * \return 0 no error, \see sdo_error otherwise
+ */
+int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request);
+
+/**
+ * \brief Read value form index of object dictionary
+ *
+ * **WARINING** `void *value` needs to be big enough to hold the complete
+ * values!
+ *
+ * \return 0 no error, \see error_codes otherwise
+ */
+int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request);
+
+/**
+ * \brief Read the number of bytes of the entry value
+ *
+ * The number of bytes for a entry value is calculated from the bitsize as:
+ * $ bytes = \lceil bits / 8 \rceil $
+ *
+ * \param index     Index of the entry
+ * \param subindex  Subindex of the entry
+ * \return number of bytes necessary to store the value of the entry
+ */
+size_t sdo_entry_get_byte_count(uint16_t index, uint8_t subindex);
+
+/* specific datatype access */
+
+/**
+ * \brief Get entry value with a specific datatype
+ *
+ * If the datatype requested does not match the datatype of the entry value
+ * this functions return a error and set \c sdo_error to SDO_WRONG_TYPE.
+ *
+ * \param index        Index of the entry
+ * \param subindex     Subindex of the entry
+ * \param[out] *value  Value read from entry
+ * \return 0 no error, != 0 otherwise
+ */
+int sdo_entry_get_int8(uint16_t index, uint8_t subindex, int8_t *value);
+int sdo_entry_get_uint8(uint16_t index, uint8_t subindex, uint8_t *value);
+int sdo_entry_get_int16(uint16_t index, uint16_t subindex, int16_t *value);
+int sdo_entry_get_uint16(uint16_t index, uint16_t subindex, uint16_t *value);
+int sdo_entry_get_int32(uint16_t index, uint32_t subindex, int32_t *value);
+int sdo_entry_get_uint32(uint16_t index, uint32_t subindex, uint32_t *value);
+int sdo_entry_get_real32(uint16_t index, uint32_t subindex, float *value);
+int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value);
+
+/**
+ * \brief Set entry value with a specific datatype
+ *
+ * If the datatype requested does not match the datatype of the entry value
+ * this functions return a error and set \c sdo_error to SDO_WRONG_TYPE.
+ *
+ * \param index      Index of the entry
+ * \param subindex   Subindex of the entry
+ * \param[in] value  Value to be set
+ * \return 0 no error, != 0 otherwise
+ */
+int sdo_entry_set_int8(uint16_t index, uint8_t subindex, int8_t value);
+int sdo_entry_set_uint8(uint16_t index, uint8_t subindex, uint8_t value);
+int sdo_entry_set_int16(uint16_t index, uint16_t subindex, int16_t value);
+int sdo_entry_set_uint16(uint16_t index, uint16_t subindex, uint16_t value);
+int sdo_entry_set_int32(uint16_t index, uint32_t subindex, int32_t value);
+int sdo_entry_set_uint32(uint16_t index, uint32_t subindex, uint32_t value);
+int sdo_entry_set_real32(uint16_t index, uint32_t subindex, float value);
+int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value);
+
+/*
+ * SDO Information
+ */
 
 /**
  * \brief Get object lists and listlength

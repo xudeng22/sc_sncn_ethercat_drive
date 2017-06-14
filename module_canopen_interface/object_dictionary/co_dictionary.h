@@ -167,7 +167,7 @@ struct _base_type {
     uint16_t index;
     uint16_t type;
     char *name;
-};
+} __attribute__((packed));;
 
 extern uint8_t        entry_values[];
 extern const uint8_t  entry_default_values[];

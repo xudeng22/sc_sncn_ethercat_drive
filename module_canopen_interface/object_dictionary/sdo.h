@@ -11,6 +11,11 @@
 #define SDO_H
 
 #include <stdint.h>
+#include <xccompat.h>
+
+#ifdef __XC__
+extern "C" {
+#endif
 
 typedef enum {
     SDO_NO_ERROR = 0
@@ -129,5 +134,9 @@ void sdoinfo_get_list(enum eListType listtype, uint16_t *list, size_t capacity);
 void sdoinfo_get_object(uint16_t index);
 
 void sdoinfo_get_entry(uint16_t index, uint8_t subindex);
+
+#ifdef __XC__
+}
+#endif
 
 #endif /* SDO_H */

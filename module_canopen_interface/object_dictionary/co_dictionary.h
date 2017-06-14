@@ -106,6 +106,10 @@
 #define CODE_SET_ENTRY_FLAG(i)    (i | 1)
 #define CODE_CLR_ENTRY_FLAG(i)    (i & ~1)
 
+#define OD_COMMUNICATION_AREA     0x1000
+#define OD_MANUFACTURER_AREA      0x2000
+#define OD_PROFILE_AREA           0x6000
+
 #ifdef __XC__
 #warning co_dictionary is not intended to be accessed directly from XC!
 extern "C" {
@@ -169,6 +173,11 @@ struct _base_type {
     char *name;
 } __attribute__((packed));;
 
+struct _bookmarks {
+    uint16_t index;
+    uint16_t entry_element;
+} __attribute__((packed));
+
 extern uint8_t        entry_values[];
 extern const uint8_t  entry_default_values[];
 extern const uint8_t  entry_min_values[];
@@ -176,6 +185,7 @@ extern const uint8_t  entry_max_values[];
 extern const char     *string[];
 extern COD_Entry      object_entries[];
 extern COD_Object     object_dictionary[];
+extern struct _bookmarks bookmark[];
 
 #ifdef __XC__
 }

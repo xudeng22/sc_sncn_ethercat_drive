@@ -13,6 +13,12 @@
 #define BYTE_COUNT_MIN_VALUES         0
 #define BYTE_COUNT_MAX_VALUES         0
 
+struct _bookmarks bookmark[] = {
+    { 0x1000, 0 },
+    { 0x2000, 12 },
+    { 0x3000, 24 }
+};
+
 /*
  * Local storage of entry values.
  *

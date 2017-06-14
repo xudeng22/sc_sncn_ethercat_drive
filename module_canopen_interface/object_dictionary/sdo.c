@@ -30,8 +30,15 @@ static COD_Entry *find_entry(uint16_t index, uint8_t subindex, COD_Entry * entri
 {
     size_t num_entries = sizeof(entries) / sizeof(entries[0]);
     COD_Entry *found = NULL;
+    size_t start = 0;
 
-    for (size_t i = 0; i < num_entries; i++) {
+    for (size_t i = 0; i < bookmark_length; i++) {
+        if ((index & 0xf000) >= bookmark[i].index) {
+            start = bookmark[i].entry_element;
+        }
+    }
+
+    for (size_t i = start; i < num_entries; i++) {
         if (CODE_GET_INDEX(entries[i].index) == index &&
             CODE_GET_SUBINDEX(entries[i].index) == subindex) {
             found = &(entries[i]);

@@ -26,9 +26,8 @@
 
 SDO_Error sdo_error = SDO_NO_ERROR;
 
-static COD_Entry *find_entry(uint16_t index, uint8_t subindex, COD_Entry * entries)
+static COD_Entry *find_entry(uint16_t index, uint8_t subindex)
 {
-    size_t num_entries = sizeof(entries) / sizeof(entries[0]);
     COD_Entry *found = NULL;
     size_t start = 0;
 
@@ -38,10 +37,10 @@ static COD_Entry *find_entry(uint16_t index, uint8_t subindex, COD_Entry * entri
         }
     }
 
-    for (size_t i = start; i < num_entries; i++) {
-        if (CODE_GET_INDEX(entries[i].index) == index &&
-            CODE_GET_SUBINDEX(entries[i].index) == subindex) {
-            found = &(entries[i]);
+    for (size_t i = start; i < object_entries_length; i++) {
+        if (CODE_GET_INDEX(object_entries[i].index) == index &&
+            CODE_GET_SUBINDEX(object_entries[i].index) == subindex) {
+            found = &(object_entries[i]);
             break;
         }
     }
@@ -55,7 +54,7 @@ static COD_Entry *find_entry(uint16_t index, uint8_t subindex, COD_Entry * entri
 
 int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request)
 {
-    COD_Entry *entry = find_entry(index, subindex, object_entries);
+    COD_Entry *entry = find_entry(index, subindex);
     size_t bytes = (entry->bitlength + 8 - 1) / 8;
     if (bytes != bytesize) {
         sdo_error = SDO_WRONG_TYPE;
@@ -78,7 +77,7 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
 
 int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request)
 {
-    COD_Entry *entry = find_entry(index, subindex, object_entries);
+    COD_Entry *entry = find_entry(index, subindex);
     size_t bytes = (entry->bitlength + 8 - 1) / 8;
     if (bytes != bytesize) {
         sdo_error = SDO_WRONG_TYPE;

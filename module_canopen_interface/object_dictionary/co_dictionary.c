@@ -13,6 +13,15 @@
 #define BYTE_COUNT_MIN_VALUES         0
 #define BYTE_COUNT_MAX_VALUES         0
 
+const size_t entry_values_length           = 56;
+const size_t entry_default_values_length   = 56;
+const size_t entry_min_values_length       = 0;
+const size_t entry_max_values_length       = 0;
+const size_t string_length                 = 23;
+const size_t object_entries_length         = 25;
+const size_t object_dictionary_length      = 12;
+const size_t bookmark_length               = 3;
+
 struct _bookmarks bookmark[] = {
     { 0x1000, 0 },
     { 0x2000, 12 },
@@ -25,7 +34,7 @@ struct _bookmarks bookmark[] = {
  * All entries are stored as byte slices within this array. The value pointer
  * in \c COD_Entry points to the LSB of the value within this memory area.
  */
-uint8_t entry_values[BYTE_COUNT_ALL_ENTRY_VALUES] = {
+uint8_t entry_values[entry_values_length] = {
     0x92, 0x01, 0x02, 0x00, /* 0x1000:0 Start: 0 */
     0x04,                   /* 0x1018:0 Start: 4 */
     0xd2, 0x22, 0x00, 0x00, /* 0x1018:1 Start: 5 */
@@ -80,8 +89,9 @@ const uint8_t entry_default_values[entry_default_values_length] = {
  * Not every entry has a min and max value, to save some memory only the actual
  * necessary bytes for all available min and max values should be allocated.
  */
-const uint8_t entry_min_values[BYTE_COUNT_MIN_VALUES];
-const uint8_t entry_max_values[BYTE_COUNT_MAX_VALUES];
+const uint8_t entry_min_values[entry_min_values_length];
+
+const uint8_t entry_max_values[entry_max_values_length];
 
 /*
  * This array contains all the strings found in the dictionary. Strings are
@@ -113,7 +123,6 @@ const char *string[] = {
     "SubIndex 1",         /* 20: SubIndex 1 - can be used by multiple objects */
     "SM 3 Assingment",    /* 21: 0x1c13 */
     "Command Object",     /* 22: 0x3000 */
-    NULL
 };
 
 COD_Entry object_entries[] = {

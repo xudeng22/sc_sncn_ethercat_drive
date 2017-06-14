@@ -187,6 +187,16 @@ extern COD_Entry      object_entries[];
 extern COD_Object     object_dictionary[];
 extern struct _bookmarks bookmark[];
 
+/* sizes */
+extern const size_t         entry_values_length;
+extern const size_t         entry_default_values_length;
+extern const size_t         entry_min_values_length;
+extern const size_t         entry_max_values_length;
+extern const size_t         string_length;
+extern const size_t         object_entries_length;
+extern const size_t         object_dictionary_length;
+extern const size_t         bookmark_length;
+
 #ifdef __XC__
 }
 #endif

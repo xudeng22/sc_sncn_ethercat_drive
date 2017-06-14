@@ -315,7 +315,7 @@ void tuning_command_handler(
             motorcontrol_config = i_motion_control.set_offset_detection_enabled();
             break;
 
-        case TUNING_CMD_AUTO_POS_CONTROLLER_TUNE:
+        case TUNING_CMD_AUTO_LT_POS_CTRL_TUNE:
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_LT;
             tuning_mode_state.brake_flag = 1;
 
@@ -336,8 +336,40 @@ void tuning_command_handler(
             motion_ctrl_config = i_motion_control.get_motion_control_config();
             motion_ctrl_config.position_control_autotune = 1;
             i_motion_control.set_motion_control_config(motion_ctrl_config);
+            break;
+
+
+        case TUNING_CMD_AUTO_CC_POS_CTRL_TUNE:
+            tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED;
+            tuning_mode_state.brake_flag = 1;
+
+            // set kp, ki and kd equal to 0 for velocity controller:
+            motion_ctrl_config = i_motion_control.get_motion_control_config();
+
+            motion_ctrl_config.velocity_kp = 0;
+            motion_ctrl_config.velocity_ki = 0;
+            motion_ctrl_config.velocity_kd = 0;
+            motion_ctrl_config.velocity_integral_limit = 10000000;
+
+            motion_ctrl_config.position_kp = 0;
+            motion_ctrl_config.position_ki = 0;
+            motion_ctrl_config.position_kd = 0;
+            motion_ctrl_config.position_integral_limit = 10000000;
+            motion_ctrl_config.moment_of_inertia       = 0;
+
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
+
+            i_motion_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
+
+            // set the velocity pid tuning flag to 1
+            motion_ctrl_config = i_motion_control.get_motion_control_config();
+            motion_ctrl_config.position_control_autotune = 1;
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
 
             break;
+
+
+
 
         //set brake
         case TUNING_CMD_BRAKE:

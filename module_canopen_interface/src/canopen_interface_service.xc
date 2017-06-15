@@ -20,9 +20,6 @@
 /* there are 5 list lengths for all, rx-, tx-mappable, startup, and backup objects */
 #define ALL_LIST_LENGTH_SIZE    5
 
-typedef struct _sdoinfo_object SDInfo_Object;
-typedef struct _sdoinfo_netry SDOInfo_Entry;
-
 [[distributable]]
 void canopen_interface_service(
         server interface i_pdo_handler_exchange i_pdo_handler,
@@ -75,7 +72,11 @@ void canopen_interface_service(
             /* SDO */
 
             case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { enum eAccessRights access, uint8_t error }:
-                    {access, error}  = canod_get_access(index_, subindex);
+                    struct _sdoinfo_entry_description entry;
+                    error = sdoinfo_get_entry_description(index_, subindex, 0, &entry);
+                    if (!error) {
+                        access = (enum eAccessRights)(entry.objectAccess & 0xff);
+                    }
                     break;
 
             case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
@@ -144,8 +145,8 @@ void canopen_interface_service(
 
             case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
-                    error_out = canod_get_entry_description(index_, subindex, valueinfo, desc);
-                    desc_out = desc;
+                    error_out = sdoinfo_get_entry_description(index_, subindex, valueinfo, &desc);
+                    memcpy(&desc_out, &desc, sizeof(struct _sdoinfo_entry_description));
                     break;
 
             case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
@@ -166,12 +167,18 @@ void canopen_interface_service(
 
             case i_co[int j].od_get_object_description(struct _sdoinfo_entry_description &obj_out, uint16_t index_, uint8_t subindex) -> { int error }:
                     struct _sdoinfo_entry_description obj;
-                    error = canod_get_object_description(obj, index_, subindex);
-                    obj_out = obj;
+                    /* FIXME misnomer, object description and entry description are separate now. */
+                    /* FIXME the current CoE handler does not distinguish between object and entry description */
+                    error = sdoinfo_get_object_description(index_, &obj);
+                    memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
                     break;
 
             case i_co[int j].od_get_data_length(uint16_t index_, uint8_t subindex) -> {uint32_t len, uint8_t error}:
-                    {len, error} = canod_find_data_length(index_, subindex); // return value: count of byte
+                    struct _sdoinfo_entry_description entry;
+                    error = sdoinfo_get_entry_description(index_, subindex, 0, &entry);
+                    if (!error) {
+                        len = (uint32_t)((entry.bitLength + 8 - 1) / 8);
+                    }
                     break;
 
             case i_co[int j].inactive_communication(void):

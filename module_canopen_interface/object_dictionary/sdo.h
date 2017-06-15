@@ -5,11 +5,10 @@
  * Copyright 2017 Synapticon GmbH <support@synapticon.com>
  */
 
-#include <stdint.h>
-
 #ifndef SDO_H
 #define SDO_H
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <xccompat.h>
 
@@ -37,13 +36,27 @@ enum eListType {
     ,LT_STARTUP_OJBECTS  = 5
 };
 
+/* FIXME Replication of entry description structure
+ * because the interface include does not work in the C world. */
+struct _sdoinfo_entry_description {
+    uint16_t index;
+    uint8_t subindex;
+    uint8_t objectDataType;
+    uint8_t dataType;
+    uint8_t objectCode;
+    uint8_t bitLength;
+    uint16_t objectAccess;
+    uint32_t value;
+    uint8_t name[50];
+};
+
 /* FIXME or make as return value for the sdo_entry_{get,set}_value() ??? */
 extern SDO_Error sdo_error;
 
 /**
  * \brief Store value at index in object dictionary
  *
- * **WARINING** `void *value` needs to be big enough to hold the complete
+ * **WARNING** `uint8_t *value` needs to be big enough to hold the complete
  * values!
  *
  * \return 0 no error, \see sdo_error otherwise
@@ -53,7 +66,7 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
 /**
  * \brief Read value form index of object dictionary
  *
- * **WARINING** `void *value` needs to be big enough to hold the complete
+ * **WARNING** `uint8_t *value` needs to be big enough to hold the complete
  * values!
  *
  * \return 0 no error, \see error_codes otherwise
@@ -139,9 +152,26 @@ int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value);
  */
 size_t sdoinfo_get_list(enum eListType listtype, size_t capacity, uint16_t *list);
 
-void sdoinfo_get_object(uint16_t index);
+/**
+ * \brief Get object description
+ *
+ * \param[in] index   object index to get description from
+ * \param[out] *obj_out  reference to a sturcture \see _sdoinfo_entry_description
+ * \return 0 on success
+ */
+int sdoinfo_get_object_description(uint16_t index, struct _sdoinfo_entry_description *obj_out);
 
-void sdoinfo_get_entry(uint16_t index, uint8_t subindex);
+/**
+ * \brief Get entry description
+ *
+ * \param[in] index      object index to get description from
+ * \param[in] subindex   entry subindex to get description from
+ * \param[in] valueinfo  specify which value information to retrieve \see FIXME
+ * \param[out] *obj_out  reference to a sturcture \see _sdoinfo_entry_description
+ * \return 0 on success
+ */
+int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int valuleinfo,
+        struct _sdoinfo_entry_description *obj_out);
 
 #ifdef __XC__
 }

@@ -9,6 +9,7 @@
 #ifndef CO_INTERFACE_H_
 #define CO_INTERFACE_H_
 
+#include <sdo.h>
 #include <stdint.h>
 
 #define CO_IF_COUNT 4
@@ -32,6 +33,7 @@ struct _sdo_command_object {
     enum eSdoState   state;
 };
 
+#if 0   /* now in sdo.h */
 /** entry description structure */
 struct _sdoinfo_entry_description {
     uint16_t index; ///< 16 bit int should be sufficient
@@ -44,6 +46,7 @@ struct _sdoinfo_entry_description {
     uint32_t value; ///< real data type is defined by .dataType
     uint8_t name[50];
 };
+#endif
 
 /**
  * @brief Access types

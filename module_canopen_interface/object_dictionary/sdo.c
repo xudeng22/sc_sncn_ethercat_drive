@@ -26,6 +26,22 @@
 
 SDO_Error sdo_error = SDO_NO_ERROR;
 
+static COD_Object *find_object(uint16_t index)
+{
+    COD_Object *found = NULL;
+
+    for (size_t i = 0; i < object_dictionary_length; i++) {
+        if (object_dictionary[i].index == index) {
+            found = &(object_dictionary[i]);
+            break;
+        }
+    }
+
+    sdo_error = (found == NULL) ? SDO_ERROR_NOT_FOUND : SDO_NO_ERROR;
+
+    return found;
+}
+
 static COD_Entry *find_entry(uint16_t index, uint8_t subindex)
 {
     COD_Entry *found = NULL;
@@ -282,4 +298,42 @@ size_t sdoinfo_get_list(enum eListType listtype, size_t capacity, uint16_t *list
     }
 
     return listsize;
+}
+
+int sdoinfo_get_object_description(uint16_t index, struct _sdoinfo_entry_description *obj_out)
+{
+    COD_Object *object = find_object(index);
+    if (object == NULL) {
+        return (int)-sdo_error;
+    }
+
+    obj_out->index = object->index;
+    obj_out->objectCode = object->type;
+    obj_out->objectAccess = object->access;
+    memcpy(obj_out->name, object->name, 50);
+
+    return 0;
+}
+
+int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int valuleinfo,
+        struct _sdoinfo_entry_description *obj_out)
+{
+    COD_Entry *entry = find_entry(index, subindex);
+    if (entry == NULL) {
+        return (int)-sdo_error;
+    }
+
+    /* FIXME value is not flexible, value is not necessary for description
+     * SOLUTION: co_dictionary hold a export struct for object and entry where the values for
+     * default, min and max are stored.
+     */
+
+    obj_out->subindex = CODE_GET_SUBINDEX(entry->index);
+    obj_out->dataType = entry->data_type;
+    obj_out->bitLength = entry->bitlength;
+    obj_out->objectAccess = entry->access;
+    memcpy(obj_out->name, entry->name, 50);
+    /* FIXME use valueinfo to figure out what needs to be added in reply */
+    memcpy((void *)(obj_out->value), entry->value, sizeof(uint32_t));
+    return 0;
 }

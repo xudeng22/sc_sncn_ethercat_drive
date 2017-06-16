@@ -210,18 +210,17 @@ void canopen_interface_service(
             /* command handling interface methods */
 
             case i_co[int j].command_ready(void) -> { enum eSdoCommand command }:
-                    //canod_set_entry(0, 0, 0, 1);
                     command = sdo_command_object.command;
                     if (command != OD_COMMAND_NONE) {
                         sdo_command_object.state = OD_COMMAND_STATE_PROCESSING;
                     }
-                    canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
+                    sdo_entry_set_uint16(DICT_COMMAND_OBJECT, 0, sdo_command_object.state, REQUEST_FROM_APP);
                     break;
 
             case i_co[int j].command_set_result(int result):
                     sdo_command_object.command = OD_COMMAND_NONE;
                     sdo_command_object.state = result ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
-                    canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
+                    sdo_entry_set_uint16(DICT_COMMAND_OBJECT, 0, sdo_command_object.state, REQUEST_FROM_APP);
                     break;
         }
     }

@@ -15,6 +15,9 @@
 #define CO_IF_COUNT 4
 #define OD_LIST_ALL 1
 
+#define REQUEST_FROM_MASTER   1
+#define REQUEST_FROM_APP      0
+
 enum eSdoCommand {
     OD_COMMAND_NONE = 0
     ,OD_COMMAND_WRITE_CONFIG

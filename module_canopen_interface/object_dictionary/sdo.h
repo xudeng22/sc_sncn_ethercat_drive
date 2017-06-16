@@ -20,10 +20,12 @@ extern "C" {
 typedef enum {
     SDO_NO_ERROR = 0
     ,SDO_ERROR
-    ,SDO_NOT_FOUND
-    ,SDO_READ_ONLY
-    ,SDO_WRITE_ONLY
-    ,SDO_WRONG_TYPE
+    ,SDO_ERROR_NOT_FOUND
+    ,SDO_ERROR_READ_ONLY
+    ,SDO_ERROR_WRITE_ONLY
+    ,SDO_ERROR_WRONG_TYPE
+    ,SDO_ERROR_INVALID_LIST /// \see sdoinfo_get_list()
+    ,SDO_ERROR_INSUFFICIENT_BUFFER
 } SDO_Error;
 
 enum eListType {

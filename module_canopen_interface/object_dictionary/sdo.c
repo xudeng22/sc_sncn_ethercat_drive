@@ -57,13 +57,13 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     COD_Entry *entry = find_entry(index, subindex);
     size_t bytes = (entry->bitlength + 8 - 1) / 8;
     if (bytes != bytesize) {
-        sdo_error = SDO_WRONG_TYPE;
+        sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)-sdo_error;
     }
 
     if (master_request &&
             (entry->access & ACCESS_ALL_RD) == 0) {
-        sdo_error = SDO_WRITE_ONLY;
+        sdo_error = SDO_ERROR_WRITE_ONLY;
         return (int)-sdo_error;
     }
 
@@ -80,13 +80,13 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     COD_Entry *entry = find_entry(index, subindex);
     size_t bytes = (entry->bitlength + 8 - 1) / 8;
     if (bytes != bytesize) {
-        sdo_error = SDO_WRONG_TYPE;
-        return (int)-SDO_WRONG_TYPE;
+        sdo_error = SDO_ERROR_WRONG_TYPE;
+        return (int)-SDO_ERROR_WRONG_TYPE;
     }
 
     if (master_request &&
             (entry->access & ACCESS_ALL_WR) == 0) {
-        sdo_error = SDO_READ_ONLY;
+        sdo_error = SDO_ERROR_READ_ONLY;
         return (int)-sdo_error;
     }
 

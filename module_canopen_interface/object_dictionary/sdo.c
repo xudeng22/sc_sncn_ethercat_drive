@@ -194,3 +194,92 @@ int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value)
     memmove(val, &value, 8);
 	return (sdo_entry_set_value(index, subindex, val, TYPE_REAL64, 0));
 }
+
+/*
+ * SDO Info access functions
+ */
+
+static size_t get_object_list_indexes(uint16_t flag_mask, size_t capacity, uint16_t *list)
+{
+    size_t length = object_dictionary_length;
+    size_t listsize = 0;
+
+    if (capacity < object_dictionary_length) {
+        sdo_error = SDO_ERROR_INSUFFICIENT_BUFFER;
+        length = capacity;
+    }
+
+    for (size_t i = 0; i < length; i++) {
+        if (object_dictionary[i].access & flag_mask) {
+            memcpy((list + i), &(object_dictionary[i].index), sizeof(uint16_t));
+            listsize++;
+        }
+    }
+
+    return listsize;
+}
+
+static size_t get_all_list_counts(size_t capacity, uint16_t *list)
+{
+    const size_t LIST_COUNT = 5;
+
+    list[0] = object_dictionary_length;
+
+    for (size_t i = 0; i < object_dictionary_length; i++) {
+        if (object_dictionary[i].access & ACCESS_RXPDO_MAP) {
+            list[LT_RX_PDO_OBJECTS - 1] += 1;
+        }
+
+        if (object_dictionary[i].access & ACCESS_TXPDO_MAP) {
+            list[LT_TX_PDO_OBJECTS - 1] += 1;
+        }
+
+        if (object_dictionary[i].access & ACCESS_BACKUP) {
+            list[LT_BACKUP_OBJECTS - 1] += 1;
+        }
+
+        if (object_dictionary[i].access & ACCESS_STARTUP) {
+            list[LT_STARTUP_OJBECTS - 1] += 1;
+        }
+    }
+
+    return (size_t)LIST_COUNT;
+}
+
+size_t sdoinfo_get_list(enum eListType listtype, size_t capacity, uint16_t *list)
+{
+    size_t listsize = 0;
+
+    switch (listtype) {
+        case LT_LIST_LENGTH:
+            listsize = get_all_list_counts(capacity, list);
+            break;
+
+        case LT_ALL_OBJECTS:
+            listsize = get_object_list_indexes(ACCESS_ALL_LIST_FLAGS, capacity, list);
+            break;
+
+        case LT_RX_PDO_OBJECTS:
+            listsize = get_object_list_indexes(ACCESS_RXPDO_MAP, capacity, list);
+            break;
+
+        case LT_TX_PDO_OBJECTS:
+            listsize = get_object_list_indexes(ACCESS_TXPDO_MAP, capacity, list);
+            break;
+
+        case LT_BACKUP_OBJECTS:
+            listsize = get_object_list_indexes(ACCESS_BACKUP, capacity, list);
+            break;
+
+        case LT_STARTUP_OJBECTS:
+            listsize = get_object_list_indexes(ACCESS_STARTUP, capacity, list);
+            break;
+
+        default:
+            sdo_error = SDO_ERROR_INVALID_LIST;
+            listsize = 0;
+            break;
+    }
+
+    return listsize;
+}

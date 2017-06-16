@@ -58,14 +58,14 @@ static unsigned get_configuration_from_dictionary(
         client interface i_co_communication i_canopen,
         ConfigParameter_t* Config)
 {
-    uint32_t list_lengths[5];
+    uint16_t list_lengths[5];
     i_canopen.od_get_all_list_length(list_lengths);
 
     if (list_lengths[0] > MAX_CONFIG_SDO_ENTRIES) {
         printstrln("Warning OD to large, only get what fits.");
     }
 
-    unsigned all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
+    uint16_t all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
     i_canopen.od_get_list(all_od_objects, list_lengths[0], OD_LIST_ALL);
 
     struct _sdoinfo_entry_description od_entry;

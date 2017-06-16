@@ -137,13 +137,18 @@ interface i_co_communication
      *
      * @param[out] Array with all list lengths
      */
-    void od_get_all_list_length(uint32_t lists[]);
+    void od_get_all_list_length(uint16_t lists[]);
 
     /**
      * @brief Returns a list with all index.
+     *
+     * @param[out] list      array of indexes for \c listtype
+     * @param[in]  size      capacity of the list
+     * @param[in] listtype   type of indexes to return in the list
+     *                       (values: 1 - all, 2 - RX mappable, 3 - TX mappable, 4 - backup, 5 - startup)
      * @return List length
      */
-    int od_get_list(unsigned list[], unsigned size, unsigned listtype);
+    int od_get_list(uint16_t list[], unsigned size, unsigned listtype);
 
     /**
      * @brief Get single entry description.

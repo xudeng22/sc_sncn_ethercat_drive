@@ -27,12 +27,12 @@ typedef enum {
 } SDO_Error;
 
 enum eListType {
-    LT_LIST_LENGTH = 0
-    ,LT_ALL_OBJECTS = 1
-    ,LT_RX_PDO_OBJECTS
-    ,LT_TX_PDO_OBJECTS
-    ,LT_BACKUP_OBJECTS
-    ,LT_STARTUP_OJBECTS
+    LT_LIST_LENGTH       = 0
+    ,LT_ALL_OBJECTS      = 1
+    ,LT_RX_PDO_OBJECTS   = 2
+    ,LT_TX_PDO_OBJECTS   = 3
+    ,LT_BACKUP_OBJECTS   = 4
+    ,LT_STARTUP_OJBECTS  = 5
 };
 
 /* FIXME or make as return value for the sdo_entry_{get,set}_value() ??? */
@@ -128,8 +128,14 @@ int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value);
  *
  * A call with another listtype returns a list of object indexes for the
  * accoring list, \see enum eListType for more information on list types.
+ *
+ * \param[in] listtype  requested list type \see enum eListType
+ * \param[in] capacity  capacaty of the list
+ * \param[out] list     pointer to array to store values to
+ * \return Number of elements stored in list, if count 0 check sdo_error
+ *         Possible errors: SDO_ERROR, SDO_ERROR_INVALID_LIST, SDO_ERROR_INSUFFICIENT_BUFFER
  */
-void sdoinfo_get_list(enum eListType listtype, uint16_t *list, size_t capacity);
+size_t sdoinfo_get_list(enum eListType listtype, size_t capacity, uint16_t *list);
 
 void sdoinfo_get_object(uint16_t index);
 

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "sdo.h"
 #include "canod.h"
 #include "co_interface.h"
 #include "dictionary_symbols.h"
@@ -15,6 +16,12 @@
 #include "print.h"
 
 #define MAX_PDO_SIZE 64
+
+/* there are 5 list lengths for all, rx-, tx-mappable, startup, and backup objects */
+#define ALL_LIST_LENGTH_SIZE    5
+
+typedef struct _sdoinfo_object SDInfo_Object;
+typedef struct _sdoinfo_netry SDOInfo_Entry;
 
 [[distributable]]
 void canopen_interface_service(
@@ -141,15 +148,19 @@ void canopen_interface_service(
                     desc_out = desc;
                     break;
 
-            case i_co[int j].od_get_all_list_length(uint32_t list_out[]):
-                    unsigned list[5];
-                    canod_get_all_list_length(list);
-                    memcpy(list_out, list, 5 * sizeof(unsigned));
+            case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
+                    uint16_t list[ALL_LIST_LENGTH_SIZE];
+                    sdoinfo_get_list(LT_LIST_LENGTH, ALL_LIST_LENGTH_SIZE, list);
+                    memcpy(list_out, list, ALL_LIST_LENGTH_SIZE * sizeof(uint16_t));
                     break;
 
-            case i_co[int j].od_get_list(unsigned list_out[], unsigned size, unsigned listtype) -> {int size_out}:
-                    unsigned list[100];
-                    size_out = canod_get_list(list, 100, listtype);
+/* FIXME change listtype to enum eListType type
+ * See sdo.h may put eListType and SDO_Error to co_interface.h
+ */
+            case i_co[int j].od_get_list(uint16_t list_out[], unsigned size, unsigned listtype) -> {int size_out}:
+                    uint16_t list[100];
+                    size_out = sdoinfo_get_list(listtype, 100, list);
+                    /* FIXME this memcpy will not work since sdoinfo_get_list() expects a uint16_t[] */
                     memcpy(list_out, list, size_out * sizeof(unsigned));
                     break;
 

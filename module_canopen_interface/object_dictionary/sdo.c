@@ -92,7 +92,12 @@ size_t sdo_entry_get_bitsize(uint16_t index, uint8_t subindex)
 int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request)
 {
     COD_Entry *entry = find_entry(index, subindex);
-    size_t bytes = (entry->bitlength + 8 - 1) / 8;
+    if (entry == NULL) {
+        sdo_error = SDO_ERROR_NOT_FOUND;
+        return (int)-sdo_error;
+    }
+
+    size_t bytes = BYTES_FROM_BITS(entry->bitlength);
     if (bytes != bytesize) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)-sdo_error;
@@ -115,7 +120,12 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
 int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request)
 {
     COD_Entry *entry = find_entry(index, subindex);
-    size_t bytes = (entry->bitlength + 8 - 1) / 8;
+    if (entry == NULL) {
+        sdo_error = SDO_ERROR_NOT_FOUND;
+        return (int)-sdo_error;
+    }
+
+    size_t bytes = BYTES_FROM_BITS(entry->bitlength);
     if (bytes != bytesize) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)-SDO_ERROR_WRONG_TYPE;

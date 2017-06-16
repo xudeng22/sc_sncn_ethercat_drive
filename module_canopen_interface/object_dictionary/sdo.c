@@ -114,101 +114,101 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     return 0;
 }
 
-int sdo_entry_get_int8(uint16_t index, uint8_t subindex, int8_t *value)
+int sdo_entry_get_int8(uint16_t index, uint8_t subindex, int8_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT8, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT8, master_request));
 }
 
-int sdo_entry_get_uint8(uint16_t index, uint8_t subindex, uint8_t *value)
+int sdo_entry_get_uint8(uint16_t index, uint8_t subindex, uint8_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT8, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT8, master_request));
 }
 
-int sdo_entry_get_int16(uint16_t index, uint16_t subindex, int16_t *value)
+int sdo_entry_get_int16(uint16_t index, uint16_t subindex, int16_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT16, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT16, master_request));
 }
 
-int sdo_entry_get_uint16(uint16_t index, uint16_t subindex, uint16_t *value)
+int sdo_entry_get_uint16(uint16_t index, uint16_t subindex, uint16_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT16, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT16, master_request));
 }
 
-int sdo_entry_get_int32(uint16_t index, uint32_t subindex, int32_t *value)
+int sdo_entry_get_int32(uint16_t index, uint32_t subindex, int32_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT32, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT32, master_request));
 }
 
-int sdo_entry_get_uint32(uint16_t index, uint32_t subindex, uint32_t *value)
+int sdo_entry_get_uint32(uint16_t index, uint32_t subindex, uint32_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT32, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT32, master_request));
 }
 
-int sdo_entry_get_real32(uint16_t index, uint32_t subindex, float *value)
+int sdo_entry_get_real32(uint16_t index, uint32_t subindex, float *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_REAL32, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_REAL32, master_request));
 }
 
-int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value)
+int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_REAL64, 0));
+	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_REAL64, master_request));
 }
 
 
-int sdo_entry_set_int8(uint16_t index, uint8_t subindex, int8_t value)
+int sdo_entry_set_int8(uint16_t index, uint8_t subindex, int8_t value, int master_request)
 {
     uint8_t val[sizeof(int8_t)];
     memmove(val, &value, sizeof(int8_t));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_INT8, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_INT8, master_request));
 }
 
-int sdo_entry_set_uint8(uint16_t index, uint8_t subindex, uint8_t value)
+int sdo_entry_set_uint8(uint16_t index, uint8_t subindex, uint8_t value, int master_request)
 {
     uint8_t val[sizeof(uint8_t)];
     memmove(val, &value, sizeof(uint8_t));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_UINT8, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_UINT8, master_request));
 }
 
-int sdo_entry_set_int16(uint16_t index, uint16_t subindex, int16_t value)
+int sdo_entry_set_int16(uint16_t index, uint16_t subindex, int16_t value, int master_request)
 {
     uint8_t val[sizeof(int16_t)];
     memmove(val, &value, sizeof(int16_t));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_INT16, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_INT16, master_request));
 }
 
-int sdo_entry_set_uint16(uint16_t index, uint16_t subindex, uint16_t value)
+int sdo_entry_set_uint16(uint16_t index, uint16_t subindex, uint16_t value, int master_request)
 {
     uint8_t val[sizeof(uint16_t)];
     memmove(val, &value, sizeof(uint16_t));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_UINT16, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_UINT16, master_request));
 }
 
-int sdo_entry_set_int32(uint16_t index, uint32_t subindex, int32_t value)
+int sdo_entry_set_int32(uint16_t index, uint32_t subindex, int32_t value, int master_request)
 {
     uint8_t val[sizeof(int32_t)];
     memmove(val, &value, sizeof(int32_t));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_INT32, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_INT32, master_request));
 }
 
-int sdo_entry_set_uint32(uint16_t index, uint32_t subindex, uint32_t value)
+int sdo_entry_set_uint32(uint16_t index, uint32_t subindex, uint32_t value, int master_request)
 {
     uint8_t val[sizeof(uint32_t)];
     memmove(val, &value, sizeof(uint32_t));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_UINT32, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_UINT32, master_request));
 }
 
-int sdo_entry_set_real32(uint16_t index, uint32_t subindex, float value)
+int sdo_entry_set_real32(uint16_t index, uint32_t subindex, float value, int master_request)
 {
     uint8_t val[sizeof(float)];
     memmove(val, &value, sizeof(float));
-	return (sdo_entry_set_value(index, subindex, val, TYPE_REAL32, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_REAL32, master_request));
 }
 
-int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value)
+int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value, int master_request)
 {
     uint8_t val[8];
     memmove(val, &value, 8);
-	return (sdo_entry_set_value(index, subindex, val, TYPE_REAL64, 0));
+	return (sdo_entry_set_value(index, subindex, val, TYPE_REAL64, master_request));
 }
 
 /*

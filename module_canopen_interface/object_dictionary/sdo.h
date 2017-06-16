@@ -98,14 +98,14 @@ size_t sdo_entry_get_byte_count(uint16_t index, uint8_t subindex);
  * \param[out] *value  Value read from entry
  * \return 0 no error, != 0 otherwise
  */
-int sdo_entry_get_int8(uint16_t index, uint8_t subindex, int8_t *value);
-int sdo_entry_get_uint8(uint16_t index, uint8_t subindex, uint8_t *value);
-int sdo_entry_get_int16(uint16_t index, uint16_t subindex, int16_t *value);
-int sdo_entry_get_uint16(uint16_t index, uint16_t subindex, uint16_t *value);
-int sdo_entry_get_int32(uint16_t index, uint32_t subindex, int32_t *value);
-int sdo_entry_get_uint32(uint16_t index, uint32_t subindex, uint32_t *value);
-int sdo_entry_get_real32(uint16_t index, uint32_t subindex, float *value);
-int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value);
+int sdo_entry_get_int8(uint16_t index, uint8_t subindex, int8_t *value, int master_request);
+int sdo_entry_get_uint8(uint16_t index, uint8_t subindex, uint8_t *value, int master_request);
+int sdo_entry_get_int16(uint16_t index, uint16_t subindex, int16_t *value, int master_request);
+int sdo_entry_get_uint16(uint16_t index, uint16_t subindex, uint16_t *value, int master_request);
+int sdo_entry_get_int32(uint16_t index, uint32_t subindex, int32_t *value, int master_request);
+int sdo_entry_get_uint32(uint16_t index, uint32_t subindex, uint32_t *value, int master_request);
+int sdo_entry_get_real32(uint16_t index, uint32_t subindex, float *value, int master_request);
+int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value, int master_request);
 
 /**
  * \brief Set entry value with a specific datatype
@@ -118,14 +118,14 @@ int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value);
  * \param[in] value  Value to be set
  * \return 0 no error, != 0 otherwise
  */
-int sdo_entry_set_int8(uint16_t index, uint8_t subindex, int8_t value);
-int sdo_entry_set_uint8(uint16_t index, uint8_t subindex, uint8_t value);
-int sdo_entry_set_int16(uint16_t index, uint16_t subindex, int16_t value);
-int sdo_entry_set_uint16(uint16_t index, uint16_t subindex, uint16_t value);
-int sdo_entry_set_int32(uint16_t index, uint32_t subindex, int32_t value);
-int sdo_entry_set_uint32(uint16_t index, uint32_t subindex, uint32_t value);
-int sdo_entry_set_real32(uint16_t index, uint32_t subindex, float value);
-int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value);
+int sdo_entry_set_int8(uint16_t index, uint8_t subindex, int8_t value, int master_request);
+int sdo_entry_set_uint8(uint16_t index, uint8_t subindex, uint8_t value, int master_request);
+int sdo_entry_set_int16(uint16_t index, uint16_t subindex, int16_t value, int master_request);
+int sdo_entry_set_uint16(uint16_t index, uint16_t subindex, uint16_t value, int master_request);
+int sdo_entry_set_int32(uint16_t index, uint32_t subindex, int32_t value, int master_request);
+int sdo_entry_set_uint32(uint16_t index, uint32_t subindex, uint32_t value, int master_request);
+int sdo_entry_set_real32(uint16_t index, uint32_t subindex, float value, int master_request);
+int sdo_entry_set_real64(uint16_t index, uint32_t subindex, double value, int master_request);
 
 /*
  * SDO Information

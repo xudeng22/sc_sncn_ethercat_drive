@@ -24,6 +24,9 @@
 #define TYPE_DOUBLE     8
 #define TYPE_REAL64     TYPE_DOUBLE
 
+#define INT_CEIL(a,b)         ((a + b - 1) / b)
+#define BYTES_FROM_BITS(a)    INT_CEIL(a, 8)
+
 SDO_Error sdo_error = SDO_NO_ERROR;
 
 static COD_Object *find_object(uint16_t index)
@@ -67,6 +70,24 @@ static COD_Entry *find_entry(uint16_t index, uint8_t subindex)
 /*
  * public functions
  */
+
+size_t sdo_entry_get_bytecount(uint16_t index, uint8_t subindex)
+{
+    size_t bitsize = sdo_entry_get_bitsize(index, subindex);
+    return BYTES_FROM_BITS(bitsize);
+}
+
+size_t sdo_entry_get_bitsize(uint16_t index, uint8_t subindex)
+{
+    size_t bitsize = 0;
+
+    COD_Entry *entry = find_entry(index, subindex);
+    if (entry == NULL) {
+        sdo_error = SDO_ERROR_NOT_FOUND;
+        return 0;
+    }
+    return (entry->bitlength);
+}
 
 int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request)
 {

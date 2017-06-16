@@ -83,7 +83,16 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
  * \param subindex  Subindex of the entry
  * \return number of bytes necessary to store the value of the entry
  */
-size_t sdo_entry_get_byte_count(uint16_t index, uint8_t subindex);
+size_t sdo_entry_get_bytecount(uint16_t index, uint8_t subindex);
+
+/**
+ * \brief Read the bitsize of the entry value
+ *
+ * \param index     Index of the entry
+ * \param subindex  Subindex of the entry
+ * \return number of bits necessary to store the value of the entry
+ */
+size_t sdo_entry_get_bitsize(uint16_t index, uint8_t subindex);
 
 /* specific datatype access */
 

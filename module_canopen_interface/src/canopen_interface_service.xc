@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "sdo.h"
-#include "canod.h"
 #include "co_interface.h"
 #include "dictionary_symbols.h"
 #include "canopen_interface_service.h"
@@ -82,14 +81,18 @@ void canopen_interface_service(
             case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
                     unsigned bitlength = 0;
                     unsigned value = 0;
-                    error_out = canod_get_entry(index_, subindex, value, bitlength);
+                    /* FIXME Need to distinguish between request from communication side (aka master) and local
+                     * requests, one possible fix is the use of different interfaces for com side and app side (as
+                     * planed). */
+                    sdo_entry_get_value(index_, subindex, (uint8_t*)&value, sizeof(value), REQUEST_FROM_APP);
+
                     bitlength_out = bitlength;
                     value_out = value;
 
                     /* After command is finished processing and the result is read by the master reset
                      * the command to allow the next command to be scheduled for execution. */
                     if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
-                        canod_set_entry(index_, subindex, OD_COMMAND_STATE_IDLE, 1);
+                        sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
                         sdo_command_object.command = OD_COMMAND_NONE;
                         sdo_command_object.state = OD_COMMAND_STATE_IDLE;
                     }
@@ -101,44 +104,43 @@ void canopen_interface_service(
                         value = OD_COMMAND_STATE_IDLE;
                     }
 
-                    error_out = canod_set_entry(index_, subindex, value, 1);
+                    size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
+                    error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, REQUEST_FROM_APP);
                     break;
 
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
                     unsigned bitlength = 0;
-                    unsigned value = 0;
                     unsigned error = 0;
-                    error = canod_get_entry(index_, subindex, value, bitlength);
-                    if (error > 0)
+                    bitlength = sdo_entry_get_bitsize(index_, subindex);
+                    if (bitlength == 0)
                     {
-                        error_out = error;
+                        error_out = sdo_error;
                         bitlength_out = 0;
                     }
                     else
                     {
-                        bitlength_out = bitlength;
-                        for (unsigned i = 0; i < (bitlength/8); i++) {
-                            data_buffer[i] = (value >> (i*8)) & 0xff;
-                        }
+                        uint8_t value[8]; /* 8 because CAN has max 8 bytes value */
+                        sdo_entry_get_value(index_, subindex, value, (bitlength + 7) / 8, REQUEST_FROM_APP);
+                        memcpy(data_buffer, value, (bitlength + 7) / 8);
                     }
                     break;
 
             case i_co[int j].od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint8_t error_out }:
-                    unsigned byte_len, error = 0;
-                    unsigned value = 0;
+                    unsigned bytecount, error = 0;
 
-                    {byte_len, error} = canod_find_data_length(index_, subindex);
-
-                    if (error > 0)
+                    bytecount = sdo_entry_get_bytecount(index_, subindex);
+                    if (bytecount == 0)
                     {
-                        error_out = error;
+                        error_out = sdo_error;
                     }
                     else
                     {
-                        for (unsigned i = 0; i < byte_len; i++) {
-                            value |= (unsigned) data_buffer[i] << (i*8);
+                        uint8_t value[8]; /* 8 because CAN has max 8 bytes value */
+                        memcpy(value, data_buffer, bytecount);
+                        int err = sdo_entry_set_value(index_, subindex, value, bytecount, REQUEST_FROM_APP);
+                        if (err) {
+                            error_out = sdo_error;
                         }
-                        error_out = canod_set_entry(index_, subindex, value, 1);
                     }
                     break;
 

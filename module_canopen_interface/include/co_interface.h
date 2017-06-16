@@ -104,6 +104,9 @@ interface i_co_communication
 
     /**
      * @brief Returns an object value from dictionary.
+     *
+     * NOTE: For CAN the data_buffer is maxiumum 8 byte wide.
+     *
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex
      * @param[out] data_buffer  OD value
@@ -113,6 +116,9 @@ interface i_co_communication
 
     /**
      * @brief Set an object value in dictionary.
+     *
+     * NOTE: For CAN the data_buffer is maxiumum 8 byte wide.
+     *
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex
      * @param[in] data_buffer     Value, which will set in OD

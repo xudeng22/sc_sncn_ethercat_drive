@@ -343,7 +343,9 @@ int sdoinfo_get_object_description(uint16_t index, struct _sdoinfo_entry_descrip
     obj_out->index = object->index;
     obj_out->objectCode = object->type;
     obj_out->objectAccess = object->access;
-    memcpy(obj_out->name, object->name, 50);
+    obj_out->dataType = object->data_type;
+    obj_out->value = object->max_subindex;
+    memcpy(obj_out->name, *object->name, 50);
 
     return 0;
 }
@@ -366,7 +368,7 @@ int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int
     obj_out->dataType = entry->data_type;
     obj_out->bitLength = entry->bitlength;
     obj_out->objectAccess = entry->access;
-    memcpy(obj_out->name, entry->name, 50);
+    memcpy(obj_out->name, *(entry->name), 50);
     /* FIXME use valueinfo to figure out what needs to be added in reply */
     size_t bytes_to_copy = BYTES_FROM_BITS(entry->bitlength);
     if (bytes_to_copy > sizeof(uint32_t)) {

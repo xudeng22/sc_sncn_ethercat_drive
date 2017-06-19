@@ -115,7 +115,7 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
         entry->index = CODE_CLR_ENTRY_FLAG(entry->index);
     }
 
-    memmove(value, entry->value, bytesize);
+    memmove(value, entry->value, bytes);
     return 0;
 }
 

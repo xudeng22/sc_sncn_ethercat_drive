@@ -79,14 +79,13 @@ void canopen_interface_service(
                     break;
 
             case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
-                    unsigned bitlength = 0;
                     unsigned value = 0;
                     /* FIXME Need to distinguish between request from communication side (aka master) and local
                      * requests, one possible fix is the use of different interfaces for com side and app side (as
                      * planed). */
                     sdo_entry_get_value(index_, subindex, (uint8_t*)&value, sizeof(value), REQUEST_FROM_APP);
+                    bitlength_out = sdo_entry_get_bitsize(index_, subindex);
 
-                    bitlength_out = bitlength;
                     value_out = value;
 
                     /* After command is finished processing and the result is read by the master reset

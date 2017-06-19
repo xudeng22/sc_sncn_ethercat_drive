@@ -121,6 +121,7 @@ void canopen_interface_service(
                         uint8_t value[8]; /* 8 because CAN has max 8 bytes value */
                         sdo_entry_get_value(index_, subindex, value, (bitlength + 7) / 8, REQUEST_FROM_APP);
                         memcpy(data_buffer, value, (bitlength + 7) / 8);
+                        bitlength_out = bitlength;
                     }
                     break;
 

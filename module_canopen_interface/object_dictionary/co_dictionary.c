@@ -11,10 +11,9 @@
 
 #include "co_dictionary.h"
 
-#define BYTE_COUNT_ALL_ENTRY_VALUES   56
-#define BYTE_COUNT_DEFAULT_VALUES     BYTE_COUNT_ALL_ENTRY_VALUES
-#define BYTE_COUNT_MIN_VALUES         0
-#define BYTE_COUNT_MAX_VALUES         0
+/*
+ * Sizes of exported arrays
+ */
 
 const size_t entry_values_length           = 56;
 const size_t entry_default_values_length   = 56;

@@ -180,6 +180,10 @@ struct _bookmarks {
     uint16_t entry_element;
 } __attribute__((packed));
 
+/*
+ * Define variable to be accessible from the application
+ */
+
 extern uint8_t        entry_values[];
 extern const uint8_t  entry_default_values[];
 extern const uint8_t  entry_min_values[];

@@ -163,8 +163,7 @@ void canopen_interface_service(
             case i_co[int j].od_get_list(uint16_t list_out[], unsigned size, unsigned listtype) -> {int size_out}:
                     uint16_t list[100];
                     size_out = sdoinfo_get_list(listtype, 100, list);
-                    /* FIXME this memcpy will not work since sdoinfo_get_list() expects a uint16_t[] */
-                    memcpy(list_out, list, size_out * sizeof(unsigned));
+                    memcpy(list_out, list, size_out * sizeof(uint16_t));
                     break;
 
             case i_co[int j].od_get_object_description(struct _sdoinfo_entry_description &obj_out, uint16_t index_, uint8_t subindex) -> { int error }:

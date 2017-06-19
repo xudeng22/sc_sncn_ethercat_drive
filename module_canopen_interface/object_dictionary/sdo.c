@@ -98,7 +98,9 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     }
 
     size_t bytes = BYTES_FROM_BITS(entry->bitlength);
-    if (bytes != bytesize) {
+    /* I only give a error if the requested bytesize is smaller than the actual
+     * bytesize to allow a larger return buffer than the actual data size is. */
+    if (bytes > bytesize) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)-sdo_error;
     }

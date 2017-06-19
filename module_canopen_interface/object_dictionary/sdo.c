@@ -259,8 +259,8 @@ static size_t get_object_list_indexes(uint16_t flag_mask, size_t capacity, uint1
     }
 
     for (size_t i = 0; i < length; i++) {
-        if (object_dictionary[i].access & flag_mask) {
-            memcpy((list + i), &(object_dictionary[i].index), sizeof(uint16_t));
+        if (!flag_mask || ((object_dictionary[i].access & 0x3c0) & flag_mask)) {
+            memcpy((void *)(list + listsize), &(object_dictionary[i].index), sizeof(uint16_t));
             listsize++;
         }
     }
@@ -305,7 +305,7 @@ size_t sdoinfo_get_list(enum eListType listtype, size_t capacity, uint16_t *list
             break;
 
         case LT_ALL_OBJECTS:
-            listsize = get_object_list_indexes(ACCESS_ALL_LIST_FLAGS, capacity, list);
+            listsize = get_object_list_indexes(0, capacity, list);
             break;
 
         case LT_RX_PDO_OBJECTS:

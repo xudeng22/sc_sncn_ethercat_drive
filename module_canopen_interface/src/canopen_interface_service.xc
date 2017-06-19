@@ -74,7 +74,7 @@ void canopen_interface_service(
                     struct _sdoinfo_entry_description entry;
                     error = sdoinfo_get_entry_description(index_, subindex, 0, &entry);
                     if (!error) {
-                        access = (enum eAccessRights)(entry.objectAccess & 0xff);
+                        access = (enum eAccessRights)(entry.objectAccess & 0x3f);
                     }
                     break;
 

@@ -10,6 +10,7 @@
 # You can also set MODULE_XCC_C_FLAGS, MODULE_XCC_XC_FLAGS etc..
 
 MODULE_XCC_XC_FLAGS = $(XCC_XC_FLAGS)
+MODULE_XCC_C_FLAGS = -O0 -g -mno_dual_issue
 
 # The following specifies the dependencies of the module. When an application
 # includes a module it will also include all its dependencies.

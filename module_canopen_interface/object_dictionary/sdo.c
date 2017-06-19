@@ -359,12 +359,17 @@ int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int
      * default, min and max are stored.
      */
 
+    obj_out->index = CODE_GET_INDEX(entry->index);
     obj_out->subindex = CODE_GET_SUBINDEX(entry->index);
     obj_out->dataType = entry->data_type;
     obj_out->bitLength = entry->bitlength;
     obj_out->objectAccess = entry->access;
     memcpy(obj_out->name, entry->name, 50);
     /* FIXME use valueinfo to figure out what needs to be added in reply */
-    memcpy((void *)(obj_out->value), entry->value, sizeof(uint32_t));
+    size_t bytes_to_copy = BYTES_FROM_BITS(entry->bitlength);
+    if (bytes_to_copy > sizeof(uint32_t)) {
+        bytes_to_copy = sizeof(uint32_t);
+    }
+    memcpy((void *)&(obj_out->value), entry->value, bytes_to_copy);
     return 0;
 }

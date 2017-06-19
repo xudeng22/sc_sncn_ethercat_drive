@@ -278,6 +278,7 @@ static size_t get_object_list_indexes(uint16_t flag_mask, size_t capacity, uint1
     if (capacity < object_dictionary_length) {
         sdo_error = SDO_ERROR_INSUFFICIENT_BUFFER;
         length = capacity;
+        return 0;
     }
 
     for (size_t i = 0; i < length; i++) {

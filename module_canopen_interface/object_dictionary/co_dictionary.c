@@ -44,21 +44,21 @@ uint8_t entry_values[entry_values_length] = {
     0x01, 0x02, 0x00, 0x00, /* 0x1018:2 Start: 9 */
     0x02, 0x00, 0x00, 0x0A, /* 0x1018:3 Start: 13 */
     0x00, 0x00, 0x00, 0x00, /* 0x1018:4 Start: 17 */
-    0x01,                   /* 0x1600:0 Start: 18 */
-    0x20, 0x00, 0x01, 0x20, /* 0x1600:1 Start: 19 */
-    0x01,                   /* 0x1a00:0 Start: 23 */
-    0x20, 0x00, 0x02, 0x20, /* 0x1a00:1 Start: 24 */
-    0x04,                   /* 0x1c00:0 Start: 28 */
+    0x01,                   /* 0x1600:0 Start: 21 */
+    0x20, 0x00, 0x01, 0x20, /* 0x1600:1 Start: 22 */
+    0x01,                   /* 0x1a00:0 Start: 26 */
+    0x20, 0x00, 0x02, 0x20, /* 0x1a00:1 Start: 27 */
+    0x04,                   /* 0x1c00:0 Start: 31 */
     0x00, 0x00, 0x03, 0x04, /* 0x1c00:1..4 */
-    0x00,                   /* 0x1c10:0 Start: 33 */
-    0x00,                   /* 0x1c11:0 Start: 34 */
-    0x01,                   /* 0x1c12:0 Start: 35 */
-    0x00, 0x16,             /* 0x1c12:1 Start: 36 */
-    0x01,                   /* 0x1c13:0 Start: 38 */
-    0x00, 0x1a,             /* 0x1c13:1 Start: 39 */
-    0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 41 */
-    0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 45 */
-    0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 49 */
+    0x00,                   /* 0x1c10:0 Start: 36 */
+    0x00,                   /* 0x1c11:0 Start: 37 */
+    0x01,                   /* 0x1c12:0 Start: 38 */
+    0x00, 0x16,             /* 0x1c12:1 Start: 39 */
+    0x01,                   /* 0x1c13:0 Start: 41 */
+    0x00, 0x1a,             /* 0x1c13:1 Start: 42 */
+    0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
+    0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
+    0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
 };
 
 /*
@@ -203,7 +203,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[5]),
-        &(entry_values[18]),
+        &(entry_values[21]),
         NULL,
         NULL,
         NULL
@@ -214,7 +214,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[5]),
-        &(entry_values[19]),
+        &(entry_values[22]),
         NULL,
         NULL,
         NULL
@@ -225,7 +225,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[5]),
-        &(entry_values[23]),
+        &(entry_values[26]),
         NULL,
         NULL,
         NULL
@@ -236,7 +236,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[5]),
-        &(entry_values[24]),
+        &(entry_values[27]),
         NULL,
         NULL,
         NULL
@@ -247,7 +247,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[7]),
-        &(entry_values[28]),
+        &(entry_values[31]),
         NULL,
         NULL,
         NULL
@@ -258,7 +258,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[13]),
-        &(entry_values[29]),
+        &(entry_values[32]),
         NULL,
         NULL,
         NULL
@@ -269,7 +269,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[14]),
-        &(entry_values[30]),
+        &(entry_values[33]),
         NULL,
         NULL,
         NULL
@@ -280,7 +280,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[15]),
-        &(entry_values[31]),
+        &(entry_values[34]),
         NULL,
         NULL,
         NULL
@@ -291,7 +291,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[16]),
-        &(entry_values[32]),
+        &(entry_values[35]),
         NULL,
         NULL,
         NULL
@@ -302,7 +302,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[7]),
-        &(entry_values[33]),
+        &(entry_values[36]),
         NULL,
         NULL,
         NULL
@@ -313,7 +313,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[7]),
-        &(entry_values[34]),
+        &(entry_values[37]),
         NULL,
         NULL,
         NULL
@@ -324,7 +324,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[7]),
-        &(entry_values[35]),
+        &(entry_values[38]),
         NULL,
         NULL,
         NULL
@@ -335,7 +335,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[20]),
-        &(entry_values[36]),
+        &(entry_values[39]),
         NULL,
         NULL,
         NULL
@@ -346,7 +346,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[7]),
-        &(entry_values[38]),
+        &(entry_values[41]),
         NULL,
         NULL,
         NULL
@@ -357,7 +357,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
         &(string[20]),
-        &(entry_values[39]),
+        &(entry_values[42]),
         NULL,
         NULL,
         NULL
@@ -368,7 +368,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[11]),
-        &(entry_values[41]),
+        &(entry_values[44]),
         NULL,
         NULL,
         NULL
@@ -379,7 +379,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[9]),
-        &(entry_values[45]),
+        &(entry_values[48]),
         NULL,
         NULL,
         NULL
@@ -390,7 +390,7 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
         &(string[22]),
-        &(entry_values[49]),
+        &(entry_values[52]),
         NULL,
         NULL,
         NULL

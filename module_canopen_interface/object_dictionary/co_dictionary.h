@@ -123,6 +123,8 @@ typedef struct _cod_entry COD_Entry;
 struct _cod_object {
     uint16_t index;
     uint8_t type;                   /* object code: VAR, RECORD, ARRAY */
+    uint16_t data_type;         /* index of data type, e.g. for VAR it is the basic data type, some
+                                   complex objects have special types like DEVSTRUCT_IDENTITY */
     uint16_t access;                 /* Read/Write access flags */
     uint8_t max_subindex;         /* number of the largest subindex */
     const char **name;                 /* pointer to element in \c *entry_name ??? */

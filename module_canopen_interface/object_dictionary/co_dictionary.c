@@ -20,14 +20,14 @@ const size_t entry_default_values_length   = 56;
 const size_t entry_min_values_length       = 0;
 const size_t entry_max_values_length       = 0;
 const size_t string_length                 = 23;
-const size_t object_entries_length         = 25;
+const size_t object_entries_length         = 24;
 const size_t object_dictionary_length      = 12;
 const size_t bookmark_length               = 3;
 
 struct _bookmarks bookmark[] = {
     { 0x1000, 0 },
     { 0x2000, 12 },
-    { 0x3000, 24 }
+    { 0x3000, 23 }
 };
 
 /*
@@ -401,6 +401,7 @@ COD_Object object_dictionary[] = {
         0x1000,
         OBJECT_TYPE_VAR,
         ACCESS_ALL_RD,
+        DEFTYPE_UNSIGNED32,
         0,
         &(string[0]),
         &(object_entries[0])
@@ -408,6 +409,7 @@ COD_Object object_dictionary[] = {
     {
         0x1018,
         OBJECT_TYPE_RECORD,
+        DEFSTRUCT_PDO_MAPPING,
         ACCESS_ALL_RD,
         4,                          /* max subindex */
         &(string[1]),
@@ -415,6 +417,7 @@ COD_Object object_dictionary[] = {
     }, {
         0x1600, /* RxPDO: Output: Master->Slave */
         OBJECT_TYPE_RECORD,
+        DEFSTRUCT_PDO_MAPPING,
         ACCESS_ALL_RD,
         1,
         &(string[8]),
@@ -422,6 +425,7 @@ COD_Object object_dictionary[] = {
     }, {
         0x1A00, /* TxPDO: Input: Slave-> Master */
         OBJECT_TYPE_RECORD,
+        DEFSTRUCT_PDO_MAPPING,
         ACCESS_ALL_RD,
         1,
         &(string[10]),
@@ -429,6 +433,7 @@ COD_Object object_dictionary[] = {
     }, {
         0x1C00,
         OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED8,
         ACCESS_ALL_RD,
         4,
         &(string[12]),
@@ -436,51 +441,58 @@ COD_Object object_dictionary[] = {
     }, {
         0x1C10,
         OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED16,
         ACCESS_ALL_RD,
         0,
         &(string[17]),
-        &(object_entries[16])
+        &(object_entries[15])
     }, {
         0x1C11,
         OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED16,
         ACCESS_ALL_RD,
         0,
         &(string[18]),
-        &(object_entries[17])
+        &(object_entries[16])
     }, {
         0x1C12,
         OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED16,
         ACCESS_ALL_RD,
         1,
         &(string[19]),
-        &(object_entries[18])
+        &(object_entries[17])
     }, {
         0x1C13,
         OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED16,
         ACCESS_ALL_RD,
         1,
         &(string[21]),
-        &(object_entries[20])
+        &(object_entries[19])
     }, {
         0x2001,
         OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[11]),
-        &(object_entries[22])
+        &(object_entries[21])
     }, {
         0x2002,
         OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[9]),
-        &(object_entries[23])
+        &(object_entries[22])
     }, {
         0x3000,
         OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
-        &(string[9]),
-        &(object_entries[24])
+        &(string[22]),
+        &(object_entries[23])
     }
 };

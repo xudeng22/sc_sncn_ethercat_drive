@@ -147,8 +147,10 @@ void canopen_interface_service(
 
             case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
-                    error_out = sdoinfo_get_entry_description(index_, subindex, valueinfo, &desc);
-                    memcpy(&desc_out, &desc, sizeof(struct _sdoinfo_entry_description));
+                    error_out = -1 * sdoinfo_get_entry_description(index_, subindex, valueinfo, &desc);
+                    if (!error_out) {
+                        memcpy(&desc_out, &desc, sizeof(struct _sdoinfo_entry_description));
+                    }
                     break;
 
             case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
@@ -170,8 +172,10 @@ void canopen_interface_service(
                     struct _sdoinfo_entry_description obj;
                     /* FIXME misnomer, object description and entry description are separate now. */
                     /* FIXME the current CoE handler does not distinguish between object and entry description */
-                    error = sdoinfo_get_object_description(index_, &obj);
-                    memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
+                    error = -1 * sdoinfo_get_object_description(index_, &obj);
+                    if (!error) {
+                        memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
+                    }
                     break;
 
             case i_co[int j].od_get_data_length(uint16_t index_, uint8_t subindex) -> {uint32_t len, uint8_t error}:

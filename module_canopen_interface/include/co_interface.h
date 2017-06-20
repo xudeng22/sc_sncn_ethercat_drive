@@ -9,7 +9,7 @@
 #ifndef CO_INTERFACE_H_
 #define CO_INTERFACE_H_
 
-#include <sdo.h>
+#include <coe_handling.h>
 #include <stdint.h>
 
 #define CO_IF_COUNT 4
@@ -18,38 +18,24 @@
 #define REQUEST_FROM_MASTER   1
 #define REQUEST_FROM_APP      0
 
+/**
+ * \brief Available SDO commands
+ */
 enum eSdoCommand {
     OD_COMMAND_NONE = 0
     ,OD_COMMAND_WRITE_CONFIG
     ,OD_COMMAND_READ_CONFIG
 };
 
+/**
+ * \brief State of the current SDO command
+ */
 enum eSdoState {
-    OD_COMMAND_STATE_IDLE = 0
-    ,OD_COMMAND_STATE_PROCESSING
-    ,OD_COMMAND_STATE_SUCCESS
-    ,OD_COMMAND_STATE_ERROR
+    OD_COMMAND_STATE_IDLE = 0       ///< SDO state is idle and ready to accept new commands
+    ,OD_COMMAND_STATE_PROCESSING    ///< SDO command is currently processed
+    ,OD_COMMAND_STATE_SUCCESS       ///< SDO command finished successfully
+    ,OD_COMMAND_STATE_ERROR         ///< SDO command finished with a error
 };
-
-struct _sdo_command_object {
-    enum eSdoCommand command;
-    enum eSdoState   state;
-};
-
-#if 0   /* now in sdo.h */
-/** entry description structure */
-struct _sdoinfo_entry_description {
-    uint16_t index; ///< 16 bit int should be sufficient
-    uint8_t subindex; ///< 16 bit int should be sufficient
-    uint8_t objectDataType;
-    uint8_t dataType;
-    uint8_t objectCode;
-    uint8_t bitLength;
-    uint16_t objectAccess;
-    uint32_t value; ///< real data type is defined by .dataType
-    uint8_t name[50];
-};
-#endif
 
 /**
  * @brief Access types

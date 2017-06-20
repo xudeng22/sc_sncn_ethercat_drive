@@ -19,6 +19,11 @@
 /* there are 5 list lengths for all, rx-, tx-mappable, startup, and backup objects */
 #define ALL_LIST_LENGTH_SIZE    5
 
+struct _sdo_command_object {
+    enum eSdoCommand command;
+    enum eSdoState   state;
+};
+
 [[distributable]]
 void canopen_interface_service(
         server interface i_pdo_handler_exchange i_pdo_handler,

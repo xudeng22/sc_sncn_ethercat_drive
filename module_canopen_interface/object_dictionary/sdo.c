@@ -7,6 +7,7 @@
 
 #include "co_dictionary.h"
 #include "sdo.h"
+#include <coe_handling.h>
 
 #include <stdint.h>
 #include <string.h>

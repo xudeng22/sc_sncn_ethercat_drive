@@ -36,20 +36,6 @@ enum eListType {
     ,LT_STARTUP_OJBECTS  = 5
 };
 
-/* FIXME Replication of entry description structure
- * because the interface include does not work in the C world. */
-struct _sdoinfo_entry_description {
-    uint16_t index;
-    uint8_t subindex;
-    uint8_t objectDataType;
-    uint8_t dataType;
-    uint8_t objectCode;
-    uint8_t bitLength;
-    uint16_t objectAccess;
-    uint32_t value;
-    uint8_t name[50];
-};
-
 /* FIXME or make as return value for the sdo_entry_{get,set}_value() ??? */
 extern SDO_Error sdo_error;
 

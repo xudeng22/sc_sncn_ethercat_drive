@@ -204,6 +204,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     pdo_output->tuning_command = TUNING_CMD_AUTO_POS_CTRL_TUNE;
                     pdo_output->user_mosi = output->value;
                     pdo_output->target_position = pdo_input.position_value;
+                    break;
                 case 'v':
                     pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;
                     pdo_output->target_velocity = 0;

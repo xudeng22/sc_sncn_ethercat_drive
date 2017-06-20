@@ -73,6 +73,12 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case TUNING_STATUS_MUX_FILTER://filter
         (*input).filter = pdo_input.user_miso;
         break;
+    case TUNING_STATUS_MUX_TUNE_AMPLITUDE:
+        (*input).tune_amplitude = pdo_input.user_miso;
+        break;
+    case TUNING_STATUS_MUX_TUNE_PERIOD:
+        (*input).tune_period = pdo_input.user_miso;
+        break;
     }
 
     //tuning state
@@ -201,9 +207,19 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
                 switch(output->mode_2) {
                 case 'p':
-                    pdo_output->tuning_command = TUNING_CMD_AUTO_POS_CTRL_TUNE;
+                    switch(output->mode_3) {
+                    case 'a':
+                        pdo_output->tuning_command = TUNING_CMD_TUNE_AMPLITUDE;
+                        break;
+                    case 'p':
+                        pdo_output->tuning_command = TUNING_CMD_TUNE_PERIOD;
+                        break;
+                    default:
+                        pdo_output->tuning_command = TUNING_CMD_AUTO_POS_CTRL_TUNE;
+                        pdo_output->target_position = pdo_input.position_value;
+                        break;
+                    }
                     pdo_output->user_mosi = output->value;
-                    pdo_output->target_position = pdo_input.position_value;
                     break;
                 case 'v':
                     pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;

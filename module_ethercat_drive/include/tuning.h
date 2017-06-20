@@ -63,6 +63,8 @@ typedef enum {
     TUNING_CMD_BRAKE_RELEASE_STRATEGY     = 0xCD,
     TUNING_CMD_POLARITY_MOTION            = 0xCE,
     TUNING_CMD_FILTER                     = 0xCF,
+    TUNING_CMD_TUNE_AMPLITUDE             = 0xD0,
+    TUNING_CMD_TUNE_PERIOD                = 0xD1,
     TUNING_CMD_MAX_TORQUE                 = 0xE0,
     TUNING_CMD_POLARITY_SENSOR            = 0x90,
     TUNING_CMD_POLE_PAIRS                 = 0xB0,
@@ -111,7 +113,9 @@ typedef enum {
     TUNING_STATUS_MUX_SENSOR_ERROR      = 17,
     TUNING_STATUS_MUX_MOTION_CTRL_ERROR = 18,
     TUNING_STATUS_MUX_RATED_TORQUE      = 19,
-    TUNING_STATUS_MUX_FILTER            = 20
+    TUNING_STATUS_MUX_FILTER            = 20,
+    TUNING_STATUS_MUX_TUNE_AMPLITUDE    = 21,
+    TUNING_STATUS_MUX_TUNE_PERIOD       = 22
 } TuningStatusMux;
 
 

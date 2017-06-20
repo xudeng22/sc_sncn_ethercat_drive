@@ -77,9 +77,10 @@ The following one character commands are executed directly without pressing ente
 The rest of the commands can be up to 3 characters with an optional number. The command is then executed by pressing [enter].
 The number can be negative. Spaces are ignored. The default number value is 0.
 
-  - ``ao``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
-  - ``apc``: start the automatic tuning of cascaded position controller. while cascaded position controller is being tuned, the dynamic values of PID controllers are shown on the terminal.
-  - ``apl``: start the automatic tuning of limited-torque position controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
+  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
+  - ``ap2``: start the automatic tuning of cascaded position controller. while cascaded position controller is being tuned, the dynamic values of PID controllers are shown on the terminal.
+  - ``ap3``: start the automatic tuning of limited-torque position controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
+  - ``av``: start the automatic tuning of velocity controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
   - ``b``: toggle the brake state between blocking and released.
   - ``bs``: set the brake release strategy parameter. 0 is to disable the brake. 1 to enable normal release. and 2 to 100 (percentage of maximum torque) for shaking release.
   - ``p[number]``: set a target position. the position control need to be enabled first.
@@ -111,6 +112,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``kvd [number]``: set the D coefficient of the Velocity controller.
   - ``kpl [number]``: set the Integral part limit the Velocity controller.
   - ``ktr [number]``: set the rated torque.
+  - ``kf [number]``: set the cut-off frequency of the filter in motion control service in Hz (0 to disable)
   - ``Lp [number]``:  set both the maximum and minimum position limit to [number] and -[number]. The motorcontrol will be automatically disable when the position limit is reached. You can use this feature if your axis has a limited movement. If you are past the limits move the axis manually (use b and tss to unlock the motor) or restart position/velocity/torque controller in the right direction (the position limiter has a threshold to allow to restart if the motor is right after the limit).
   - ``Lpu [number]``: set the maximum position limit.
   - ``Lpl [number]``: set the minimum position limit.

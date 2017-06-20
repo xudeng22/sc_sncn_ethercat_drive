@@ -193,9 +193,30 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             output->value *= output->sign;
             switch(output->mode_1) {
 
-            //auto offset
-            case 'a': //auto offset
-                pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+
+
+            // enable/disable motorcontrol commands
+            case 'a':
+                switch(output->mode_2)
+                {
+                case 'o':
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+                    break;
+                case 'p':
+                    switch(output->mode_3)
+                    {
+                    case 'l':
+                        pdo_output->tuning_command = TUNING_CMD_AUTO_LT_POS_CTRL_TUNE;
+                        pdo_output->target_position = pdo_input.position_value;
+                        break;
+
+                    case 'c':
+                        pdo_output->tuning_command = TUNING_CMD_AUTO_CC_POS_CTRL_TUNE;
+                        pdo_output->target_position = pdo_input.position_value;
+                        break;
+                    }
+                    break;
+                }
                 break;
 
             //brake
@@ -531,7 +552,7 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
         switch(input.motorctrl_status) {
         case TUNING_MOTORCTRL_POSITION_PID:
         case TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED:
-        case TUNING_MOTORCTRL_POSITION_NL:
+        case TUNING_MOTORCTRL_POSITION_LT:
             config->data[config->count].target = pdo_output.target_position;
             break;
         case TUNING_MOTORCTRL_VELOCITY:

@@ -98,8 +98,8 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     case TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED:
         wprintw(wnd, "Position control Velocity Cascaded %9d", pdo_output.target_position);
         break;
-    case TUNING_MOTORCTRL_POSITION_NL:
-        wprintw(wnd, "Position control Non Linear %9d", pdo_output.target_position);
+    case TUNING_MOTORCTRL_POSITION_LT:
+        wprintw(wnd, "Position control Limited Torque %9d", pdo_output.target_position);
         break;
     case TUNING_MOTORCTRL_VELOCITY:
         wprintw(wnd, "Velocity control %5d", pdo_output.target_velocity);

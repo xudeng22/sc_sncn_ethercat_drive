@@ -32,6 +32,7 @@
 
 /**
  * @brief Tuning command codes
+ *
  */
 typedef enum {
     TUNING_CMD_AUTO_OFFSET                = 0x01,
@@ -44,6 +45,8 @@ typedef enum {
     TUNING_CMD_CONTROL_POSITION           = 0x08,
     TUNING_CMD_CONTROL_VELOCITY           = 0x09,
     TUNING_CMD_CONTROL_TORQUE             = 0x0A,
+    TUNING_CMD_AUTO_LT_POS_CTRL_TUNE      = 0x0B,
+    TUNING_CMD_AUTO_CC_POS_CTRL_TUNE      = 0x0C,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,
@@ -75,7 +78,7 @@ typedef enum {
     TUNING_MOTORCTRL_OFF                            = 0,
     TUNING_MOTORCTRL_POSITION_PID                   = 1,
     TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED = 2,
-    TUNING_MOTORCTRL_POSITION_NL                    = 3,
+    TUNING_MOTORCTRL_POSITION_LT                    = 3,
     TUNING_MOTORCTRL_VELOCITY                       = 4,
     TUNING_MOTORCTRL_TORQUE                         = 5
 } TuningMotorCtrlStatus;

@@ -15,8 +15,13 @@
 #define CO_IF_COUNT 4
 #define OD_LIST_ALL 1
 
+#ifndef REQUEST_FORM_MASTER
 #define REQUEST_FROM_MASTER   1
+#endif
+
+#ifndef REQUEST_FROM_APP
 #define REQUEST_FROM_APP      0
+#endif
 
 /**
  * \brief Available SDO commands

@@ -8,6 +8,7 @@
 #ifndef SDO_H
 #define SDO_H
 
+#include <coe_handling.h> /* from the ethercat_service */
 #include <stdlib.h>
 #include <stdint.h>
 #include <xccompat.h>
@@ -15,6 +16,9 @@
 #ifdef __XC__
 extern "C" {
 #endif
+
+#define REQUEST_FROM_MASTER   1
+#define REQUEST_FROM_APP      0
 
 typedef enum {
     SDO_NO_ERROR = 0

@@ -203,6 +203,7 @@ typedef struct {
     int32_t position;
     int32_t velocity;
     int16_t torque;
+    int32_t timestamp;
 } RecordData;
 
 typedef enum {

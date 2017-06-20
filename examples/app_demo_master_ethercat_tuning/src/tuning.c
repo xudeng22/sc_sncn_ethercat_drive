@@ -563,13 +563,14 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
         config->data[config->count].position = (int32_t)pdo_input.position_value;
         config->data[config->count].velocity = (int32_t)pdo_input.velocity_value;
         config->data[config->count].torque = (int16_t)pdo_input.torque_value;
+        config->data[config->count].timestamp = (int32_t)pdo_input.timestamp;
         config->count++;
     } else {
         if (config->data != NULL) { //save to file
             FILE *fd = fopen(filename, "w");
-            fprintf(fd, "count,target,position,velocity,torque\n");
+            fprintf(fd, "count,timestamp,target,position,velocity,torque\n");
             for (int i=0 ; i<config->count ; i++) {
-                fprintf(fd, "%d,%d,%d,%d,%d\n", i, config->data[i].target, config->data[i].position, config->data[i].velocity, config->data[i].torque);
+                fprintf(fd, "%d,%d,%d,%d,%d,%d\n", i, config->data[i].timestamp, config->data[i].target, config->data[i].position, config->data[i].velocity, config->data[i].torque);
             }
             fclose(fd);
             free(config->data);

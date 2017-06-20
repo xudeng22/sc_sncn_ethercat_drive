@@ -134,7 +134,7 @@ struct _cod_object {
 struct _cod_entry {
     uint32_t index;             /* := | obj_index:16 | sub_index:8 | flags:8 */
     uint16_t data_type;         /* index of data type */
-    size_t bitlength;
+    size_t bitsize;
     uint16_t access;     /* object access flags, see also R/W flags and PDO Mapping above */
     uint32_t unit;
     const char **name;                 /* pointer to element in \see *entry_name */

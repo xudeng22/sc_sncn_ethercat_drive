@@ -80,11 +80,12 @@ void canopen_interface_service(
 
             case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
                     unsigned value = 0;
+                    size_t bitsize = 0;
                     /* FIXME Need to distinguish between request from communication side (aka master) and local
                      * requests, one possible fix is the use of different interfaces for com side and app side (as
                      * planed). */
-                    sdo_entry_get_value(index_, subindex, (uint8_t*)&value, sizeof(value), REQUEST_FROM_APP);
-                    bitlength_out = sdo_entry_get_bitsize(index_, subindex);
+                    sdo_entry_get_value(index_, subindex, sizeof(value), REQUEST_FROM_APP, (uint8_t*)&value, &bitsize);
+                    bitlength_out = bitsize;
 
                     value_out = value;
 
@@ -119,7 +120,7 @@ void canopen_interface_service(
                     else
                     {
                         uint8_t value[8]; /* 8 because CAN has max 8 bytes value */
-                        sdo_entry_get_value(index_, subindex, value, (bitlength + 7) / 8, REQUEST_FROM_APP);
+                        sdo_entry_get_value(index_, subindex, (bitlength + 7) / 8, REQUEST_FROM_APP, value, &bitlength);
                         memcpy(data_buffer, value, (bitlength + 7) / 8);
                         bitlength_out = bitlength;
                     }

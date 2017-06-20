@@ -71,7 +71,7 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
  *
  * \return 0 no error, \see error_codes otherwise
  */
-int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request);
+int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int master_request, uint8_t *value, size_t *bitsize);
 
 /**
  * \brief Read the number of bytes of the entry value

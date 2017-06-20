@@ -86,10 +86,10 @@ size_t sdo_entry_get_bitsize(uint16_t index, uint8_t subindex)
         sdo_error = SDO_ERROR_NOT_FOUND;
         return 0;
     }
-    return (entry->bitlength);
+    return (entry->bitsize);
 }
 
-int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t bytesize, int master_request)
+int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int master_request, uint8_t *value, size_t *bitsize)
 {
     COD_Entry *entry = find_entry(index, subindex);
     if (entry == NULL) {
@@ -97,10 +97,10 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
         return (int)-sdo_error;
     }
 
-    size_t bytes = BYTES_FROM_BITS(entry->bitlength);
+    size_t bytes = BYTES_FROM_BITS(entry->bitsize);
     /* I only give a error if the requested bytesize is smaller than the actual
      * bytesize to allow a larger return buffer than the actual data size is. */
-    if (bytes > bytesize) {
+    if (bytes > capacity) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)-sdo_error;
     }
@@ -116,6 +116,9 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     }
 
     memmove(value, entry->value, bytes);
+    if (bitsize != NULL) {
+        *bitsize = entry->bitsize;
+    }
     return 0;
 }
 
@@ -127,7 +130,7 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
         return (int)-sdo_error;
     }
 
-    size_t bytes = BYTES_FROM_BITS(entry->bitlength);
+    size_t bytes = BYTES_FROM_BITS(entry->bitsize);
     if (bytes != bytesize) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)-SDO_ERROR_WRONG_TYPE;
@@ -149,42 +152,50 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
 
 int sdo_entry_get_int8(uint16_t index, uint8_t subindex, int8_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT8, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_INT8, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_uint8(uint16_t index, uint8_t subindex, uint8_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT8, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_UINT8, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_int16(uint16_t index, uint16_t subindex, int16_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT16, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_INT16, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_uint16(uint16_t index, uint16_t subindex, uint16_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT16, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_UINT16, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_int32(uint16_t index, uint32_t subindex, int32_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_INT32, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_INT32, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_uint32(uint16_t index, uint32_t subindex, uint32_t *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_UINT32, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_UINT32, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_real32(uint16_t index, uint32_t subindex, float *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_REAL32, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_REAL32, master_request, (uint8_t *)value, &bitsize));
 }
 
 int sdo_entry_get_real64(uint16_t index, uint32_t subindex, double *value, int master_request)
 {
-	return (sdo_entry_get_value(index, subindex, (uint8_t *)value, TYPE_REAL64, master_request));
+    size_t bitsize = 0;
+	return (sdo_entry_get_value(index, subindex, TYPE_REAL64, master_request, (uint8_t *)value, &bitsize));
 }
 
 
@@ -366,11 +377,11 @@ int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int
     obj_out->index = CODE_GET_INDEX(entry->index);
     obj_out->subindex = CODE_GET_SUBINDEX(entry->index);
     obj_out->dataType = entry->data_type;
-    obj_out->bitLength = entry->bitlength;
+    obj_out->bitLength = entry->bitsize;
     obj_out->objectAccess = entry->access;
     memcpy(obj_out->name, *(entry->name), 50);
     /* FIXME use valueinfo to figure out what needs to be added in reply */
-    size_t bytes_to_copy = BYTES_FROM_BITS(entry->bitlength);
+    size_t bytes_to_copy = BYTES_FROM_BITS(entry->bitsize);
     if (bytes_to_copy > sizeof(uint32_t)) {
         bytes_to_copy = sizeof(uint32_t);
     }

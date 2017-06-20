@@ -196,28 +196,17 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             output->value *= output->sign;
             switch(output->mode_1) {
 
-
-
             // enable/disable motorcontrol commands
             case 'a':
-                switch(output->mode_2)
-                {
-                case 'o':
-                    pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
-                    break;
+                pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+                switch(output->mode_2) {
                 case 'p':
-                    switch(output->mode_3)
-                    {
-                    case 'l':
-                        pdo_output->tuning_command = TUNING_CMD_AUTO_LT_POS_CTRL_TUNE;
-                        pdo_output->target_position = pdo_input.position_value;
-                        break;
-
-                    case 'c':
-                        pdo_output->tuning_command = TUNING_CMD_AUTO_CC_POS_CTRL_TUNE;
-                        pdo_output->target_position = pdo_input.position_value;
-                        break;
-                    }
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_POS_CTRL_TUNE;
+                    pdo_output->user_mosi = output->value;
+                    pdo_output->target_position = pdo_input.position_value;
+                case 'v':
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;
+                    pdo_output->target_velocity = 0;
                     break;
                 }
                 break;

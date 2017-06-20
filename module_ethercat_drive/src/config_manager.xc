@@ -175,7 +175,7 @@ int cm_sync_config_motor_control(
         int sensor_commutation_type)
 {
     if (isnull(i_torque_control))
-        return;
+        return motorcontrol_config.max_torque;
 
     motorcontrol_config = i_torque_control.get_config();
 

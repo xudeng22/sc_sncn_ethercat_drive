@@ -47,6 +47,7 @@
 0x2011,        4,         900,         900,         900,         900,         900,         900 # DICT_VELOCITY_CONTROLLER integral limit
 0x2002,        0,           3,           3,           3,           3,           3,           3 # DICT_POSITION_CONTROL_STRATEGY #  3: non linear  
 0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
+0x2007,        1,     1000000,     1000000,     1000000,     1000000,     1000000,     1000000 # SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT
 # other
 0x2010,        1,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Kp
 0x2010,        2,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Ki

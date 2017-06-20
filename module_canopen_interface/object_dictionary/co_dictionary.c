@@ -136,7 +136,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[0]),
         &(entry_values[0]),
-        NULL,
+        &(entry_default_values[0]),
         NULL,
         NULL
     },
@@ -148,9 +148,9 @@ COD_Entry object_entries[] = {
         0,
         &(string[2]),
         &(entry_values[4]),
-        &(entry_default_values[0]),
-        &(entry_min_values[0]),
-        &(entry_max_values[0])
+        &(entry_default_values[4]),
+        NULL,
+        NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x1018, 1, 0),
         DEFTYPE_UNSIGNED32,
@@ -159,7 +159,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[3]),
         &(entry_values[5]),
-        NULL,
+        &(entry_default_values[5]),
         NULL,
         NULL
     }, {
@@ -170,7 +170,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[4]),
         &(entry_values[9]),
-        NULL,
+        &(entry_default_values[9]),
         NULL,
         NULL
     }, {
@@ -181,7 +181,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[5]),
         &(entry_values[13]),
-        NULL,
+        &(entry_default_values[13]),
         NULL,
         NULL
     }, {
@@ -192,7 +192,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[6]),
         &(entry_values[17]),
-        NULL,
+        &(entry_default_values[17]),
         NULL,
         NULL
     }, {
@@ -203,7 +203,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[5]),
         &(entry_values[21]),
-        NULL,
+        &(entry_default_values[21]),
         NULL,
         NULL
     }, {
@@ -214,7 +214,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[5]),
         &(entry_values[22]),
-        NULL,
+        &(entry_default_values[22]),
         NULL,
         NULL
     }, {
@@ -225,7 +225,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[5]),
         &(entry_values[26]),
-        NULL,
+        &(entry_default_values[26]),
         NULL,
         NULL
     }, {
@@ -236,7 +236,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[5]),
         &(entry_values[27]),
-        NULL,
+        &(entry_default_values[27]),
         NULL,
         NULL
     }, {
@@ -247,7 +247,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[7]),
         &(entry_values[31]),
-        NULL,
+        &(entry_default_values[31]),
         NULL,
         NULL
     }, {
@@ -258,7 +258,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[13]),
         &(entry_values[32]),
-        NULL,
+        &(entry_default_values[32]),
         NULL,
         NULL
     }, {
@@ -269,7 +269,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[14]),
         &(entry_values[33]),
-        NULL,
+        &(entry_default_values[33]),
         NULL,
         NULL
     }, {
@@ -280,7 +280,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[15]),
         &(entry_values[34]),
-        NULL,
+        &(entry_default_values[34]),
         NULL,
         NULL
     }, {
@@ -291,7 +291,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[16]),
         &(entry_values[35]),
-        NULL,
+        &(entry_default_values[35]),
         NULL,
         NULL
     }, {
@@ -302,7 +302,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[7]),
         &(entry_values[36]),
-        NULL,
+        &(entry_default_values[36]),
         NULL,
         NULL
     }, {
@@ -313,7 +313,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[7]),
         &(entry_values[37]),
-        NULL,
+        &(entry_default_values[37]),
         NULL,
         NULL
     }, {
@@ -324,7 +324,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[7]),
         &(entry_values[38]),
-        NULL,
+        &(entry_default_values[38]),
         NULL,
         NULL
     }, {
@@ -335,7 +335,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[20]),
         &(entry_values[39]),
-        NULL,
+        &(entry_default_values[39]),
         NULL,
         NULL
     }, {
@@ -346,7 +346,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[7]),
         &(entry_values[41]),
-        NULL,
+        &(entry_default_values[41]),
         NULL,
         NULL
     }, {
@@ -357,7 +357,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[20]),
         &(entry_values[42]),
-        NULL,
+        &(entry_default_values[42]),
         NULL,
         NULL
     }, {
@@ -368,7 +368,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[11]),
         &(entry_values[44]),
-        NULL,
+        &(entry_default_values[44]),
         NULL,
         NULL
     }, {
@@ -379,7 +379,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[9]),
         &(entry_values[48]),
-        NULL,
+        &(entry_default_values[48]),
         NULL,
         NULL
     }, {
@@ -390,7 +390,7 @@ COD_Entry object_entries[] = {
         0,
         &(string[22]),
         &(entry_values[52]),
-        NULL,
+        &(entry_default_values[52]),
         NULL,
         NULL
     }

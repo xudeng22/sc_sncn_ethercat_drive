@@ -79,8 +79,6 @@ size_t sdo_entry_get_bytecount(uint16_t index, uint8_t subindex)
 
 size_t sdo_entry_get_bitsize(uint16_t index, uint8_t subindex)
 {
-    size_t bitsize = 0;
-
     COD_Entry *entry = find_entry(index, subindex);
     if (entry == NULL) {
         sdo_error = SDO_ERROR_NOT_FOUND;

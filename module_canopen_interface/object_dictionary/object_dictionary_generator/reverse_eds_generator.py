@@ -1,3 +1,7 @@
+#
+# **DEPRECATED** This generates the object dictionary for SOMANET SDK 3.0 and prior
+#
+
 import re
 import sys
 

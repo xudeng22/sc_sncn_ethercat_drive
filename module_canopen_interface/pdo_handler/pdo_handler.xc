@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include "pdo_handler.h"
 #include "dictionary_symbols.h"
-#include "canod.h"
+#include <sdo.h>
 
 #define CANOPEN_WRITE_PDO_IN_OD
 
@@ -36,11 +36,14 @@ pdo_mapping_t pdo_map_rx[4];
  */
 void pdo_init_mapping_struct(unsigned pdo_mapping_address, pdo_mapping_t pdo_map[], size_t pdo_map_size)
 {
-    unsigned error = 0, pdo_num = 0, value = 0, pdo_entries = 0, bitlength = 0, od_index;
+    unsigned error = 0, pdo_num = 0, value = 0, pdo_entries = 0, bitlength = 0;
+    int od_index;
 
     while (!error)
     {
-        error = canod_get_entry(pdo_mapping_address + pdo_num, 0, value, bitlength);
+        error = sdo_entry_get_value(pdo_mapping_address + pdo_num, 0,
+                                    sizeof(value), REQUEST_FROM_APP,
+                                    (uint8_t *)&value, &bitlength);
         if (error) break;
 
         pdo_entries = value;
@@ -52,15 +55,20 @@ void pdo_init_mapping_struct(unsigned pdo_mapping_address, pdo_mapping_t pdo_map
 
         for (int i = 0; i < pdo_entries; i++)
         {
-            error = canod_get_entry(pdo_mapping_address + pdo_num, i+1, value, bitlength);
+            error = sdo_entry_get_value(pdo_mapping_address + pdo_num, i+1,
+                                        sizeof(value), REQUEST_FROM_APP,
+                                        (uint8_t *)&value, &bitlength);
             if (error) break;
 
             pdo_map[pdo_num].pdo_mapping_index[i] = (value >> 16) & 0xffff;
             pdo_map[pdo_num].pdo_mapping_subindex[i] = (value >> 8) & 0xff;
             pdo_map[pdo_num].pdo_mapping_datalength[i] = (value & 0xff);
-            {od_index, error} = canod_find_index(pdo_map[pdo_num].pdo_mapping_index[i], pdo_map[pdo_num].pdo_mapping_subindex[i]);
-            if (error) break;
-            pdo_map[pdo_num].od_struct_index[i] = od_index;
+            od_index = sdo_entry_get_position(pdo_map[pdo_num].pdo_mapping_index[i], pdo_map[pdo_num].pdo_mapping_subindex[i]);
+            if (od_index < 0) {
+                error++;
+                break;
+            }
+            pdo_map[pdo_num].od_struct_index[i] = (unsigned)od_index;
         }
 
         pdo_num++;

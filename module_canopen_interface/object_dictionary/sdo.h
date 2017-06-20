@@ -54,6 +54,15 @@ struct _sdoinfo_entry_description {
 extern SDO_Error sdo_error;
 
 /**
+ * \brief Get the position in the entry array for faster access
+ *
+ * \param index     Index of the entry
+ * \param subindex  Subindex of the entry
+ * \return Index of the array position, <0 on error
+ */
+int sdo_entry_get_position(uint16_t index, uint8_t subindex);
+
+/**
  * \brief Store value at index in object dictionary
  *
  * **WARNING** `uint8_t *value` needs to be big enough to hold the complete

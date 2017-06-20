@@ -89,6 +89,21 @@ size_t sdo_entry_get_bitsize(uint16_t index, uint8_t subindex)
     return (entry->bitsize);
 }
 
+int sdo_entry_get_position(uint16_t index, uint8_t subindex)
+{
+    int position = -1;
+
+    for (size_t i = 0; i < object_entries_length; i++) {
+        if (CODE_GET_INDEX(object_entries[i].index) == index &&
+            CODE_GET_SUBINDEX(object_entries[i].index) == subindex) {
+            position = (int)i;
+            break;
+        }
+    }
+
+    return position;
+}
+
 int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int master_request, uint8_t *value, size_t *bitsize)
 {
     COD_Entry *entry = find_entry(index, subindex);

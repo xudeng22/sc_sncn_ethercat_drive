@@ -400,8 +400,8 @@ COD_Object object_dictionary[] = {
     {
         0x1000,
         OBJECT_TYPE_VAR,
-        ACCESS_ALL_RD,
         DEFTYPE_UNSIGNED32,
+        ACCESS_ALL_RD,
         0,
         &(string[0]),
         &(object_entries[0])

@@ -9,10 +9,10 @@
 #include <print.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <canod.h>
 
 #include <profile_control.h>
 #include <co_interface.h>
+#include <dictionary_symbols.h>
 
 /* internal qei single variable selection code */
 #define QEI_SENSOR_TYPE                         QEI_WITH_INDEX//QEI_WITH_NO_INDEX

@@ -177,8 +177,11 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 13
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Filter         %8d", input.filter);
+    wprintw(wnd, "Autotune Period    %4d | Amplitude        %7d", input.tune_period, input.tune_amplitude);
     //row 14
+    wmoveclr(wnd, &row);
+    wprintw(wnd, "Filter         %8d", input.filter);
+    //row 15
     wmoveclr(wnd, &row);
     //motorcontrol fault
     if (input.error_status != 0) {

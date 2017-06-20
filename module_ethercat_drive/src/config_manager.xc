@@ -175,7 +175,7 @@ int cm_sync_config_motor_control(
         int sensor_commutation_type)
 {
     if (isnull(i_torque_control))
-        return;
+        return motorcontrol_config.max_torque;
 
     motorcontrol_config = i_torque_control.get_config();
 
@@ -248,6 +248,7 @@ void cm_sync_config_pos_velocity_control(
 
     position_config.enable_profiler = i_coe.get_object_value(DICT_MOTION_PROFILE_TYPE, 0); //FIXME: profiler setting missing
     position_config.resolution      = sensor_resolution;
+    position_config.filter          = i_coe.get_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT);
 
     position_config.position_control_strategy = i_coe.get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0);
 
@@ -462,6 +463,8 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_MOTION_PROFILE_TYPE, 0, position_config.enable_profiler);
 
     i_coe.set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.position_control_strategy);
+
+    i_coe.set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.filter);
 
     //position PID
     i_coe.set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KP, position_config.position_kp);

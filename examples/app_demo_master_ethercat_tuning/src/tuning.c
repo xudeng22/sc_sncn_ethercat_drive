@@ -70,6 +70,9 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     case TUNING_STATUS_MUX_RATED_TORQUE://rated torque
         (*input).rated_torque = pdo_input.user_miso;
         break;
+    case TUNING_STATUS_MUX_FILTER://filter
+        (*input).filter = pdo_input.user_miso;
+        break;
     }
 
     //tuning state
@@ -193,28 +196,18 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             output->value *= output->sign;
             switch(output->mode_1) {
 
-
-
             // enable/disable motorcontrol commands
             case 'a':
-                switch(output->mode_2)
-                {
-                case 'o':
-                    pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
-                    break;
+                pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
+                switch(output->mode_2) {
                 case 'p':
-                    switch(output->mode_3)
-                    {
-                    case 'l':
-                        pdo_output->tuning_command = TUNING_CMD_AUTO_LT_POS_CTRL_TUNE;
-                        pdo_output->target_position = pdo_input.position_value;
-                        break;
-
-                    case 'c':
-                        pdo_output->tuning_command = TUNING_CMD_AUTO_CC_POS_CTRL_TUNE;
-                        pdo_output->target_position = pdo_input.position_value;
-                        break;
-                    }
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_POS_CTRL_TUNE;
+                    pdo_output->user_mosi = output->value;
+                    pdo_output->target_position = pdo_input.position_value;
+                    break;
+                case 'v':
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;
+                    pdo_output->target_velocity = 0;
                     break;
                 }
                 break;
@@ -386,29 +379,32 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                         break;
                     }
                     break;
-                    case 'v': //velocity
-                        switch(output->mode_3) {
-                        case 'p':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_KP;
-                            break;
-                        case 'i':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_KI;
-                            break;
-                        case 'd':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_KD;
-                            break;
-                        case 'l':
-                            pdo_output->tuning_command = TUNING_CMD_VELOCITY_I_LIM;
-                            break;
-                        }
+                case 'v': //velocity
+                    switch(output->mode_3) {
+                    case 'p':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_KP;
                         break;
-                    case 't': //torque
-                        switch(output->mode_3) {
-                        case 'r':
-                            pdo_output->tuning_command = TUNING_CMD_RATED_TORQUE;
-                            break;
-                        }
+                    case 'i':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_KI;
                         break;
+                    case 'd':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_KD;
+                        break;
+                    case 'l':
+                        pdo_output->tuning_command = TUNING_CMD_VELOCITY_I_LIM;
+                        break;
+                    }
+                    break;
+                case 't': //torque
+                    switch(output->mode_3) {
+                    case 'r':
+                        pdo_output->tuning_command = TUNING_CMD_RATED_TORQUE;
+                        break;
+                    }
+                    break;
+                case 'f': //filter
+                    pdo_output->tuning_command = TUNING_CMD_FILTER;
+                    break;
                 } /* end mode_2 */
                 break;
 
@@ -568,13 +564,14 @@ void tuning_record(RecordConfig * config, struct _pdo_cia402_input pdo_input, st
         config->data[config->count].position = (int32_t)pdo_input.position_value;
         config->data[config->count].velocity = (int32_t)pdo_input.velocity_value;
         config->data[config->count].torque = (int16_t)pdo_input.torque_value;
+        config->data[config->count].timestamp = (int32_t)pdo_input.timestamp;
         config->count++;
     } else {
         if (config->data != NULL) { //save to file
             FILE *fd = fopen(filename, "w");
-            fprintf(fd, "count,target,position,velocity,torque\n");
+            fprintf(fd, "count,timestamp,target,position,velocity,torque\n");
             for (int i=0 ; i<config->count ; i++) {
-                fprintf(fd, "%d,%d,%d,%d,%d\n", i, config->data[i].target, config->data[i].position, config->data[i].velocity, config->data[i].torque);
+                fprintf(fd, "%d,%d,%d,%d,%d,%d\n", i, config->data[i].timestamp, config->data[i].target, config->data[i].position, config->data[i].velocity, config->data[i].torque);
             }
             fclose(fd);
             free(config->data);

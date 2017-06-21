@@ -94,6 +94,27 @@ interface i_co_communication
     uint8_t od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value);
 
     /**
+     * @brief Master reads an object value from dictionary.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] capacity  The capacity of the output array value_out
+     * @param[out] value_out  The value as byte array of the requested entry
+     * @return bitlength    Read bitlength of the entry value - Object value, bitlength, Error: 0 -> No error, 2 -> Index not found, 3 -> Subindex not found
+     * @return error_out    0 on no error
+     */
+    {uint32_t, uint8_t} od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]);
+
+    /**
+     * @brief Master set an object value in dictionary.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] value     Value array, which will set in OD
+     * @param[in] capacity  Size of the value field
+     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found, 255 -> wrong capacity for entry
+     */
+    uint8_t od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity);
+
+    /**
      * @brief Returns an object value from dictionary.
      *
      * NOTE: For CAN the data_buffer is maxiumum 8 byte wide.

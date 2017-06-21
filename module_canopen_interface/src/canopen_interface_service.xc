@@ -16,6 +16,12 @@
 
 #define MAX_PDO_SIZE 64
 
+/* Number of bytes to store in the return value array.
+ * This is necessary because with interface methods the "variable length array" gimmick of XC
+ * (see https://www.xmos.com/published/xmos-programming-guide?version=B&page=25)
+ * does not work and leads to an internal error of xcc.  */
+#define MAX_VALUE_BUFFER    10
+
 /* there are 5 list lengths for all, rx-, tx-mappable, startup, and backup objects */
 #define ALL_LIST_LENGTH_SIZE    5
 
@@ -86,16 +92,19 @@ void canopen_interface_service(
             case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
                     unsigned value = 0;
                     size_t bitsize = 0;
+                    int request_from = REQUEST_FROM_APP;
+
                     /* FIXME Need to distinguish between request from communication side (aka master) and local
                      * requests, one possible fix is the use of different interfaces for com side and app side (as
                      * planed). */
-                    sdo_entry_get_value(index_, subindex, sizeof(value), REQUEST_FROM_APP, (uint8_t*)&value, &bitsize);
+                    sdo_entry_get_value(index_, subindex, sizeof(value), request_from, (uint8_t*)&value, &bitsize);
                     bitlength_out = bitsize;
 
                     value_out = value;
 
                     /* After command is finished processing and the result is read by the master reset
-                     * the command to allow the next command to be scheduled for execution. */
+                     * the command to allow the next command to be scheduled for execution.
+                     * The command status is always written from the application requester */
                     if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
                         sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
                         sdo_command_object.command = OD_COMMAND_NONE;
@@ -109,8 +118,62 @@ void canopen_interface_service(
                         value = OD_COMMAND_STATE_IDLE;
                     }
 
+                    int request_from  = REQUEST_FROM_APP;
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                    error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, REQUEST_FROM_APP);
+                    error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, request_from);
+                    break;
+
+            case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
+                    unsigned value = 0;
+                    size_t bitsize = 0;
+                    int request_from = REQUEST_FROM_MASTER;
+                    uint8_t tmp[MAX_VALUE_BUFFER];
+
+                    if (capacity > MAX_VALUE_BUFFER) {
+                        error_out = 255;
+                        bitlength_out = 0;
+                        break;
+                    }
+
+                    int err = sdo_entry_get_value(index_, subindex, sizeof(value), request_from, (uint8_t*)&tmp, &bitsize);
+                    if (err != 0) {
+                        error_out = sdo_error;
+                        bitlength_out = 0;
+                    } else {
+                        error_out = 0;
+                        bitlength_out = bitsize;
+                        memcpy(value_out, tmp, BYTES_FROM_BITS(bitsize));
+                    }
+
+                    /* After command is finished processing and the result is read by the master reset
+                     * the command to allow the next command to be scheduled for execution.
+                     * The command status is always written from the application requester */
+                    if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
+                        sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
+                        sdo_command_object.command = OD_COMMAND_NONE;
+                        sdo_command_object.state = OD_COMMAND_STATE_IDLE;
+                    }
+                    break;
+
+            case i_co[int j].od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity) -> { uint8_t error_out }:
+                    int request_from  = REQUEST_FROM_MASTER;
+                    if (index_ == DICT_COMMAND_OBJECT && sdo_command_object.state == OD_COMMAND_STATE_IDLE) {
+                        uint16_t tmpvalue = 0;
+                        memcpy(&tmpvalue, value, sizeof(uint16_t));
+                        sdo_command_object.command = (uint16_t)(tmpvalue & 0xffff);
+                        tmpvalue = OD_COMMAND_STATE_IDLE;
+                        // The slave controls the value of the command object.
+                        error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
+                    } else {
+                        size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
+                        if (capacity > bytecount) {
+                            error_out = 255; /* wrong bytecount */
+                        } else {
+                            uint8_t tmpvalue[MAX_VALUE_BUFFER];
+                            memcpy(tmpvalue, value, capacity);
+                            error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
+                        }
+                    }
                     break;
 
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:

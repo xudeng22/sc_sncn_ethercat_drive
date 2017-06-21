@@ -25,9 +25,6 @@
 #define TYPE_DOUBLE     8
 #define TYPE_REAL64     TYPE_DOUBLE
 
-#define INT_CEIL(a,b)         ((a + b - 1) / b)
-#define BYTES_FROM_BITS(a)    INT_CEIL(a, 8)
-
 SDO_Error sdo_error = SDO_NO_ERROR;
 
 static COD_Object *find_object(uint16_t index)

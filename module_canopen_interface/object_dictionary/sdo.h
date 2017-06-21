@@ -20,6 +20,9 @@ extern "C" {
 #define REQUEST_FROM_MASTER   1
 #define REQUEST_FROM_APP      0
 
+#define INT_CEIL(a,b)         ((a + b - 1) / b)
+#define BYTES_FROM_BITS(a)    INT_CEIL(a, 8)
+
 typedef enum {
     SDO_NO_ERROR = 0
     ,SDO_ERROR

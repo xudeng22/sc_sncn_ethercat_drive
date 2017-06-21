@@ -152,7 +152,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     size_t size = 0;
     int write_result = 0;
     unsigned packetnumber = 0;
-    enum eFoeStat stat = FOE_STAT_EOF;
+    enum eFoeStat stat = FOE_STAT_DATA;
     enum eFoeError foe_error = FOE_ERROR_NONE;
     static int cfd;
 
@@ -219,7 +219,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         }
     }
 
-    //i_foe.result(packetnumber, foe_error);
+    i_foe.result(packetnumber, foe_error);
     if (foe_error != FOE_ERROR_NONE)
         i_foe.write_data((int8_t *)errormsg, strlen(errormsg), foe_error);
 
@@ -235,7 +235,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     size_t size = 0;
     size_t wsize = 0;
     static unsigned packetnumber;
-    enum eFoeStat stat = FOE_STAT_EOF;
+    enum eFoeStat stat = FOE_STAT_DATA;
     enum eFoeError foe_error = FOE_ERROR_NONE;
     static int cfd;
 
@@ -323,7 +323,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         }
     }
 
-    //i_foe.result(packetnumber, foe_error);
     if (foe_error != FOE_ERROR_NONE)
         i_foe.write_data((int8_t *)errormsg, strlen(errormsg), foe_error);
 

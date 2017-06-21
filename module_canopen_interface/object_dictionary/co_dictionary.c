@@ -15,19 +15,20 @@
  * Sizes of exported arrays
  */
 
-const size_t entry_values_length           = 56;
-const size_t entry_default_values_length   = 56;
+const size_t entry_values_length           = 58;
+const size_t entry_default_values_length   = 58;
 const size_t entry_min_values_length       = 0;
 const size_t entry_max_values_length       = 0;
-const size_t string_length                 = 23;
-const size_t object_entries_length         = 24;
-const size_t object_dictionary_length      = 12;
+const size_t string_length                 = 24;
+const size_t object_entries_length         = 25;
+const size_t object_dictionary_length      = 13;
 const size_t bookmark_length               = 3;
 
 struct _bookmarks bookmark[] = {
     { 0x1000, 0 },
     { 0x2000, 12 },
-    { 0x3000, 23 }
+    { 0x3000, 23 },
+    { 0x6660, 24 }
 };
 
 /*
@@ -58,6 +59,7 @@ uint8_t entry_values[entry_values_length] = {
     0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
     0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
     0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
+    0x00, 0x00              /* 0x6660:0 Start: 56 */
 };
 
 /*
@@ -70,21 +72,22 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x01, 0x02, 0x00, 0x00, /* 0x1018:2 Start: 9 */
     0x02, 0x00, 0x00, 0x0A, /* 0x1018:3 Start: 13 */
     0x00, 0x00, 0x00, 0x00, /* 0x1018:4 Start: 17 */
-    0x01,                   /* 0x1600:0 Start: 18 */
-    0x20, 0x00, 0x01, 0x20, /* 0x1600:1 Start: 19 */
-    0x01,                   /* 0x1a00:0 Start: 23 */
-    0x20, 0x00, 0x02, 0x20, /* 0x1a00:1 Start: 24 */
-    0x04,                   /* 0x1c00:0 Start: 28 */
+    0x01,                   /* 0x1600:0 Start: 21 */
+    0x20, 0x00, 0x01, 0x20, /* 0x1600:1 Start: 22 */
+    0x01,                   /* 0x1a00:0 Start: 26 */
+    0x20, 0x00, 0x02, 0x20, /* 0x1a00:1 Start: 27 */
+    0x04,                   /* 0x1c00:0 Start: 31 */
     0x00, 0x00, 0x03, 0x04, /* 0x1c00:1..4 */
-    0x00,                   /* 0x1c10:0 Start: 33 */
-    0x00,                   /* 0x1c11:0 Start: 34 */
-    0x01,                   /* 0x1c12:0 Start: 35 */
-    0x00, 0x16,             /* 0x1c12:1 Start: 36 */
-    0x01,                   /* 0x1c13:0 Start: 38 */
-    0x00, 0x1a,             /* 0x1c13:1 Start: 39 */
-    0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 41 */
-    0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 45 */
-    0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 49 */
+    0x00,                   /* 0x1c10:0 Start: 36 */
+    0x00,                   /* 0x1c11:0 Start: 37 */
+    0x01,                   /* 0x1c12:0 Start: 38 */
+    0x00, 0x16,             /* 0x1c12:1 Start: 39 */
+    0x01,                   /* 0x1c13:0 Start: 41 */
+    0x00, 0x1a,             /* 0x1c13:1 Start: 42 */
+    0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
+    0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
+    0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
+    0x00, 0x00              /* 0x6660:0 Start: 56 */
 };
 
 /*
@@ -125,6 +128,7 @@ const char *string[] = {
     "SubIndex 1",         /* 20: SubIndex 1 - can be used by multiple objects */
     "SM 3 Assingment",    /* 21: 0x1c13 */
     "Command Object",     /* 22: 0x3000 */
+    "Change Me Value"     /* 23: 0x6660 Testobject to change randomly */
 };
 
 COD_Entry object_entries[] = {
@@ -393,6 +397,17 @@ COD_Entry object_entries[] = {
         &(entry_default_values[52]),
         NULL,
         NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x6660, 0, 0),
+        DEFTYPE_UNSIGNED32,
+        32,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
+        0,
+        &(string[23]),
+        &(entry_values[56]),
+        &(entry_default_values[56]),
+        NULL,
+        NULL
     }
 };
 
@@ -494,5 +509,13 @@ COD_Object object_dictionary[] = {
         0,
         &(string[22]),
         &(object_entries[23])
+    }, {
+        0x6660,
+        OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED16,
+        ACCESS_ALL_RD,
+        0,
+        &(string[23]),
+        &(object_entries[24])
     }
 };

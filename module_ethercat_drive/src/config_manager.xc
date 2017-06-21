@@ -192,6 +192,9 @@ int cm_sync_config_motor_control(
     motorcontrol_config.torque_constant          = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
     motorcontrol_config.rated_current            = i_coe.get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
     motorcontrol_config.rated_torque             = i_coe.get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
+    if (motorcontrol_config.rated_torque == 0) {
+        motorcontrol_config.rated_torque = 1;
+    }
     motorcontrol_config.max_torque               = (i_coe.get_object_value(DICT_MAX_TORQUE, 0)*motorcontrol_config.rated_torque)/1000; // in 1/1000 of rated torque
     motorcontrol_config.percent_offset_torque    = i_coe.get_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0);
     /* Read protection limits */

@@ -399,8 +399,8 @@ COD_Entry object_entries[] = {
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6660, 0, 0),
-        DEFTYPE_UNSIGNED32,
-        32,
+        DEFTYPE_INTEGER16,
+        16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
         &(string[23]),
@@ -512,7 +512,7 @@ COD_Object object_dictionary[] = {
     }, {
         0x6660,
         OBJECT_TYPE_VAR,
-        DEFTYPE_UNSIGNED16,
+        DEFTYPE_INTEGER16,
         ACCESS_ALL_RD,
         0,
         &(string[23]),

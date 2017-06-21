@@ -81,6 +81,10 @@ void canopen_interface_service(
 
             /* SDO */
 
+            /* FIXME this function was necessary on the ethercat service
+             * side to check if the ethercat service is allowed to write or
+             * read this value, with the use of the master access functions
+             * this interface method becomes obsolete. */
             case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { enum eAccessRights access, uint8_t error }:
                     struct _sdoinfo_entry_description entry;
                     error = sdoinfo_get_entry_description(index_, subindex, 0, &entry);
@@ -120,7 +124,8 @@ void canopen_interface_service(
 
                     int request_from  = REQUEST_FROM_APP;
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                    error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, request_from);
+                    int error = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, request_from);
+                    error_out = (error != 0) ? -error : 0;
                     break;
 
             case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
@@ -142,7 +147,7 @@ void canopen_interface_service(
                     } else {
                         error_out = 0;
                         bitlength_out = bitsize;
-                        memcpy(value_out, tmp, BYTES_FROM_BITS(bitsize));
+                        memcpy(value_out, &tmp, BYTES_FROM_BITS(bitsize));
                     }
 
                     /* After command is finished processing and the result is read by the master reset
@@ -157,23 +162,30 @@ void canopen_interface_service(
 
             case i_co[int j].od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity) -> { uint8_t error_out }:
                     int request_from  = REQUEST_FROM_MASTER;
+                    int error = 0;
                     if (index_ == DICT_COMMAND_OBJECT && sdo_command_object.state == OD_COMMAND_STATE_IDLE) {
                         uint16_t tmpvalue = 0;
                         memcpy(&tmpvalue, value, sizeof(uint16_t));
                         sdo_command_object.command = (uint16_t)(tmpvalue & 0xffff);
                         tmpvalue = OD_COMMAND_STATE_IDLE;
                         // The slave controls the value of the command object.
-                        error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
+                        error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
                     } else {
                         size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                        if (capacity > bytecount) {
-                            error_out = 255; /* wrong bytecount */
+                        if (capacity < bytecount) {
+                            error = -255; /* wrong bytecount */
                         } else {
                             uint8_t tmpvalue[MAX_VALUE_BUFFER];
-                            memcpy(tmpvalue, value, capacity);
-                            error_out = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
+                            memcpy(&tmpvalue, value, capacity);
+                            error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
                         }
                     }
+
+                    if (error) {
+                        printstr("Error: ");
+                        printintln(-error);
+                    }
+                    error_out = (error != 0) ? -error : 0;
                     break;
 
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:

@@ -15,8 +15,8 @@
  * Sizes of exported arrays
  */
 
-const size_t entry_values_length           = 58;
-const size_t entry_default_values_length   = 58;
+const size_t entry_values_length           = 64;
+const size_t entry_default_values_length   = 64;
 const size_t entry_min_values_length       = 0;
 const size_t entry_max_values_length       = 0;
 const size_t string_length                 = 24;
@@ -59,7 +59,8 @@ uint8_t entry_values[entry_values_length] = {
     0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
     0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
     0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
-    0x00, 0x00              /* 0x6660:0 Start: 56 */
+    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 Start: 56 */
+    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 highest */
 };
 
 /*
@@ -87,7 +88,8 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
     0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
     0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
-    0x00, 0x00              /* 0x6660:0 Start: 56 */
+    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 Start: 56 */
+    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 highest */
 };
 
 /*
@@ -399,8 +401,8 @@ COD_Entry object_entries[] = {
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6660, 0, 0),
-        DEFTYPE_INTEGER16,
-        16,
+        DEFTYPE_INTEGER64,
+        64,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
         &(string[23]),
@@ -512,7 +514,7 @@ COD_Object object_dictionary[] = {
     }, {
         0x6660,
         OBJECT_TYPE_VAR,
-        DEFTYPE_INTEGER16,
+        DEFTYPE_INTEGER64,
         ACCESS_ALL_RD,
         0,
         &(string[23]),

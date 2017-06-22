@@ -143,9 +143,25 @@ interface i_co_communication
      * @brief Get whole entry description of object.
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex
+     * @param[in] valueinfo put these additional values in the reply, possible bits to set are:
+     *                      0x04 Unit, 0x08 default value, 0x10 minimum value, 0x20 maximum value
+     *                      *Attention:* not all values are available for all entries.
      * @return entry description, error
      */
-    {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo);
+    {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint8_t subindex);
+
+    /**
+     * \brief Get specific values for SDO Information entry request
+     *
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] valueinfo put these additional values in the reply, possible bits to set are:
+     *                      0x04 Unit, 0x08 default value, 0x10 minimum value, 0x20 maximum value
+     *                      *Attention:* not all values are available for all entries.
+     * @return size of the value or 0 if unavailable
+     *
+     */
+    size_t od_get_entry_description_value(uint16_t index_, uint8_t subindex, uint8_t valuetype, size_t capacity, uint8_t values[]);
 
     /**
      * @brief Returns an array with five length entrys (Currently just one entry).

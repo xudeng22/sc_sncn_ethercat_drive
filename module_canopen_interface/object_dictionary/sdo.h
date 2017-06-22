@@ -32,6 +32,7 @@ typedef enum {
     ,SDO_ERROR_WRONG_TYPE
     ,SDO_ERROR_INVALID_LIST /// \see sdoinfo_get_list()
     ,SDO_ERROR_INSUFFICIENT_BUFFER
+    ,SDO_ERROR_VALUEINFO_UNAVAILABLE
 } SDO_Error;
 
 enum eListType {
@@ -177,12 +178,24 @@ int sdoinfo_get_object_description(uint16_t index, struct _sdoinfo_entry_descrip
  *
  * \param[in] index      object index to get description from
  * \param[in] subindex   entry subindex to get description from
- * \param[in] valueinfo  specify which value information to retrieve \see FIXME
  * \param[out] *obj_out  reference to a sturcture \see _sdoinfo_entry_description
  * \return 0 on success
  */
-int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int valuleinfo,
+int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex,
         struct _sdoinfo_entry_description *obj_out);
+
+/**
+ * \brief Get entry description
+ *
+ * \param[in] index      object index to get description from
+ * \param[in] subindex   entry subindex to get description from
+ * \param[in] valueinfo  specify which value information to retrieve \see FIXME
+ * \param[in] capacity   capacity of the output value
+ * \param[out] *value  reference to a sturcture \see _sdoinfo_entry_description
+ * \return size (in bytes) of the copied value
+ */
+size_t sdoinfo_get_entry_description_value(uint16_t index, uint8_t subindex, uint8_t valueinfo,
+        size_t capacity, uint8_t *value);
 
 #ifdef __XC__
 }

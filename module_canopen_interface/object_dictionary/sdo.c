@@ -372,7 +372,7 @@ int sdoinfo_get_object_description(uint16_t index, struct _sdoinfo_entry_descrip
     return 0;
 }
 
-int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int valuleinfo,
+int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex,
         struct _sdoinfo_entry_description *obj_out)
 {
     COD_Entry *entry = find_entry(index, subindex);
@@ -398,4 +398,40 @@ int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex, unsigned int
     }
     memcpy((void *)&(obj_out->value), entry->value, bytes_to_copy);
     return 0;
+}
+
+size_t sdoinfo_get_entry_description_value(uint16_t index, uint8_t subindex, uint8_t valueinfo,
+        size_t capacity, uint8_t *value)
+{
+    size_t sizeout = 0;
+
+    COD_Entry *entry = find_entry(index, subindex);
+    if (entry == NULL) {
+        return 0;
+    }
+
+    if (capacity < BYTES_FROM_BITS(entry->bitsize)) {
+        sdo_error = SDO_ERROR_INSUFFICIENT_BUFFER;
+        return 0;
+    }
+
+    /* value info filter */
+    if ((valueinfo & VALUEINFO_UNIT) && (0 != entry->unit)) {
+        memmove(value, &(entry->unit), sizeof(entry->unit));
+        sizeout = sizeof(entry->unit);
+    } else if (valueinfo & VALUEINFO_DEFAULT) {
+        sizeout = BYTES_FROM_BITS(entry->bitsize);
+        memmove(value, entry->default_value, sizeout);
+    } else if ((valueinfo & VALUEINFO_MINIMUM) && (entry->min_value != NULL)) {
+        sizeout = BYTES_FROM_BITS(entry->bitsize);
+        memmove(value, entry->min_value, sizeout);
+    } else if ((valueinfo & VALUEINFO_MAXIMUM) && (entry->max_value != NULL)) {
+        sizeout = BYTES_FROM_BITS(entry->bitsize);
+        memmove(value, entry->max_value, sizeout);
+    } else {
+        sdo_error = SDO_ERROR_VALUEINFO_UNAVAILABLE;
+        sizeout = 0;
+    }
+
+    return sizeout;
 }

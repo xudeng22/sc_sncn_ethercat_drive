@@ -87,7 +87,7 @@ void canopen_interface_service(
              * this interface method becomes obsolete. */
             case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { enum eAccessRights access, uint8_t error }:
                     struct _sdoinfo_entry_description entry;
-                    error = sdoinfo_get_entry_description(index_, subindex, 0, &entry);
+                    error = sdoinfo_get_entry_description(index_, subindex, &entry);
                     if (!error) {
                         access = (enum eAccessRights)(entry.objectAccess & 0x3f);
                     }
@@ -226,11 +226,22 @@ void canopen_interface_service(
                     break;
 
 
-            case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
+            case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
-                    error_out = -1 * sdoinfo_get_entry_description(index_, subindex, valueinfo, &desc);
+                    error_out = -1 * sdoinfo_get_entry_description(index_, subindex, &desc);
                     if (!error_out) {
                         memcpy(&desc_out, &desc, sizeof(struct _sdoinfo_entry_description));
+                    }
+                    break;
+
+            case i_co[int j].od_get_entry_description_value(uint16_t index, uint8_t subindex, uint8_t valuetype, size_t capacity, uint8_t value[]) -> { size_t length_out }:
+                    uint8_t value_tmp[MAX_VALUE_BUFFER];
+                    size_t length = sdoinfo_get_entry_description_value(index, subindex, valuetype, capacity, value_tmp);
+                    if (length == 0) {
+                        length_out = 0;
+                    } else {
+                        length_out = length;
+                        memcpy(value, value_tmp, length);
                     }
                     break;
 
@@ -261,7 +272,7 @@ void canopen_interface_service(
 
             case i_co[int j].od_get_data_length(uint16_t index_, uint8_t subindex) -> {uint32_t len, uint8_t error}:
                     struct _sdoinfo_entry_description entry;
-                    error = sdoinfo_get_entry_description(index_, subindex, 0, &entry);
+                    error = sdoinfo_get_entry_description(index_, subindex, &entry);
                     if (!error) {
                         len = (uint32_t)((entry.bitLength + 8 - 1) / 8);
                     }

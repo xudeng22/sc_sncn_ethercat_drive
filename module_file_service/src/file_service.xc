@@ -84,7 +84,7 @@ static unsigned get_configuration_from_dictionary(
             continue;
         }
 
-        { od_entry, error } = i_canopen.od_get_entry_description(all_od_objects[i], 0, 0);
+        { od_entry, error } = i_canopen.od_get_entry_description(all_od_objects[i], 0);
 
         /* object is no simple variable and subindex 0 holds the highest subindex then read all sub elements */
         if (od_entry.objectCode != CANOD_TYPE_VAR && od_entry.value > 0) {

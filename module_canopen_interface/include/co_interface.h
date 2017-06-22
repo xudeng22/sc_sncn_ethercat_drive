@@ -15,7 +15,7 @@
 #define CO_IF_COUNT 4
 #define OD_LIST_ALL 1
 
-#ifndef REQUEST_FORM_MASTER
+#ifndef REQUEST_FROM_MASTER
 #define REQUEST_FROM_MASTER   1
 #endif
 
@@ -48,7 +48,7 @@ enum eSdoState {
 enum eAccessRights {
   RO = 0x07,
   WO = 0x38,
-  RW = 0x3f,
+  RW = 0x3f
 };
 
 /* FIXME keep typedef for obfuscation? */

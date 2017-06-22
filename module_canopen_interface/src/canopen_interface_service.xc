@@ -140,7 +140,7 @@ void canopen_interface_service(
                         break;
                     }
 
-                    int err = sdo_entry_get_value(index_, subindex, sizeof(value), request_from, (uint8_t*)&tmp, &bitsize);
+                    int err = sdo_entry_get_value(index_, subindex, capacity, request_from, (uint8_t*)&tmp, &bitsize);
                     if (err != 0) {
                         error_out = sdo_error;
                         bitlength_out = 0;

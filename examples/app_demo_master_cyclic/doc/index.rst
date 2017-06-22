@@ -43,7 +43,7 @@ Build the application
 ++++++++++++++++++++++++++++++++
 
    #. You need the EtherCAT master :ref:`IgH EtherLab to be installed <ethercat_master_software_linux>` on your system to build the application.
-   #. You need the `ncurses <https://www.gnu.org/software/ncurses/>`_ library installed on your system to build the application. There is probably a package existing for you linux distribution. It's the *libncurses-dev* package on Ubuntu:
+   #. You need the :ref:`ncurses <https://www.gnu.org/software/ncurses/>` library installed on your system to build the application. There is probably a package existing for you linux distribution. It's the *libncurses-dev* package on Ubuntu:
    
    .. code-block:: bash
    
@@ -57,7 +57,7 @@ Build the application
 Run the application
 +++++++++++++++++++
 
-When the application has been compiled, the next step is to run it on the Linux PC. Before doing that, make sure that the SOMANET EtherCAT stack is running a proper motor control software for the EtherCAT slave side, i.e. ``app_demo_slave_ethercat_motorcontrol``.  
+When the application has been compiled, the next step is to run it on the Linux PC. Before doing that, make sure that the SOMANET EtherCAT stack is running :ref:`a proper motor control software for the EtherCAT slave side <ethercat_slave_demo>`  
 
    #. Make sure your EtherCAT Master is up and running. To start the Master on a Linux machine, execute the following command: ::
 

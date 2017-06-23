@@ -98,9 +98,6 @@ void canopen_interface_service(
                     size_t bitsize = 0;
                     int request_from = REQUEST_FROM_APP;
 
-                    /* FIXME Need to distinguish between request from communication side (aka master) and local
-                     * requests, one possible fix is the use of different interfaces for com side and app side (as
-                     * planed). */
                     sdo_entry_get_value(index_, subindex, sizeof(value), request_from, (uint8_t*)&value, &bitsize);
                     bitlength_out = bitsize;
 
@@ -163,6 +160,7 @@ void canopen_interface_service(
             case i_co[int j].od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity) -> { uint8_t error_out }:
                     int request_from  = REQUEST_FROM_MASTER;
                     int error = 0;
+
                     if (index_ == DICT_COMMAND_OBJECT && sdo_command_object.state == OD_COMMAND_STATE_IDLE) {
                         uint16_t tmpvalue = 0;
                         memcpy(&tmpvalue, value, sizeof(uint16_t));
@@ -181,10 +179,6 @@ void canopen_interface_service(
                         }
                     }
 
-                    if (error) {
-                        printstr("Error: ");
-                        printintln(-error);
-                    }
                     error_out = error;
                     break;
 
@@ -245,36 +239,32 @@ void canopen_interface_service(
                     }
                     break;
 
-            case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
-                    uint16_t list[ALL_LIST_LENGTH_SIZE];
-                    sdoinfo_get_list(LT_LIST_LENGTH, ALL_LIST_LENGTH_SIZE, list);
-                    memcpy(list_out, list, ALL_LIST_LENGTH_SIZE * sizeof(uint16_t));
-                    break;
-
-/* FIXME change listtype to enum eListType type
- * See sdo.h may put eListType and SDO_Error to co_interface.h
- */
-            case i_co[int j].od_get_list(uint16_t list_out[], unsigned size, unsigned listtype) -> {int size_out}:
-                    uint16_t list[100];
-                    size_out = sdoinfo_get_list(listtype, 100, list);
-                    memcpy(list_out, list, size_out * sizeof(uint16_t));
-                    break;
-
             case i_co[int j].od_get_object_description(struct _sdoinfo_entry_description &obj_out, uint16_t index_, uint8_t subindex) -> { int error }:
                     struct _sdoinfo_entry_description obj;
                     /* FIXME misnomer, object description and entry description are separate now. */
-                    /* FIXME the current CoE handler does not distinguish between object and entry description */
                     error = sdoinfo_get_object_description(index_, &obj);
                     if (!error) {
                         memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
                     }
                     break;
 
+            case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
+                    uint16_t list[ALL_LIST_LENGTH_SIZE];
+                    sdoinfo_get_list(LT_LIST_LENGTH, ALL_LIST_LENGTH_SIZE, list);
+                    memcpy(list_out, list, ALL_LIST_LENGTH_SIZE * sizeof(uint16_t));
+                    break;
+
+            case i_co[int j].od_get_list(uint16_t list_out[], unsigned size, unsigned listtype) -> {int size_out}:
+                    uint16_t list[100];
+                    size_out = sdoinfo_get_list(listtype, 100, list);
+                    memcpy(list_out, list, size_out * sizeof(uint16_t));
+                    break;
+
             case i_co[int j].od_get_data_length(uint16_t index_, uint8_t subindex) -> {uint32_t len, uint8_t error}:
                     struct _sdoinfo_entry_description entry;
                     error = sdoinfo_get_entry_description(index_, subindex, &entry);
                     if (!error) {
-                        len = (uint32_t)((entry.bitLength + 8 - 1) / 8);
+                        len = (uint32_t)(BYTES_FROM_BITS(entry.bitLength));
                     }
                     break;
 

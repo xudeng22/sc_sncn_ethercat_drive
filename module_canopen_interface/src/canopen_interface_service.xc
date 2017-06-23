@@ -125,7 +125,7 @@ void canopen_interface_service(
                     int request_from  = REQUEST_FROM_APP;
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
                     int error = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, request_from);
-                    error_out = (error != 0) ? -error : 0;
+                    error_out = error;
                     break;
 
             case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
@@ -135,7 +135,7 @@ void canopen_interface_service(
                     uint8_t tmp[MAX_VALUE_BUFFER];
 
                     if (capacity > MAX_VALUE_BUFFER) {
-                        error_out = 255;
+                        error_out = SDO_ERROR_INSUFFICIENT_BUFFER;
                         bitlength_out = 0;
                         break;
                     }
@@ -185,7 +185,7 @@ void canopen_interface_service(
                         printstr("Error: ");
                         printintln(-error);
                     }
-                    error_out = (error != 0) ? -error : 0;
+                    error_out = error;
                     break;
 
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
@@ -228,7 +228,7 @@ void canopen_interface_service(
 
             case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
-                    error_out = -1 * sdoinfo_get_entry_description(index_, subindex, &desc);
+                    error_out =  sdoinfo_get_entry_description(index_, subindex, &desc);
                     if (!error_out) {
                         memcpy(&desc_out, &desc, sizeof(struct _sdoinfo_entry_description));
                     }
@@ -264,7 +264,7 @@ void canopen_interface_service(
                     struct _sdoinfo_entry_description obj;
                     /* FIXME misnomer, object description and entry description are separate now. */
                     /* FIXME the current CoE handler does not distinguish between object and entry description */
-                    error = -1 * sdoinfo_get_object_description(index_, &obj);
+                    error = sdoinfo_get_object_description(index_, &obj);
                     if (!error) {
                         memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
                     }

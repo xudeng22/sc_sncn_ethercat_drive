@@ -105,7 +105,7 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int m
     COD_Entry *entry = find_entry(index, subindex);
     if (entry == NULL) {
         sdo_error = SDO_ERROR_NOT_FOUND;
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     size_t bytes = BYTES_FROM_BITS(entry->bitsize);
@@ -113,13 +113,13 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int m
      * bytesize to allow a larger return buffer than the actual data size is. */
     if (bytes > capacity) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     if (master_request &&
             (entry->access & ACCESS_ALL_RD) == 0) {
         sdo_error = SDO_ERROR_WRITE_ONLY;
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     if (!master_request) {
@@ -138,19 +138,19 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     COD_Entry *entry = find_entry(index, subindex);
     if (entry == NULL) {
         sdo_error = SDO_ERROR_NOT_FOUND;
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     size_t bytes = BYTES_FROM_BITS(entry->bitsize);
     if (bytes != bytesize) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
-        return (int)-SDO_ERROR_WRONG_TYPE;
+        return (int)sdo_error;
     }
 
     if (master_request &&
             (entry->access & ACCESS_ALL_WR) == 0) {
         sdo_error = SDO_ERROR_READ_ONLY;
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     if (master_request) {
@@ -360,7 +360,7 @@ int sdoinfo_get_object_description(uint16_t index, struct _sdoinfo_entry_descrip
 {
     COD_Object *object = find_object(index);
     if (object == NULL) {
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     obj_out->index = object->index;
@@ -378,7 +378,7 @@ int sdoinfo_get_entry_description(uint16_t index, uint8_t subindex,
 {
     COD_Entry *entry = find_entry(index, subindex);
     if (entry == NULL) {
-        return (int)-sdo_error;
+        return (int)sdo_error;
     }
 
     /* FIXME value is not flexible, value is not necessary for description

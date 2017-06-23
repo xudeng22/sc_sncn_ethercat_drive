@@ -100,6 +100,72 @@ int sdo_entry_get_position(uint16_t index, uint8_t subindex)
     return position;
 }
 
+/*
+ * Read entry value changed flag
+ */
+
+/* can start at 0x2000 since there start the config parameters */
+#define SEARCH_START    0x2000
+static size_t entries_updated = 0;
+static uint32_t last_read_entry = SEARCH_START;
+
+size_t sdo_entry_changed_count(void)
+{
+    return entries_updated;
+}
+
+int sdo_entry_has_changed(uint16_t index, uint8_t subindex)
+{
+    COD_Entry *entry = find_entry(index, subindex);
+    return (CODE_GET_FLAGS(entry->index) & 0x1);
+}
+
+int sdo_entry_get_next_unread(uint16_t *index, uint8_t *subindex)
+{
+    size_t search_head = 0;
+    size_t start_search = 0;
+
+    *index = 0;
+    *subindex = 0;
+
+    for (size_t i = 0; i < bookmark_length; i++) {
+        if (SEARCH_START > bookmark[i].index) {
+            search_head = bookmark[i].entry_element;
+        }
+    }
+
+    start_search = search_head;
+    for (size_t i = 0; i < object_entries_length; i++) {
+        if ((CODE_GET_INDEX(last_read_entry) == CODE_GET_INDEX(object_entries[i].index)) &&
+               (CODE_GET_SUBINDEX(last_read_entry) == CODE_GET_SUBINDEX(object_entries[i].index))) {
+            start_search = i + 1; /* start search on the next element to avoid blocking by one entry */
+            break;
+        }
+    }
+
+    size_t i = start_search;
+    size_t end_search = start_search - 1;
+    while (i != end_search) {
+        if (CODE_GET_FLAGS(object_entries[i].index) & 0x1) {
+            *index = CODE_GET_INDEX(object_entries[i].index);
+            *subindex = CODE_GET_SUBINDEX(object_entries[i].index);
+            break;
+        }
+
+        i++;
+        if (i >= object_entries_length) {
+            i = search_head;
+            end_search = start_search; /* necessary to check if the same object changed twice */
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * Entry value access
+ */
+
 int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int master_request, uint8_t *value, size_t *bitsize)
 {
     COD_Entry *entry = find_entry(index, subindex);
@@ -123,7 +189,11 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int m
     }
 
     if (!master_request) {
+        if (CODE_GET_FLAGS(entry->index) && (entries_updated > 0)) {
+            entries_updated--;
+        }
         entry->index = CODE_CLR_ENTRY_FLAG(entry->index);
+        last_read_entry = entry->index;
     }
 
     memmove(value, entry->value, bytes);
@@ -154,6 +224,9 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     }
 
     if (master_request) {
+        if (!(CODE_GET_FLAGS(entry->index) & 0x1)) {
+            entries_updated++;
+        }
         entry->index = CODE_SET_ENTRY_FLAG(entry->index);
     }
 

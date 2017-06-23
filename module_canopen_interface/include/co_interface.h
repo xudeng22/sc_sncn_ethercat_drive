@@ -140,6 +140,38 @@ interface i_co_communication
 
 
     /**
+     * \brief Check how many entry values changed
+     *
+     * The number of changed entry values is incremented everytime the master
+     * updates a value and decremented when the application reads a value from this
+     * dictioanry.
+     *
+     * \return Number of changed entry values
+     */
+    size_t od_changed_values_count(void);
+
+    /**
+     * \brief Check specific object if it changed
+     *
+     * \param index     Index of the object entry to test
+     * \param subindex  Subindex of the object entry to test
+     * \return 0 entry did not changed, 1 entry value is modified
+     */
+    int od_entry_has_changed(uint16_t index, uint8_t subindex);
+
+    /**
+     * \brief Find the next changed object entry
+     *
+     * The last read object entry value is stored internally, this request returns
+     * the next higher index/subindex which has not been read until now.
+     *
+     * \return index and subindex of the next changed element, if index ==
+     *         subindex == 0 then no changed element is present.
+     */
+    {uint16_t, uint8_t} od_get_next_changed_element(void);
+
+
+    /**
      * @brief Get whole entry description of object.
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex

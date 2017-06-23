@@ -248,6 +248,25 @@ void canopen_interface_service(
                     }
                     break;
 
+            /* Functions to handle changed object entry values */
+
+            case i_co[int j].od_changed_values_count(void) -> { size_t changed_values }:
+                    changed_values = sdo_entry_changed_count();
+                    break;
+
+            case i_co[int j].od_entry_has_changed(uint16_t index_, uint8_t subindex) -> { int changed }:
+                    changed = sdo_entry_has_changed(index_, subindex);
+                    break;
+
+            case i_co[int j].od_get_next_changed_element(void) -> {uint16_t index_, uint8_t subindex}:
+                    uint16_t idx;
+                    uint8_t subidx;
+                    sdo_entry_get_next_unread(&idx, &subidx);
+                    index_ = idx;
+                    subindex = subidx;
+                    break;
+
+
             case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
                     uint16_t list[ALL_LIST_LENGTH_SIZE];
                     sdoinfo_get_list(LT_LIST_LENGTH, ALL_LIST_LENGTH_SIZE, list);

@@ -106,8 +106,8 @@
 #define CODE_GET_FLAGS(a)        (a         & 0xff)
 #define CODE_SET_ENTRY_INDEX(i,s,f)   (((i & 0xffff) << 16) | ((s & 0xff) << 8) | (f & 0xff))
 
-#define CODE_SET_ENTRY_FLAG(i)    (i | 1)
-#define CODE_CLR_ENTRY_FLAG(i)    (i & ~1)
+#define CODE_SET_ENTRY_FLAG(i)    (i | 0x1)
+#define CODE_CLR_ENTRY_FLAG(i)    (i & ~0x1)
 
 #define OD_COMMUNICATION_AREA     0x1000
 #define OD_MANUFACTURER_AREA      0x2000

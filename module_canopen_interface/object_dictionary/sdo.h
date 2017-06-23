@@ -23,16 +23,23 @@ extern "C" {
 #define INT_CEIL(a,b)         ((a + b - 1) / b)
 #define BYTES_FROM_BITS(a)    INT_CEIL(a, 8)
 
+/**
+ * \brief SDO error numbers
+ *
+ * The define is used throughout the canopen interface service, the error
+ * numbers for the communication layer are defined in coe_handling.h and
+ * can differ for different communication channels.
+ */
 typedef enum {
-    SDO_NO_ERROR = 0
-    ,SDO_ERROR
-    ,SDO_ERROR_NOT_FOUND
-    ,SDO_ERROR_READ_ONLY
-    ,SDO_ERROR_WRITE_ONLY
-    ,SDO_ERROR_WRONG_TYPE
-    ,SDO_ERROR_INVALID_LIST /// \see sdoinfo_get_list()
-    ,SDO_ERROR_INSUFFICIENT_BUFFER
-    ,SDO_ERROR_VALUEINFO_UNAVAILABLE
+    SDO_NO_ERROR                       = SDO_REQUEST_NO_ERROR
+    ,SDO_ERROR                         = SDO_REQUEST_ERROR
+    ,SDO_ERROR_NOT_FOUND               = SDO_REQUEST_ERROR_NOT_FOUND
+    ,SDO_ERROR_READ_ONLY               = SDO_REQUEST_ERROR_READ_ONLY
+    ,SDO_ERROR_WRITE_ONLY              = SDO_REQUEST_ERROR_WRITE_ONLY
+    ,SDO_ERROR_WRONG_TYPE              = SDO_REQUEST_ERROR_WRONG_TYPE
+    ,SDO_ERROR_INVALID_LIST            = SDO_REQUEST_ERROR_INVALID_LIST ///< \see sdoinfo_get_list()
+    ,SDO_ERROR_INSUFFICIENT_BUFFER     = SDO_REQUEST_ERROR_INSUFFICIENT_BUFFER
+    ,SDO_ERROR_VALUEINFO_UNAVAILABLE   = SDO_REQUEST_ERROR_VALUEINFO_UNAVAILABLE
 } SDO_Error;
 
 enum eListType {

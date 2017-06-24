@@ -171,7 +171,7 @@ void canopen_interface_service(
                     } else {
                         size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
                         if (capacity < bytecount) {
-                            error = -255; /* wrong bytecount */
+                            error = sdo_error;
                         } else {
                             uint8_t tmpvalue[MAX_VALUE_BUFFER];
                             memcpy(&tmpvalue, value, capacity);

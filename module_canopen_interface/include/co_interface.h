@@ -257,8 +257,25 @@ interface i_co_communication
 
     /* Since a notification cannot be send from a interface call this one is
      * necessary to poll if a command is ready to be executed */
+    /**
+     * \brief Get currently requested command
+     *
+     * If this application supports command via object dictionary this method
+     * needs to be read regularly to get notified aobut a command request from
+     * the master.
+     *
+     * \return command to process \see enum eSdoCommand
+     */
     enum eSdoCommand command_ready(void);
 
+    /**
+     * \brief Set result of the last command
+     *
+     * If a command is processed accordingly set the result here. You can use the
+     * definitions in \see enum eSdoState
+     *
+     * \param result 0 on success, != 0 on error
+     */
     void command_set_result(int result);
 };
 

@@ -15,20 +15,20 @@
  * Sizes of exported arrays
  */
 
-const size_t entry_values_length           = 64;
-const size_t entry_default_values_length   = 64;
+const size_t entry_values_length           = 65;
+const size_t entry_default_values_length   = 65;
 const size_t entry_min_values_length       = 0;
 const size_t entry_max_values_length       = 0;
-const size_t string_length                 = 24;
-const size_t object_entries_length         = 25;
-const size_t object_dictionary_length      = 13;
-const size_t bookmark_length               = 3;
+const size_t string_length                 = 25;
+const size_t object_entries_length         = 26;
+const size_t object_dictionary_length      = 14;
+const size_t bookmark_length               = 4;
 
 struct _bookmarks bookmark[] = {
     { 0x1000, 0 },
     { 0x2000, 12 },
     { 0x3000, 23 },
-    { 0x6660, 24 }
+    { 0x6660, 25 }
 };
 
 /*
@@ -59,7 +59,8 @@ uint8_t entry_values[entry_values_length] = {
     0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
     0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
     0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
-    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 Start: 56 */
+    0x00,                   /* 0x5000:0 Start: 56 */
+    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 Start: 57 */
     0x00, 0x00, 0x00, 0x00, /* 0x6660:0 highest */
 };
 
@@ -88,7 +89,8 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x00, 0x00, 0x00, 0x00, /* 0x2001:0 Start: 44 */
     0x00, 0x00, 0x00, 0x00, /* 0x2002:0 Start: 48 */
     0x00, 0x00, 0x00, 0x00, /* 0x3000:0 Start: 52 */
-    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 Start: 56 */
+    0x00,                   /* 0x5000:0 Start: 56 */
+    0x00, 0x00, 0x00, 0x00, /* 0x6660:0 Start: 57 */
     0x00, 0x00, 0x00, 0x00, /* 0x6660:0 highest */
 };
 
@@ -130,7 +132,8 @@ const char *string[] = {
     "SubIndex 1",         /* 20: SubIndex 1 - can be used by multiple objects */
     "SM 3 Assingment",    /* 21: 0x1c13 */
     "Command Object",     /* 22: 0x3000 */
-    "Change Me Value"     /* 23: 0x6660 Testobject to change randomly */
+    "Change Me Value",    /* 23: 0x6660 Testobject to change randomly */
+    "Bit or Bool Value"   /* 24: 0x5000 bit sized value */
 };
 
 COD_Entry object_entries[] = {
@@ -400,14 +403,25 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
+        CODE_SET_ENTRY_INDEX(0x5000, 0, 0),
+        DEFTYPE_BOOLEAN,
+        1,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
+        0,
+        &(string[24]),
+        &(entry_values[56]),
+        &(entry_default_values[56]),
+        NULL,
+        NULL
+    }, {
         CODE_SET_ENTRY_INDEX(0x6660, 0, 0),
         DEFTYPE_INTEGER64,
         64,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
         &(string[23]),
-        &(entry_values[56]),
-        &(entry_default_values[56]),
+        &(entry_values[57]),
+        &(entry_default_values[57]),
         NULL,
         NULL
     }
@@ -512,12 +526,20 @@ COD_Object object_dictionary[] = {
         &(string[22]),
         &(object_entries[23])
     }, {
+        0x5000,
+        OBJECT_TYPE_VAR,
+        DEFTYPE_BOOLEAN,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0,
+        &(string[24]),
+        &(object_entries[24])
+    }, {
         0x6660,
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER64,
         ACCESS_ALL_RD,
         0,
         &(string[23]),
-        &(object_entries[24])
+        &(object_entries[25])
     }
 };

@@ -49,7 +49,7 @@ static COD_Entry *find_entry(uint16_t index, uint8_t subindex)
     size_t start = 0;
 
     for (size_t i = 0; i < bookmark_length; i++) {
-        if ((index & 0xf000) >= bookmark[i].index) {
+        if (index >= bookmark[i].index) {
             start = bookmark[i].entry_element;
         }
     }

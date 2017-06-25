@@ -18,6 +18,13 @@
 #include <spiffs_service.h>
 #include <flash_service.h>
 
+/*
+ * Select SDO service to run
+ */
+#define SDO_SERVICE_DEFAULT     1
+#define SDO_SERVICE_MONITOR     2
+#define SDO_SERVICE             SDO_SERVICE_DEFAULT
+
 #define OBJECT_PRINT              0  /* enable object print with 1 */
 #define MAX_TIME_TO_WAIT_SDO      100000
 
@@ -407,6 +414,60 @@ static void read_od_config(client interface i_co_communication i_co)
     return;
 }
 
+/*
+ * This simple service demonstrates how changes of entry values can be monitored
+ * by a service.
+ *
+ * With the method od_changed_values_count() you can check if anything changed
+ * in the object dictionary. This method can be used to wait until a pre defined
+ * number of entries changed.
+ *
+ * With od_get_next_changed_element() the index and subindex of a updated entry
+ * is returned. The index and subindex is 0 if nothing changed. This method can
+ * be used if it is necessary to get every update as fast as possible.
+ *
+ * It is not necessary to use both functions.
+ */
+static void sdo_monitor_service(client interface i_co_communication i_co)
+{
+    timer t;
+    unsigned int delay = 100 * 1000 * 1000;
+    unsigned int time;
+
+    printstrln("Start SDO monitor service");
+
+    t :> time;
+    t when timerafter(time + 2 * delay) :> void;
+
+    while (1) {
+        t :> time;
+        /* check for changed object values */
+        size_t entries_updated = i_co.od_changed_values_count();
+        if (entries_updated != 0) {
+            printstr("Entries updated: "); printintln(entries_updated);
+        }
+
+        uint16_t iindex = 0;
+        uint8_t subindex = 0;
+        {iindex, subindex} = i_co.od_get_next_changed_element();
+        if (iindex != 0) {
+            printstr("Object changed: 0x"); printhexln(iindex); printstr(":"); printintln(subindex);
+
+            //uint8_t value_buffer[8] = { 0 };
+            uint32_t value = 0;
+            uint32_t bitlength = 0;
+            uint8_t error = 0;
+            {value, bitlength, error} = i_co.od_get_object_value(iindex, subindex);
+            if (error != 0) {
+                printstrln("Error, could not read value");
+            } else {
+                printstr("Value: "); printintln(value);
+            }
+        }
+
+        t when timerafter(time+delay) :> time;
+    }
+}
 
 static void sdo_service(client interface i_co_communication i_co, server interface i_command i_cmd)
 {
@@ -511,7 +572,11 @@ int main(void)
                 pdo_service(i_pdo, i_co[1], i_cmd);
 
                 /* Start the SDO / Object Dictionary test service */
+#if SDO_SERVICE == SDO_SERVICE_DEFAULT
                 sdo_service(i_co[2], i_cmd);
+#elif SDO_SERVICE == SDO_SERVICE_MONITOR
+                sdo_monitor_service(i_co[2]);
+#endif /* SDO_SERVICE selection */
             }
         }
 

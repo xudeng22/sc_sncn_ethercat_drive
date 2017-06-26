@@ -179,6 +179,7 @@ int sdo_entry_get_value(uint16_t index, uint8_t subindex, size_t capacity, int m
      * bytesize to allow a larger return buffer than the actual data size is. */
     if (bytes > capacity) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
+        *bitsize = entry->bitsize;
         return (int)sdo_error;
     }
 

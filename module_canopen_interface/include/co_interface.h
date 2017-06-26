@@ -103,7 +103,7 @@ interface i_co_communication
      * @return bitlength    Read bitlength of the entry value - Object value, bitlength, Error: 0 -> No error, 2 -> Index not found, 3 -> Subindex not found
      * @return error_out    0 on no error
      */
-    {uint32_t, uint8_t} od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]);
+    {uint32_t, uint8_t} od_master_get_object_value(uint16_t index_, uint8_t subindex, size_t capacity, uint8_t value_out[]);
 
     /**
      * @brief Master set an object value in dictionary.

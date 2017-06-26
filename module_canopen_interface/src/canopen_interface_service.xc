@@ -125,7 +125,7 @@ void canopen_interface_service(
                     error_out = error;
                     break;
 
-            case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
+            case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
                     unsigned value = 0;
                     size_t bitsize = 0;
                     int request_from = REQUEST_FROM_MASTER;

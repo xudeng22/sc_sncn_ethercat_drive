@@ -20,6 +20,7 @@
 
 static int8_t foedata[FOE_MAX_SIM_FILE_SIZE];
 char errormsg[] = "error";
+struct _file_t file;
 
 
 static unsigned int set_configuration_to_dictionary(
@@ -145,7 +146,6 @@ static int flash_read_od_config(
     return result;
 }
 
-
 static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
 {
     int wait_for_reply = 0;
@@ -154,7 +154,6 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     unsigned packetnumber = 0;
     enum eFoeStat stat = FOE_STAT_DATA;
     enum eFoeError foe_error = FOE_ERROR_NONE;
-    static int cfd;
 
     memset(foedata, '\0', MAX_FOE_DATA);
     {size, packetnumber, stat} = i_foe.read_data(foedata);
@@ -167,17 +166,16 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         if (file.opened)
         {
             file.opened = 0;
-            i_spiffs.close_file(cfd);
+            i_spiffs.close_file(file.cfd);
         }
     }
-
 
     if (!file.opened)
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-        if ((cfd < 0)||(cfd > SPIFFS_MAX_FILE_DESCRIPTOR))
+        file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+        if (file.cfd < 0)
         {
             printstrln("Error opening file");
             foe_error = FOE_ERROR_PROGRAM_ERROR;
@@ -186,14 +184,14 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         else
         {
             printstr("File created: ");
-            printintln(cfd);
+            printintln(file.cfd);
             file.opened = 1;
         }
     }
 
     if (file.opened)
     {
-        write_result = i_spiffs.write(cfd, (uint8_t *)foedata, size);
+        write_result = i_spiffs.write(file.cfd, (uint8_t *)foedata, size);
         if (write_result < 0)
         {
             if (write_result == SPIFFS_ERR_FULL)
@@ -201,8 +199,11 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
             else
                 foe_error = FOE_ERROR_PROGRAM_ERROR;
 
+            i_spiffs.close_file(file.cfd);
             file.opened = 0;
-            i_spiffs.close_file(cfd);
+            file.current = 0;
+            file.length = 0;
+            file.cfd = 0;
             stat = FOE_STAT_ERROR;
         }
         else
@@ -212,8 +213,11 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
 
             if (stat == FOE_STAT_EOF) {
                 printstrln("Read Transmission finished!");
+                i_spiffs.close_file(file.cfd);
                 file.opened = 0;
-                i_spiffs.close_file(cfd);
+                file.current = 0;
+                file.length = 0;
+                file.cfd = 0;
             }
             foe_error = FOE_ERROR_NONE;
         }
@@ -234,15 +238,8 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     int wait_for_reply = 0;
     size_t size = 0;
     size_t wsize = 0;
-    static unsigned packetnumber;
     enum eFoeStat stat = FOE_STAT_DATA;
     enum eFoeError foe_error = FOE_ERROR_NONE;
-    static int cfd;
-
-    //just to read opened file size
-    unsigned short obj_id;
-    unsigned char type;
-    unsigned short pix;
 
     foe_error = FOE_ERROR_NONE;
 
@@ -250,27 +247,29 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        cfd = i_spiffs.open_file(file.filename, strlen(file.filename), SPIFFS_RDONLY);
-        if (cfd < 0)
+        file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), SPIFFS_RDONLY);
+        if (file.cfd < 0)
         {
-            printstrln("Error opening file");
-            foe_error = FOE_ERROR_PROGRAM_ERROR;
-            stat = FOE_STAT_ERROR;
+            if (file.cfd == SPIFFS_ERR_NOT_FOUND)
+            {
+                printstrln("Error opening file not found");
+                foe_error = FOE_ERROR_NOT_FOUND;
+                stat = FOE_STAT_ERROR;
+            }
+            else
+            {
+                printstr("Error opening file: code ");
+                printintln(file.cfd);
+                foe_error = FOE_ERROR_PROGRAM_ERROR;
+                stat = FOE_STAT_ERROR;
+            }
         }
         else
-        if (cfd > SPIFFS_MAX_FILE_DESCRIPTOR)
-        {
-            printstrln("Error opening file: not found");
-            foe_error = FOE_ERROR_NOT_FOUND;
-            stat = FOE_STAT_ERROR;
-         }
-         else
          {
              file.opened = 1;
-             packetnumber = 0;
              printstr("File opened: ");
-             printintln(cfd);
-             i_spiffs.status(cfd, obj_id, file.length, type, pix, file.filename);
+             printintln(file.cfd);
+             file.length = i_spiffs.get_file_size(file.cfd);
          }
     }
 
@@ -282,7 +281,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         if (size > 0)
         {
             memset(foedata, '\0', MAX_FOE_DATA);
-            size = i_spiffs.read(cfd, (uint8_t *)foedata, size);
+            size = i_spiffs.read(file.cfd, (uint8_t *)foedata, size);
         }
 
         if ((size == SPIFFS_EOF)||(size == 0))
@@ -296,29 +295,28 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
             file.current += wsize;
 
             /* If writed data size less than readed (from file) data size , we are seeking back and trying to send lost data again */
-            if (wsize < size) i_spiffs.seek(cfd, wsize , SPIFFS_SEEK_SET);
+            if (wsize < size) i_spiffs.seek(file.cfd, wsize , SPIFFS_SEEK_SET);
 
-            packetnumber++;
             printstr("Send packet of size: ");
             printintln(size);
         }
 
         if (stat == FOE_STAT_EOF) {
             printstrln("Write Transmission finished!");
+            i_spiffs.close_file(file.cfd);
             file.opened = 0;
             file.current = 0;
             file.length = 0;
-            packetnumber = 0;
-            i_spiffs.close_file(cfd);
+            file.cfd = 0;
         }
 
         if (stat == FOE_STAT_ERROR) {
             printstrln("Error Write Transmission!");
+            i_spiffs.close_file(file.cfd);
             file.opened = 0;
             file.current = 0;
             file.length = 0;
-            packetnumber = 0;
-            i_spiffs.close_file(cfd);
+            file.cfd = 0;
             foe_error = FOE_ERROR_PROGRAM_ERROR;
         }
     }
@@ -338,17 +336,17 @@ void file_service(
         client interface i_foe_communication ?i_foe)
 {
     timer t;
-    unsigned time = 0;
+    unsigned time = 0, time2 = 0;
 
-    struct _file_t file;
     file.length = 0;
     file.opened = 0;
     file.current = 0;
+    file.cfd = 0;
     memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
 
     /* wait some time until ethercat handler is ready */
-    t :> time;
-    t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
+   // t :> time;
+   // t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
 
     enum eFoeNotificationType notify = FOE_NTYPE_UNDEF;
 
@@ -410,13 +408,14 @@ void file_service(
                 }
                 break;
 
-            case t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void :
+           case t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void :
                 if (wait_for_reply) {
                     printstrln("[foe_testing()] Timeout catched");
-
+                    i_spiffs.close_file(file.cfd);
                     file.length = 0;
                     file.opened = 0;
                     file.current = 0;
+                    file.cfd = 0;
                     memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
 
                     i_foe.write_data((int8_t *)errormsg, strlen(errormsg), FOE_ERROR_PROGRAM_ERROR);
@@ -431,8 +430,8 @@ void file_service(
                 break;
         }
 
-        t :> time;
-        t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
+        t :> time2;
+        t when timerafter(time2 + FILE_SERVICE_INITIAL_DELAY) :> void;
     }
 }
 

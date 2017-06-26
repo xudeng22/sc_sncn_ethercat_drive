@@ -4,11 +4,12 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <stdint.h>
 #include <dictionary_symbols.h>
+#include <config_manager.h>
 #include <state_modes.h>
 #include <position_feedback_service.h>
-#include "config_manager.h"
+#include <co_interface.h>
+#include <stdint.h>
 #include <xs1.h>
 
 struct _config_object {

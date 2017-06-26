@@ -11,6 +11,7 @@
 
 #include <coe_handling.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #define CO_IF_COUNT 4
 #define OD_LIST_ALL 1

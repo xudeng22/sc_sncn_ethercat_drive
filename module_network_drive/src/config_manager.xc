@@ -232,7 +232,7 @@ void cm_sync_config_pos_velocity_control(
         int sensor_resolution,
         int max_torque)
 {
-    i_motion_control.get_motion_control_config();
+    position_config = i_motion_control.get_motion_control_config();
 
     //limits
     {position_config.min_pos_range_limit, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);

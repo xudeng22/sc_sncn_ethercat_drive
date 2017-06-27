@@ -105,7 +105,8 @@ void canopen_interface_service(
 
                     /* After command is finished processing and the result is read by the master reset
                      * the command to allow the next command to be scheduled for execution.
-                     * The command status is always written from the application requester */
+                     * The command status is always written from the application requester
+                     * FIXME still necessary for internal command handling! */
                     if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
                         sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
                         sdo_command_object.command = OD_COMMAND_NONE;
@@ -150,10 +151,13 @@ void canopen_interface_service(
                     /* After command is finished processing and the result is read by the master reset
                      * the command to allow the next command to be scheduled for execution.
                      * The command status is always written from the application requester */
-                    if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
-                        sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
-                        sdo_command_object.command = OD_COMMAND_NONE;
-                        sdo_command_object.state = OD_COMMAND_STATE_IDLE;
+                    if (index_ == DICT_COMMAND_OBJECT) {
+                        memcpy(&value, &tmp, BYTES_FROM_BITS(bitsize));
+                        if (value > OD_COMMAND_STATE_PROCESSING) {
+                            sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
+                            sdo_command_object.command = OD_COMMAND_NONE;
+                            sdo_command_object.state = OD_COMMAND_STATE_IDLE;
+                        }
                     }
                     break;
 

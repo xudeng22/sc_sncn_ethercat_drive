@@ -78,6 +78,9 @@ The rest of the commands can be up to 3 characters with an optional number. The 
 The number can be negative. Spaces are ignored. The default number value is 0.
 
   - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
+  - ``ap2``: start the automatic tuning of cascaded position controller. while cascaded position controller is being tuned, the dynamic values of PID controllers are shown on the terminal.
+  - ``ap3``: start the automatic tuning of limited-torque position controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
+  - ``av``: start the automatic tuning of velocity controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
   - ``b``: toggle the brake state between blocking and released.
   - ``bs``: set the brake release strategy parameter. 0 is to disable the brake. 1 to enable normal release. and 2 to 100 (percentage of maximum torque) for shaking release.
   - ``p[number]``: set a target position. the position control need to be enabled first.
@@ -85,7 +88,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``ps[number]``: start a position step command. For example ``ps1000`` will move to 1000 then to -1000 then to 0. The motor need to be in 0 position before sending this command.
   - ``psp[number]``: start a position step command with profile. same as ps but with profiler.
   - ``v[number]``: set a velocity command. the velocity controller needs to be enabled first.
-  - ``ep[number]``: enable position control. The value is to set the position control mode. 1 is for simple PID, 2 for velocity cascaded, and 3 for Non linear. The modes don't use the same parameters so check if the parameters are for the right mode before enabling.
+  - ``ep[number]``: enable position control. The value is to set the position control mode. 1 is for simple PID, 2 for velocity cascaded, and 3 for limited torque position controller. The modes don't use the same parameters so check if the parameters are for the right mode before enabling.
   - ``ev1``: enable velocity control.
   - ``et1``: enable torque control.
   - ``ec``: toggle cogging torque compensation.
@@ -110,11 +113,12 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``kvd [number]``: set the D coefficient of the Velocity controller.
   - ``kpl [number]``: set the Integral part limit the Velocity controller.
   - ``ktr [number]``: set the rated torque.
+  - ``kf [number]``: set the cut-off frequency of the filter in motion control service in Hz (0 to disable)
   - ``Lp [number]``:  set both the maximum and minimum position limit to [number] and -[number]. The motorcontrol will be automatically disable when the position limit is reached. You can use this feature if your axis has a limited movement. If you are past the limits move the axis manually (use b and tss to unlock the motor) or restart position/velocity/torque controller in the right direction (the position limiter has a threshold to allow to restart if the motor is right after the limit).
   - ``Lpu [number]``: set the maximum position limit.
   - ``Lpl [number]``: set the minimum position limit.
   - ``Lt [number]``: set the torque limit. The unit in in 1/1000 of rated torque. This command stops the motorcontrol.
-  - ``Lv [number]``: set the velocity limit. Used in velocity control and in cascaded and non linear position control modes.
+  - ``Lv [number]``: set the velocity limit. Used in velocity control and in cascaded and limited-torque position control modes.
   - ``[number]``: just entering a number will switch to torque control mode and set a target torque.
 
 Some of the command descriptions are also printed is the app.

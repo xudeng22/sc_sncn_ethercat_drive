@@ -1,7 +1,8 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 #include <IFM_BOARD_REQUIRED>
+
 
 /**
  * @file test_ethercat-mode.xc
@@ -13,8 +14,10 @@
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 #include <user_config.h>
 
-#include <ethercat_drive_service.h>
+#include <network_drive_service.h>
 #include <reboot.h>
+
+#include <canopen_interface_service.h>
 
 #include <ethercat_service.h>
 #include <shared_memory.h>
@@ -30,6 +33,10 @@
 //Position control + profile libs
 #include <motion_control_service.h>
 #include <profile_control.h>
+
+#include <flash_service.h>
+#include <spiffs_service.h>
+#include <file_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -63,10 +70,15 @@ int main(void)
     interface PositionFeedbackInterface i_position_feedback_2[3];
 
     /* EtherCat Communication channels */
-    interface i_coe_communication i_coe;
+    interface i_co_communication i_co[CO_IF_COUNT];
+    interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
-    interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
+
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot;
+
 
     par
     {
@@ -77,37 +89,56 @@ int main(void)
         /* EtherCAT Communication Handler Loop */
         on tile[COM_TILE] :
         {
-            par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
-                                    i_foe, i_pdo, ethercat_ports);
+            par
+            {
+                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+                                    i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
+
+#ifdef CORE_C21_DX_G2
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
+
+
+                {
+                    ProfilerConfig profiler_config;
+
+                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+
+                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
+                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
+
+#if 0
+                    network_drive_service_debug( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0]);
+#else
+                    network_drive_service( profiler_config,
+                            i_pdo,
+                            i_co[1],
+                            i_torque_control[1],
+                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+#endif
+                }
+
             }
         }
 
-        /* EtherCAT Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-            ProfilerConfig profiler_config;
-
-            profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-            profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-
-            profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
-
-#if 0
-            ethercat_drive_service_debug( profiler_config,
-                                    i_pdo, i_coe,
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback[0]);
-#else
-            ethercat_drive_service( profiler_config,
-                                    i_pdo, i_coe,
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
-#endif
+            par
+            {
+                file_service(i_spiffs[0], i_co[3], i_foe);
+                spiffs_service(i_data[0], i_spiffs, 1);
+            }
         }
+
 
         on tile[APP_TILE_2]:
         {
@@ -115,6 +146,7 @@ int main(void)
             {
                 /* Motion Control Loop */
                 {
+
                     MotionControlConfig motion_ctrl_config;
 
                     motion_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
@@ -141,6 +173,8 @@ int main(void)
                     motion_ctrl_config.velocity_ki =                          VELOCITY_Ki;
                     motion_ctrl_config.velocity_kd =                          VELOCITY_Kd;
                     motion_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
+                    motion_ctrl_config.enable_velocity_auto_tuner =           ENABLE_VELOCITY_AUTO_TUNER;
+
 
                     motion_ctrl_config.brake_release_strategy =               BRAKE_RELEASE_STRATEGY;
                     motion_ctrl_config.brake_release_delay =                  BRAKE_RELEASE_DELAY;
@@ -204,12 +238,6 @@ int main(void)
                     motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
                     motorcontrol_config.commutation_sensor=SENSOR_1_TYPE;
                     motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-                    motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
-                    motorcontrol_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
-                    motorcontrol_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
-                    motorcontrol_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
-                    motorcontrol_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
-                    motorcontrol_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
                     motorcontrol_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
                     motorcontrol_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
                     motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
@@ -266,6 +294,12 @@ int main(void)
                     position_feedback_config_1.qei_config.port_number        = QEI_SENSOR_PORT_NUMBER;
 
                     position_feedback_config_1.hall_config.port_number = HALL_SENSOR_PORT_NUMBER;
+                    position_feedback_config_1.hall_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
+                    position_feedback_config_1.hall_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
+                    position_feedback_config_1.hall_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
+                    position_feedback_config_1.hall_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
+                    position_feedback_config_1.hall_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
+                    position_feedback_config_1.hall_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
 
                     //setting second sensor
                     PositionFeedbackConfig position_feedback_config_2 = position_feedback_config_1;

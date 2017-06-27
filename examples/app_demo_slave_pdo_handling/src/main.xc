@@ -1,5 +1,5 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <CORE_C22-rev-a.bsp>
+#include <CORE_C21-DX_G2.bsp>
 #include <COM_ECAT-rev-a.bsp>
 
 /**
@@ -8,21 +8,62 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
-#include <ethercat_service.h>
+#include <co_interface.h>
+#include <canopen_interface_service.h>
 #include <pdo_handler.h>
+#include <ethercat_service.h>
 #include <reboot.h>
+#include <file_service.h>
+#include <spiffs_service.h>
+#include <flash_service.h>
 
 #define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 
+#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+port c21watchdog = WD_PORT_TICK;
+port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#endif
+
 /* function declaration of later used functions */
-static void read_od_config(client interface i_coe_communication i_coe);
+static void read_od_config(client interface i_co_communication i_co);
+
+/* Read most recent values for object dictionary values from flash (if existing) */
+static int initial_od_read(client interface i_co_communication i_co)
+{
+    timer t;
+    unsigned time;
+
+    /* give the other services some time to start */
+    t :> time;
+    t when timerafter(time+100000000) :> void;
+
+    printstrln("[DEBUG] start initial update dictionary");
+    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
+    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
+
+    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
+        t :> time;
+        t when timerafter(time+100000) :> void;
+
+        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
+        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
+         * dictionary should not be overwritten.
+         *
+         * FIXME: What happens if nothing is stored in flash?
+         */
+    }
+
+    printstrln("[DEBUG] update dictionary complete");
+
+    return 0;
+}
 
 /* Wait until the EtherCAT enters operation mode. At this point the master
  * should have finished all client configuration. */
-static void sdo_configuration(client interface i_coe_communication i_coe)
+static void sdo_configuration(client interface i_co_communication i_co)
 {
     timer t;
     unsigned int delay = MAX_TIME_TO_WAIT_SDO;
@@ -31,13 +72,12 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
     int sdo_configured = 0;
 
     while (sdo_configured == 0) {
-        select {
-            case i_coe.operational_state_change():
-                printstrln("Master requests OP mode - cyclic operation is about to start.");
-                break;
+        if (i_co.configuration_get()) {
+            printstrln("Master requests OP mode - cyclic operation is about to start.");
+            sdo_configured = 1;
         }
 
-        i_coe.configuration_done();
+        i_co.configuration_done();
         sdo_configured = 1;
 
         t when timerafter(time+delay) :> time;
@@ -48,10 +88,11 @@ static void sdo_configuration(client interface i_coe_communication i_coe)
     printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
 
     /* clear the notification before proceeding the operation */
+    i_co.configuration_done();
 }
 
 /* Test application handling pdos from EtherCat */
-static void pdo_service(client interface i_coe_communication i_coe, client interface i_pdo_communication i_pdo)
+static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co)
 {
     timer t;
     unsigned char device_in_opstate = 0;
@@ -59,37 +100,30 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
     unsigned int delay = 100000;
     unsigned int time = 0;
     unsigned int analog_value = 0;
+    unsigned int comm_status = 0;
 
-    pdo_handler_values_t InOut = {0};
-    pdo_handler_values_t InOutOld = {0};
+    pdo_values_t InOut = {0};
+    pdo_values_t InOutOld = {0};
     t :> time;
 
-    sdo_configuration(i_coe);
+    initial_od_read(i_co);
+    printstrln("[DEBUG] update dictionary complete");
+
+    sdo_configuration(i_co);
     device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
 
     printstrln("Starting PDO protocol");
     while(1)
     {
-        select {
-            case i_coe.operational_state_change():
-                device_in_opstate = i_coe.in_op_state();
-                if (device_in_opstate) {
-                    printstrln("Device in opmode, \\o/");
-                } else {
-                    printstrln("Device not in opmode, sigh");
-                }
-                break;
-
-            default: /* don't do a blocking wait */
-                break;
-        }
-
-        if (device_in_opstate == 0) {
+        device_in_opstate = i_co.in_operational_state();
+        if (!device_in_opstate) {
+            t :> time;
             t when timerafter(time+delay) :> time;
+
             continue;
         }
 
-        pdo_handler(i_pdo, InOut);
+        { InOut, comm_status } = i_pdo.pdo_exchange_app(InOut);
 
         /* Mirror incomimng value to the output */
         InOut.position_value  = InOut.target_position;
@@ -157,6 +191,12 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
             printhexln(InOut.tuning_status);
         }
 
+        if (InOutOld.user_mosi != InOut.user_mosi)
+        {
+            printstr("MISO Data: ");
+            printhexln(InOut.user_miso);
+        }
+
         if (InOutOld.digital_output1 != InOut.digital_output1) {
             printstr("Digital output 1 = ");
             printintln(InOut.digital_output1);
@@ -194,6 +234,13 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
         InOutOld.digital_output3 = InOut.digital_output3;
         InOutOld.digital_output4 = InOut.digital_output4;
 
+//    for (size_t i = 0; i < object_list_size; i+=2) {
+//        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
+//        printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
+//        printstr(" = "); printintln(value);
+        t :> time;
+        InOut.timestamp = time;
+
         t when timerafter(time+delay) :> time;
     }
 
@@ -201,10 +248,14 @@ static void pdo_service(client interface i_coe_communication i_coe, client inter
 
 int main(void) {
     /* EtherCat Communication channels */
-    interface i_coe_communication i_coe;
+    interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
-    interface i_pdo_communication i_pdo;
+    interface i_co_communication i_co[CO_IF_COUNT];
     interface EtherCATRebootInterface i_ecat_reboot;
+
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot; /* FIXME necessary? */
 
     par
     {
@@ -212,16 +263,34 @@ int main(void) {
         on tile[COM_TILE] :
         {
             par {
-                ethercat_service(i_ecat_reboot, i_coe, null,
-                        i_foe, i_pdo, ethercat_ports);
+                ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
+                        i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
+
+#ifdef NO_SPIFFS_SERVICE
+                file_service(null, i_co[3]);
+#else
+#ifdef XCORE200
+                flash_service(p_qspi_flash, i_boot, i_data, 1);
+#else
+                flash_service(p_spi_flash, i_boot, i_data, 1);
+#endif
+                file_service(i_spiffs[0], i_co[3], null);
+#endif
             }
         }
 
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
-            pdo_service(i_coe, i_pdo);
+            pdo_service(i_pdo, i_co[1]);
+        }
+
+        on tile[IFM_TILE] :
+        {
+#ifndef NO_SPIFFS_SERIVCE
+            spiffs_service(i_data[0], i_spiffs, 1);
+#endif
         }
     }
 

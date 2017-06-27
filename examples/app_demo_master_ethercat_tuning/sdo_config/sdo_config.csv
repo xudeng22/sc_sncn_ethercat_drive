@@ -1,7 +1,7 @@
 #index, subindex,      axis 1,      axis 2,      axis 3,      axis 4,      axis 5,      axis 6
 #offset
 0x2001,        0,        1201,        1202,        1202,        1204,        1205,        1206 # DICT_COMMUTATION_ANGLE_OFFSET
-0x2A00,        0,          20,          20,          20,          20,          20,          20 # DICT_APPLIED_TUNING_TORQUE_PERCENT #for offset tuning
+0x2A00,        0,          20,          20,          20,          20,          20,          20 # DICT_APPLIED_TUNING_TORQUE_PERCENT for offset tuning
 
 #motor config
 0x6075,        0,        4800,        4800,        4800,        4800,        4800,        4800 # DICT_MOTOR_RATED_CURRENT
@@ -57,19 +57,20 @@
 #sensor config
 0x607C,        0,           0,           0,           0,           0,           0,           0 # DICT_HOME_OFFSET
 0x2100,        1,           0,           0,           0,           0,           0,           0 # DICT_FEEDBACK_SENSOR_PORTS 1
-0x2100,        2,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201 # DICT_FEEDBACK_SENSOR_PORTS 2 # 0x2201 is BiSS 1
+0x2100,        2,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201 # DICT_FEEDBACK_SENSOR_PORTS 2, 0x2201 is BiSS 1
 0x2100,        3,           0,           0,           0,           0,           0,           0 # DICT_FEEDBACK_SENSOR_PORTS 3
 #biss 1
 0x2201,        1,           4,           4,           4,           4,           4,           4 # SENSOR TYPE (4 is BiSS)
 0x2201,        2,           1,           1,           1,           1,           1,           1 # SUB_ENCODER_FUNCTION (1 is commutation and motion control)
 0x2201,        3,      262144,      262144,      262144,      262144,      262144,      262144 # SUB_ENCODER_RESOLUTION
 0x2201,        4,          50,          50,          50,          50,          50,          50 # SUB_ENCODER_VELOCITY_CALCULATION_PERIOD
-0x2201,        5,          0,            0,           0,           0,           0,           0 # SUB_ENCODER_POLARITY (0 normal,  1 inverted)
+0x2201,        5,           0,           0,           0,           0,           0,           0 # SUB_ENCODER_POLARITY (0 normal,  1 inverted)
 0x2201,        6,          10,          10,          10,          10,          10,          10 # SUB_BISS_ENCODER_MULTITURN_RESOLUTION
 0x2201,        7,        4000,        4000,        4000,        4000,        4000,        4000 # SUB_BISS_ENCODER_CLOCK_FREQUENCY
 0x2201,        8,          20,          20,          20,          20,          20,          20 # SUB_BISS_ENCODER_TIMEOUT
 0x2201,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # SUB_BISS_ENCODER_CRC_POLYNOM
 0x2201,       10,           8,           8,           8,           8,           8,           8 # SUB_BISS_ENCODER_CLOCK_PORT_CONFIG
+0x2201,       11,           1,           1,           1,           1,           1,           1 # SUB_BISS_ENCODER_DATA_PORT_CONFIG
 0x2201,       12,           0,           0,           0,           0,           0,           0 # SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS
 0x2201,       13,          30,          30,          30,          30,          30,          30 # SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY
 #hall 1

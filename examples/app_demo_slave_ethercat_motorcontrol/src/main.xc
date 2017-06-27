@@ -51,7 +51,6 @@ port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
 port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
 port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
 port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
-
 #ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
 port c21watchdog = WD_PORT_TICK;
 port c21led = LED_PORT_4BIT_X_nG_nB_nR;
@@ -145,7 +144,7 @@ int main(void)
         {
             par
             {
-                /* Position Control Loop */
+                /* Motion Control Loop */
                 {
 
                     MotionControlConfig motion_ctrl_config;
@@ -159,14 +158,10 @@ int main(void)
                     motion_ctrl_config.max_acceleration_profiler =            MAX_ACCELERATION_PROFILER;
                     motion_ctrl_config.max_deceleration_profiler =            MAX_DECELERATION_PROFILER;
                     motion_ctrl_config.max_speed_profiler =                   MAX_SPEED_PROFILER;
-                    //select resolution of sensor used for motion control
-                    if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {
-                        motion_ctrl_config.resolution  =                      SENSOR_2_RESOLUTION;
-                    } else {
-                        motion_ctrl_config.resolution  =                      SENSOR_1_RESOLUTION;
-                    }
 
                     motion_ctrl_config.position_control_strategy =            POSITION_CONTROL_STRATEGY;
+
+                    motion_ctrl_config.filter =                               FILTER_CUT_OFF_FREQ;
 
                     motion_ctrl_config.position_kp =                          POSITION_Kp;
                     motion_ctrl_config.position_ki =                          POSITION_Ki;
@@ -181,8 +176,15 @@ int main(void)
                     motion_ctrl_config.enable_velocity_auto_tuner =           ENABLE_VELOCITY_AUTO_TUNER;
 
 
-                    motion_ctrl_config.brake_release_strategy =                BRAKE_RELEASE_STRATEGY;
-                    motion_ctrl_config.brake_release_delay =                 BRAKE_RELEASE_DELAY;
+                    motion_ctrl_config.brake_release_strategy =               BRAKE_RELEASE_STRATEGY;
+                    motion_ctrl_config.brake_release_delay =                  BRAKE_RELEASE_DELAY;
+
+                    //select resolution of sensor used for motion control
+                    if (SENSOR_2_FUNCTION == SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL || SENSOR_2_FUNCTION == SENSOR_FUNCTION_MOTION_CONTROL) {
+                        motion_ctrl_config.resolution  =                          SENSOR_2_RESOLUTION;
+                    } else {
+                        motion_ctrl_config.resolution  =                          SENSOR_1_RESOLUTION;
+                    }
 
                     motion_ctrl_config.dc_bus_voltage=                        DC_BUS_VOLTAGE;
                     motion_ctrl_config.pull_brake_voltage=                    PULL_BRAKE_VOLTAGE;

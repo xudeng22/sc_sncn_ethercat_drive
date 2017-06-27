@@ -498,7 +498,7 @@ int main(void)
 #else
                 flash_service(p_spi_flash, i_boot, i_data, 1);
 #endif
-                file_service(i_spiffs[0], i_co[3], null);
+                file_service(i_spiffs[0], i_co[3], i_foe);
             }
         }
 

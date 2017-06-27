@@ -9,40 +9,38 @@
 #ifndef CO_INTERFACE_H_
 #define CO_INTERFACE_H_
 
+#include <coe_handling.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #define CO_IF_COUNT 4
 #define OD_LIST_ALL 1
 
+#ifndef REQUEST_FROM_MASTER
+#define REQUEST_FROM_MASTER   1
+#endif
+
+#ifndef REQUEST_FROM_APP
+#define REQUEST_FROM_APP      0
+#endif
+
+/**
+ * \brief Available SDO commands
+ */
 enum eSdoCommand {
     OD_COMMAND_NONE = 0
     ,OD_COMMAND_WRITE_CONFIG
     ,OD_COMMAND_READ_CONFIG
 };
 
+/**
+ * \brief State of the current SDO command
+ */
 enum eSdoState {
-    OD_COMMAND_STATE_IDLE = 0
-    ,OD_COMMAND_STATE_PROCESSING
-    ,OD_COMMAND_STATE_SUCCESS
-    ,OD_COMMAND_STATE_ERROR
-};
-
-struct _sdo_command_object {
-    enum eSdoCommand command;
-    enum eSdoState   state;
-};
-
-/** entry description structure */
-struct _sdoinfo_entry_description {
-    uint16_t index; ///< 16 bit int should be sufficient
-    uint8_t subindex; ///< 16 bit int should be sufficient
-    uint8_t objectDataType;
-    uint8_t dataType;
-    uint8_t objectCode;
-    uint8_t bitLength;
-    uint16_t objectAccess;
-    uint32_t value; ///< real data type is defined by .dataType
-    uint8_t name[50];
+    OD_COMMAND_STATE_IDLE = 0       ///< SDO state is idle and ready to accept new commands
+    ,OD_COMMAND_STATE_PROCESSING    ///< SDO command is currently processed
+    ,OD_COMMAND_STATE_SUCCESS       ///< SDO command finished successfully
+    ,OD_COMMAND_STATE_ERROR         ///< SDO command finished with a error
 };
 
 /**
@@ -51,7 +49,7 @@ struct _sdoinfo_entry_description {
 enum eAccessRights {
   RO = 0x07,
   WO = 0x38,
-  RW = 0x3f,
+  RW = 0x3f
 };
 
 /* FIXME keep typedef for obfuscation? */
@@ -97,7 +95,31 @@ interface i_co_communication
     uint8_t od_set_object_value(uint16_t index_, uint8_t subindex, uint32_t value);
 
     /**
+     * @brief Master reads an object value from dictionary.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] capacity  The capacity of the output array value_out
+     * @param[out] value_out  The value as byte array of the requested entry
+     * @return bitlength    Read bitlength of the entry value - Object value, bitlength, Error: 0 -> No error, 2 -> Index not found, 3 -> Subindex not found
+     * @return error_out    0 on no error
+     */
+    {uint32_t, uint8_t} od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]);
+
+    /**
+     * @brief Master set an object value in dictionary.
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] value     Value array, which will set in OD
+     * @param[in] capacity  Size of the value field
+     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found, 255 -> wrong capacity for entry
+     */
+    uint8_t od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity);
+
+    /**
      * @brief Returns an object value from dictionary.
+     *
+     * NOTE: For CAN the data_buffer is maxiumum 8 byte wide.
+     *
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex
      * @param[out] data_buffer  OD value
@@ -107,6 +129,9 @@ interface i_co_communication
 
     /**
      * @brief Set an object value in dictionary.
+     *
+     * NOTE: For CAN the data_buffer is maxiumum 8 byte wide.
+     *
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex
      * @param[in] data_buffer     Value, which will set in OD
@@ -119,9 +144,25 @@ interface i_co_communication
      * @brief Get whole entry description of object.
      * @param[in] index_    Object dictionary index
      * @param[in] subindex  Object dictionary subindex
+     * @param[in] valueinfo put these additional values in the reply, possible bits to set are:
+     *                      0x04 Unit, 0x08 default value, 0x10 minimum value, 0x20 maximum value
+     *                      *Attention:* not all values are available for all entries.
      * @return entry description, error
      */
-    {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo);
+    {struct _sdoinfo_entry_description, uint8_t} od_get_entry_description(uint16_t index_, uint8_t subindex);
+
+    /**
+     * \brief Get specific values for SDO Information entry request
+     *
+     * @param[in] index_    Object dictionary index
+     * @param[in] subindex  Object dictionary subindex
+     * @param[in] valueinfo put these additional values in the reply, possible bits to set are:
+     *                      0x04 Unit, 0x08 default value, 0x10 minimum value, 0x20 maximum value
+     *                      *Attention:* not all values are available for all entries.
+     * @return size of the value or 0 if unavailable
+     *
+     */
+    size_t od_get_entry_description_value(uint16_t index_, uint8_t subindex, uint8_t valuetype, size_t capacity, uint8_t values[]);
 
     /**
      * @brief Returns an array with five length entrys (Currently just one entry).
@@ -137,13 +178,18 @@ interface i_co_communication
      *
      * @param[out] Array with all list lengths
      */
-    void od_get_all_list_length(uint32_t lists[]);
+    void od_get_all_list_length(uint16_t lists[]);
 
     /**
      * @brief Returns a list with all index.
+     *
+     * @param[out] list      array of indexes for \c listtype
+     * @param[in]  size      capacity of the list
+     * @param[in] listtype   type of indexes to return in the list
+     *                       (values: 1 - all, 2 - RX mappable, 3 - TX mappable, 4 - backup, 5 - startup)
      * @return List length
      */
-    int od_get_list(unsigned list[], unsigned size, unsigned listtype);
+    int od_get_list(uint16_t list[], unsigned size, unsigned listtype);
 
     /**
      * @brief Get single entry description.
@@ -212,8 +258,25 @@ interface i_co_communication
 
     /* Since a notification cannot be send from a interface call this one is
      * necessary to poll if a command is ready to be executed */
+    /**
+     * \brief Get currently requested command
+     *
+     * If this application supports command via object dictionary this method
+     * needs to be read regularly to get notified aobut a command request from
+     * the master.
+     *
+     * \return command to process \see enum eSdoCommand
+     */
     enum eSdoCommand command_ready(void);
 
+    /**
+     * \brief Set result of the last command
+     *
+     * If a command is processed accordingly set the result here. You can use the
+     * definitions in \see enum eSdoState
+     *
+     * \param result 0 on success, != 0 on error
+     */
     void command_set_result(int result);
 };
 

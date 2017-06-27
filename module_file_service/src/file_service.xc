@@ -38,7 +38,7 @@ static unsigned int set_configuration_to_dictionary(
 static int exclude_object(uint16_t index)
 {
     const uint16_t blacklist[] = {
-            0x3000, 0x603f, /* special objects */
+            0x2000, 0x603f, /* special objects */
             0x6040, 0x6060, 0x6071, 0x607a, 0x60ff, 0x2300, 0x2a01, 0x2601, 0x2602, 0x2603, 0x2604, 0x2ffe, /* receive pdos */
             0x6041, 0x6061, 0x6064, 0x606c, 0x6077, 0x230a, 0x230b, 0x2401, 0x2402, 0x2403, 0x2404, 0x2a03, 0x2501, 0x2502, 0x2503, 0x2504, 0x2fff, 0x2ffd /* send pdos */
     };
@@ -59,14 +59,14 @@ static unsigned get_configuration_from_dictionary(
         client interface i_co_communication i_canopen,
         ConfigParameter_t* Config)
 {
-    uint32_t list_lengths[5];
+    uint16_t list_lengths[5];
     i_canopen.od_get_all_list_length(list_lengths);
 
     if (list_lengths[0] > MAX_CONFIG_SDO_ENTRIES) {
         printstrln("Warning OD to large, only get what fits.");
     }
 
-    unsigned all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
+    uint16_t all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
     i_canopen.od_get_list(all_od_objects, list_lengths[0], OD_LIST_ALL);
 
     struct _sdoinfo_entry_description od_entry;
@@ -85,12 +85,11 @@ static unsigned get_configuration_from_dictionary(
             continue;
         }
 
-        { od_entry, error } = i_canopen.od_get_entry_description(all_od_objects[i], 0, 0);
+        error = i_canopen.od_get_object_description(od_entry, all_od_objects[i], 0);
 
         /* object is no simple variable and subindex 0 holds the highest subindex then read all sub elements */
         if (od_entry.objectCode != CANOD_TYPE_VAR && od_entry.value > 0) {
             for (unsigned k = 1; k <= od_entry.value; k++) {
-                //...
                 {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], k);
                 Config->parameter[count][0].index    = all_od_objects[i];
                 Config->parameter[count][0].subindex = k;
@@ -98,9 +97,10 @@ static unsigned get_configuration_from_dictionary(
                 count++;
             }
         } else { /* simple variable object */
+            {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], 0);
             Config->parameter[count][0].index    = od_entry.index;
-            Config->parameter[count][0].subindex    = od_entry.subindex;
-            Config->parameter[count][0].value    = od_entry.value;
+            Config->parameter[count][0].subindex = 0;
+            Config->parameter[count][0].value    = value;
             count++;
         }
     }

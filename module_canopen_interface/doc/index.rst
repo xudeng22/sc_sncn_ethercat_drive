@@ -341,6 +341,80 @@ How to use CANopen Interface Service
                 }
             }
 
+Implementation Notes
+====================
+
+The communication interface ``i_co_communication`` provides methods to access
+the object dictionary from the communication and from the application side. Not
+all methods make sense to be used on both sides. Especially the value access
+methods have some sepcialities which makes it important to use the correct one
+with the corresponding side.
+
+Methods used primary by communication side
+------------------------------------------
+(informative, these methods should not be used unintentionallly)
+
+- ``od_master_get_object_value`` to read a value from a dictionary entry
+
+- ``od_master_set_object_value`` to set a value of a dictionary entry
+  If called, the ``written by master flag`` in the entry is set true.
+
+- ``od_get_object_description`` read the object description, the description is
+  stored in ``struct _sdoinfo_entry_description``
+
+- ``od_get_entry_description`` read the entry description, the description is
+  stored in the ``struct _sdoinfo_entry_description``
+
+- ``od_get_entry_description_value`` request a speficic valuetype from the
+  entry like unit, default value, minimum value or maximum value.
+
+- ``od_get_all_list_length`` get the length of all object lists, the object
+  lists are specified in ETG 1000.6
+
+- ``od_get_list`` get a list of all objects which are part the the specified list.
+
+
+Methods used primary by the application side
+--------------------------------------------
+
+Value Access
+~~~~~~~~~~~~
+
+- ``od_get_object_value`` read the value of a object dictionary entry
+
+- ``od_set_object_value`` write the value to a object dictionary value
+
+- ``od_get_data_length`` get the bitsize of a object dictionary entry value
+
+For the value access it is important that the application side only uses the
+methods meant for her. The master side sets internal flags in the object
+dictionary which are necessary for a correct EtherCAT communication.
+
+State Change Signaling
+~~~~~~~~~~~~~~~~~~~~~~
+
+- ``operational_state_change`` return true if the EtherCAT State Machine
+  recently switched to OP Mode
+
+- ``in_operational_state`` return true if the drive is in operation mode
+
+- ``configuration_done`` clear the flag returned by ``operation_state_change``
+
+It is assumed that, if the EtherCAT Master requests the OPERATIONAL mode from
+the device, the necessary configuration uploads are finished. Configuration
+uploads usually happens at the state changes PREOP->SAFEOP or SAFEOP->OP.
+
+Command Object
+~~~~~~~~~~~~~~
+
+- ``command_ready`` signals a incoming command
+
+- ``command_set_result`` set the return value of the processed command
+
+The current release of the object dictionary supports a command object. For the
+application to react on a given command the method ``command_ready`` returns
+which command is currently set. If the command is finshed the application
+signals the result with ``command_set_result``.
 
 API
 ===

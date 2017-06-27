@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "canod.h"
+#include "sdo.h"
 #include "co_interface.h"
 #include "dictionary_symbols.h"
 #include "canopen_interface_service.h"
@@ -15,6 +15,20 @@
 #include "print.h"
 
 #define MAX_PDO_SIZE 64
+
+/* Number of bytes to store in the return value array.
+ * This is necessary because with interface methods the "variable length array" gimmick of XC
+ * (see https://www.xmos.com/published/xmos-programming-guide?version=B&page=25)
+ * does not work and leads to an internal error of xcc.  */
+#define MAX_VALUE_BUFFER    10
+
+/* there are 5 list lengths for all, rx-, tx-mappable, startup, and backup objects */
+#define ALL_LIST_LENGTH_SIZE    5
+
+struct _sdo_command_object {
+    enum eSdoCommand command;
+    enum eSdoState   state;
+};
 
 [[distributable]]
 void canopen_interface_service(
@@ -67,21 +81,34 @@ void canopen_interface_service(
 
             /* SDO */
 
+            /* FIXME this function was necessary on the ethercat service
+             * side to check if the ethercat service is allowed to write or
+             * read this value, with the use of the master access functions
+             * this interface method becomes obsolete. */
             case i_co[int j].od_get_access(uint16_t index_, uint8_t subindex) -> { enum eAccessRights access, uint8_t error }:
-                    {access, error}  = canod_get_access(index_, subindex);
+                    struct _sdoinfo_entry_description entry;
+                    error = sdoinfo_get_entry_description(index_, subindex, &entry);
+                    if (!error) {
+                        access = (enum eAccessRights)(entry.objectAccess & 0x3f);
+                    }
                     break;
 
             case i_co[int j].od_get_object_value(uint16_t index_, uint8_t subindex) -> { uint32_t value_out, uint32_t bitlength_out, uint8_t error_out }:
-                    unsigned bitlength = 0;
                     unsigned value = 0;
-                    error_out = canod_get_entry(index_, subindex, value, bitlength);
-                    bitlength_out = bitlength;
+                    size_t bitsize = 0;
+                    int request_from = REQUEST_FROM_APP;
+
+                    sdo_entry_get_value(index_, subindex, sizeof(value), request_from, (uint8_t*)&value, &bitsize);
+                    bitlength_out = bitsize;
+
                     value_out = value;
 
                     /* After command is finished processing and the result is read by the master reset
-                     * the command to allow the next command to be scheduled for execution. */
+                     * the command to allow the next command to be scheduled for execution.
+                     * The command status is always written from the application requester
+                     * FIXME still necessary for internal command handling! */
                     if (index_ == DICT_COMMAND_OBJECT && value > OD_COMMAND_STATE_PROCESSING) {
-                        canod_set_entry(index_, subindex, OD_COMMAND_STATE_IDLE, 1);
+                        sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
                         sdo_command_object.command = OD_COMMAND_NONE;
                         sdo_command_object.state = OD_COMMAND_STATE_IDLE;
                     }
@@ -93,74 +120,163 @@ void canopen_interface_service(
                         value = OD_COMMAND_STATE_IDLE;
                     }
 
-                    error_out = canod_set_entry(index_, subindex, value, 1);
+                    uint8_t error = 0;
+                    int request_from  = REQUEST_FROM_APP;
+                    size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
+                    if (bytecount == 0) {
+                        error = (uint8_t)sdo_error;
+                    } else {
+                        uint8_t valtmp[8];
+                        memcpy(&valtmp, &value, bytecount);
+                        error = sdo_entry_set_value(index_, subindex, (uint8_t *)&valtmp, bytecount, request_from);
+                    }
+                    error_out = error;
+                    break;
+
+            case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
+                    unsigned value = 0;
+                    size_t bitsize = 0;
+                    int request_from = REQUEST_FROM_MASTER;
+                    uint8_t tmp[MAX_VALUE_BUFFER];
+
+                    if (capacity > MAX_VALUE_BUFFER) {
+                        error_out = SDO_ERROR_INSUFFICIENT_BUFFER;
+                        bitlength_out = 0;
+                        break;
+                    }
+
+                    int err = sdo_entry_get_value(index_, subindex, capacity, request_from, (uint8_t*)&tmp, &bitsize);
+                    if (err != 0) {
+                        error_out = sdo_error;
+                        bitlength_out = 0;
+                    } else {
+                        error_out = 0;
+                        bitlength_out = bitsize;
+                        memcpy(value_out, &tmp, BYTES_FROM_BITS(bitsize));
+                    }
+
+                    /* After command is finished processing and the result is read by the master reset
+                     * the command to allow the next command to be scheduled for execution.
+                     * The command status is always written from the application requester */
+                    if (index_ == DICT_COMMAND_OBJECT) {
+                        memcpy(&value, &tmp, BYTES_FROM_BITS(bitsize));
+                        if (value > OD_COMMAND_STATE_PROCESSING) {
+                            sdo_entry_set_uint16(index_, subindex, OD_COMMAND_STATE_IDLE, REQUEST_FROM_APP);
+                            sdo_command_object.command = OD_COMMAND_NONE;
+                            sdo_command_object.state = OD_COMMAND_STATE_IDLE;
+                        }
+                    }
+                    break;
+
+            case i_co[int j].od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity) -> { uint8_t error_out }:
+                    int request_from  = REQUEST_FROM_MASTER;
+                    int error = 0;
+
+                    if (index_ == DICT_COMMAND_OBJECT && sdo_command_object.state == OD_COMMAND_STATE_IDLE) {
+                        uint16_t tmpvalue = 0;
+                        memcpy(&tmpvalue, value, sizeof(uint16_t));
+                        sdo_command_object.command = (uint16_t)(tmpvalue & 0xffff);
+                        tmpvalue = OD_COMMAND_STATE_IDLE;
+                        // The slave controls the value of the command object.
+                        error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
+                    } else {
+                        size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
+                        if (capacity < bytecount) {
+                            error = sdo_error;
+                        } else {
+                            uint8_t tmpvalue[MAX_VALUE_BUFFER];
+                            memcpy(&tmpvalue, value, capacity);
+                            error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
+                        }
+                    }
+
+                    error_out = error;
                     break;
 
             case i_co[int j].od_get_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint32_t bitlength_out, uint8_t error_out }:
                     unsigned bitlength = 0;
-                    unsigned value = 0;
                     unsigned error = 0;
-                    error = canod_get_entry(index_, subindex, value, bitlength);
-                    if (error > 0)
+                    bitlength = sdo_entry_get_bitsize(index_, subindex);
+                    if (bitlength == 0)
                     {
-                        error_out = error;
+                        error_out = sdo_error;
                         bitlength_out = 0;
                     }
                     else
                     {
+                        uint8_t value[8]; /* 8 because CAN has max 8 bytes value */
+                        sdo_entry_get_value(index_, subindex, (bitlength + 7) / 8, REQUEST_FROM_APP, value, &bitlength);
+                        memcpy(data_buffer, value, (bitlength + 7) / 8);
                         bitlength_out = bitlength;
-                        for (unsigned i = 0; i < (bitlength/8); i++) {
-                            data_buffer[i] = (value >> (i*8)) & 0xff;
-                        }
                     }
                     break;
 
             case i_co[int j].od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]) -> { uint8_t error_out }:
-                    unsigned byte_len, error = 0;
-                    unsigned value = 0;
+                    unsigned bytecount, error = 0;
 
-                    {byte_len, error} = canod_find_data_length(index_, subindex);
-
-                    if (error > 0)
+                    bytecount = sdo_entry_get_bytecount(index_, subindex);
+                    if (bytecount == 0)
                     {
-                        error_out = error;
+                        error_out = sdo_error;
                     }
                     else
                     {
-                        for (unsigned i = 0; i < byte_len; i++) {
-                            value |= (unsigned) data_buffer[i] << (i*8);
+                        uint8_t value[8]; /* 8 because CAN has max 8 bytes value */
+                        memcpy(value, data_buffer, bytecount);
+                        int err = sdo_entry_set_value(index_, subindex, value, bytecount, REQUEST_FROM_APP);
+                        if (err) {
+                            error_out = sdo_error;
                         }
-                        error_out = canod_set_entry(index_, subindex, value, 1);
                     }
                     break;
 
 
-            case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex, uint32_t valueinfo) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
+            case i_co[int j].od_get_entry_description(uint16_t index_, uint8_t subindex) -> { struct _sdoinfo_entry_description desc_out, uint8_t error_out }:
                     struct _sdoinfo_entry_description desc;
-                    error_out = canod_get_entry_description(index_, subindex, valueinfo, desc);
-                    desc_out = desc;
+                    error_out =  sdoinfo_get_entry_description(index_, subindex, &desc);
+                    if (!error_out) {
+                        memcpy(&desc_out, &desc, sizeof(struct _sdoinfo_entry_description));
+                    }
                     break;
 
-            case i_co[int j].od_get_all_list_length(uint32_t list_out[]):
-                    unsigned list[5];
-                    canod_get_all_list_length(list);
-                    memcpy(list_out, list, 5 * sizeof(unsigned));
-                    break;
-
-            case i_co[int j].od_get_list(unsigned list_out[], unsigned size, unsigned listtype) -> {int size_out}:
-                    unsigned list[100];
-                    size_out = canod_get_list(list, 100, listtype);
-                    memcpy(list_out, list, size_out * sizeof(unsigned));
+            case i_co[int j].od_get_entry_description_value(uint16_t index, uint8_t subindex, uint8_t valuetype, size_t capacity, uint8_t value[]) -> { size_t length_out }:
+                    uint8_t value_tmp[MAX_VALUE_BUFFER];
+                    size_t length = sdoinfo_get_entry_description_value(index, subindex, valuetype, capacity, value_tmp);
+                    if (length == 0) {
+                        length_out = 0;
+                    } else {
+                        length_out = length;
+                        memcpy(value, value_tmp, length);
+                    }
                     break;
 
             case i_co[int j].od_get_object_description(struct _sdoinfo_entry_description &obj_out, uint16_t index_, uint8_t subindex) -> { int error }:
                     struct _sdoinfo_entry_description obj;
-                    error = canod_get_object_description(obj, index_, subindex);
-                    obj_out = obj;
+                    /* FIXME misnomer, object description and entry description are separate now. */
+                    error = sdoinfo_get_object_description(index_, &obj);
+                    if (!error) {
+                        memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
+                    }
+                    break;
+
+            case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
+                    uint16_t list[ALL_LIST_LENGTH_SIZE];
+                    sdoinfo_get_list(LT_LIST_LENGTH, ALL_LIST_LENGTH_SIZE, list);
+                    memcpy(list_out, list, ALL_LIST_LENGTH_SIZE * sizeof(uint16_t));
+                    break;
+
+            case i_co[int j].od_get_list(uint16_t list_out[], unsigned size, unsigned listtype) -> {int size_out}:
+                    uint16_t list[100];
+                    size_out = sdoinfo_get_list(listtype, 100, list);
+                    memcpy(list_out, list, size_out * sizeof(uint16_t));
                     break;
 
             case i_co[int j].od_get_data_length(uint16_t index_, uint8_t subindex) -> {uint32_t len, uint8_t error}:
-                    {len, error} = canod_find_data_length(index_, subindex); // return value: count of byte
+                    struct _sdoinfo_entry_description entry;
+                    error = sdoinfo_get_entry_description(index_, subindex, &entry);
+                    if (!error) {
+                        len = (uint32_t)(BYTES_FROM_BITS(entry.bitLength));
+                    }
                     break;
 
             case i_co[int j].inactive_communication(void):
@@ -192,18 +308,17 @@ void canopen_interface_service(
             /* command handling interface methods */
 
             case i_co[int j].command_ready(void) -> { enum eSdoCommand command }:
-                    //canod_set_entry(0, 0, 0, 1);
                     command = sdo_command_object.command;
                     if (command != OD_COMMAND_NONE) {
                         sdo_command_object.state = OD_COMMAND_STATE_PROCESSING;
                     }
-                    canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
+                    sdo_entry_set_uint16(DICT_COMMAND_OBJECT, 0, sdo_command_object.state, REQUEST_FROM_APP);
                     break;
 
             case i_co[int j].command_set_result(int result):
                     sdo_command_object.command = OD_COMMAND_NONE;
                     sdo_command_object.state = result ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
-                    canod_set_entry(DICT_COMMAND_OBJECT, 0, (uint16_t)sdo_command_object.state, 1);
+                    sdo_entry_set_uint16(DICT_COMMAND_OBJECT, 0, sdo_command_object.state, REQUEST_FROM_APP);
                     break;
         }
     }

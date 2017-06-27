@@ -691,6 +691,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 /* we allow opmode change in this state */
                 //check and update opmode
                 opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
+                read_configuration = 1;
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);

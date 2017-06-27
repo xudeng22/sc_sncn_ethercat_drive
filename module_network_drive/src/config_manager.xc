@@ -187,6 +187,10 @@ int cm_sync_config_motor_control(
     {motorcontrol_config.pole_pairs, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
     motorcontrol_config.commutation_sensor       = sensor_commutation_type;
     {motorcontrol_config.commutation_angle_offset, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
+    {motorcontrol_config.rated_torque, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
+    if (motorcontrol_config.rated_torque == 0) {
+        motorcontrol_config.rated_torque = 1;
+    }
     int tmp = 0;
     {tmp, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0);
     motorcontrol_config.max_torque = (tmp  * motorcontrol_config.rated_torque) / 1000; // in 1/1000 of rated torque;
@@ -194,7 +198,6 @@ int cm_sync_config_motor_control(
     {motorcontrol_config.phase_inductance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE);
     {motorcontrol_config.torque_constant, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
     {motorcontrol_config.rated_current, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
-    {motorcontrol_config.rated_torque, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
     {motorcontrol_config.percent_offset_torque, void, void} = i_co.od_get_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0);
     /* Read protection limits */
     {motorcontrol_config.protection_limit_over_current, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
@@ -241,6 +244,7 @@ void cm_sync_config_pos_velocity_control(
 
     {position_config.enable_profiler, void, void} = i_co.od_get_object_value(DICT_MOTION_PROFILE_TYPE, 0); //FIXME: profiler setting missing
     position_config.resolution      = sensor_resolution;
+    {position_config.filter, void, void}          = i_co.od_get_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT);
 
     {position_config.position_control_strategy, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0);
 
@@ -453,6 +457,8 @@ void cm_default_config_pos_velocity_control(
     i_co.od_set_object_value(DICT_MOTION_PROFILE_TYPE, 0, position_config.enable_profiler);
 
     i_co.od_set_object_value(DICT_POSITION_CONTROL_STRATEGY, 0, position_config.position_control_strategy);
+
+    i_co.od_set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.filter);
 
     //position PID
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KP, position_config.position_kp);

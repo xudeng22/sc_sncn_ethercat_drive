@@ -48,6 +48,7 @@ struct _file_t {
     size_t length;
     size_t current;
     char opened;
+    short cfd;
 };
 
 

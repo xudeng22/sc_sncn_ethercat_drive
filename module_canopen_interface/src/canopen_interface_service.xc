@@ -120,9 +120,16 @@ void canopen_interface_service(
                         value = OD_COMMAND_STATE_IDLE;
                     }
 
+                    uint8_t error = 0;
                     int request_from  = REQUEST_FROM_APP;
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                    int error = sdo_entry_set_value(index_, subindex, (uint8_t *)&value, bytecount, request_from);
+                    if (bytecount == 0) {
+                        error = (uint8_t)sdo_error;
+                    } else {
+                        uint8_t valtmp[8];
+                        memcpy(&valtmp, &value, bytecount);
+                        error = sdo_entry_set_value(index_, subindex, (uint8_t *)&valtmp, bytecount, request_from);
+                    }
                     error_out = error;
                     break;
 

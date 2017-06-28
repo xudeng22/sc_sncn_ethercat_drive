@@ -464,8 +464,11 @@ void network_drive_service(ProfilerConfig &profiler_config,
 //#pragma xta endpoint "ecatloop"
         /* FIXME reduce code duplication with above init sequence */
         /* Check if we reenter the operation mode. If so, update the configuration please. */
-        if (!read_configuration)
+        if (!read_configuration) {
             read_configuration = i_co.configuration_get();
+            // FIXME If something change (and we are in READY_SWITCH_ON state) update some values.
+            // read_configuration = i_co.od_changed_values_count();
+        }
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {

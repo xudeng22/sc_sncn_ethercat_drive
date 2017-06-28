@@ -25,7 +25,7 @@ Quick How-to
 .. figure:: images/ethercat_stack.jpg
    :align: center
    
-2. Wire up your device. Check how at your specific :ref:`hardware documentation <hardware>`. Connect your sensor, motor phases, power supply and EtherCAT cables, and XTAG. Power up!
+2. Wire up your device. Check your specific :ref:`hardware documentation <hardware>` how. Connect your sensor, motor phases, power supply, EtherCAT cables and XTAG. Power up!
 
 .. figure:: images/stack_and_motor.jpg
    :align: center

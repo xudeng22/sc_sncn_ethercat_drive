@@ -49,6 +49,7 @@ struct _pdo_cia402_input {
     uint8_t digital_input3;
     uint8_t digital_input4;
     uint32_t user_miso;
+    uint32_t timestamp;
 };
 
 struct _pdo_cia402_output {

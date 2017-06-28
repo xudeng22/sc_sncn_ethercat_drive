@@ -58,6 +58,7 @@
 #define PDO_INDEX_DIGITAL_INPUT3             16
 #define PDO_INDEX_DIGITAL_INPUT4             18
 #define PDO_INDEX_USER_MISO                  20
+#define PDO_INDEX_TIMESTAMP                  21
 
 /* Index of sending (out) PDOs */
 #define PDO_INDEX_CONTROLWORD                 0
@@ -247,6 +248,7 @@ void pd_get(Ethercat_Master_t *master, int slaveid, struct _pdo_cia402_input *pd
     pdo_input->digital_input3 = (uint8_t)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT3);
     pdo_input->digital_input4 = (uint8_t)ecw_slave_get_in_value(slave, PDO_INDEX_DIGITAL_INPUT4);
     pdo_input->user_miso = (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_USER_MISO);
+    pdo_input->timestamp = (uint32_t)ecw_slave_get_in_value(slave, PDO_INDEX_TIMESTAMP);
 
     return;
 }

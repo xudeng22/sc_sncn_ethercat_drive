@@ -32,7 +32,7 @@
 #protection
 0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
 0x2006,        2,          60,          60,          60,          60,          60,          60 # DICT_PROTECTION MAX_DC_VOLTAGE
-0x2006,        3,      100000,      100000,      100000,      100000,      100000,      100000 # DICT_PROTECTION MAX_CURRENT 
+0x2006,        3,       40000,       40000,       40000,       40000,       40000,       40000 # DICT_PROTECTION MAX_CURRENT 
 
 #torque position velocity control
 #main parameters
@@ -45,8 +45,9 @@
 0x2011,        2,       20000,       20000,       20000,       20000,       20000,       20000 # DICT_VELOCITY_CONTROLLER ki
 0x2011,        3,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER kd
 0x2011,        4,         900,         900,         900,         900,         900,         900 # DICT_VELOCITY_CONTROLLER integral limit
-0x2002,        0,           3,           3,           3,           3,           3,           3 # DICT_POSITION_CONTROL_STRATEGY, 3 is non linear
-0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE enable integrated profiler
+0x2002,        0,           3,           3,           3,           3,           3,           3 # DICT_POSITION_CONTROL_STRATEGY #  3: non linear  
+0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
+0x2007,        1,           0,           0,           0,           0,           0,           0 # SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT in Hz (0 to disable)
 # other
 0x2010,        1,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Kp
 0x2010,        2,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Ki

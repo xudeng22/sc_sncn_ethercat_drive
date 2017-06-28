@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #define OPMODE_TUNING    (-128)
-#define DISPLAY_LINE 28
+#define DISPLAY_LINE 30
 #define HELP_ROW_COUNT 12
 
 
@@ -55,7 +55,9 @@ typedef enum {
     TUNING_CMD_CONTROL_POSITION           = 0x08,
     TUNING_CMD_CONTROL_VELOCITY           = 0x09,
     TUNING_CMD_CONTROL_TORQUE             = 0x0A,
-    TUNING_CMD_COGGING_TORQUE             = 0x0B,
+    TUNING_CMD_AUTO_POS_CTRL_TUNE         = 0x0B,
+    TUNING_CMD_AUTO_VEL_CTRL_TUNE         = 0x0C,
+    TUNING_CMD_COGGING_TORQUE             = 0x0D,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,
@@ -71,6 +73,9 @@ typedef enum {
     TUNING_CMD_MIN_POSITION               = 0xCC,
     TUNING_CMD_BRAKE_RELEASE_STRATEGY     = 0xCD,
     TUNING_CMD_POLARITY_MOTION            = 0xCE,
+    TUNING_CMD_FILTER                     = 0xCF,
+    TUNING_CMD_TUNE_AMPLITUDE             = 0xD0,
+    TUNING_CMD_TUNE_PERIOD                = 0xD1,
     TUNING_CMD_MAX_TORQUE                 = 0xE0,
     TUNING_CMD_POLARITY_SENSOR            = 0x90,
     TUNING_CMD_POLE_PAIRS                 = 0xB0,
@@ -98,7 +103,10 @@ typedef enum {
     TUNING_STATUS_MUX_BRAKE_STRAT       = 16,
     TUNING_STATUS_MUX_SENSOR_ERROR      = 17,
     TUNING_STATUS_MUX_MOTION_CTRL_ERROR = 18,
-    TUNING_STATUS_MUX_RATED_TORQUE      = 19
+    TUNING_STATUS_MUX_RATED_TORQUE      = 19,
+    TUNING_STATUS_MUX_FILTER            = 20,
+    TUNING_STATUS_MUX_TUNE_AMPLITUDE    = 21,
+    TUNING_STATUS_MUX_TUNE_PERIOD       = 22
 } TuningStatusMux;
 
 typedef enum {
@@ -114,7 +122,7 @@ typedef enum {
     TUNING_MOTORCTRL_OFF                            = 0,
     TUNING_MOTORCTRL_POSITION_PID                   = 1,
     TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED = 2,
-    TUNING_MOTORCTRL_POSITION_NL                    = 3,
+    TUNING_MOTORCTRL_POSITION_LT                    = 3,
     TUNING_MOTORCTRL_VELOCITY                       = 4,
     TUNING_MOTORCTRL_TORQUE                         = 5
 } TuningMotorCtrlStatus;
@@ -153,6 +161,9 @@ typedef struct {
     int I_velocity;
     int D_velocity;
     int integral_limit_velocity;
+    int filter;
+    int tune_amplitude;
+    int tune_period;
 } InputValues;
 
 typedef struct {
@@ -201,6 +212,7 @@ typedef struct {
     int32_t position;
     int32_t velocity;
     int16_t torque;
+    int32_t timestamp;
 } RecordData;
 
 typedef enum {

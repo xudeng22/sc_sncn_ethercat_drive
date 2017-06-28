@@ -98,8 +98,8 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     case TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED:
         wprintw(wnd, "Position control Velocity Cascaded %9d", pdo_output.target_position);
         break;
-    case TUNING_MOTORCTRL_POSITION_NL:
-        wprintw(wnd, "Position control Non Linear %9d", pdo_output.target_position);
+    case TUNING_MOTORCTRL_POSITION_LT:
+        wprintw(wnd, "Position control Limited Torque %9d", pdo_output.target_position);
         break;
     case TUNING_MOTORCTRL_VELOCITY:
         wprintw(wnd, "Velocity control %5d", pdo_output.target_velocity);
@@ -177,12 +177,18 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
     //row 13
     wmoveclr(wnd, &row);
+    wprintw(wnd, "Autotune Period    %4d | Amplitude        %7d", input.tune_period, input.tune_amplitude);
+    //row 14
+    wmoveclr(wnd, &row);
+    wprintw(wnd, "Filter         %8d", input.filter);
+    //row 15
+    wmoveclr(wnd, &row);
     if (input.cogging_torque_flag == 1) {
         wprintw(wnd, "Cogging torque compensation ON");
     } else {
         wprintw(wnd, "Cogging torque compensation OFF");
     }
-    //row 14
+    //row 16
     wmoveclr(wnd, &row);
     //motorcontrol fault
     if (input.error_status != 0) {

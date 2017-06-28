@@ -451,7 +451,7 @@ static void sdo_monitor_service(client interface i_co_communication i_co)
         uint8_t subindex = 0;
         {iindex, subindex} = i_co.od_get_next_changed_element();
         if (iindex != 0) {
-            printstr("Object changed: 0x"); printhexln(iindex); printstr(":"); printintln(subindex);
+            printstr("Object changed: 0x"); printhex(iindex); printstr(":"); printintln(subindex);
 
             //uint8_t value_buffer[8] = { 0 };
             uint32_t value = 0;

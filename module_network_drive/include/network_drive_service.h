@@ -18,7 +18,7 @@
 /* Set with `-DSTARTUP_READ_FLASH_OBJECTS=1` either in the makefile or at the command line
  * to activate initial read of object dictionary from flash at startup */
 #ifndef STARTUP_READ_FLASH_OBJECTS
-#define STARTUP_READ_FLASH_OBJECTS  0
+#define STARTUP_READ_FLASH_OBJECTS  1
 #endif
 
 /**

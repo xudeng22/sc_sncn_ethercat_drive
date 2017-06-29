@@ -48,10 +48,10 @@ Modules
     :maxdepth: 1
     :hidden:
 
-    Drive Module <module_ethercat_drive/doc/index>
+    Drive Module <module_network_drive/doc/index>
     EtherCAT PDO Handler Module <module_pdo_handler/doc/index>
 
-* `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `Drive Module <module_network_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
 * `EtherCAT PDO Handler Module <module_pdo_handler/doc/index.html>`_: Provides the exchange of the current PDO values between :ref:`SOMANET EtherCAT <somanet_ethercat>` and the user application
 
 

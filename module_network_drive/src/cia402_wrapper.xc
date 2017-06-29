@@ -78,10 +78,12 @@ void print_object_dictionary(client interface i_co_communication i_co)
 //    printstr("HOMING METHOD: ");printintln(sdo_value);
 }
 
+/* FIXME what happend here? Is this function still in use? If no please remove
+* and don't return some undefined values! */
 {int, int} homing_sdo_update(client interface i_co_communication i_co)
 {
-	int homing_method;
-	int limit_switch_type;
+	int homing_method = 0;
+	int limit_switch_type = 0;
 	int index;
 	int error;
 

@@ -133,7 +133,7 @@ void canopen_interface_service(
                     error_out = error;
                     break;
 
-            case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
+            case i_co[int j].od_master_get_object_value(uint16_t index_, uint8_t subindex, size_t capacity, uint8_t value_out[]) -> { uint32_t bitlength_out, uint8_t error_out }:
                     unsigned value = 0;
                     size_t bitsize = 0;
                     int request_from = REQUEST_FROM_MASTER;
@@ -258,6 +258,25 @@ void canopen_interface_service(
                         memcpy(&obj_out, &obj, sizeof(struct _sdoinfo_entry_description));
                     }
                     break;
+
+            /* Functions to handle changed object entry values */
+
+            case i_co[int j].od_changed_values_count(void) -> { size_t changed_values }:
+                    changed_values = sdo_entry_changed_count();
+                    break;
+
+            case i_co[int j].od_entry_has_changed(uint16_t index_, uint8_t subindex) -> { int changed }:
+                    changed = sdo_entry_has_changed(index_, subindex);
+                    break;
+
+            case i_co[int j].od_get_next_changed_element(void) -> {uint16_t index_, uint8_t subindex}:
+                    uint16_t idx;
+                    uint8_t subidx;
+                    sdo_entry_get_next_unread(&idx, &subidx);
+                    index_ = idx;
+                    subindex = subidx;
+                    break;
+
 
             case i_co[int j].od_get_all_list_length(uint16_t list_out[]):
                     uint16_t list[ALL_LIST_LENGTH_SIZE];

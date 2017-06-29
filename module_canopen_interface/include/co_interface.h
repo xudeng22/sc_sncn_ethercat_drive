@@ -103,7 +103,7 @@ interface i_co_communication
      * @return bitlength    Read bitlength of the entry value - Object value, bitlength, Error: 0 -> No error, 2 -> Index not found, 3 -> Subindex not found
      * @return error_out    0 on no error
      */
-    {uint32_t, uint8_t} od_master_get_object_value(uint16_t index_, uint8_t subindex, static const size_t capacity, uint8_t value_out[]);
+    {uint32_t, uint8_t} od_master_get_object_value(uint16_t index_, uint8_t subindex, size_t capacity, uint8_t value_out[]);
 
     /**
      * @brief Master set an object value in dictionary.
@@ -138,6 +138,38 @@ interface i_co_communication
      * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found
      */
     uint8_t od_set_object_value_buffer(uint16_t index_, uint8_t subindex, uint8_t data_buffer[]);
+
+
+    /**
+     * \brief Check how many entry values changed
+     *
+     * The number of changed entry values is incremented everytime the master
+     * updates a value and decremented when the application reads a value from this
+     * dictioanry.
+     *
+     * \return Number of changed entry values
+     */
+    size_t od_changed_values_count(void);
+
+    /**
+     * \brief Check specific object if it changed
+     *
+     * \param index     Index of the object entry to test
+     * \param subindex  Subindex of the object entry to test
+     * \return 0 entry did not changed, 1 entry value is modified
+     */
+    int od_entry_has_changed(uint16_t index, uint8_t subindex);
+
+    /**
+     * \brief Find the next changed object entry
+     *
+     * The last read object entry value is stored internally, this request returns
+     * the next higher index/subindex which has not been read until now.
+     *
+     * \return index and subindex of the next changed element, if index ==
+     *         subindex == 0 then no changed element is present.
+     */
+    {uint16_t, uint8_t} od_get_next_changed_element(void);
 
 
     /**

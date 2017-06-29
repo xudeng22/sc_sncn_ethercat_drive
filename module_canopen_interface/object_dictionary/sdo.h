@@ -64,6 +64,42 @@ extern SDO_Error sdo_error;
 int sdo_entry_get_position(uint16_t index, uint8_t subindex);
 
 /**
+ * \brief Check how many entry values changed
+ *
+ * The number of changed entry values is incremented everytime the master
+ * updates a value and decremented when the application reads a value from this
+ * dictioanry. The number of changed entries can never be negative or larger
+ * than the number of entries.
+ *
+ * \return Number of changed entry values
+ */
+size_t sdo_entry_changed_count(void);
+
+/**
+ * \brief Check specific object if it changed
+ *
+ * \param index     Index of the object entry to test
+ * \param subindex  Subindex of the object entry to test
+ * \return 0 entry did not changed, 1 entry value is modified
+ */
+int sdo_entry_has_changed(uint16_t index, uint8_t subindex);
+
+/**
+ * \brief Find the next changed object entry
+ *
+ * The last read object entry value is stored internally, this request returns
+ * the next higher index/subindex which has the unread flag set. If the search
+ * hits the end of the entry list it continous at the element 0x2000 until the
+ * last read entry (where the search started) is reached. If nothing changed
+ * there than index = subindex = 0 is returned.
+ *
+ * \param[out] index     Index of the next changed object entry
+ * \param[out] subindex  Subindex of the next changed object entry
+ * \return 0 on no error
+ */
+int sdo_entry_get_next_unread(uint16_t *index, uint8_t *subindex);
+
+/**
  * \brief Store value at index in object dictionary
  *
  * **WARNING** `uint8_t *value` needs to be big enough to hold the complete

@@ -72,7 +72,16 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motio
          * it means that motorcontrol faults take precedence over sensor faults
          * */
         if (commutation_sensor_error != SENSOR_NO_ERROR || motion_sensor_error != SENSOR_NO_ERROR) {
-            error_code = ERROR_CODE_SENSOR;
+            if (commutation_sensor_error == SENSOR_QEI_INDEX_LOSING_TICKS || motion_sensor_error == SENSOR_QEI_INDEX_LOSING_TICKS)
+                error_code = ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT;
+            else if (commutation_sensor_error == SENSOR_INCREMENTAL_FAULT || motion_sensor_error == SENSOR_INCREMENTAL_FAULT)
+                error_code = ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT;
+            else if (commutation_sensor_error == SENSOR_SPEED_FAULT  || motion_sensor_error == SENSOR_SPEED_FAULT)
+                error_code = ERROR_CODE_SPEED;
+            else if (commutation_sensor_error == SENSOR_POSITION_FAULT  || motion_sensor_error == SENSOR_POSITION_FAULT)
+                error_code = ERROR_CODE_POSITION;
+            else
+                error_code = ERROR_CODE_SENSOR;
         } else {
             /* if there is no sensor fault check motion control fault */
             switch(motion_control_error) {

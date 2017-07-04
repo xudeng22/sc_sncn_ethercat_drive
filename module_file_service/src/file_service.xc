@@ -152,18 +152,16 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
 {
     spiffs_stat file_list[SPIFFS_MAX_FILELIST_ITEMS];
     char list_text[MAX_FOE_DATA];
-    char fsize_string[16];
+    char fsize_string[32];
     size_t wsize = 0;
     enum eFoeStat stat = FOE_STAT_DATA;
-    int res;
 
-    res = i_spiffs.ls_struct(file_list);
-
-    file_item = 0;
+    if (file_item == 0)
+        i_spiffs.ls_struct(file_list);
 
     memset(list_text, '/0', MAX_FOE_DATA);
-    strcpy(list_text, "File list:\n");
-    while ((file_list[file_item].obj_id > 0)&&(file_item < SPIFFS_MAX_FILELIST_ITEMS))
+    strcpy(list_text, "\n");
+    while ((file_list[file_item].obj_id > 0)&&(strlen(list_text) < (MAX_FOE_DATA - SPIFFS_MAX_FILENAME_SIZE)))
     {
         sprintf(fsize_string, ", size: %u \n", file_list[file_item].size);
         strcat(list_text, file_list[file_item].name);
@@ -172,16 +170,16 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
     }
 
     {wsize, stat} = i_foe.write_data((int8_t *)list_text, strlen(list_text), FOE_ERROR_NONE);
-    return -1;
-    /*else
+
+    if (file_list[file_item].obj_id == 0)
     {
         file_item = 0;
         return -1;
-    }*/
+    }
 
-
-    return res;
+    return 0;
 }
+
 
 static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
 {
@@ -282,9 +280,9 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        if (strcmp(file.filename, "fs-getlist") == 0)
+        if ((strcmp(file.filename, "fs-getlist") == 0)||(file_item > 0))
         {
-            if (get_file_list(i_foe, i_spiffs) == -1)
+            if (get_file_list(i_foe, i_spiffs) != 0)
                 stat = FOE_STAT_EOF;
         }
         else
@@ -385,10 +383,6 @@ void file_service(
     file.current = 0;
     file.cfd = 0;
     memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
-
-    /* wait some time until ethercat handler is ready */
-   // t :> time;
-   // t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
 
     enum eFoeNotificationType notify = FOE_NTYPE_UNDEF;
 

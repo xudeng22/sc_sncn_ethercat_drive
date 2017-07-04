@@ -159,7 +159,7 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
     if (file_item == 0)
         i_spiffs.ls_struct(file_list);
 
-    memset(list_text, '/0', MAX_FOE_DATA);
+    memset(list_text, '\0', MAX_FOE_DATA);
     strcpy(list_text, "\n");
     while ((file_list[file_item].obj_id > 0)&&(strlen(list_text) < (MAX_FOE_DATA - SPIFFS_MAX_FILENAME_SIZE)))
     {

@@ -9,16 +9,13 @@
  * Integration of commit 0a13cfd9aa4e98e8d46bb2de42d4648854d31e25 from sc_sncn_ethercatlib
  */
 
-#include <flash_service.h>
 #include <file_service.h>
-#include <co_interface.h>
 #include <xs1.h>
 #include <print.h>
 #include <string.h>
 #include <stdio.h>
-#include <config_parser.h>
 
-static int8_t foedata[FOE_MAX_SIM_FILE_SIZE];
+static int8_t foedata[FOE_DATA_BUFFER_SIZE];
 char errormsg[] = "error";
 struct _file_t file;
 int file_item = 0;

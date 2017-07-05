@@ -9,18 +9,16 @@
  * Integration of commit 0a13cfd9aa4e98e8d46bb2de42d4648854d31e25 from sc_sncn_ethercatlib
  */
 
-#include <flash_service.h>
 #include <file_service.h>
-#include <co_interface.h>
 #include <xs1.h>
 #include <print.h>
 #include <string.h>
-#include <safestring.h>
-#include <config_parser.h>
+#include <stdio.h>
 
-static int8_t foedata[FOE_MAX_SIM_FILE_SIZE];
+static int8_t foedata[FOE_DATA_BUFFER_SIZE];
 char errormsg[] = "error";
 struct _file_t file;
+int file_item = 0;
 
 
 static unsigned int set_configuration_to_dictionary(
@@ -146,6 +144,40 @@ static int flash_read_od_config(
     return result;
 }
 
+
+int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
+{
+    spiffs_stat file_list[SPIFFS_MAX_FILELIST_ITEMS];
+    char list_text[MAX_FOE_DATA];
+    char fsize_string[32];
+    size_t wsize = 0;
+    enum eFoeStat stat = FOE_STAT_DATA;
+
+    if (file_item == 0)
+        i_spiffs.ls_struct(file_list);
+
+    memset(list_text, '\0', MAX_FOE_DATA);
+    strcpy(list_text, "\n");
+    while ((file_list[file_item].obj_id > 0)&&(strlen(list_text) < (MAX_FOE_DATA - SPIFFS_MAX_FILENAME_SIZE)))
+    {
+        sprintf(fsize_string, ", size: %u \n", file_list[file_item].size);
+        strcat(list_text, file_list[file_item].name);
+        strcat(list_text, fsize_string);
+        file_item++;
+    }
+
+    {wsize, stat} = i_foe.write_data((int8_t *)list_text, strlen(list_text), FOE_ERROR_NONE);
+
+    if (file_list[file_item].obj_id == 0)
+    {
+        file_item = 0;
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
 {
     int wait_for_reply = 0;
@@ -241,38 +273,43 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     enum eFoeStat stat = FOE_STAT_DATA;
     enum eFoeError foe_error = FOE_ERROR_NONE;
 
-    foe_error = FOE_ERROR_NONE;
-
     if (!file.opened)
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), SPIFFS_RDONLY);
-        if (file.cfd < 0)
+        if ((strcmp(file.filename, "fs-getlist") == 0)||(file_item > 0))
         {
-            if (file.cfd == SPIFFS_ERR_NOT_FOUND)
-            {
-                printstrln("Error opening file not found");
-                foe_error = FOE_ERROR_NOT_FOUND;
-                stat = FOE_STAT_ERROR;
-            }
-            else
-            {
-                printstr("Error opening file: code ");
-                printintln(file.cfd);
-                foe_error = FOE_ERROR_PROGRAM_ERROR;
-                stat = FOE_STAT_ERROR;
-            }
+            if (get_file_list(i_foe, i_spiffs) != 0)
+                stat = FOE_STAT_EOF;
         }
         else
-         {
-             file.opened = 1;
-             printstr("File opened: ");
-             printintln(file.cfd);
-             file.length = i_spiffs.get_file_size(file.cfd);
-         }
+        {
+            file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), SPIFFS_RDONLY);
+            if (file.cfd < 0)
+            {
+                if (file.cfd == SPIFFS_ERR_NOT_FOUND)
+                {
+                    printstrln("Error opening file not found");
+                    foe_error = FOE_ERROR_NOT_FOUND;
+                    stat = FOE_STAT_ERROR;
+                }
+                else
+                {
+                    printstr("Error opening file: code ");
+                    printintln(file.cfd);
+                    foe_error = FOE_ERROR_PROGRAM_ERROR;
+                    stat = FOE_STAT_ERROR;
+                }
+            }
+            else
+             {
+                 file.opened = 1;
+                 printstr("File opened: ");
+                 printintln(file.cfd);
+                 file.length = i_spiffs.get_file_size(file.cfd);
+             }
+        }
     }
-
     if (file.opened)
     {
         size = file.length - file.current;
@@ -343,10 +380,6 @@ void file_service(
     file.current = 0;
     file.cfd = 0;
     memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
-
-    /* wait some time until ethercat handler is ready */
-   // t :> time;
-   // t when timerafter(time + FILE_SERVICE_INITIAL_DELAY) :> void;
 
     enum eFoeNotificationType notify = FOE_NTYPE_UNDEF;
 

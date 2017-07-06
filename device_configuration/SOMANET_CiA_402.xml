@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <EtherCATInfo Version="1.2">
   <Vendor>
     <Id>#x000022D2</Id>
@@ -838,8 +838,8 @@
                 <SubItem>
                   <SubIdx>5</SubIdx>
                   <Name>Motor phases inverted</Name>
-                  <Type>USINT</Type>
-                  <BitSize>8</BitSize>
+                  <Type>BOOL</Type>
+                  <BitSize>1</BitSize>
                   <BitOffs>120</BitOffs>
                   <Flags>
                     <Access>rw</Access>
@@ -979,8 +979,8 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Recuperation enabled</Name>
-                  <Type>USINT</Type>
-                  <BitSize>8</BitSize>
+                  <Type>BOOL</Type>
+                  <BitSize>1</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
                     <Access>rw</Access>
@@ -1145,7 +1145,7 @@
               </DataType>
               <DataType>
                 <Name>DT2010ARR</Name>
-                <BaseType>DINT</BaseType>
+                <BaseType>REAL</BaseType>
                 <BitSize>96</BitSize>
                 <ArrayInfo>
                   <LBound>1</LBound>
@@ -1194,7 +1194,7 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Controller Kp</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
@@ -1205,7 +1205,7 @@
                 <SubItem>
                   <SubIdx>2</SubIdx>
                   <Name>Controller Ki</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
@@ -1216,7 +1216,7 @@
                 <SubItem>
                   <SubIdx>3</SubIdx>
                   <Name>Controller Kd</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
@@ -1253,7 +1253,7 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Controller Kp</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
@@ -1264,7 +1264,7 @@
                 <SubItem>
                   <SubIdx>2</SubIdx>
                   <Name>Controller Ki</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
@@ -1275,7 +1275,7 @@
                 <SubItem>
                   <SubIdx>3</SubIdx>
                   <Name>Controller Kd</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
@@ -3150,7 +3150,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-				  <Unit>#x00B44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3196,18 +3196,21 @@
                     <Name>Torque Constant</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#xFA560400</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Phase Resistance</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#xFA280000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Phase Inductance</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#xFA2C0000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4693,6 +4696,20 @@
                   <PdoMapping>t</PdoMapping>
                 </Flags>
               </Object>
+              <Object>
+                <Index>#x2000</Index>
+                <Name>Command Object</Name>
+                <Comment></Comment>
+                <Type>UINT</Type>
+                <BitSize>16</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
             </Objects>
           </Dictionary>
         </Profile>
@@ -4764,7 +4781,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name></Name>
+            <Name>padding entry (automatically added)</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4777,7 +4794,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name></Name>
+            <Name>padding entry (automatically added)</Name>
             <DataType></DataType>
           </Entry>
           <Entry>

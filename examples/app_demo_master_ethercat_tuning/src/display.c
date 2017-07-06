@@ -183,6 +183,13 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Filter         %8d", input.filter);
     //row 15
     wmoveclr(wnd, &row);
+    if (input.cogging_torque_flag == 1) {
+        wprintw(wnd, "Cogging torque compensation ON");
+    } else {
+        wprintw(wnd, "Cogging torque compensation OFF");
+    }
+    //row 16
+    wmoveclr(wnd, &row);
     //motorcontrol fault
     if (input.error_status != 0) {
         wprintw(wnd, "* Motor Fault ");

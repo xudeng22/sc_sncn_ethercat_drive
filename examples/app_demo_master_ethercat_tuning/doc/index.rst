@@ -91,6 +91,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``ep[number]``: enable position control. The value is to set the position control mode. 1 is for simple PID, 2 for velocity cascaded, and 3 for limited torque position controller. The modes don't use the same parameters so check if the parameters are for the right mode before enabling.
   - ``ev1``: enable velocity control.
   - ``et1``: enable torque control.
+  - ``ec``: toggle cogging torque compensation.
   - ``e``: and any command starting with e like ep, ev, et will disable the motorcontrol. It's the same as the command [enter].
   - ``z``: reset the multiturn position to 0 (the number of turn). This doesn't change the offset. This command only works with the REM 16MT position sensor.
   - ``zz``: reset the multiturn and singleturn position to 0. The offset need to be found again. This command only works with the REM 16MT position sensor.

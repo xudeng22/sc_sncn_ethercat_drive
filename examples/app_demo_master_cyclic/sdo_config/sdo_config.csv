@@ -52,7 +52,7 @@
 0x2010,        1,          40,          40,          40,          40,          40,          40 # TORQUE_Kp
 0x2010,        2,          40,          40,          40,          40,          40,          40 # TORQUE_Ki
 0x2010,        3,           0,           0,           0,           0,           0,           0 # TORQUE_Kd
-0x200A,        0,           0,           0,           0,           0,           0,           0 # MOMENT_OF_INERTIA [kg·m2]
+0x200A,        0,           0,           0,           0,           0,           0,           0 # MOMENT_OF_INERTIA [g·m2]
 
 #sensor config
 0x607C,        0,           0,           0,           0,           0,           0,           0 # HOME_OFFSET [encoder increments (ticks)]

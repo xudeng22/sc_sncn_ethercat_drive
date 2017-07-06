@@ -41,65 +41,99 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error, SensorError commutation_sensor_error, MotionControlError motion_control_error)
+static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError watchdog_error, SensorError motion_sensor_error, SensorError commutation_sensor_error, MotionControlError motion_control_error)
 {
     int error_code = 0;
 
-    switch (motorcontrol_fault) {
-    case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
+    switch(watchdog_error) {
+    /* if there is no watchdog fault check motorcontrol fault
+     * it means that motorcontrol faults take precedence over sensor faults
+     * */
+    case WATCHDOG_TICKS_ERROR:
+        error_code = ERROR_CODE_SOFTWARE_RESET_WATCHDOG;
+        break;
+    case WATCHDOG_DEAD_TIME_PHASE_A_ERROR:
         error_code = ERROR_CODE_PHASE_FAILURE_L1;
         break;
-    case UNDER_VOLTAGE_NO_1:
+    case WATCHDOG_DEAD_TIME_PHASE_B_ERROR:
+        error_code = ERROR_CODE_PHASE_FAILURE_L1;
+        break;
+    case WATCHDOG_DEAD_TIME_PHASE_C_ERROR:
+        error_code = ERROR_CODE_PHASE_FAILURE_L1;
+        break;
+    case WATCHDOG_DEAD_TIME_PHASE_D_ERROR:
+        error_code = ERROR_CODE_PHASE_FAILURE;
+        break;
+    case WATCHDOG_OVER_CURRENT_ERROR:
+        error_code = ERROR_CODE_CONTINUOUS_OVER_CURRENT_DEVICE_INTERNAL;
+        break;
+    case WATCHDOG_OVER_UNDER_VOLTAGE_OVER_TEMP_ERROR:
         error_code = ERROR_CODE_DC_LINK_UNDER_VOLTAGE;
         break;
-    case OVER_VOLTAGE_NO_1:
-        error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
+    case WATCHDOG_UNKNOWN_ERROR:
+        error_code = ERROR_CODE_CONTROL;
         break;
-    case EXCESS_TEMPERATURE_DRIVE:
-        error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
-        break;
-    case PHASE_FAILURE_L1:
-        error_code = ERROR_CODE_PHASE_FAILURE_L1;
-        break;
-    case PHASE_FAILURE_L2:
-        error_code = ERROR_CODE_PHASE_FAILURE_L2;
-        break;
-    case PHASE_FAILURE_L3:
-        error_code = ERROR_CODE_PHASE_FAILURE_L3;
-        break;
-    case NO_FAULT:
-        /* if there is no motorcontrol fault check sensor fault
-         * it means that motorcontrol faults take precedence over sensor faults
-         * */
-        if (commutation_sensor_error != SENSOR_NO_ERROR || motion_sensor_error != SENSOR_NO_ERROR) {
-            if (commutation_sensor_error == SENSOR_QEI_INDEX_LOSING_TICKS || motion_sensor_error == SENSOR_QEI_INDEX_LOSING_TICKS)
-                error_code = ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT;
-            else if (commutation_sensor_error == SENSOR_INCREMENTAL_FAULT || motion_sensor_error == SENSOR_INCREMENTAL_FAULT)
-                error_code = ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT;
-            else if (commutation_sensor_error == SENSOR_SPEED_FAULT  || motion_sensor_error == SENSOR_SPEED_FAULT)
-                error_code = ERROR_CODE_SPEED;
-            else if (commutation_sensor_error == SENSOR_POSITION_FAULT  || motion_sensor_error == SENSOR_POSITION_FAULT)
-                error_code = ERROR_CODE_POSITION;
-            else
-                error_code = ERROR_CODE_SENSOR;
-        } else {
-            /* if there is no sensor fault check motion control fault */
-            switch(motion_control_error) {
-            case MOTION_CONTROL_BRAKE_NOT_RELEASED:
-                error_code = ERROR_CODE_MOTOR_BLOCKED;
-                break;
-            case MOTION_CONTROL_NO_ERROR:
-                break;
-            default:
-                error_code = ERROR_CODE_CONTROL;
-                break;
+    case WATCHDOG_NO_ERROR:
+        switch (motorcontrol_fault) {
+        case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
+            error_code = ERROR_CODE_CONTINUOUS_OVER_CURRENT_DEVICE_INTERNAL;
+            break;
+        case UNDER_VOLTAGE_NO_1:
+            error_code = ERROR_CODE_DC_LINK_UNDER_VOLTAGE;
+            break;
+        case OVER_VOLTAGE_NO_1:
+            error_code = ERROR_CODE_DC_LINK_OVER_VOLTAGE;
+            break;
+        case EXCESS_TEMPERATURE_DRIVE:
+            error_code = ERROR_CODE_EXCESS_TEMPERATURE_DEVICE;
+            break;
+        case PHASE_FAILURE_L1:
+            error_code = ERROR_CODE_PHASE_FAILURE_L1;
+            break;
+        case PHASE_FAILURE_L2:
+            error_code = ERROR_CODE_PHASE_FAILURE_L2;
+            break;
+        case PHASE_FAILURE_L3:
+            error_code = ERROR_CODE_PHASE_FAILURE_L3;
+            break;
+        case NO_FAULT:
+            /* if there is no motorcontrol fault check sensor fault
+             * it means that motorcontrol faults take precedence over sensor faults
+             * */
+            if (commutation_sensor_error != SENSOR_NO_ERROR || motion_sensor_error != SENSOR_NO_ERROR) {
+                if (commutation_sensor_error == SENSOR_QEI_INDEX_LOSING_TICKS || motion_sensor_error == SENSOR_QEI_INDEX_LOSING_TICKS)
+                    error_code = ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT;
+                else if (commutation_sensor_error == SENSOR_INCREMENTAL_FAULT || motion_sensor_error == SENSOR_INCREMENTAL_FAULT)
+                    error_code = ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT;
+                else if (commutation_sensor_error == SENSOR_SPEED_FAULT  || motion_sensor_error == SENSOR_SPEED_FAULT)
+                    error_code = ERROR_CODE_SPEED;
+                else if (commutation_sensor_error == SENSOR_POSITION_FAULT  || motion_sensor_error == SENSOR_POSITION_FAULT)
+                    error_code = ERROR_CODE_POSITION;
+                else
+                    error_code = ERROR_CODE_SENSOR;
+            } else {
+                /* if there is no sensor fault check motion control fault */
+                switch(motion_control_error) {
+                case MOTION_CONTROL_BRAKE_NOT_RELEASED:
+                    error_code = ERROR_CODE_MOTOR_BLOCKED;
+                    break;
+                case MOTION_CONTROL_NO_ERROR:
+                    break;
+                default:
+                    error_code = ERROR_CODE_CONTROL;
+                    break;
+                }
             }
-        }
+            break;
+        default: /* a fault occured but could not be specified further */
+            error_code = ERROR_CODE_CONTROL;
+            break;
+        } // end switch motorcontrol_fault
         break;
     default: /* a fault occured but could not be specified further */
         error_code = ERROR_CODE_CONTROL;
         break;
-    }
+    } //end switch watchdog error
 
     return error_code;
 }
@@ -563,6 +597,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         SensorError motion_sensor_error = send_to_master.last_sensor_error;
         SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
         MotionControlError motion_control_error = send_to_master.motion_control_error;
+        WatchdogError watchdog_error = send_to_master.watchdog_error;
 
 //        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
 //        xscope_int(ACTUAL_POSITION, actual_position);
@@ -574,12 +609,13 @@ void network_drive_service(ProfilerConfig &profiler_config,
          */
         if (motorcontrol_fault != NO_FAULT ||
                 motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR ||
-                motion_control_error != MOTION_CONTROL_NO_ERROR)
+                motion_control_error != MOTION_CONTROL_NO_ERROR ||
+                watchdog_error != WATCHDOG_NO_ERROR)
         {
             update_checklist(checklist, opmode, 1);
             if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
-                SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (motorcontrol_fault == UNDER_VOLTAGE_NO_1) {
+                SET_BIT(statusword, SW_FAULT_OVER_CURRENT || watchdog_error == WATCHDOG_OVER_CURRENT_ERROR);
+            } else if (motorcontrol_fault == UNDER_VOLTAGE_NO_1 || watchdog_error == WATCHDOG_OVER_UNDER_VOLTAGE_OVER_TEMP_ERROR) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
             } else if (motorcontrol_fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
@@ -588,7 +624,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
+            int error_code = get_cia402_error_code(motorcontrol_fault, watchdog_error, motion_sensor_error, commutation_sensor_error, motion_control_error);
             i_co.od_set_object_value(DICT_ERROR_CODE, 0, error_code);
         } else {
             update_checklist(checklist, opmode, 0); //no error
@@ -760,7 +796,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                  */
                 if (read_controlword_fault_reset(controlword) && checklist.fault_reset_wait == false) {
                     //reset fault in motorcontrol
-                    if (motorcontrol_fault != NO_FAULT) {
+                    if (motorcontrol_fault != NO_FAULT || watchdog_error != WATCHDOG_NO_ERROR) {
                         i_torque_control.reset_faults();
                         checklist.fault_reset_wait = true;
                     }
@@ -772,7 +808,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                         i_position_feedback_1.set_config(position_feedback_config_1);
                         checklist.fault_reset_wait = true;
                     }
-                    //reset fault in position feedback
+                    //reset fault in motion control
                     if (motion_control_error != MOTION_CONTROL_NO_ERROR) {
                         i_motion_control.set_motion_control_config(motion_control_config);
                     }
@@ -783,7 +819,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     if (timeafter(time, fault_reset_wait_time)) {
                         checklist.fault_reset_wait = false;
                         /* recheck fault to see if it's realy removed */
-                        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR) {
+                        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR || watchdog_error != WATCHDOG_NO_ERROR) {
                             update_checklist(checklist, opmode, 1);
                         }
                     }

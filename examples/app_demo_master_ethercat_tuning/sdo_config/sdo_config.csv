@@ -1,58 +1,59 @@
 #index, subindex,      axis 1,      axis 2,      axis 3,      axis 4,      axis 5,      axis 6
 #offset
+
 0x2001,        0,        1201,        1202,        1202,        1204,        1205,        1206 # DICT_COMMUTATION_ANGLE_OFFSET
 0x2A00,        0,          20,          20,          20,          20,          20,          20 # DICT_APPLIED_TUNING_TORQUE_PERCENT for offset tuning
 
 #motor config
-0x6075,        0,        4800,        4800,        4800,        4800,        4800,        4800 # DICT_MOTOR_RATED_CURRENT
-0x6076,        0,         270,         270,         270,         270,         270,         270 # DICT_MOTOR_RATED_TORQUE
-0x2003,        1,          10,          10,          10,          10,          10,          10 # DICT_MOTOR_SPECIFIC_SETTINGS POLE_PAIRS
-0x2003,        2,       60000,       60000,       60000,       60000,       60000,       60000 # DICT_MOTOR_SPECIFIC_SETTINGS TORQUE_CONSTANT
-0x2003,        3,      552000,      552000,      552000,      552000,      552000,      552000 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_RESISTANCE
-0x2003,        4,         720,         720,         720,         720,         720,         720 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_INDUCTANCE     
-0x2003,        5,           0,           0,           0,           0,           0,           0 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED (0 normal, 1 inverted)
+0x6075,        0,        4100,        4100,        4100,        4100,        4100,        4100 # DICT_MOTOR_RATED_CURRENT
+0x6076,        0,         620,         620,         620,         620,         620,         620 # DICT_MOTOR_RATED_TORQUE
+0x2003,        1,           5,           5,           5,           5,           5,           5 # DICT_MOTOR_SPECIFIC_SETTINGS POLE_PAIRS
+0x2003,        2,      170000,      170000,      170000,      170000,      170000,      170000 # DICT_MOTOR_SPECIFIC_SETTINGS TORQUE_CONSTANT
+0x2003,        3,     1270000,     1270000,     1270000,     1270000,     1270000,     1270000 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_RESISTANCE
+0x2003,        4,        1330,        1330,        1330,        1330,        1330,        1330 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_INDUCTANCE     
+0x2003,        5,           0,           0,           0,           0,           0,           0 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED (1 normal, -1 inverted)
 
 #brake config
-0x2004,        1,       13000,       13000,       13000,       13000,       13000,       13000 # DICT_BREAK_RELEASE PULL_BRAKE_VOLTAGE
+0x2004,        1,       18000,       18000,       18000,       18000,       18000,       18000 # DICT_BREAK_RELEASE PULL_BRAKE_VOLTAGE
 0x2004,        2,        7000,        7000,        7000,        7000,        7000,        7000 # DICT_BREAK_RELEASE HOLD_BRAKE_VOLTAGE
-0x2004,        3,         500,         500,         500,         500,         500,         500 # DICT_BREAK_RELEASE PULL_BRAKE_TIME 
-0x2004,        4,           0,           0,           0,           0,           0,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_STRATEGY 
+0x2004,        3,        3000,        3000,        3000,        3000,        3000,        3000 # DICT_BREAK_RELEASE PULL_BRAKE_TIME 
+0x2004,        4,          80,          80,          80,          80,          80,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_STRATEGY 
 0x2004,        5,           0,           0,           0,           0,           0,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_DELAY 
-0x2004,        6,          24,          24,          24,          24,          24,          24 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
+0x2004,        6,          48,          48,          48,          48,          48,          48 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
 
 #limits
-0x6072,        0,         100,         100,         100,         100,         100,          50 # DICT_MAX_TORQUE, in 1/1000 of rated torque
+0x6072,        0,        8065,        8065,        8065,        8065,        8065,        8065 # DICT_MAX_TORQUE, in 1/1000 of rated torque
 0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_MAX_MOTOR_SPEED
-0x6085,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_QUICK_STOP_DECELERATION
 0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
 0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT
-0x607B,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
-0x607B,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_POSITION_RANGE_LIMITS MAX
+0x607B,        1,    -1800000,     -350000,     -600000,    -2000000,    -1000000, -0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
+0x607B,        2,     1800000,      800000,     1200000,     2000000,     1000000,  0x7fffffff # DICT_POSITION_RANGE_LIMITS MAX
 
 #protection
 0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
-0x2006,        2,          60,          60,          60,          60,          60,          60 # DICT_PROTECTION MAX_DC_VOLTAGE
+0x2006,        2,          55,          55,          55,          55,          55,          55 # DICT_PROTECTION MAX_DC_VOLTAGE
 0x2006,        3,       40000,       40000,       40000,       40000,       40000,       40000 # DICT_PROTECTION MAX_CURRENT 
 
 #torque position velocity control
-#main parameters
-0x607E,        0,        0x00,        0x00,        0x00,        0x00,        0x00,        0x00 # DICT_POLARITY (bit 0x80 invert in CSP mode,  bit 0x40 invert in CSV mode)
-0x2012,        1,       16000,       16000,       16000,       16000,       16000,       16000 # DICT_POSITION_CONTROLLER kp
-0x2012,        2,         280,         280,         280,         280,         280,         280 # DICT_POSITION_CONTROLLER ki
-0x2012,        3,       41000,       41000,       41000,       41000,       41000,       41000 # DICT_POSITION_CONTROLLER kd
+#pid parameters
+0x2012,        1,       39070,       20000,       16420,       40000,       50000,       10000 # DICT_POSITION_CONTROLLER kp
+0x2012,        2,         207,         100,         120,         600,        1000,        1000 # DICT_POSITION_CONTROLLER ki
+0x2012,        3,      156280,       82000,       65700,      160000,      200000,       40000 # DICT_POSITION_CONTROLLER kd
 0x2012,        4,        1000,        1000,        1000,        1000,        1000,        1000 # DICT_POSITION_CONTROLLER integral limit
-0x2011,        1,      700000,      700000,      700000,      700000,      700000,      700000 # DICT_VELOCITY_CONTROLLER Kp
-0x2011,        2,       20000,       20000,       20000,       20000,       20000,       20000 # DICT_VELOCITY_CONTROLLER ki
+0x2011,        1,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER Kp
+0x2011,        2,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER ki
 0x2011,        3,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER kd
-0x2011,        4,         900,         900,         900,         900,         900,         900 # DICT_VELOCITY_CONTROLLER integral limit
-0x2002,        0,           3,           3,           3,           3,           3,           3 # DICT_POSITION_CONTROL_STRATEGY #  3: non linear  
+0x2011,        4,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER integral limit
+#other parameters
+0x607E,        0,        0x00,        0x00,        0x00,        0x00,        0x00,        0x00 # DICT_POLARITY (bit 0x80 invert in CSP mode,  bit 0x40 invert in CSV mode)
+0x2002,        0,           3,           3,           3,           3,           3,           2 # DICT_POSITION_CONTROL_STRATEGY #  3: limited torque controller 
 0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
-0x2007,        1,           0,           0,           0,           0,           0,           0 # SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT in Hz (0 to disable)
+0x2007,        1,           0,           0,           0,           0,           0,           0 # POSITION_FILTER_COEFFICIENT in Hz (0 to disable)
 # other
 0x2010,        1,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Kp
 0x2010,        2,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Ki
 0x2010,        3,           0,           0,           0,           0,           0,           0 # DICT_TORQUE_CONTROLLER Kd
-0x200A,        0,           0,           0,           0,           0,           0,           0 # DICT_MOMENT_OF_INERTIA
+0x200A,        0,       34441,      120000,      120000,       40000,           0,           0 # DICT_MOMENT_OF_INERTIA
 
 #sensor config
 0x607C,        0,           0,           0,           0,           0,           0,           0 # DICT_HOME_OFFSET
@@ -86,3 +87,11 @@
 0x2207,       10,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_4
 0x2207,       11,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_5
 
+#,        0,          0 # 
+#unknown ???
+#0x6085,        0,           0,           0,           0,           0,           0,           0 # DICT_QUICK_STOP_DECELERATION
+#0x6083,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_ACCELERATION
+#0x6084,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_DECELERATION
+#0x607F,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_VELOCITY
+#0x6073,        0,           0,           0,           0,           0,           0,           0 # DICT_MAX_CURRENT
+#0x6079,        0,           0,           0,           0,           0,           0,           0 # DICT_DC_LINK_CIRCUIT_VOLTAGE

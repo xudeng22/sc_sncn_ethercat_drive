@@ -69,7 +69,8 @@
 0x2201,        7,        4000,        4000,        4000,        4000,        4000,        4000 # BISS_ENCODER_CLOCK_FREQUENCY [Hz]
 0x2201,        8,          20,          20,          20,          20,          20,          20 # BISS_ENCODER_TIMEOUT - BiSS timeout in [usec]
 0x2201,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # BISS_ENCODER_CRC_POLYNOM - polynom in reverse representation:  x^0 + x^1 + x^6 is 0b110000
-0x2201,       10,           8,           8,           8,           8,           8,           8 # BISS_ENCODER_CLOCK_PORT_CONFIG - which HW port is used for clock
+0x2201,       10,           8,           8,           8,           8,           8,           8 # BISS_ENCODER_CLOCK_PORT_CONFIG - which HW port is used for clock: [0:4,8]. [0:3] GPIO Ports 0:3, [4] - GPIO Port 4, [8] - GPIO Port 5
+0x2201,       11,           1,           1,           1,           1,           1,           1 # BISS_ENCODER_DATA_PORT_CONFIG - which HW port is used for data: [0:5]. [0:1] - Encoder Ports 1:2, [2:5] GPIO Ports 0:3
 0x2201,       12,           0,           0,           0,           0,           0,           0 # BISS_ENCODER_NUMBER_OF_FILLING_BITS [bits]
 0x2201,       13,          30,          30,          30,          30,          30,          30 # BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY [bits]
 #BiSS-C Encoder 2
@@ -82,13 +83,14 @@
 0x2202,        7,        4000,        4000,        4000,        4000,        4000,        4000 # BISS_ENCODER_CLOCK_FREQUENCY [Hz]
 0x2202,        8,          20,          20,          20,          20,          20,          20 # BISS_ENCODER_TIMEOUT - BiSS timeout in [usec]
 0x2202,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # BISS_ENCODER_CRC_POLYNOM - polynom in reverse representation:  x^0 + x^1 + x^6 is 0b110000
-0x2202,       10,           8,           8,           8,           8,           8,           8 # BISS_ENCODER_CLOCK_PORT_CONFIG - which HW port is used for clock
+0x2202,       10,           8,           8,           8,           8,           8,           8 # BISS_ENCODER_CLOCK_PORT_CONFIG - which HW port is used for clock: [0:4,8]. [0:3] GPIO Ports 0:3, [4] - GPIO Port 4, [8] - GPIO Port 5
+0x2202,       11,           1,           1,           1,           1,           1,           1 # BISS_ENCODER_DATA_PORT_CONFIG - which HW port is used for data: [0:5]. [0:1] - Encoder Ports 1:2, [2:5] GPIO Ports 0:3
 0x2202,       12,           0,           0,           0,           0,           0,           0 # BISS_ENCODER_NUMBER_OF_FILLING_BITS [bits]
 0x2202,       13,          30,          30,          30,          30,          30,          30 # BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY [bits]
 #REM 16MT Encoder
 0x2203,        1,           6,           6,           6,           6,           6,           6 # SENSOR TYPE (6 is REM 16MT)
 0x2203,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
-0x2203,        3,      262144,      262144,      262144,      262144,      262144,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2203,        3,       65536,       65536,       65536,       65536,       65536,       65536 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2203,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
 0x2203,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
 0x2203,        6,           2,           2,           2,           2,           2,           2 # REM_16MT_FILTER [0:9] 2 is recommended
@@ -108,7 +110,7 @@
 0x2205,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2205,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
 0x2205,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
-0x2205,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [2:3] - 2: AB, 3: ABI
+0x2205,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [0:1] - 0: AB (2 channels), 1: ABI (3 channels)
 0x2205,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
 #Incremental Encoder 2
 0x2206,        1,           2,           2,           2,           2,           2,           2 # SENSOR TYPE (2 is Incremental Encoder)
@@ -116,7 +118,7 @@
 0x2206,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2206,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
 0x2206,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
-0x2206,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [2:3] - 2: AB, 3: ABI
+0x2206,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [0:1] - 0: AB (2 channels), 1: ABI (3 channels)
 0x2206,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
 #hall sensor 1
 0x2207,        1,           1,           1,           1,           1,           1,           1 # SENSOR TYPE (1 is Hall)

@@ -41,7 +41,9 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError watchdog_error, SensorError motion_sensor_error, SensorError commutation_sensor_error, MotionControlError motion_control_error)
+static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError watchdog_error,
+                                 SensorError motion_sensor_error, SensorError commutation_sensor_error,
+                                 MotionControlError motion_control_error)
 {
     int error_code = 0;
 
@@ -607,14 +609,15 @@ void network_drive_service(ProfilerConfig &profiler_config,
          * Check states of the motor drive, sensor drive and control servers
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
          */
-        if (motorcontrol_fault != NO_FAULT ||
-                motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR ||
-                motion_control_error != MOTION_CONTROL_NO_ERROR ||
-                watchdog_error != WATCHDOG_NO_ERROR)
+        if ( motorcontrol_fault != NO_FAULT ||
+             motion_sensor_error != SENSOR_NO_ERROR ||
+             commutation_sensor_error != SENSOR_NO_ERROR ||
+             motion_control_error != MOTION_CONTROL_NO_ERROR ||
+             watchdog_error != WATCHDOG_NO_ERROR )
         {
             update_checklist(checklist, opmode, 1);
-            if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
-                SET_BIT(statusword, SW_FAULT_OVER_CURRENT || watchdog_error == WATCHDOG_OVER_CURRENT_ERROR);
+            if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1 || watchdog_error == WATCHDOG_OVER_CURRENT_ERROR) {
+                SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
             } else if (motorcontrol_fault == UNDER_VOLTAGE_NO_1 || watchdog_error == WATCHDOG_OVER_UNDER_VOLTAGE_OVER_TEMP_ERROR) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
             } else if (motorcontrol_fault == OVER_VOLTAGE_NO_1) {
@@ -819,7 +822,11 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     if (timeafter(time, fault_reset_wait_time)) {
                         checklist.fault_reset_wait = false;
                         /* recheck fault to see if it's realy removed */
-                        if (motorcontrol_fault != NO_FAULT || motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR || watchdog_error != WATCHDOG_NO_ERROR) {
+                        if ( motorcontrol_fault != NO_FAULT ||
+                             motion_sensor_error != SENSOR_NO_ERROR ||
+                             commutation_sensor_error != SENSOR_NO_ERROR ||
+                             watchdog_error != WATCHDOG_NO_ERROR )
+                        {
                             update_checklist(checklist, opmode, 1);
                         }
                     }

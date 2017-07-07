@@ -1,6 +1,7 @@
 #index, subindex,      axis 1,      axis 2,      axis 3,      axis 4,      axis 5,      axis 6
 #offset
 
+
 0x2001,        0,        1201,        1202,        1202,        1204,        1205,        1206 # COMMUTATION_ANGLE_OFFSET [0:4095]
 0x2A00,        0,          20,          20,          20,          20,          20,          20 # APPLIED_TUNING_TORQUE_PERCENT - (maximum) generated torque while finding offset value as a percentage of rated torque
 

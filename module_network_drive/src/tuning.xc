@@ -351,8 +351,6 @@ void tuning_command_handler(
                 motion_ctrl_config.velocity_kp = 0;
                 motion_ctrl_config.velocity_ki = 0;
                 motion_ctrl_config.velocity_kd = 0;
-                motion_ctrl_config.velocity_integral_limit = 10000000;
-                motion_ctrl_config.position_integral_limit = 10000000;
                 i_motion_control.set_motion_control_config(motion_ctrl_config);
                 i_motion_control.enable_position_ctrl(POS_PID_VELOCITY_CASCADED_CONTROLLER);
                 break;

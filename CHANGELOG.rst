@@ -1,6 +1,13 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.0.3
+-----
+
+  * Fix torque offset pdo unit (now in 1/1000 of rated torque)
+  * Fix value of Encoder Number of Channels to 2 for AB and 3 for ABI.
+
+
 3.0.2
 -----
 

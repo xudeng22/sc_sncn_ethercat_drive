@@ -1,97 +1,147 @@
 #index, subindex,      axis 1,      axis 2,      axis 3,      axis 4,      axis 5,      axis 6
 #offset
 
-0x2001,        0,        1201,        1202,        1202,        1204,        1205,        1206 # DICT_COMMUTATION_ANGLE_OFFSET
-0x2A00,        0,          20,          20,          20,          20,          20,          20 # DICT_APPLIED_TUNING_TORQUE_PERCENT for offset tuning
+0x2001,        0,        1201,        1202,        1202,        1204,        1205,        1206 # COMMUTATION_ANGLE_OFFSET [0:4095]
+0x2A00,        0,          20,          20,          20,          20,          20,          20 # APPLIED_TUNING_TORQUE_PERCENT - (maximum) generated torque while finding offset value as a percentage of rated torque
 
 #motor config
-0x6075,        0,        4100,        4100,        4100,        4100,        4100,        4100 # DICT_MOTOR_RATED_CURRENT
-0x6076,        0,         620,         620,         620,         620,         620,         620 # DICT_MOTOR_RATED_TORQUE
-0x2003,        1,           5,           5,           5,           5,           5,           5 # DICT_MOTOR_SPECIFIC_SETTINGS POLE_PAIRS
-0x2003,        2,      170000,      170000,      170000,      170000,      170000,      170000 # DICT_MOTOR_SPECIFIC_SETTINGS TORQUE_CONSTANT
-0x2003,        3,     1270000,     1270000,     1270000,     1270000,     1270000,     1270000 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_RESISTANCE
-0x2003,        4,        1330,        1330,        1330,        1330,        1330,        1330 # DICT_MOTOR_SPECIFIC_SETTINGS PHASE_INDUCTANCE     
-0x2003,        5,           0,           0,           0,           0,           0,           0 # DICT_MOTOR_SPECIFIC_SETTINGS MOTOR_PHASES_INVERTED (1 normal, -1 inverted)
+0x6075,        0,        4800,        4800,        4800,        4800,        4800,        4800 # MOTOR_RATED_CURRENT - rated phase current [milli-Amp-RMS]
+0x6076,        0,         270,         270,         270,         270,         270,         270 # MOTOR_RATED_TORQUE - rated motor torque [milli-Nm] 
+0x2003,        1,          10,          10,          10,          10,          10,          10 # MOTOR_POLE_PAIRS - number of motor pole-pairs
+0x2003,        2,       60000,       60000,       60000,       60000,       60000,       60000 # MOTOR_TORQUE_CONSTANT - torque constant [micro-Nm/Amp-RMS]
+0x2003,        3,      552000,      552000,      552000,      552000,      552000,      552000 # MOTOR_PHASE_RESISTANCE - motor phase resistance [micro-ohm]
+0x2003,        4,         720,         720,         720,         720,         720,         720 # MOTOR_PHASE_INDUCTANCE - motor phase inductance [micro-Henry]
+0x2003,        5,           0,           0,           0,           0,           0,           0 # MOTOR_PHASES_CONFIGURATION (0 normal, 1 inverted)
 
 #brake config
-0x2004,        1,       18000,       18000,       18000,       18000,       18000,       18000 # DICT_BREAK_RELEASE PULL_BRAKE_VOLTAGE
-0x2004,        2,        7000,        7000,        7000,        7000,        7000,        7000 # DICT_BREAK_RELEASE HOLD_BRAKE_VOLTAGE
-0x2004,        3,        3000,        3000,        3000,        3000,        3000,        3000 # DICT_BREAK_RELEASE PULL_BRAKE_TIME 
-0x2004,        4,          80,          80,          80,          80,          80,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_STRATEGY 
-0x2004,        5,           0,           0,           0,           0,           0,           0 # DICT_BREAK_RELEASE BRAKE_RELEASE_DELAY 
-0x2004,        6,          48,          48,          48,          48,          48,          48 # DICT_BREAK_RELEASE DC_BUS_VOLTAGE
+0x2004,        1,       13000,       13000,       13000,       13000,       13000,       13000 # PULL_BRAKE_VOLTAGE - [milli-Volts]
+0x2004,        2,        7000,        7000,        7000,        7000,        7000,        7000 # HOLD_BRAKE_VOLTAGE - [milli-Volts]
+0x2004,        3,         500,         500,         500,         500,         500,         500 # PULL_BRAKE_TIME - time period when the controller tries to release (pull) the brake [milli seconds]
+0x2004,        4,           0,           0,           0,           0,           0,           0 # BRAKE_RELEASE_STRATEGY - 0 disabled, 1 normal, 2-100 shaking
+0x2004,        5,           0,           0,           0,           0,           0,           0 # BRAKE_RELEASE_DELAY -  delay in [milli seconds] between the brake blocking and the stop of the control
+0x2004,        6,          24,          24,          24,          24,          24,          24 # DC_BUS_VOLTAGE - this parameter is a basis for brake voltage calculation 
 
 #limits
-0x6072,        0,        8065,        8065,        8065,        8065,        8065,        8065 # DICT_MAX_TORQUE, in 1/1000 of rated torque
-0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # DICT_MAX_MOTOR_SPEED
-0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # DICT_MIN_SOFTWARE_POSITION_RANGE_LIMIT
-0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT
-0x607B,        1,    -1800000,     -350000,     -600000,    -2000000,    -1000000, -0x7fffffff # DICT_POSITION_RANGE_LIMITS MIN
-0x607B,        2,     1800000,      800000,     1200000,     2000000,     1000000,  0x7fffffff # DICT_POSITION_RANGE_LIMITS MAX
+0x6072,        0,        1000,        1000,        1000,        1000,        1000,        1000 # MAX_TORQUE, in 1/1000 of rated torque
+0x6080,        0,        5000,        5000,        5000,        5000,        5000,        5000 # MAX_MOTOR_SPEED - maximum motor speed [rpm]
+0x6085,        0,        5000,        5000,        5000,        5000,        5000,        5000 # QUICK_STOP_DECELERATION - [rpm/sec]
+0x607D,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # MIN_SOFTWARE_POSITION_RANGE_LIMIT - [encoder increments (ticks)]
+0x607D,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # MAX_SOFTWARE_POSITION_RANGE_LIMIT - [encoder increments (ticks)]
+0x607B,        1, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff, -0x7fffffff # MIN_POSITION_RANGE_LIMITS - [encoder increments (ticks)]
+0x607B,        2,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff,  0x7fffffff # MAX_POSITION_RANGE_LIMITS - [encoder increments (ticks)]
 
 #protection
-0x2006,        1,          10,          10,          10,          10,          10,          10 # DICT_PROTECTION MIN_DC_VOLTAGE
-0x2006,        2,          55,          55,          55,          55,          55,          55 # DICT_PROTECTION MAX_DC_VOLTAGE
-0x2006,        3,       40000,       40000,       40000,       40000,       40000,       40000 # DICT_PROTECTION MAX_CURRENT 
+0x2006,        1,          10,          10,          10,          10,          10,          10 # PROTECTION_MINIMUM_VOLTAGE - minimum tolerable value of dc-bus voltage in [V] (under abnormal conditions)
+0x2006,        2,          60,          60,          60,          60,          60,          60 # PROTECTION_MAXIMUM_VOLTAGE - maximum tolerable value of dc-bus voltage in [V] (under abnormal conditions)
+0x2006,        3,       40000,       40000,       40000,       40000,       40000,       40000 # PROTECTION_MAXIMUM_CURRENT - maximum tolerable value of phase current in [mA] (under abnormal conditions)
 
 #torque position velocity control
-#pid parameters
-0x2012,        1,       39070,       20000,       16420,       40000,       50000,       10000 # DICT_POSITION_CONTROLLER kp
-0x2012,        2,         207,         100,         120,         600,        1000,        1000 # DICT_POSITION_CONTROLLER ki
-0x2012,        3,      156280,       82000,       65700,      160000,      200000,       40000 # DICT_POSITION_CONTROLLER kd
-0x2012,        4,        1000,        1000,        1000,        1000,        1000,        1000 # DICT_POSITION_CONTROLLER integral limit
-0x2011,        1,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER Kp
-0x2011,        2,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER ki
-0x2011,        3,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER kd
-0x2011,        4,           0,           0,           0,           0,           0,           0 # DICT_VELOCITY_CONTROLLER integral limit
-#other parameters
-0x607E,        0,        0x00,        0x00,        0x00,        0x00,        0x00,        0x00 # DICT_POLARITY (bit 0x80 invert in CSP mode,  bit 0x40 invert in CSV mode)
-0x2002,        0,           3,           3,           3,           3,           3,           2 # DICT_POSITION_CONTROL_STRATEGY #  3: limited torque controller 
-0x6086,        0,           0,           0,           0,           0,           0,           0 # DICT_MOTION_PROFILE_TYPE #enable integrated profiler
-0x2007,        1,           0,           0,           0,           0,           0,           0 # POSITION_FILTER_COEFFICIENT in Hz (0 to disable)
+#main parameters
+0x607E,        0,        0x00,        0x00,        0x00,        0x00,        0x00,        0x00 # POLARITY - (bit 0x80 invert direction of motion in CSP mode,  bit 0x40 invert direction of motion in CSV mode)
+0x2012,        1,       16000,       16000,       16000,       16000,       16000,       16000 # POSITION_Kp - [1/1e6]
+0x2012,        2,         280,         280,         280,         280,         280,         280 # POSITION_Ki - [1/1e6]
+0x2012,        3,       41000,       41000,       41000,       41000,       41000,       41000 # POSITION_Kd - [1/1e6]
+0x2012,        4,        1000,        1000,        1000,        1000,        1000,        1000 # POSITION_INTEGRAL_LIMIT - integral limit [1/1]
+0x2011,        1,      700000,      700000,      700000,      700000,      700000,      700000 # VELOCITY_Kp
+0x2011,        2,       20000,       20000,       20000,       20000,       20000,       20000 # VELOCITY_Ki
+0x2011,        3,           0,           0,           0,           0,           0,           0 # VELOCITY_Kd
+0x2011,        4,         900,         900,         900,         900,         900,         900 # VELOCITY_INTEGRAL_LIMIT - integral limit [1/1]
+0x2002,        0,           3,           3,           3,           3,           3,           3 # POSITION_CONTROL_STRATEGY # 1: position PID -> torque PI, 2: position PID -> velocity PID -> torque PI, 3: limited torque PID -> torque PI 
+0x6086,        0,           0,           0,           0,           0,           0,           0 # MOTION_PROFILE_TYPE #enable integrated profiler, 0: disabled, 1: trapezoidal
+0x2007,        1,           0,           0,           0,           0,           0,           0 # FILTER_CUT_OFF_FREQ in [Hz] (0 to disable)
 # other
-0x2010,        1,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Kp
-0x2010,        2,          40,          40,          40,          40,          40,          40 # DICT_TORQUE_CONTROLLER Ki
-0x2010,        3,           0,           0,           0,           0,           0,           0 # DICT_TORQUE_CONTROLLER Kd
-0x200A,        0,       34441,      120000,      120000,       40000,           0,           0 # DICT_MOMENT_OF_INERTIA
+0x2010,        1,          40,          40,          40,          40,          40,          40 # TORQUE_Kp
+0x2010,        2,          40,          40,          40,          40,          40,          40 # TORQUE_Ki
+0x2010,        3,           0,           0,           0,           0,           0,           0 # TORQUE_Kd
+0x200A,        0,           0,           0,           0,           0,           0,           0 # MOMENT_OF_INERTIA [g·m2]
 
 #sensor config
-0x607C,        0,           0,           0,           0,           0,           0,           0 # DICT_HOME_OFFSET
-0x2100,        1,           0,           0,           0,           0,           0,           0 # DICT_FEEDBACK_SENSOR_PORTS 1
-0x2100,        2,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201 # DICT_FEEDBACK_SENSOR_PORTS 2, 0x2201 is BiSS 1
-0x2100,        3,           0,           0,           0,           0,           0,           0 # DICT_FEEDBACK_SENSOR_PORTS 3
-#biss 1
+0x607C,        0,           0,           0,           0,           0,           0,           0 # HOME_OFFSET [encoder increments (ticks)]
+0x2100,        1,           0,           0,           0,           0,           0,           0 # FEEDBACK_SENSOR_PORTS - IFM HW port 1: assign here your used sensor object
+0x2100,        2,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201,      0x2201 # FEEDBACK_SENSOR_PORTS - IFM HW port 2: assign here your used sensor object
+0x2100,        3,           0,           0,           0,           0,           0,           0 # FEEDBACK_SENSOR_PORTS - IFM HW port 3: assign here your used sensor object
+#BiSS-C Encoder 1
 0x2201,        1,           4,           4,           4,           4,           4,           4 # SENSOR TYPE (4 is BiSS)
-0x2201,        2,           1,           1,           1,           1,           1,           1 # SUB_ENCODER_FUNCTION (1 is commutation and motion control)
-0x2201,        3,      262144,      262144,      262144,      262144,      262144,      262144 # SUB_ENCODER_RESOLUTION
-0x2201,        4,          50,          50,          50,          50,          50,          50 # SUB_ENCODER_VELOCITY_CALCULATION_PERIOD
-0x2201,        5,           0,           0,           0,           0,           0,           0 # SUB_ENCODER_POLARITY (0 normal,  1 inverted)
-0x2201,        6,          10,          10,          10,          10,          10,          10 # SUB_BISS_ENCODER_MULTITURN_RESOLUTION
-0x2201,        7,        4000,        4000,        4000,        4000,        4000,        4000 # SUB_BISS_ENCODER_CLOCK_FREQUENCY
-0x2201,        8,          20,          20,          20,          20,          20,          20 # SUB_BISS_ENCODER_TIMEOUT
-0x2201,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # SUB_BISS_ENCODER_CRC_POLYNOM
-0x2201,       10,           8,           8,           8,           8,           8,           8 # SUB_BISS_ENCODER_CLOCK_PORT_CONFIG
-0x2201,       11,           1,           1,           1,           1,           1,           1 # SUB_BISS_ENCODER_DATA_PORT_CONFIG
-0x2201,       12,           0,           0,           0,           0,           0,           0 # SUB_BISS_ENCODER_NUMBER_OF_FILLING_BITS
-0x2201,       13,          30,          30,          30,          30,          30,          30 # SUB_BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY
-#hall 1
-0x2207,        1,           1,           1,           4,           4,           4,           4 # SENSOR TYPE (1 is Hall)
-0x2207,        2,           1,           1,           1,           1,           1,           1 # SUB_ENCODER_FUNCTION (1 is commutation and motion control)
-0x2207,        3,       16384,       16384,       16384,       16384,       16384,       16384 # SUB_ENCODER_RESOLUTION
-0x2207,        4,        1000,        1000,        1000,        1000,        1000,        1000 # SUB_ENCODER_VELOCITY_CALCULATION_PERIOD
-0x2207,        5,           0,          0,            0,           0,           0,           0 # SUB_ENCODER_POLARITY (0 normal,  1 inverted)
-0x2207,        6,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_0
-0x2207,        7,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_1
-0x2207,        8,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_2
-0x2207,        9,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_3
-0x2207,       10,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_4
-0x2207,       11,           0,          0,            0,           0,           0,           0 # SUB_HALL_SENSOR_STATE_ANGLE_5
-
-#,        0,          0 # 
-#unknown ???
-#0x6085,        0,           0,           0,           0,           0,           0,           0 # DICT_QUICK_STOP_DECELERATION
-#0x6083,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_ACCELERATION
-#0x6084,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_DECELERATION
-#0x607F,        0,           0,           0,           0,           0,           0,           0 # DICT_PROFILE_VELOCITY
-#0x6073,        0,           0,           0,           0,           0,           0,           0 # DICT_MAX_CURRENT
-#0x6079,        0,           0,           0,           0,           0,           0,           0 # DICT_DC_LINK_CIRCUIT_VOLTAGE
+0x2201,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2201,        3,      262144,      262144,      262144,      262144,      262144,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2201,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
+0x2201,        5,          0,            0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2201,        6,          10,          10,          10,          10,          10,          10 # BISS_ENCODER_MULTITURN_RESOLUTION [bits]
+0x2201,        7,        4000,        4000,        4000,        4000,        4000,        4000 # BISS_ENCODER_CLOCK_FREQUENCY [Hz]
+0x2201,        8,          20,          20,          20,          20,          20,          20 # BISS_ENCODER_TIMEOUT - BiSS timeout in [usec]
+0x2201,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # BISS_ENCODER_CRC_POLYNOM - polynom in reverse representation:  x^0 + x^1 + x^6 is 0b110000
+0x2201,       10,           8,           8,           8,           8,           8,           8 # BISS_ENCODER_CLOCK_PORT_CONFIG - which HW port is used for clock: [0:4,8]. [0:3] GPIO Ports 0:3, [4] - GPIO Port 4, [8] - GPIO Port 5
+0x2201,       11,           1,           1,           1,           1,           1,           1 # BISS_ENCODER_DATA_PORT_CONFIG - which HW port is used for data: [0:5]. [0:1] - Encoder Ports 1:2, [2:5] GPIO Ports 0:3
+0x2201,       12,           0,           0,           0,           0,           0,           0 # BISS_ENCODER_NUMBER_OF_FILLING_BITS [bits]
+0x2201,       13,          30,          30,          30,          30,          30,          30 # BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY [bits]
+#BiSS-C Encoder 2
+0x2202,        1,           4,           4,           4,           4,           4,           4 # SENSOR TYPE (4 is BiSS)
+0x2202,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2202,        3,      262144,      262144,      262144,      262144,      262144,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2202,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
+0x2202,        5,          0,            0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2202,        6,          10,          10,          10,          10,          10,          10 # BISS_ENCODER_MULTITURN_RESOLUTION [bits]
+0x2202,        7,        4000,        4000,        4000,        4000,        4000,        4000 # BISS_ENCODER_CLOCK_FREQUENCY [Hz]
+0x2202,        8,          20,          20,          20,          20,          20,          20 # BISS_ENCODER_TIMEOUT - BiSS timeout in [usec]
+0x2202,        9,        0x30,        0x30,        0x30,        0x30,        0x30,        0x30 # BISS_ENCODER_CRC_POLYNOM - polynom in reverse representation:  x^0 + x^1 + x^6 is 0b110000
+0x2202,       10,           8,           8,           8,           8,           8,           8 # BISS_ENCODER_CLOCK_PORT_CONFIG - which HW port is used for clock: [0:4,8]. [0:3] GPIO Ports 0:3, [4] - GPIO Port 4, [8] - GPIO Port 5
+0x2202,       11,           1,           1,           1,           1,           1,           1 # BISS_ENCODER_DATA_PORT_CONFIG - which HW port is used for data: [0:5]. [0:1] - Encoder Ports 1:2, [2:5] GPIO Ports 0:3
+0x2202,       12,           0,           0,           0,           0,           0,           0 # BISS_ENCODER_NUMBER_OF_FILLING_BITS [bits]
+0x2202,       13,          30,          30,          30,          30,          30,          30 # BISS_ENCODER_NUMBER_OF_BITS_TO_READ_WHILE_BUSY [bits]
+#REM 16MT Encoder
+0x2203,        1,           6,           6,           6,           6,           6,           6 # SENSOR TYPE (6 is REM 16MT)
+0x2203,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2203,        3,       65536,       65536,       65536,       65536,       65536,       65536 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2203,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
+0x2203,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2203,        6,           2,           2,           2,           2,           2,           2 # REM_16MT_FILTER [0:9] 2 is recommended
+#REM 14 Encoder
+0x2204,        1,           5,           5,           5,           5,           5,           5 # SENSOR TYPE (5 is REM 14)
+0x2204,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2204,        3,       16384,       16384,       16384,       16384,       16384,       16384 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2204,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
+0x2204,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2204,        6,           1,           1,           1,           1,           1,           1 # REM_14_SENSOR_HYSTERESIS [0:3]
+0x2204,        7,           0,           0,           0,           0,           0,           0 # REM_14_SENSOR_NOISE_SETTINGS [0:1]
+0x2204,        8,           1,           1,           1,           1,           1,           1 # REM_14_DYN_ANGLE_ERROR_COMPENSATION [0:1]
+0x2204,        9,           0,           0,           0,           0,           0,           0 # REM_14_ABI_RESOLUTION_SETTINGS [0:1]
+#Incremental Encoder 1
+0x2205,        1,           2,           2,           2,           2,           2,           2 # SENSOR TYPE (2 is Incremental Encoder)
+0x2205,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2205,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2205,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
+0x2205,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2205,        6,           1,           1,           1,           1,           1,           1 # ENCODER_NUMBER_OF_CHANNELS [0:1] - 0: AB (2 channels), 1: ABI (3 channels)
+0x2205,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
+#Incremental Encoder 2
+0x2206,        1,           2,           2,           2,           2,           2,           2 # SENSOR TYPE (2 is Incremental Encoder)
+0x2206,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2206,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
+0x2206,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
+0x2206,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2206,        6,           1,           1,           1,           1,           1,           1 # ENCODER_NUMBER_OF_CHANNELS [0:1] - 0: AB (2 channels), 1: ABI (3 channels)
+0x2206,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
+#hall sensor 1
+0x2207,        1,           1,           1,           1,           1,           1,           1 # SENSOR TYPE (1 is Hall)
+0x2207,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2207,        3,       16384,       16384,       16384,       16384,       16384,       16384 # ENCODER_RESOLUTION - 4096*MOTOR_POLE_PAIRS
+0x2207,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD
+0x2207,        5,           0,          0,            0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2207,        6,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_0 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2207,        7,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_1 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2207,        8,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_2 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2207,        9,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_3 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2207,       10,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_4 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2207,       11,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_5 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+#hall sensor 2
+0x2208,        1,           1,           1,           1,           1,           1,           1 # SENSOR TYPE (1 is Hall)
+0x2208,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
+0x2208,        3,       16384,       16384,       16384,       16384,       16384,       16384 # ENCODER_RESOLUTION - 4096*MOTOR_POLE_PAIRS
+0x2208,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD
+0x2208,        5,           0,          0,            0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2208,        6,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_0 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2208,        7,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_1 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2208,        8,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_2 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2208,        9,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_3 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2208,       10,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_4 - use this parameter only if you have a custom sensor where distance between the sensors can vary
+0x2208,       11,           0,          0,            0,           0,           0,           0 # HALL_SENSOR_STATE_ANGLE_5 - use this parameter only if you have a custom sensor where distance between the sensors can vary

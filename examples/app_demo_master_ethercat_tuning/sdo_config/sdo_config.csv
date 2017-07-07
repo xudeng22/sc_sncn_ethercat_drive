@@ -64,7 +64,7 @@
 0x2201,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
 0x2201,        3,      262144,      262144,      262144,      262144,      262144,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2201,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
-0x2201,        5,          0,            0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2201,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
 0x2201,        6,          10,          10,          10,          10,          10,          10 # BISS_ENCODER_MULTITURN_RESOLUTION [bits]
 0x2201,        7,        4000,        4000,        4000,        4000,        4000,        4000 # BISS_ENCODER_CLOCK_FREQUENCY [Hz]
 0x2201,        8,          20,          20,          20,          20,          20,          20 # BISS_ENCODER_TIMEOUT - BiSS timeout in [usec]
@@ -78,7 +78,7 @@
 0x2202,        2,           1,           1,           1,           1,           1,           1 # ENCODER_FUNCTION - 0: Disabled, 1: Commutation and motion control, 2: Commutation and feedback display only, 3: Motion Control, 4: Feedback display only, 5: Commutation only
 0x2202,        3,      262144,      262144,      262144,      262144,      262144,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2202,        4,          50,          50,          50,          50,          50,          50 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
-0x2202,        5,          0,            0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
+0x2202,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
 0x2202,        6,          10,          10,          10,          10,          10,          10 # BISS_ENCODER_MULTITURN_RESOLUTION [bits]
 0x2202,        7,        4000,        4000,        4000,        4000,        4000,        4000 # BISS_ENCODER_CLOCK_FREQUENCY [Hz]
 0x2202,        8,          20,          20,          20,          20,          20,          20 # BISS_ENCODER_TIMEOUT - BiSS timeout in [usec]
@@ -110,7 +110,7 @@
 0x2205,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2205,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
 0x2205,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
-0x2205,        6,           1,           1,           1,           1,           1,           1 # ENCODER_NUMBER_OF_CHANNELS [0:1] - 0: AB (2 channels), 1: ABI (3 channels)
+0x2205,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [2:3] - 2: AB (2 channels), 3: ABI (3 channels)
 0x2205,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
 #Incremental Encoder 2
 0x2206,        1,           2,           2,           2,           2,           2,           2 # SENSOR TYPE (2 is Incremental Encoder)
@@ -118,7 +118,7 @@
 0x2206,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2206,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
 0x2206,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
-0x2206,        6,           1,           1,           1,           1,           1,           1 # ENCODER_NUMBER_OF_CHANNELS [0:1] - 0: AB (2 channels), 1: ABI (3 channels)
+0x2205,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [2:3] - 2: AB (2 channels), 3: ABI (3 channels)
 0x2206,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
 #hall sensor 1
 0x2207,        1,           1,           1,           1,           1,           1,           1 # SENSOR TYPE (1 is Hall)

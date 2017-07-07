@@ -50,9 +50,8 @@ examples/libreadsdoconfig/testreadconfig
 
 # ignore profiler files
 *.gprof
-*.inc
 *.sh
 *.log
-record.csv
+*.csv
 config_motor
 

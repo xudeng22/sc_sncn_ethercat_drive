@@ -160,7 +160,7 @@ uint8_t entry_values[entry_values_length] = {
     0x0,                        /* 0x2201:11 Data port config - START: 344 */
     0x0,                        /* 0x2201:12 Number of filling bits - START: 345 */
     0x4,                        /* 0x2201:13 Number of bits to read while busy - START: 346 */
-    0xC,                        /* 0x2202:0 BISS Encoder 2 - START: 347 */
+    0xD,                        /* 0x2202:0 BISS Encoder 2 - START: 347 */
     0x4,                        /* 0x2202:1 Type - START: 348 */
     0x0,                        /* 0x2202:2 Function - START: 349 */
     0x0, 0x0, 0x0, 0x0,         /* 0x2202:3 Resolution - START: 350 */
@@ -418,7 +418,7 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x0,                        /* 0x2201:11 Data port config - START: 344 */
     0x0,                        /* 0x2201:12 Number of filling bits - START: 345 */
     0x4,                        /* 0x2201:13 Number of bits to read while busy - START: 346 */
-    0xC,                        /* 0x2202:0 BISS Encoder 2 - START: 347 */
+    0xD,                        /* 0x2202:0 BISS Encoder 2 - START: 347 */
     0x4,                        /* 0x2202:1 Type - START: 348 */
     0x0,                        /* 0x2202:2 Function - START: 349 */
     0x0, 0x0, 0x0, 0x0,         /* 0x2202:3 Resolution - START: 350 */
@@ -3717,7 +3717,7 @@ COD_Object object_dictionary[] = {
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
-        12,
+        13,
         &(string[96]),
         &(object_entries[122])
     }, {

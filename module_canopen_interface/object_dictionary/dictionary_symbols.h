@@ -212,7 +212,7 @@
 #define SUB_HALL_SENSOR_STATE_ANGLE_2                      8
 #define SUB_HALL_SENSOR_STATE_ANGLE_3                      9
 #define SUB_HALL_SENSOR_STATE_ANGLE_4                      10
-#define SUB_HALL_SENSOR_STATE_ANGLE_5                      10
+#define SUB_HALL_SENSOR_STATE_ANGLE_5                      11
 #define DICT_GPIO                                     0x2210
 #define SUB_GPIO_PIN_1                                     1
 #define SUB_GPIO_PIN_2                                     2

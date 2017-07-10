@@ -58,6 +58,7 @@ void print_help(WINDOW *wnd, int row)
             "[number]: set target (depends on the opmode)\n"
             "r: reverse target\n"
             "s: disable operation, 'ss' to stop all the slaves\n"
+            "a: acknowledge fault\n"
             "q: quit"
     );
 }

@@ -57,6 +57,11 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
         output->app_mode = QUIT_MODE;
         break;
 
+    //fault_acknowledge
+    case 'a':
+        output->fault_ack = 1;
+        break;
+
     //enable debug display
     case 'd':
         output->debug ^= 1;
@@ -246,29 +251,36 @@ void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t nu
 {
     for (int i=0; i<number_slaves; i++) {
         CIA402State current_state = cia402_read_state(pdo_input[i].statusword);
-        switch(pdo_output[i].op_mode) {
-        case OPMODE_CSP://CSP
-        case OPMODE_CSV://CSV
-        case OPMODE_CST://CST
-            //if the opmode is not yet set in the slave we need to go to the SWITCH_ON_DISABLED state to be able to change the opmode
-            if (pdo_output[i].op_mode != pdo_input[i].op_mode_display) {
+        if (current_state == CIASTATE_FAULT) { //fault state, wait for acknowledge by the user
+            if (i == output->select && output->fault_ack) { //send reset fault command for selected slave
                 pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
-            } else {
-                if (current_state != CIASTATE_OP_ENABLED) {
-                    /* iniatialize position/velocity/torque target
-                     * this is a safeguard so when we switch to op enable the motor does not move before the user sets the real target
-                     * */
-                    pdo_output[i].target_position = pdo_input[i].position_value;
-                    pdo_output[i].target_velocity = 0;
-                    pdo_output[i].target_torque = 0;
-                }
-                // the opmode and is set, we can now go to target state
-                pdo_output[i].controlword = cia402_go_to_state((output->target_state)[i], current_state, pdo_output[i].controlword, 0);
+                output->fault_ack = 0;
             }
-            break;
-        default://for other opmodes disable operation
-            pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
-            break;
+        } else {
+            switch(pdo_output[i].op_mode) {
+            case OPMODE_CSP://CSP
+            case OPMODE_CSV://CSV
+            case OPMODE_CST://CST
+                //if the opmode is not yet set in the slave we need to go to the SWITCH_ON_DISABLED state to be able to change the opmode
+                if (pdo_output[i].op_mode != pdo_input[i].op_mode_display) {
+                    pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
+                } else {
+                    if (current_state != CIASTATE_OP_ENABLED) {
+                        /* iniatialize position/velocity/torque target
+                         * this is a safeguard so when we switch to op enable the motor does not move before the user sets the real target
+                         * */
+                        pdo_output[i].target_position = pdo_input[i].position_value;
+                        pdo_output[i].target_velocity = 0;
+                        pdo_output[i].target_torque = 0;
+                    }
+                    // the opmode and is set, we can now go to target state
+                    pdo_output[i].controlword = cia402_go_to_state((output->target_state)[i], current_state, pdo_output[i].controlword, 0);
+                }
+                break;
+            default://for other opmodes disable operation
+                pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
+                break;
+            }
         }
     }
 }
@@ -299,4 +311,23 @@ void cyclic_synchronous_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output,
 
     //use profile to generate a target for position/velocity
     target_generate(profile_config, pdo_output, pdo_input, number_slaves);
+}
+
+int quit_mode(PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves)
+{
+    int run_flag = 0;
+    for (int i=0; i<number_slaves; i++) {
+        if ( pdo_input[i].op_mode_display == OPMODE_CSP ||
+             pdo_input[i].op_mode_display == OPMODE_CSV ||
+             pdo_input[i].op_mode_display == OPMODE_CST )
+        {
+            CIA402State current_state = cia402_read_state(pdo_input[i].statusword);
+            //wait until all slaves are in CIASTATE_FAULT or CIASTATE_SWITCH_ON_DISABLED
+            if (current_state != CIASTATE_FAULT && current_state != CIASTATE_SWITCH_ON_DISABLED) {
+                pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
+                run_flag = 1;
+            }
+        }
+    }
+    return run_flag;
 }

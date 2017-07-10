@@ -2790,7 +2790,6 @@
                   <MinData>00</MinData>
                   <MaxData>FF0F</MaxData>
                   <DefaultData>0000</DefaultData>
-                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2874,7 +2873,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>00470000</Unit>
+                  <Unit>#x00470000</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -2889,7 +2888,6 @@
                 <BitSize>16</BitSize>
                 <Info>
                   <DefaultData>0000</DefaultData>
-                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2905,7 +2903,7 @@
                 <Info>
                   <MinData>01</MinData>
                   <DefaultData>01000000</DefaultData>
-                  <Unit>22040000</Unit>
+                  <Unit>#x22040000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2920,7 +2918,7 @@
                 <Info>
                   <MinData>01</MinData>
                   <DefaultData>01000000</DefaultData>
-                  <Unit>22560000</Unit>
+                  <Unit>#x22560000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3022,7 +3020,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>00470000</Unit>
+                  <Unit>#x00470000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3052,7 +3050,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3085,7 +3083,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>22260000</Unit>
+                  <Unit>#x22260000</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -3116,7 +3114,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3133,7 +3131,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3479,7 +3477,6 @@
                   <MinData>00</MinData>
                   <MaxData>64</MaxData>
                   <DefaultData>3C</DefaultData>
-                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -4542,7 +4539,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>

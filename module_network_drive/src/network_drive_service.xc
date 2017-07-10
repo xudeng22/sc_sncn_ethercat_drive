@@ -176,6 +176,82 @@ static int initial_object_dictionary_read(client interface i_co_communication i_
     return ((command_state == OD_COMMAND_STATE_SUCCESS) ? 0 : 1);
 }
 
+/*
+ * For tuning of the PID values it is necessary to modify these values during
+ * the motion of the drive. This function checks if any of the relevant entries
+ * changed since the last check.
+ *
+ * This functions only gets the next changed entry element at a time.
+ *
+ * Return 0 if nothing changed
+ *        1 if a value is updated
+ */
+static int check_for_pid_updatate(
+        client interface i_co_communication i_co,
+        client interface MotionControlInterface i_motion_control,
+        MotionControlConfig &position_config)
+{
+    uint16_t changed_index = 0;
+    uint8_t  changed_subindex = 0;
+
+    {changed_index, changed_subindex} = i_co.od_get_next_changed_element();
+    if (changed_index == 0) {
+        return 0;
+    }
+
+    uint32_t value = 0;
+    uint8_t od_err = 0;
+
+    {value, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+    if (od_err != 0) {
+        return 0;
+    }
+
+    int changed = 0;
+    position_config = i_motion_control.get_motion_control_config();
+    if (changed_index    == DICT_FILTER_COEFFICIENTS &&
+        changed_subindex == SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT) {
+        position_config.filter = value;
+        changed = 1;
+    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
+               changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KP) {
+        position_config.position_kp = value;
+        changed = 1;
+    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
+               changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KI) {
+        position_config.position_ki = value;
+        changed = 1;
+    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
+               changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KD) {
+        position_config.position_kd = value;
+        changed = 1;
+    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
+               changed_subindex == SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT) {
+        position_config.position_integral_limit = value;
+        changed = 1;
+    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
+               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KP) {
+        position_config.velocity_kp = value;
+        changed = 1;
+    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
+               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KI) {
+        position_config.velocity_ki = value;
+        changed = 1;
+    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
+               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KD) {
+        position_config.velocity_kd = value;
+        changed = 1;
+    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
+               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT) {
+        position_config.velocity_integral_limit = value;
+        changed = 1;
+    }
+
+    i_motion_control.set_motion_control_config(position_config);
+
+    return changed;
+}
+
 static int quick_stop_perform(int opmode, int &step)
 {
     int target = 0;
@@ -524,15 +600,8 @@ void network_drive_service(ProfilerConfig &profiler_config,
     t :> time;
     while (1) {
 //#pragma xta endpoint "ecatloop"
-        /* FIXME reduce code duplication with above init sequence */
-        /* Check if we reenter the operation mode. If so, update the configuration please. */
-        if (!read_configuration) {
-            read_configuration = i_co.configuration_get();
-            // FIXME If something change (and we are in READY_SWITCH_ON state) update some values.
-            // read_configuration = i_co.od_changed_values_count();
-        }
 
-        /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
+        /* Read the configuration in SWITCH_ON_DISABLE */
         if (read_configuration) {
             update_configuration(i_co, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
                     motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
@@ -543,6 +612,10 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
             read_configuration = 0;
             i_co.configuration_done();
+        } else {
+            /* if there is no "read the whole configuration", just check if single values changed.
+             * More precisely, the PID configuration values, one at time. */
+            check_for_pid_updatate(i_co, i_motion_control, motion_control_config);
         }
 
         /*

@@ -621,7 +621,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 //        debug_print_state(state);
 
         if (opmode == OPMODE_NONE) {
-            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
             /* for safety considerations, if no opmode choosen, the brake should blocking. */
             i_torque_control.set_brake_status(0);
 
@@ -630,7 +630,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
         } else if (opmode == OPMODE_CSP || opmode == OPMODE_CST || opmode == OPMODE_CSV) {
             /* FIXME Put this into a separate CSP, CST, CSV function! */
-            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
 
             /*
              * Additionally used bits in statusword for...
@@ -797,7 +797,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
                 i_motion_control.disable();
                 state = S_SWITCH_ON_DISABLED;
-                statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+                statusword      = update_statusword(0, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
                 //reset tuning status
                 tuning_mode_state.brake_flag = 0;
                 tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
@@ -811,7 +811,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
              * For safety reasons, if no opmode is selected the brake is closed! */
             i_torque_control.set_brake_status(0);
             opmode = OPMODE_NONE;
-            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
         }
 
         /* wait 1 ms to respect timing */

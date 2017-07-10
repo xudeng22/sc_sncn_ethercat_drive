@@ -545,8 +545,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
+            uint32_t error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
             i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
+
+            //put error_code in user_miso pdo when not in tuning mode
+            if (opmode != OPMODE_SNCN_TUNING) {
+                user_miso = error_code;
+            }
         } else {
             update_checklist(checklist, opmode, 0); //no error
         }
@@ -783,6 +788,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                         position_feedback_config_1, position_feedback_config_2, sensor_commutation);
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                user_miso = 0;
             }
         } else {
             /* if a unknown or unsupported opmode is requested we simply return

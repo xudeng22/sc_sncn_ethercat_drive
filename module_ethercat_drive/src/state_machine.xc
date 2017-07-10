@@ -200,7 +200,7 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
         case S_NOT_READY_TO_SWITCH_ON:
             if (checklist.fault)
                 out_state = S_FAULT_REACTION_ACTIVE;
-            else // transision 1 auto
+            else // transition 1 auto
                 out_state = S_SWITCH_ON_DISABLED;
             break;
 

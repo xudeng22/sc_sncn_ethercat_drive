@@ -165,10 +165,7 @@ int main(int argc, char **argv)
             pdo_handler(master, pdo_input, pdo_output, -1);
 
             if (output.app_mode == QUIT_MODE) {
-                if (pdo_input[num_slaves-1].op_mode_display == 0) {
-                    run_flag = 0;
-                    break;
-                }
+                run_flag = quit_mode(pdo_output, pdo_input, num_slaves);
             } else if (output.app_mode == CYCLIC_SYNCHRONOUS_MODE){
                 cyclic_synchronous_mode(wnd, &cursor, pdo_output, pdo_input, num_slaves, &output, profile_config);
             }

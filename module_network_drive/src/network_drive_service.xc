@@ -43,7 +43,8 @@ enum eDirection {
 
 static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError watchdog_error,
                                  SensorError motion_sensor_error, SensorError commutation_sensor_error,
-                                 MotionControlError motion_control_error)
+                                 MotionControlError motion_control_error,
+                                 int inactive_timeout_flag)
 {
     int error_code = 0;
 
@@ -75,7 +76,7 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError wat
     case WATCHDOG_UNKNOWN_ERROR:
         error_code = ERROR_CODE_CONTROL;
         break;
-    case WATCHDOG_NO_ERROR:
+    case WATCHDOG_NO_ERROR://if there is no watchdog fault check motorcontrol fault
         switch (motorcontrol_fault) {
         case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
             error_code = ERROR_CODE_CONTINUOUS_OVER_CURRENT_DEVICE_INTERNAL;
@@ -119,7 +120,10 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError wat
                 case MOTION_CONTROL_BRAKE_NOT_RELEASED:
                     error_code = ERROR_CODE_MOTOR_BLOCKED;
                     break;
-                case MOTION_CONTROL_NO_ERROR:
+                case MOTION_CONTROL_NO_ERROR: //if there is no motioncontrol fault check communication fault
+                    if (inactive_timeout_flag) {
+                        error_code = ERROR_CODE_COMMUNICATION;
+                    }
                     break;
                 default:
                     error_code = ERROR_CODE_CONTROL;
@@ -237,6 +241,9 @@ static int quick_stop_init(int opmode,
     //limit steps
     if (actual_velocity < 0) {
         actual_velocity = -actual_velocity;
+    }
+    if (quick_stop_deceleration == 0) {
+        quick_stop_deceleration = 1;
     }
     int steps_limit = (1000*actual_velocity)/quick_stop_deceleration + 1;
     if (steps > steps_limit) {
@@ -448,6 +455,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     int controlword = 0;
+    uint16_t error_code = 0;
 
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
@@ -545,7 +553,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         target_position = pdo_get_target_position(InOut);
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
-        send_to_control.offset_torque = pdo_get_offset_torque(InOut); /* FIXME send this to the controll */
+        send_to_control.offset_torque = (pdo_get_offset_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //offset torque received in 1/1000 of rated torque
 
         /* tuning pdos */
         tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
@@ -613,7 +621,8 @@ void network_drive_service(ProfilerConfig &profiler_config,
              motion_sensor_error != SENSOR_NO_ERROR ||
              commutation_sensor_error != SENSOR_NO_ERROR ||
              motion_control_error != MOTION_CONTROL_NO_ERROR ||
-             watchdog_error != WATCHDOG_NO_ERROR )
+             watchdog_error != WATCHDOG_NO_ERROR ||
+             inactive_timeout_flag)
         {
             update_checklist(checklist, opmode, 1);
             if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1 || watchdog_error == WATCHDOG_OVER_CURRENT_ERROR) {
@@ -627,10 +636,19 @@ void network_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(motorcontrol_fault, watchdog_error, motion_sensor_error, commutation_sensor_error, motion_control_error);
+            error_code = get_cia402_error_code(motorcontrol_fault, watchdog_error,
+                                               motion_sensor_error, commutation_sensor_error,
+                                               motion_control_error, inactive_timeout_flag);
             i_co.od_set_object_value(DICT_ERROR_CODE, 0, error_code);
         } else {
             update_checklist(checklist, opmode, 0); //no error
+            error_code = 0;
+            i_co.od_set_object_value(DICT_ERROR_CODE, 0, 0);
+        }
+
+        //put error_code in user_miso pdo when not in tuning mode
+        if (opmode != OPMODE_SNCN_TUNING) {
+            user_miso = error_code;
         }
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
@@ -687,7 +705,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 //        debug_print_state(state);
 
         if (opmode == OPMODE_NONE) {
-            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
             /* for safety considerations, if no opmode choosen, the brake should blocking. */
             i_torque_control.set_brake_status(0);
 
@@ -696,7 +714,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
         } else if (opmode == OPMODE_CSP || opmode == OPMODE_CST || opmode == OPMODE_CSV) {
             /* FIXME Put this into a separate CSP, CST, CSV function! */
-            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
 
             /*
              * Additionally used bits in statusword for...
@@ -815,6 +833,8 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     if (motion_control_error != MOTION_CONTROL_NO_ERROR) {
                         i_motion_control.set_motion_control_config(motion_control_config);
                     }
+                    //reset communication fault
+                    inactive_timeout_flag = 0;
                     //start timer
                     fault_reset_wait_time = time + 1000000*tile_usec; //wait 1s before restarting the motorcontrol
                 } else if (checklist.fault_reset_wait == true) {
@@ -866,12 +886,13 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 opmode = opmode_request; /* stop tuning and switch to new opmode */
                 i_motion_control.disable();
                 state = S_SWITCH_ON_DISABLED;
-                statusword      = update_statusword(0, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+                statusword      = update_statusword(0, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
                 //reset tuning status
                 tuning_mode_state.brake_flag = 0;
                 tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                         position_feedback_config_1, position_feedback_config_2, sensor_commutation);
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                user_miso = 0;
             }
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
@@ -879,7 +900,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
              * For safety reasons, if no opmode is selected the brake is closed! */
             i_torque_control.set_brake_status(0);
             opmode = OPMODE_NONE;
-            statusword      = update_statusword(statusword, state, 0, 0, 0); /* FiXME update ack, q_active and shutdown_ack */
+            statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
         }
 
         /* wait 1 ms to respect timing */

@@ -31,3 +31,5 @@
 
 /* for all error in this control which could not further specified */
 #define ERROR_CODE_CONTROL                          0x8A00
+
+#define ERROR_CODE_COMMUNICATION                    0x7500

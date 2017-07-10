@@ -45,7 +45,7 @@ void target_generate(PositionProfileConfig *config, PDOOutput *pdo_output, PDOIn
 void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config)
 {
     //read user input
-    wmove(wnd, (*cursor).row, (*cursor).col);
+    wmove(wnd, cursor->row, cursor->col);
     int c2 = 0;
     int c = wgetch(wnd); // curses call to input from keyboard
     switch(c) {
@@ -151,19 +151,20 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
     case KEY_BACKSPACE:
     case KEY_DC:
     case 127: //discard
-        wmove(wnd, (*cursor).row, 0);
+        output->mode_1 = 0;
+        wmove(wnd, cursor->row, 0);
         wclrtoeol(wnd);
         wprintw(wnd, "> ");
-        (*cursor).col = 2;
+        cursor->col = 2;
         break;
 
     // (enter) process command
     case '\n':
-        (*output).value *= (*output).sign;
-        if ((*output).mode_1 == 'o') {
-            pdo_output[output->select].op_mode = (*output).value;
-        } else if ((*output).mode_1 == 'c') {
-            pdo_output[output->select].controlword = (*output).value;
+        output->value *= output->sign;
+        if (output->mode_1 == 'o' || output->mode_1 == 'O') {
+            pdo_output[output->select].op_mode = output->value;
+        } else if (output->mode_1 == 'c' || output->mode_1 == 'C') {
+            pdo_output[output->select].controlword = output->value;
         } else {
             // set target position/velocity/torque
             switch(pdo_input[output->select].op_mode_display) {
@@ -171,21 +172,21 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
                 //init profile
                 profile_config[output->select].step = 0;
                 profile_config[output->select].steps = init_position_profile(&(profile_config[output->select].motion_profile),
-                        (*output).value, pdo_input[output->select].position_value,
+                        output->value, pdo_input[output->select].position_value,
                         profile_config[output->select].profile_speed, profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration,
                         profile_config[output->select].ticks_per_turn);
                 break;
             case OPMODE_CSV:
                 profile_config[output->select].step = 0;
                 profile_config[output->select].steps = init_velocity_profile(&(profile_config[output->select].motion_profile),
-                        (*output).value, pdo_input[output->select].velocity_value,
+                        output->value, pdo_input[output->select].velocity_value,
                         profile_config[output->select].profile_acceleration, profile_config[output->select].profile_acceleration,
                         profile_config[output->select].ticks_per_turn);
                 break;
             case OPMODE_CST:
                 profile_config[output->select].step = 0;
                 profile_config[output->select].steps = init_torque_profile(&(profile_config[output->select].motion_profile),
-                        (*output).value, pdo_input[output->select].torque_value,
+                        output->value, pdo_input[output->select].torque_value,
                         profile_config[output->select].profile_torque_acceleration, profile_config[output->select].profile_torque_acceleration);
                 break;
             }
@@ -197,39 +198,39 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
         getmaxyx(wnd,nrows,ncols); // curses call to find size of window
         wmove(wnd, nrows-1, 0);
         wclrtoeol(wnd);
-        wprintw(wnd, "value %d, mode %c (%X), mode_2 %c, mode_3 %c", (*output).value, (*output).mode_1, (*output).mode_1, (*output).mode_2, (*output).mode_3);
+        wprintw(wnd, "value %d, mode %c (%X), mode_2 %c, mode_3 %c", output->value, output->mode_1, output->mode_1, output->mode_2, output->mode_3);
 
         //reset
-        (*output).mode_1 = 0;
-        (*output).mode_2 = 0;
-        (*output).mode_3 = 0;
-        (*output).value = 0;
-        (*output).sign = 1;
+        output->mode_1 = 0;
+        output->mode_2 = 0;
+        output->mode_3 = 0;
+        output->value = 0;
+        output->sign = 1;
 
         //reset prompt
-        wmove(wnd, (*cursor).row, 0);
+        wmove(wnd, cursor->row, 0);
         wclrtoeol(wnd);
         wprintw(wnd, "> ");
-        (*cursor).col = 2;
+        cursor->col = 2;
         break;
 
     // process and draw the character
     default:
         if (c != ERR) {
-            (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
+            cursor->col = draw(wnd, c, cursor->row, cursor->col); // draw the character
             //parse input
             if(isdigit(c)>0) {
-                (*output).value *= 10;
-                (*output).value += c - '0';
+                output->value *= 10;
+                output->value += c - '0';
             } else if (c == '-') {
-                (*output).sign = -1;
+                output->sign = -1;
             } else if (c != ' ' && c != '\n') {
-                if ((*output).mode_1 == 0) {
-                    (*output).mode_1 = c;
-                } else if ((*output).mode_2 == 0) {
-                    (*output).mode_2 = c;
+                if (output->mode_1 == 0) {
+                    output->mode_1 = c;
+                } else if (output->mode_2 == 0) {
+                    output->mode_2 = c;
                 } else {
-                    (*output).mode_3 = c;
+                    output->mode_3 = c;
                 }
             }
         }

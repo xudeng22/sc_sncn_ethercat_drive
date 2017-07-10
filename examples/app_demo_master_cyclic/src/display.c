@@ -58,6 +58,7 @@ void print_help(WINDOW *wnd, int row)
             "[number]: set target (depends on the opmode)\n"
             "r: reverse target\n"
             "s: disable operation, 'ss' to stop all the slaves\n"
+            "a: acknowledge fault\n"
             "q: quit"
     );
 }
@@ -122,7 +123,7 @@ int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_in
         if (output.debug) {
             wprintw(wnd, " |");
             print_state(wnd, state);
-            wprintw(wnd, "|%04x|%3d", pdo_input[i].statusword, pdo_input[i].op_mode_display);
+            wprintw(wnd, "|%04x|%3d|%04x", pdo_input[i].statusword, pdo_input[i].op_mode_display, pdo_input[i].user_miso);
         }
 
         wmoveclr(wnd, &row);

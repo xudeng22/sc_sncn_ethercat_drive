@@ -28,6 +28,7 @@ typedef struct {
     int last_value;
     int init;
     int select;
+    int fault_ack;
     int debug;
     CIA402State *target_state;
     AppMode app_mode;
@@ -70,6 +71,8 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
 void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output);
 
 void cyclic_synchronous_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config);
+
+int quit_mode(PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves);
 
 
 #endif /* OPERATION_H_ */

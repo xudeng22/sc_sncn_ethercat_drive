@@ -40,7 +40,9 @@ enum eDirection {
 
 #define MAX_TIME_TO_WAIT_SDO      100000
 
-static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error, SensorError commutation_sensor_error, MotionControlError motion_control_error)
+static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motion_sensor_error,
+                                 SensorError commutation_sensor_error, MotionControlError motion_control_error,
+                                 int inactive_timeout_flag)
 {
     int error_code = 0;
 
@@ -69,7 +71,10 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, SensorError motio
             case MOTION_CONTROL_BRAKE_NOT_RELEASED:
                 error_code = ERROR_CODE_MOTOR_BLOCKED;
                 break;
-            case MOTION_CONTROL_NO_ERROR:
+            case MOTION_CONTROL_NO_ERROR: //if there is no motioncontrol fault check communication fault
+                if (inactive_timeout_flag) {
+                    error_code = ERROR_CODE_COMMUNICATION;
+                }
                 break;
             default:
                 error_code = ERROR_CODE_CONTROL;
@@ -377,6 +382,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     int controlword = 0;
+    uint16_t error_code = 0;
 
     //int torque_offstate = 0;
     check_list checklist = init_checklist();
@@ -534,7 +540,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
          */
         if (motorcontrol_fault != NO_FAULT ||
                 motion_sensor_error != SENSOR_NO_ERROR || commutation_sensor_error != SENSOR_NO_ERROR ||
-                motion_control_error != MOTION_CONTROL_NO_ERROR)
+                motion_control_error != MOTION_CONTROL_NO_ERROR ||
+                inactive_timeout_flag)
         {
             update_checklist(checklist, opmode, 1);
             if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1) {
@@ -548,10 +555,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             }
 
             /* Write error code to object dictionary */
-            int error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error, motion_control_error);
+            error_code = get_cia402_error_code(motorcontrol_fault, motion_sensor_error, commutation_sensor_error,
+                                               motion_control_error, inactive_timeout_flag);
             i_coe.set_object_value(DICT_ERROR_CODE, 0, error_code);
         } else {
             update_checklist(checklist, opmode, 0); //no error
+            error_code = 0;
+            i_coe.set_object_value(DICT_ERROR_CODE, 0, 0);
+        }
+
+        //put error_code in user_miso pdo when not in tuning mode
+        if (opmode != OPMODE_SNCN_TUNING) {
+            user_miso = error_code;
         }
 
         follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
@@ -733,6 +748,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                     if (motion_control_error != MOTION_CONTROL_NO_ERROR) {
                         i_motion_control.set_motion_control_config(motion_control_config);
                     }
+                    //reset communication fault
+                    inactive_timeout_flag = 0;
                     //start timer
                     fault_reset_wait_time = time + 1000000*tile_usec; //wait 1s before restarting the motorcontrol
                 } else if (checklist.fault_reset_wait == true) {
@@ -786,6 +803,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                         position_feedback_config_1, position_feedback_config_2, sensor_commutation);
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                user_miso = 0;
             }
         } else {
             /* if a unknown or unsupported opmode is requested we simply return

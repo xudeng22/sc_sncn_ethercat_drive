@@ -2873,7 +2873,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>#x00470000</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -2903,7 +2903,7 @@
                 <Info>
                   <MinData>01</MinData>
                   <DefaultData>01000000</DefaultData>
-                  <Unit>#x22040000</Unit>
+                  <Unit>#xFD040000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2918,7 +2918,7 @@
                 <Info>
                   <MinData>01</MinData>
                   <DefaultData>01000000</DefaultData>
-                  <Unit>#x22560000</Unit>
+                  <Unit>#xFD560000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3020,7 +3020,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>#x00470000</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3067,7 +3067,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x00b44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3083,7 +3083,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x22260000</Unit>
+                  <Unit>#xFD260000</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -3274,7 +3274,7 @@
                     <Name>DC bus voltage</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
-                      <Unit>#xFD260000</Unit>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3784,7 +3784,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x00b44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -4555,7 +4555,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x00b44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>

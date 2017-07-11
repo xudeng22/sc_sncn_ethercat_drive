@@ -81,10 +81,9 @@ int cm_sync_config_position_feedback(
         }
     }
 
+    int old_sensor_type = config.sensor_type; //too check if we need to restart the service
+
     if (feedback_sensor_object != 0) {
-
-        int old_sensor_type = config.sensor_type; //too check if we need to restart the service
-
         config.sensor_type             = i_coe.get_object_value(feedback_sensor_object, 1);
         config.sensor_function         = sensor_function;
         config.resolution              = i_coe.get_object_value(feedback_sensor_object, 3);
@@ -92,11 +91,6 @@ int cm_sync_config_position_feedback(
         config.polarity                = i_coe.get_object_value(feedback_sensor_object, 5);
         config.pole_pairs              = i_coe.get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
         config.offset                  = i_coe.get_object_value(DICT_HOME_OFFSET, 0);
-
-        //restart the service if the sensor type is changed
-        if (old_sensor_type != config.sensor_type) {
-            restart = 1;
-        }
 
         // sensor specific parameters
         // use port_index to select the port number used for hall, qei or biss
@@ -159,10 +153,18 @@ int cm_sync_config_position_feedback(
                 config.gpio_config[i] = i_coe.get_object_value(DICT_GPIO, i+1);
             }
 
-        i_pos_feedback.set_config(config);
-
         port_index++; //the next port to check
+    } else { //disable service if not set
+        config.sensor_type = 0;
+        config.sensor_function = SENSOR_FUNCTION_DISABLED;
     }
+
+    //restart the service if the sensor type is changed
+    if (old_sensor_type != config.sensor_type) {
+        restart = 1;
+    }
+
+    i_pos_feedback.set_config(config);
 
     return restart;
 }

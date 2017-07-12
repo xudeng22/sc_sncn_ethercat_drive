@@ -9,6 +9,8 @@ sc_sncn_ethercat_drive Change Log
   * Fix bug in CiA 402 state machine.
   * Put error code (0x603F object) into user_miso pdo when not in tuning mode.
   * Do not change the integral limits of position/velocity controllers in case automatic tuners are called
+  * Fix bug in position feedback config manager in switching from dual sensor to one sensor.
+  * Bug fixes and improvement in app_master_cyclic.
 
 
 3.0.2

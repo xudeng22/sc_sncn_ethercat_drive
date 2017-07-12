@@ -27,9 +27,11 @@ typedef struct {
     int last_command;
     int last_value;
     int init;
+    int init_display;
     int select;
     int fault_ack;
     int debug;
+    int manual;
     CIA402State *target_state;
     AppMode app_mode;
 } OutputValues;

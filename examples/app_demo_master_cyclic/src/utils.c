@@ -28,26 +28,32 @@ static void printhelp(const char *prog)
 {
     printf("Usage: %s [-h] [-v] [-o] [-c <SDO config filename>] [-s <profile velocity>]\n", _basename(prog));
     printf("\n");
-    printf("  -h             print this help and exit\n");
-    printf("  -o             enable sdo upload\n");
-    printf("  -v             print version and exit\n");
-    printf("  -s <profile velocity in rpm>\n");
-    printf("  -a <profile acceleration in rpm/s>\n");
-    printf("  -t <profile torque acceleration in 1/1000 of rated torque per second>\n");
-    printf("  -c <SDO config filename>\n");
+    printf("  -h                          print this help and exit\n");
+    printf("  -o                          enable sdo upload\n");
+    printf("  -v                          print version and exit\n");
+    printf("  -d                          enable debug display\n");
+    printf("  -s <speed>                  profile velocity in rpm\n");
+    printf("  -a <acceleration>           profile acceleration in rpm/s\n");
+    printf("  -t <torque acceleration>    profile torque acceleration\n"
+           "                              in 1/1000 of rated torque per second\n");
+    printf("  -c <file>                   SDO config filename\n");
 }
 
-void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *profile_speed, int *profile_acc, int *profile_torque_acc, char **sdo_config)
+void cmdline(int argc, char **argv, const char *version, int *sdo_enable, int *profile_speed, int *profile_acc, int *profile_torque_acc, char **sdo_config, int *debug)
 {
     int  opt;
 
-    const char *options = "hvos:c:a:t:";
+    const char *options = "hvods:c:a:t:";
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
         case 'v':
             printversion(argv[0], version);
             exit(0);
+            break;
+
+        case 'd':
+            *debug = 1;
             break;
 
         case 's':

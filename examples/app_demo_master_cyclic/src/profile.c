@@ -324,6 +324,10 @@ int init_linear_profile(motion_profile_t *motion_profile)
 {
     motion_profile->s_time = .001f;
 
+    if (motion_profile->qfd == motion_profile->qid) {
+        return 0;
+    }
+
     // compute time needed (in seconds)
     float total_time = (motion_profile->qfd - motion_profile->qid)/motion_profile->acc;
 

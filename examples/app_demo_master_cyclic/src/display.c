@@ -20,31 +20,73 @@ void print_state(WINDOW *wnd, CIA402State state)
 {
     switch(state) {
     case CIASTATE_NOT_READY:
-        wprintw(wnd, "NOT_READY         ");
+        wprintw(wnd, "         NOT_READY");
         break;
     case CIASTATE_SWITCH_ON_DISABLED:
         wprintw(wnd, "SWITCH_ON_DISABLED");
         break;
     case CIASTATE_READY_SWITCH_ON:
-        wprintw(wnd, "READY_SWITCH_ON   ");
+        wprintw(wnd, "   READY_SWITCH_ON");
         break;
     case CIASTATE_SWITCHED_ON:
-        wprintw(wnd, "SWITCHED_ON       ");
+        wprintw(wnd, "       SWITCHED_ON");
         break;
     case CIASTATE_OP_ENABLED:
-        wprintw(wnd, "OP_ENABLED        ");
+        wprintw(wnd, "        OP_ENABLED");
         break;
     case CIASTATE_QUICK_STOP:
-        wprintw(wnd, "QUICK_STOP        ");
+        wprintw(wnd, "        QUICK_STOP");
         break;
     case CIASTATE_FAULT_REACTION_ACTIVE:
-        wprintw(wnd, "FAULT_REACTION    ");
+        wprintw(wnd, "    FAULT_REACTION");
         break;
     case CIASTATE_FAULT:
-        wprintw(wnd, "FAULT             ");
+        wprintw(wnd, "             FAULT");
         break;
     default:
-        wprintw(wnd, "%04d              ");
+        wprintw(wnd, "              %04d");
+        break;
+    }
+}
+
+void print_error_code(WINDOW *wnd, uint16_t error_code)
+{
+    switch(error_code) {
+    case CIA402_ERROR_CODE_DC_LINK_OVER_VOLTAGE:
+        wprintw(wnd, "Over voltage");
+        break;
+    case CIA402_ERROR_CODE_DC_LINK_UNDER_VOLTAGE:
+        wprintw(wnd, "Under voltage");
+        break;
+    case CIA402_ERROR_CODE_PHASE_FAILURE_L1:
+        wprintw(wnd, "Phase failure 1");
+        break;
+    case CIA402_ERROR_CODE_PHASE_FAILURE_L2:
+        wprintw(wnd, "Phase failure 2");
+        break;
+    case CIA402_ERROR_CODE_PHASE_FAILURE_L3:
+        wprintw(wnd, "Phase failure 3");
+        break;
+    case CIA402_ERROR_CODE_EXCESS_TEMPERATURE_DEVICE:
+        wprintw(wnd, "Over temperature");
+        break;
+    case CIA402_ERROR_CODE_SENSOR:
+        wprintw(wnd, "Error Sensor");
+        break;
+    case CIA402_ERROR_CODE_MOTOR_COMMUTATION:
+        wprintw(wnd, "Error commutation");
+        break;
+    case CIA402_ERROR_CODE_MOTOR_BLOCKED:
+        wprintw(wnd, "Motor blocked");
+        break;
+    case CIA402_ERROR_CODE_CONTROL:
+        wprintw(wnd, "Error control");
+        break;
+    case CIA402_ERROR_CODE_COMMUNICATION:
+        wprintw(wnd, "Error communication");
+        break;
+    default:
+        wprintw(wnd, "Error code Ox%04x", error_code);
         break;
     }
 }
@@ -58,6 +100,9 @@ void print_help(WINDOW *wnd, int row)
             "[number]: set target (depends on the opmode)\n"
             "r: reverse target\n"
             "s: disable operation, 'ss' to stop all the slaves\n"
+            "d: enable debug display\n"
+            "m: enable manual mode\n"
+            "c[number] | o[number]: manually set the controlword | opmode\n"
             "a: acknowledge fault\n"
             "q: quit"
     );
@@ -73,7 +118,7 @@ void wprintw_attr(WINDOW *wnd, char * str, int var, int attr)
 int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_input, size_t num_slaves, OutputValues output)
 {
     wmoveclr(wnd, &row);
-    wprintw(wnd, "-----------------------------------------------------------------------");
+    wprintw(wnd, "------------------------------------------------------------------------");
     for (size_t i = 0; i < num_slaves; i++) {
         int attr = A_NORMAL;
         if (i == output.select) {
@@ -98,7 +143,8 @@ int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_in
             break;
         case CIASTATE_FAULT:
         case CIASTATE_FAULT_REACTION_ACTIVE:
-            wprintw(wnd," Fault!                     ");
+            wprintw(wnd," Fault: ");
+            print_error_code(wnd, pdo_input[i].user_miso);
             break;
         case CIASTATE_OP_ENABLED:
             switch(pdo_input[i].op_mode_display) {
@@ -118,19 +164,26 @@ int display_slaves(WINDOW *wnd, int row, PDOOutput *pdo_output, PDOInput *pdo_in
             break;
         }
 
+        wmoveclr(wnd, &row);
+        wprintw_attr(wnd,"         ", 0, attr);
+        wprintw(wnd, " Position         %10d | Velocity %8d | Torque %5d", pdo_input[i].position_value, pdo_input[i].velocity_value, pdo_input[i].torque_value);
 
         //dispay debug
         if (output.debug) {
-            wprintw(wnd, " |");
+            wmoveclr(wnd, &row);
+            if (output.manual) {
+                wprintw_attr(wnd," Manual  ", 0, attr);
+                wprintw(wnd, " State:   ");
+            } else {
+                wprintw_attr(wnd," Auto    ", 0, attr);
+                wprintw(wnd, " State:   ");
+            }
             print_state(wnd, state);
-            wprintw(wnd, "|%04x|%3d|%04x", pdo_input[i].statusword, pdo_input[i].op_mode_display, pdo_input[i].user_miso);
+            wprintw(wnd, " | Statusword 0x%04x | opmode %5d", pdo_input[i].statusword, pdo_input[i].op_mode_display);
         }
 
         wmoveclr(wnd, &row);
-        wprintw_attr(wnd,"         ", 0, attr);
-        wprintw(wnd, " Position         %10d | Velocity %7d | Torque %5d", pdo_input[i].position_value, pdo_input[i].velocity_value, pdo_input[i].torque_value);
-        wmoveclr(wnd, &row);
-        wprintw(wnd, "-----------------------------------------------------------------------");
+        wprintw(wnd, "------------------------------------------------------------------------");
     }
     return row;
 }

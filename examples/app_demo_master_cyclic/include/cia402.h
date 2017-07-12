@@ -15,6 +15,24 @@
 #define OPMODE_CSV                   9
 #define OPMODE_CST                   10
 
+#define STATUS_WORD_MASQ_A           0x6f
+#define STATUS_WORD_MASQ_B           0x4f
+
+#define STATUS_NOT_READY             0x00   /* masq B */
+#define STATUS_SWITCH_ON_DISABLED    0x40   /* masq B */
+#define STATUS_READY_SWITCH_ON       0x21
+#define STATUS_SWITCHED_ON           0x23
+#define STATUS_OP_ENABLED            0x27
+#define STATUS_QUICK_STOP            0x07
+#define STATUS_FAULT_REACTION_ACTIVE 0x0f   /* masq B */
+#define STATUS_FAULT                 0x08   /* masq B */
+
+#define CONTROL_BIT_ENABLE_OP        0x08
+#define CONTROL_BIT_QUICK_STOP       0x04
+#define CONTROL_BIT_ENABLE_VOLTAGE   0x02
+#define CONTROL_BIT_SWITCH_ON        0x01
+#define CONTROL_BIT_FAULT_RESET      0x80
+
 typedef enum {
      CIASTATE_NOT_READY = 0
     ,CIASTATE_SWITCH_ON_DISABLED
@@ -36,6 +54,25 @@ typedef enum {
     CIA402_CMD_ENABLE_OPERATION,
     CIA402_CMD_FAULT_RESET,
 } CIA402Command;
+
+#define CIA402_ERROR_CODE_DC_LINK_OVER_VOLTAGE             0x3210
+#define CIA402_ERROR_CODE_DC_LINK_UNDER_VOLTAGE            0x3220
+
+#define CIA402_ERROR_CODE_PHASE_FAILURE_L1                 0x3131
+#define CIA402_ERROR_CODE_PHASE_FAILURE_L2                 0x3132
+#define CIA402_ERROR_CODE_PHASE_FAILURE_L3                 0x3133
+
+#define CIA402_ERROR_CODE_EXCESS_TEMPERATURE_DEVICE        0x4210
+
+#define CIA402_ERROR_CODE_SENSOR                           0x7300
+#define CIA402_ERROR_CODE_MOTOR_COMMUTATION                0x7122
+
+#define CIA402_ERROR_CODE_MOTOR_BLOCKED                    0x7121
+
+/* for all error in this control which could not further specified */
+#define CIA402_ERROR_CODE_CONTROL                          0x8A00
+
+#define CIA402_ERROR_CODE_COMMUNICATION                    0x7500
 
 
 CIA402State cia402_read_state(uint16_t statusword);

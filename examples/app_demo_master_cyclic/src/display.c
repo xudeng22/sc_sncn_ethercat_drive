@@ -102,7 +102,7 @@ void print_help(WINDOW *wnd, int row)
             "s: disable operation, 'ss' to stop all the slaves\n"
             "d: enable debug display\n"
             "m: enable manual mode\n"
-            "c[number] | o[number]: manually set the controlword | opmode\n"
+            "c[dec number] | o[dec number]: manually set the controlword | opmode\n"
             "a: acknowledge fault\n"
             "q: quit"
     );

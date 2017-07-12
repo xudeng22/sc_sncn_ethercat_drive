@@ -222,6 +222,9 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     }
                     pdo_output->user_mosi = output->value;
                     break;
+                case 'c':
+                    pdo_output->tuning_command = TUNING_CMD_AUTO_RECORD_COGGING;
+                    break;
                 case 'v':
                     pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;
                     pdo_output->target_velocity = 0;

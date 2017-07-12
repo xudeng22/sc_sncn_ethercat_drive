@@ -9,6 +9,7 @@ SOMANET EtherCat Drive Special Tuning Mode Application
 
 This application is demonstrating the use of the tuning mode of SOMANET EtherCat Drive.
 It allows finding the commutation offset of the motor, tuning of the PID parameters and test the Position, Velocity and Torque controllers. 
+The application is given the functionnality to compensate :ref:`the cogging torque <Cogging-Torque-Feature>` of the motor, allowing a better control at low speed.
 
 .. cssclass:: github
 
@@ -78,6 +79,7 @@ The rest of the commands can be up to 3 characters with an optional number. The 
 The number can be negative. Spaces are ignored. The default number value is 0.
 
   - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
+  - ``ac``:  start the cogging torque detection. It automatically records the cogging torque present in the motor in one mechanical rotation. After the torque is recorded, press “ec1” to enable the compensation of the cogging torque
   - ``ap2``: start the automatic tuning of cascaded position controller. while cascaded position controller is being tuned, the dynamic values of PID controllers are shown on the terminal.
   - ``ap3``: start the automatic tuning of limited-torque position controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
   - ``av``: start the automatic tuning of velocity controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.

@@ -185,6 +185,8 @@ When the application has been compiled, the next step is to run it on the Linux 
 
    #. Use the commands previously described to find the commutation offset then tune and test the position/velocity/torque controllers. After you found the optimal parameters please note them (don't quit the app!) and update your ``sdo_config.csv`` file. You can also test the CSP,CSV,CST CiA 402 operation modes with the ``app_master_cyclic``.
 
+   #. Once the controllers are tuned, you can test the cogging torque compensation. Use the command 'ac', the motor will start to calibrate, make two turns in each direction and stop. Once the compesator is calibrated, you can enable/disable it with the command ec. Note : to be able to calibrate, you need a good velocity tuning at 10 rpm. 
+   
 Examine the code
 ++++++++++++++++
 

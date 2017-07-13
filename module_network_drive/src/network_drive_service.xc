@@ -564,7 +564,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
 #if STARTUP_READ_FLASH_OBJECTS == 1
     /* Before anything else, read the object data values from flash - if existing. */
     if (initial_object_dictionary_read(i_co) != 0) {
-        printstrln("ERROR Could not read object dictionary from file system.");
+        printstrln("Warning: Could not read object dictionary from file system.");
 #endif /* STARTUP_READ_FLASH_OBJECTS */
 
     /*

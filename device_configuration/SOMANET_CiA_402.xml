@@ -63,8 +63,8 @@
                 <BitSize>16</BitSize>
               </DataType>
               <DataType>
-                <Name>STRING(6)</Name>
-                <BitSize>48</BitSize>
+                <Name>STRING(8)</Name>
+                <BitSize>64</BitSize>
               </DataType>
               <DataType>
                 <Name>DT1018</Name>
@@ -2343,6 +2343,19 @@
                 <BitSize>8</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>ro</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x100A</Index>
+                <Name>Manufacturer Software Version</Name>
+                <Type>STRING(8)</Type>
+                <BitSize>64</BitSize>
+                <Info>
+                  <DefaultData>332e31</DefaultData>
                 </Info>
                 <Flags>
                   <Access>ro</Access>

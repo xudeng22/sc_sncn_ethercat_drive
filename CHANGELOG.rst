@@ -1,6 +1,11 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.1
+---
+
+  * Add cogging torque calibration command
+
 3.0.3
 -----
 

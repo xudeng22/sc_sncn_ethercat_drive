@@ -2467,7 +2467,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2479,7 +2479,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2491,7 +2491,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2503,7 +2503,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2611,7 +2611,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2623,7 +2623,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2635,7 +2635,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2647,7 +2647,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>

@@ -58,6 +58,7 @@ typedef enum {
     TUNING_CMD_AUTO_POS_CTRL_TUNE         = 0x0B,
     TUNING_CMD_AUTO_VEL_CTRL_TUNE         = 0x0C,
     TUNING_CMD_COGGING_TORQUE             = 0x0D,
+    TUNING_CMD_AUTO_RECORD_COGGING        = 0x0E,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,

@@ -453,6 +453,16 @@ void tuning_command_handler(
             }
             break;
 
+        // start the recording of the cogging torque
+        case TUNING_CMD_AUTO_RECORD_COGGING:
+
+            tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_VELOCITY;
+            i_motion_control.enable_velocity_ctrl();
+            motion_ctrl_config = i_motion_control.get_motion_control_config();
+            motion_ctrl_config.enable_compensation_recording = 1;
+            i_motion_control.set_motion_control_config(motion_ctrl_config);
+            break;
+
         } /* end switch action command*/
     } /* end if setting/action command */
 }

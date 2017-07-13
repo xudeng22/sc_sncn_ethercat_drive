@@ -64,7 +64,19 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
 
     //enable debug display
     case 'd':
-        output->debug ^= 1;
+        if (output->manual != 1) { //don't disable debug when in manual mode
+            output->debug ^= 1;
+            output->init_display = 0;
+        }
+        break;
+
+    //enable manual mode
+    case 'm':
+        output->manual ^= 1;
+        if (output->manual) {
+            output->debug = 1;
+            output->init_display = 0;
+        }
         break;
 
     //arrow keys to change the selected slave
@@ -157,6 +169,10 @@ void cs_command(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pd
     case KEY_DC:
     case 127: //discard
         output->mode_1 = 0;
+        output->mode_2 = 0;
+        output->mode_3 = 0;
+        output->value = 0;
+        output->sign = 1;
         wmove(wnd, cursor->row, 0);
         wclrtoeol(wnd);
         wprintw(wnd, "> ");
@@ -252,16 +268,19 @@ void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t nu
 {
     for (int i=0; i<number_slaves; i++) {
         CIA402State current_state = cia402_read_state(pdo_input[i].statusword);
-        if (current_state == CIASTATE_FAULT) { //fault state, wait for acknowledge by the user
-            if (i == output->select && output->fault_ack) { //send reset fault command for selected slave
-                pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
-                output->fault_ack = 0;
-            }
-        } else {
-            switch(pdo_output[i].op_mode) {
-            case OPMODE_CSP://CSP
-            case OPMODE_CSV://CSV
-            case OPMODE_CST://CST
+        switch(pdo_output[i].op_mode) {
+        case OPMODE_CSP://CSP
+        case OPMODE_CSV://CSV
+        case OPMODE_CST://CST
+            if (current_state == CIASTATE_FAULT) { //fault state, wait for acknowledge by the user
+                if (i == output->select && output->fault_ack) { //send reset fault command for selected slave
+                    pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
+                    output->fault_ack = 0;
+                }
+            } else {
+                //remove fault reset bit
+                pdo_output[i].controlword &= ~CONTROL_BIT_FAULT_RESET;
+
                 //if the opmode is not yet set in the slave we need to go to the SWITCH_ON_DISABLED state to be able to change the opmode
                 if (pdo_output[i].op_mode != pdo_input[i].op_mode_display) {
                     pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
@@ -277,11 +296,11 @@ void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t nu
                     // the opmode and is set, we can now go to target state
                     pdo_output[i].controlword = cia402_go_to_state((output->target_state)[i], current_state, pdo_output[i].controlword, 0);
                 }
-                break;
-            default://for other opmodes disable operation
-                pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
-                break;
             }
+            break;
+        default://for other opmodes disable operation
+            pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
+            break;
         }
     }
 }
@@ -290,15 +309,34 @@ void state_machine_control(PDOOutput *pdo_output, PDOInput *pdo_input, size_t nu
 void cyclic_synchronous_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output, PDOInput *pdo_input, size_t number_slaves, OutputValues *output, PositionProfileConfig *profile_config)
 {
     //init display
-    if (output->init == 0) {
-        output->init = 1;
+    if (output->init_display == 0) {
         clear();
-        cursor->row = number_slaves*3 + 2;
+        int slave_row_length = 3;
+        if (output->debug) {
+            slave_row_length = 4;
+        }
+        cursor->row = number_slaves*slave_row_length + 2;
         //print help
         print_help(wnd, (cursor->row)+2);
         cursor->col = 2;
         move(cursor->row, 0);
         printw("> ");
+        output->init_display = 1;
+    }
+    //init slaves, set all slaves to opmode CST CIASTATE_SWITCH_ON_DISABLED
+    if (output->init == 0) {
+        output->init = 1;
+        for (int i=0; i<number_slaves; i++) {
+            CIA402State current_state = cia402_read_state(pdo_input[i].statusword);
+            // if the fault is only CIA402_ERROR_CODE_COMMUNICATION we reset it
+            // if the slave is not in CIASTATE_SWITCH_ON_DISABLED or CIASTATE_FAULT we put it in CIASTATE_SWITCH_ON_DISABLED
+            if ( (current_state == CIASTATE_FAULT && pdo_input[i].user_miso == CIA402_ERROR_CODE_COMMUNICATION) ||
+                 (current_state != CIASTATE_FAULT && current_state != CIASTATE_SWITCH_ON_DISABLED) )
+            {
+                pdo_output[i].controlword = cia402_go_to_state(CIASTATE_SWITCH_ON_DISABLED, current_state, pdo_output[i].controlword, 0);
+                output->init = 0;
+            }
+        }
     }
 
     //display slaves data
@@ -308,7 +346,9 @@ void cyclic_synchronous_mode(WINDOW *wnd, Cursor *cursor, PDOOutput *pdo_output,
     cs_command(wnd, cursor, pdo_output, pdo_input, number_slaves, output, profile_config);
 
     //manage slaves state machines and opmode
-    state_machine_control(pdo_output, pdo_input, number_slaves, output);
+    if (output->manual != 1) {
+        state_machine_control(pdo_output, pdo_input, number_slaves, output);
+    }
 
     //use profile to generate a target for position/velocity
     target_generate(profile_config, pdo_output, pdo_input, number_slaves);

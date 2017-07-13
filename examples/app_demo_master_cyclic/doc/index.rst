@@ -93,7 +93,7 @@ When the application has been compiled, the next step is to run it on the Linux 
 
        > 100
 
-   #. You can stop the selected slave with ``s`` (stop all the slaves with ``ss``). Quit the app with ``q``. And change the selected slave with the ``up`` and ``down`` keyboard arrows (the current selected slave is highlighted).
+   #. You can stop the selected slave with ``s`` (stop all the slaves with ``ss``). Quit the app with ``q``. And change the selected slave with the ``up`` and ``down`` keyboard arrows (the current selected slave is highlighted). If a slave in fault state you need to acknowledge the fault with ``a`` to reset it.
    
 
 Commands
@@ -101,13 +101,15 @@ Commands
 
 The application provides the following command line arguments
 
-  - ``-h``             print this help and exit
-  - ``-v``             print version and exit
-  - ``-o``             enable sdo upload
-  - ``-s <profile velocity>`` velocity in rpm used for CSP
-  - ``-a <profile acceleration>`` acceleration in rmp/s used for CSP and CSV
-  - ``-t <profile torque acceleration>`` Torque acceleration in 1/1000 of rated torque per second used for CST
-  - ``-c <SDO config filename>`` filename of the sdo config csv file. Default is ``sdo_config/sdo_config.csv``
+  - ``-h``                          print this help and exit
+  - ``-o``                          enable sdo upload
+  - ``-v``                          print version and exit
+  - ``-d``                          enable debug display
+  - ``-s <speed>``                  profile velocity in rpm
+  - ``-a <acceleration>``           profile acceleration in rpm/s
+  - ``-t <torque acceleration>``    profile torque acceleration
+                                    in 1/1000 of rated torque per second
+  - ``-c <file>``                   SDO config filename
 
 The application is a ``ncurses`` graphical console application. It uses simple commands to switch between CSP, CSV and CST modes and send a target position, velocity or torque:
 
@@ -116,6 +118,10 @@ The application is a ``ncurses`` graphical console application. It uses simple c
   - ``[number]``: set target (depends on the opmode)
   - ``r``: reverse target
   - ``s``: disable operation, 'ss' to stop all the slaves
+  - ``d``: enable debug display
+  - ``m``: enable manual mode
+  - ``c[dec number] | o[dec number]``: manually set the controlword | opmode
+  - ``a``: acknowledge fault
   - ``q``: quit
 
 The commands are also printed is the app.

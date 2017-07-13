@@ -75,9 +75,10 @@ int cm_sync_config_position_feedback(
         }
     }
 
+    int old_sensor_type = config.sensor_type; //too check if we need to restart the service
+
     if (feedback_sensor_object != 0) {
 
-        int old_sensor_type = config.sensor_type; //too check if we need to restart the service
 
         {config.sensor_type, void, void}             = i_co.od_get_object_value(feedback_sensor_object, 1);
         config.sensor_function                       = sensor_function;
@@ -156,15 +157,24 @@ int cm_sync_config_position_feedback(
         }
 
         //gpio settings (gpio are always on the first position feedback service)
-        if (feedback_service_index == 1)
+        if (feedback_service_index == 1) {
             for (int i=0; i<4; i++) {
                 {config.gpio_config[i], void, void} = i_co.od_get_object_value(DICT_GPIO, i+1);
             }
-
-        i_pos_feedback.set_config(config);
+        }
 
         port_index++; //the next port to check
+    } else { //disable service if not set
+        config.sensor_type = 0;
+        config.sensor_function = SENSOR_FUNCTION_DISABLED;
     }
+
+    //restart the service if the sensor type is changed
+    if (old_sensor_type != config.sensor_type) {
+        restart = 1;
+    }
+
+    i_pos_feedback.set_config(config);
 
     return restart;
 }

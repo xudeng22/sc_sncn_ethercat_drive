@@ -25,11 +25,12 @@ int main(int argc, char **argv)
     int profile_speed = 50; //rpm
     int profile_acc = 50; //rpm/s
     int profile_torque_acc = 50; // 1/1000 rated torque / s
+    int debug = 0;
     char *sdo_config_file = malloc(PATH_MAX);
     strncpy(sdo_config_file, default_sdo_config_file, PATH_MAX);
 
     //get parameters from cmdline
-    cmdline(argc, argv, VERSION, &sdo_enable, &profile_speed, &profile_acc, &profile_torque_acc, &sdo_config_file);
+    cmdline(argc, argv, VERSION, &sdo_enable, &profile_speed, &profile_acc, &profile_torque_acc, &sdo_config_file, &debug);
 
     //read sdo parameters from file
     SdoConfigParameter_t sdo_config_parameter;
@@ -86,6 +87,7 @@ int main(int argc, char **argv)
     OutputValues output = {0};
     output.app_mode = CYCLIC_SYNCHRONOUS_MODE;
     output.sign = 1;
+    output.debug = debug;
     output.target_state = malloc(num_slaves*sizeof(CIA402State));
 
 
@@ -97,7 +99,7 @@ int main(int argc, char **argv)
 
         /* Init pdos */
         pdo_output[i].controlword = 0;
-        pdo_output[i].op_mode = 0;
+        pdo_output[i].op_mode = OPMODE_CST;
         pdo_output[i].target_position = 0;
         pdo_output[i].target_torque = 0;
         pdo_output[i].target_velocity = 0;

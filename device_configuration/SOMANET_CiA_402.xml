@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <EtherCATInfo Version="1.2">
   <Vendor>
     <Id>#x000022D2</Id>
@@ -2860,6 +2860,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
+                  <Unit>#x00B50000</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -2874,7 +2875,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>00470000</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -2889,7 +2890,6 @@
                 <BitSize>16</BitSize>
                 <Info>
                   <DefaultData>0000</DefaultData>
-                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2905,7 +2905,7 @@
                 <Info>
                   <MinData>01</MinData>
                   <DefaultData>01000000</DefaultData>
-                  <Unit>22040000</Unit>
+                  <Unit>#xFD040000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2920,7 +2920,7 @@
                 <Info>
                   <MinData>01</MinData>
                   <DefaultData>01000000</DefaultData>
-                  <Unit>22560000</Unit>
+                  <Unit>#xFD563D00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2948,6 +2948,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
+                  <Unit>#x00B50000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2971,12 +2972,14 @@
                     <Name>Min position limit</Name>
                     <Info>
                       <DefaultData>00000080</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max position limit</Name>
                     <Info>
                       <DefaultData>FFFFFF7F</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3001,12 +3004,14 @@
                     <Name>Min position range limit</Name>
                     <Info>
                       <DefaultData>00000080</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max position range limit</Name>
                     <Info>
                       <DefaultData>FFFFFF7F</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3022,7 +3027,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>00470000</Unit>
+                  <Unit>#x00004700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3052,7 +3057,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3069,7 +3074,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x00b44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3085,7 +3090,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>22260000</Unit>
+                  <Unit>#xFD26A900</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -3116,7 +3121,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3133,7 +3138,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3150,7 +3155,7 @@
                 <Info>
                   <MinData>00</MinData>
                   <DefaultData>00</DefaultData>
-				  <Unit>#x00B44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3166,6 +3171,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
+                  <Unit>#x00B50000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3196,18 +3202,21 @@
                     <Name>Torque Constant</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#xFA210400</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Phase Resistance</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#xFA280000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Phase Inductance</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
+                      <Unit>#xFA2C0000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3273,7 +3282,7 @@
                     <Name>DC bus voltage</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
-                      <Unit>#xFD260000</Unit>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3357,36 +3366,42 @@
                     <Name>Min battery energy</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max battery energy</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Min recuperation power</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00240000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max recuperation power</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00240000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Minimum recuperation speed</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B44700</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Maximum recuperation speed</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B44700</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3451,13 +3466,15 @@
                   <SubItem>
                     <Name>Position filter coefficient</Name>
                     <Info>
-                      <DefaultData>64</DefaultData>
+                      <DefaultData>00000000</DefaultData>
+                      <Unit>#x00200000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity filter coefficient</Name>
                     <Info>
-                      <DefaultData>5A</DefaultData>
+                      <DefaultData>00000000</DefaultData>
+                      <Unit>#x00200000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3476,7 +3493,6 @@
                   <MinData>00</MinData>
                   <MaxData>64</MaxData>
                   <DefaultData>3C</DefaultData>
-                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3497,22 +3513,6 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>m</Category>
-                </Flags>
-              </Object>
-              <Object>
-                <Index>#x6072</Index>
-                <Name>Max torque</Name>
-                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
-                <Type>UINT</Type>
-                <BitSize>16</BitSize>
-                <Info>
-                  <MinData>00</MinData>
-                  <DefaultData>00</DefaultData>
-                </Info>
-                <Flags>
-                  <Access>rw</Access>
-                  <Category>o</Category>
-                  <PdoMapping>tr</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -3836,12 +3836,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3860,12 +3862,14 @@
                     <Name>Clock frequency</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#x03200000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Timeout</Name>
                     <Info>
                       <DefaultData>24</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3933,12 +3937,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3988,12 +3994,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4061,12 +4069,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4122,12 +4132,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4183,12 +4195,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4268,12 +4282,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4539,7 +4555,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>00005700</Unit>
+                  <Unit>#x00005700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -4555,7 +4571,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x00b44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -4592,12 +4608,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4616,12 +4634,14 @@
                     <Name>Clock frequency</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#x03200000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Timeout</Name>
                     <Info>
                       <DefaultData>24</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4691,6 +4711,21 @@
                   <Access>ro</Access>
                   <Category>o</Category>
                   <PdoMapping>t</PdoMapping>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x6072</Index>
+                <Name>Max torque</Name>
+                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
+                <Type>UINT</Type>
+                <BitSize>16</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                  <PdoMapping>tr</PdoMapping>
                 </Flags>
               </Object>
             </Objects>

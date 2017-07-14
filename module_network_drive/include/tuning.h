@@ -19,7 +19,7 @@
 
 #include <xscope.h>
 #include <mc_internal_constants.h>
-#include <spiffs_service.h>
+#include <file_service.h>
 
 #define TUNING_CMD_SET_PARAM_MASK               0x80
 #define TUNING_CMD_SET_MOTION_CONTROL_MASK      0x40
@@ -179,7 +179,7 @@ int tuning_handler_ethercat(
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2,
-                client interface SPIFFSInterface i_spiffs
+                client interface FileServiceInterface i_file_service
     );
 
 
@@ -209,7 +209,7 @@ void tuning_command_handler(
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
         client interface PositionFeedbackInterface ?i_position_feedback_2,
-        client interface SPIFFSInterface i_spiffs
+        client interface FileServiceInterface i_file_service
     );
 
 

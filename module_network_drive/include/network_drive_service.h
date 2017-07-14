@@ -40,7 +40,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
-                                    client interface SPIFFSInterface i_spiffs);
+                                    client interface FileServiceInterface i_file_service);
 
 void network_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_pdo_handler_exchange i_pdo,

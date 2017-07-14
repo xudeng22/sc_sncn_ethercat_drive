@@ -65,6 +65,14 @@ struct _file_t {
     short cfd;
 };
 
+typedef interface FileServiceInterface FileServiceInterface;
+
+interface FileServiceInterface
+{
+    void write_torque_array(short array_in[]);
+    int read_torque_array(short array_out[]);
+};
+
 
 /**
  * @brief This Service reads / stores configuration parameters to flash via SPIFFS
@@ -75,6 +83,7 @@ struct _file_t {
  *
  */
 void file_service(
+        server FileServiceInterface i_file_service [2],
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
         client interface i_foe_communication ?i_foe);

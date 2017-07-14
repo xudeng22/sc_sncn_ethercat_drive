@@ -13,6 +13,7 @@
 #include <statemachine.h>
 #include <state_modes.h>
 #include <profile.h>
+#include <string.h>
 #include <config_manager.h>
 #include <motion_control_service.h>
 #include <position_feedback_service.h>
@@ -478,7 +479,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
-                                    client interface SPIFFSInterface i_spiffs)
+                                    client interface FileServiceInterface i_file_service)
 {
 
 
@@ -612,6 +613,13 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
                     quick_stop_deceleration
                     );
+            //Load cogging torque data
+            char filename [] = "cogging_torque.bin";
+            int status = i_file_service.read_torque_array(motorcontrol_config.torque_offset);
+            if (status != SPIFFS_ERR_NOT_FOUND)
+                i_motion_control.enable_cogging_compensation(1);
+
+
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
             read_configuration = 0;
@@ -820,7 +828,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 /* we allow opmode change in this state */
                 //check and update opmode
                 opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
-                read_configuration = 1;
+//                read_configuration = 1;
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);
@@ -953,7 +961,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     motorcontrol_config, motion_control_config, position_feedback_config_1, position_feedback_config_2,
                     sensor_commutation, sensor_motion_control,
                     send_to_master,
-                    i_motion_control, i_position_feedback_1, i_position_feedback_2, i_spiffs);
+                    i_motion_control, i_position_feedback_1, i_position_feedback_2, i_file_service);
 
             //check and update opmode
             opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);

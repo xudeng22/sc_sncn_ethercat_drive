@@ -4,7 +4,7 @@
 Flash File Service Module
 =============================
 
-This module provides a service to store and read configuration parameters from the object dictionary  into flash.
+This module provides a service to store and read configuration parameters from the object dictionary (OD) into flash.
 
 Dependent modules:
 - ``module_spiffs``
@@ -19,27 +19,26 @@ Dependent modules:
 
   `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_file_service>`_
 
-The module provides access to files in SPIFFS file system via Ethercat, downloading data into OD and uploading data from OD to the human-readable csv file using the config parser module. To read or write files use standard commands: ethercat "foe_read (<file name>)", ethercat "foe_write (<file name>)". To load and save data from OD,use a special object-command 0x2000. The file name for OD data is "config.csv". To upload data from OD to a file, use the command "download 0x2000 1". To download data from a file to OD, use the command "download 0x2000 2". Also, when the system starts and if there is a "config.csv" file in the file system, data will be loaded automatically . If there is no file, OD uses default values.
+The module provides access to files in the SPIFFS file system via Ethercat, downloading data into OD and uploading data from OD to the human-readable csv file using the config parser module. To read or write files use standard commands: ethercat "foe_read (<file name>)", ethercat "foe_write (<file name>)". To load and save data from OD,use a special object-command 0x2000. The file name for OD data is "config.csv". To upload data from OD to a file, use the command "download 0x2000 1". To download data from a file to OD, use the command "download 0x2000 2". Also, when the system starts and if there is a "config.csv" file in the file system, data will be loaded automatically. If there is no file, OD uses default values.
 
-**The service takes as parameters:**
+**Valid parameters for the service:**
  - interface for writing ethercat data to flash
  - interface to the canopen interface service
  - interface to communication send, receive and signal for FoE
 
-The service starts after receiving notification from the SPIFFS service "spiffs_reday", This notification indicates, that file service initialized and mounted.
-The service requires modules:
+The service starts after receiving the notification "spiffs_ready" from the SPIFFS service. This notification indicates that file service is initialized and mounted.
 
 How to use
 ==========
-1. Pass options to xCORE build tools from makefile::
+1. Pass options to xCORE build tools from makefile ::
   
   XCC_FLAGS = -g -O3 -DCOM_ETHERCAT -lflash
 
-2. Add the following modules to your app Makefile::
+2. Add the following modules to your app Makefile ::
 
   USED_MODULES = module_board-support module_canopen_interface lib_ethercat module_file_service module_flash_service  module_spiffs module_config_parser
 
- 3. Include the following headers in your app ::
+ 3. Include the following headers in your app::
   
   #include <canopen_interface_service.h>
   #include <ethercat_service.h>

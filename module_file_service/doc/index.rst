@@ -32,7 +32,7 @@ How to use
 ==========
 1. Pass options to xCORE build tools from makefile ::
   
-  XCC_FLAGS = -g -O3 -DCOM_ETHERCAT -lflash
+  XCC_FLAGS = -g -O3 -DCOM_ETHERCAT -lquadflash
 
 2. Add the following modules to your app Makefile ::
 

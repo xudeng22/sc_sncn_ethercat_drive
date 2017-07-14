@@ -5,6 +5,11 @@ sc_sncn_ethercat_drive Change Log
 ---
 
   * Add cogging torque calibration command
+  * New Object Dictionary (OD) structure:
+    * Arbitrary value sizes (type aware)
+    * Detection of changed values by master
+    * Min, Max, Default, Unit values
+  * Reading, storing, and automatic loading of OD (via file service of SPIFFS)
 
 3.0.3
 -----

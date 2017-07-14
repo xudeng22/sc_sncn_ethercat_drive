@@ -378,7 +378,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
-    enum e_States state_old = state;
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     int controlword = 0;
@@ -661,6 +660,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);
+
+                /* update config on the S_SWITCH_ON_DISABLED -> S_READY_TO_SWITCH_ON transition */
+                if (state == S_READY_TO_SWITCH_ON) {
+                    read_configuration = 1;
+                }
                 break;
 
             case S_READY_TO_SWITCH_ON:
@@ -811,12 +815,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             opmode = OPMODE_NONE;
             statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
         }
-
-        /* update config when entering the S_SWITCH_ON_DISABLED state */
-        if (state == S_SWITCH_ON_DISABLED && state_old != S_SWITCH_ON_DISABLED) {
-            read_configuration = 1;
-        }
-        state_old = state;
 
         /* wait 1 ms to respect timing */
         t when timerafter(time + tile_usec*1000) :> time;

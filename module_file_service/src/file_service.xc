@@ -399,15 +399,14 @@ void file_service(
     while (1) {
         select
         {
-            case i_file_service[int i].write_torque_array(short array_in[]):
-
-                    char filename [20] = "cogging_torque.bin";
+            case i_file_service[int i].write_torque_array(int array_in[]) -> int status:
 
                     printf("Name written\n");
-                    int file_id = i_spiffs.open_file(filename, strlen(filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
+                        status = file_id;
                         break;
                     }
                     else
@@ -425,15 +424,13 @@ void file_service(
                             printf("error : %d\n", err_write);
 
                     }
-                    file_id = i_spiffs.close_file(file_id);
+                    i_spiffs.close_file(file_id);
                     break;
 
-            case i_file_service[int i].read_torque_array(short array_out[]) -> int status:
-
-                    char filename [20] = "cogging_torque.bin";
+            case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
 
                     printf("Name written\n");
-                    int file_id = i_spiffs.open_file(filename, strlen(filename), (SPIFFS_RDONLY));
+                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
@@ -465,22 +462,13 @@ void file_service(
                             array_out[i] -= 0x10000;
                     }
 
-                    file_id = i_spiffs.close_file(file_id);
-                    if (file_id < 0)
-                    {
-                        printstrln("Error closing file");
-                        status = -1;
-                    }
-                    else
-                    {
-                        printstr("File closed: ");
-                        printintln(file_id);
-                        status = 2;
-                    }
+                    i_spiffs.close_file(file_id);
                     break;
 
-
+            default:
+                  break;
         }
+
         enum eSdoCommand command = i_canopen.command_ready();
         int command_result = 0;
         switch (command) {

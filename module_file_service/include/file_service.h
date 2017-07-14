@@ -45,6 +45,11 @@
 #define CONFIG_FILE_NAME "config.csv"
 
 /**
+ * \brief Name of binary file to store / read torque offset
+ */
+#define TORQUE_OFFSET_FILE_NAME "cogging_torque.bin"
+
+/**
  * \brief FoE service timeout
  */
 #define FILE_SERVICE_DELAY_TIMEOUT 500000000
@@ -69,8 +74,9 @@ typedef interface FileServiceInterface FileServiceInterface;
 
 interface FileServiceInterface
 {
-    void write_torque_array(short array_in[]);
-    int read_torque_array(short array_out[]);
+    [[guarded]] int write_torque_array(int array_in[]);
+
+    [[guarded]] int read_torque_array(int array_out[]);
 };
 
 

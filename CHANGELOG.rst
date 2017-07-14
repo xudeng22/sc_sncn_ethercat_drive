@@ -10,6 +10,8 @@ sc_sncn_ethercat_drive Change Log
     * Detection of changed values by master
     * Min, Max, Default, Unit values
   * Reading, storing, and automatic loading of OD (via file service of SPIFFS)
+  * Support for watchdog error for DC1K rev.D1
+  * Core C22 and C21-DX rev.A are no longer supported (memory limitation)
 
 3.0.3
 -----

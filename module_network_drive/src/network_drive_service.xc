@@ -565,14 +565,12 @@ void network_drive_service(ProfilerConfig &profiler_config,
 #if STARTUP_READ_FLASH_OBJECTS == 1
     /* Before anything else, read the object data values from flash - if existing. */
     if (initial_object_dictionary_read(i_co) != 0) {
-        printstrln("ERROR Could not read object dictionary from file system.");
-    }
+        printstrln("Warning: Could not read object dictionary from file system.");
 #endif /* STARTUP_READ_FLASH_OBJECTS */
 
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
-
     /* FIXME add support for more than one feedback sensor */
     cm_default_config_position_feedback(i_co, i_position_feedback_1, position_feedback_config_1, 1);
     if (!isnull(i_position_feedback_2)) {
@@ -583,6 +581,10 @@ void network_drive_service(ProfilerConfig &profiler_config,
     cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_co, i_motion_control);
 
+#if STARTUP_READ_FLASH_OBJECTS == 1
+    }
+#endif /* STARTUP_READ_FLASH_OBJECTS */
+
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
@@ -591,6 +593,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
      * This should be done before we configure anything.
      */
     sdo_wait_first_config(i_co);
+
 
     /* if we reach this point the EtherCAT service is considered in OPMODE */
     int drive_in_opstate = 1;

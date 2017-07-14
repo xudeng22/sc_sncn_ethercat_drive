@@ -4,7 +4,7 @@ sc_sncn_ethercat_drive Change Log
 3.1
 ---
 
-  * Add cogging torque calibration command
+  * Add cogging torque calibration command. Possibility to store it in the flash memory.
 
 3.0.3
 -----

@@ -477,7 +477,8 @@ void network_drive_service(ProfilerConfig &profiler_config,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
-                            client interface PositionFeedbackInterface ?i_position_feedback_2)
+                            client interface PositionFeedbackInterface ?i_position_feedback_2,
+                                    client interface SPIFFSInterface i_spiffs)
 {
 
 
@@ -949,7 +950,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     motorcontrol_config, motion_control_config, position_feedback_config_1, position_feedback_config_2,
                     sensor_commutation, sensor_motion_control,
                     send_to_master,
-                    i_motion_control, i_position_feedback_1, i_position_feedback_2);
+                    i_motion_control, i_position_feedback_1, i_position_feedback_2, i_spiffs);
 
             //check and update opmode
             opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);

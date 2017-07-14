@@ -123,7 +123,7 @@ int main(void)
                             i_pdo,
                             i_co[1],
                             i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_spiffs[1]);
 #endif
                 }
 
@@ -135,7 +135,7 @@ int main(void)
             par
             {
                 file_service(i_spiffs[0], i_co[3], i_foe);
-                spiffs_service(i_data[0], i_spiffs, 1);
+                spiffs_service(i_data[0], i_spiffs, 2);
             }
         }
 

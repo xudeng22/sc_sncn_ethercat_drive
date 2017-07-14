@@ -19,6 +19,7 @@
 
 #include <xscope.h>
 #include <mc_internal_constants.h>
+#include <spiffs_service.h>
 
 #define TUNING_CMD_SET_PARAM_MASK               0x80
 #define TUNING_CMD_SET_MOTION_CONTROL_MASK      0x40
@@ -47,6 +48,8 @@ typedef enum {
     TUNING_CMD_AUTO_VEL_CTRL_TUNE         = 0x0C,
     TUNING_CMD_COGGING_TORQUE             = 0x0D,
     TUNING_CMD_AUTO_RECORD_COGGING        = 0x0E,
+    TUNING_CMD_SAVE_RECORD_COGGING        = 0x0F,
+    TUNING_CMD_LOAD_RECORD_COGGING        = 0X10,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,
@@ -175,7 +178,8 @@ int tuning_handler_ethercat(
         UpstreamControlData      &upstream_control_data,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+                client interface SPIFFSInterface i_spiffs
     );
 
 
@@ -204,7 +208,8 @@ void tuning_command_handler(
         int sensor_motion_control,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface SPIFFSInterface i_spiffs
     );
 
 

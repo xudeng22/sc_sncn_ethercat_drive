@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <state_modes.h>
-
+#include <file_service.h>
+#include <string.h>
+#include <print.h>
 /*
  * Function to call while in tuning opmode
  *
@@ -31,7 +33,8 @@ int tuning_handler_ethercat(
         UpstreamControlData      &upstream_control_data,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+                client interface SPIFFSInterface i_spiffs
     )
 {
     uint8_t status_mux     = (tuning_status >> 16) & 0xff;
@@ -126,7 +129,7 @@ int tuning_handler_ethercat(
         tuning_command_handler(tuning_mode_state,
                 motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
                 sensor_commutation, sensor_motion_control,
-                i_motion_control, i_position_feedback_1, i_position_feedback_2);
+                i_motion_control, i_position_feedback_1, i_position_feedback_2, i_spiffs);
 
         //update flags
         tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_ctrl_config,
@@ -151,7 +154,8 @@ void tuning_command_handler(
         int sensor_motion_control,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface SPIFFSInterface i_spiffs
 )
 {
 
@@ -461,6 +465,66 @@ void tuning_command_handler(
             motion_ctrl_config = i_motion_control.get_motion_control_config();
             motion_ctrl_config.enable_compensation_recording = 1;
             i_motion_control.set_motion_control_config(motion_ctrl_config);
+            break;
+
+        case TUNING_CMD_SAVE_RECORD_COGGING:
+            char filename [20] = "cogging_torque.bin";
+
+            printf("Name written\n");
+            int file_id = i_spiffs.open_file(filename, strlen(filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+            if (file_id < 0)
+            {
+                printstrln("Error opening file");
+                break;
+            }
+            else
+            {
+                printstr("File created: ");
+                printintln(file_id);
+            }
+            unsigned char data [2] ={0} ;
+
+            motorcontrol_config = i_motion_control.get_motorcontrol_config();
+            for (int i = 0; i < 1024; i++)
+            {
+                data [0] = (motorcontrol_config.torque_offset[i] & 0xFF00)>> 8;
+                data [1] = motorcontrol_config.torque_offset[i] & 0x00FF;
+                int err_write = i_spiffs.write(file_id, data, 2);
+                if (err_write < 0)
+                    printf("error : %d\n", err_write);
+
+            }
+            file_id = i_spiffs.close_file(file_id);
+
+            break;
+
+        case TUNING_CMD_LOAD_RECORD_COGGING:
+            char filename [20] = "cogging_torque.bin";
+            int file_id = i_spiffs.open_file(filename, strlen(filename), (SPIFFS_RDONLY));
+            motorcontrol_config = i_motion_control.get_motorcontrol_config();
+            if (file_id < 0)
+            {
+                printstrln("Error opening file");
+                break;
+            }
+            else
+            {
+                printstr("File opened: ");
+                printintln(file_id);
+            }
+            char buffer [2];
+            for (int i = 0; i < 1024; i++)
+            {
+                int err_read = i_spiffs.read(file_id, buffer, 2);
+                if (err_read < 0)
+                    printf("error : %d\n", err_read);
+                motorcontrol_config.torque_offset[i] = (buffer[0] << 8) + buffer[1];
+                if(motorcontrol_config.torque_offset[i] >= 0x7FFF)
+                    motorcontrol_config.torque_offset[i] -= 0x10000;
+            }
+            i_motion_control.set_motorcontrol_config(motorcontrol_config);
+            file_id = i_spiffs.close_file(file_id);
+
             break;
 
         } /* end switch action command*/

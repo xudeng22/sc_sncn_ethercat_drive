@@ -222,8 +222,20 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     }
                     pdo_output->user_mosi = output->value;
                     break;
+
                 case 'c':
-                    pdo_output->tuning_command = TUNING_CMD_AUTO_RECORD_COGGING;
+                    switch(output->mode_3) {
+                    case 's':
+                        pdo_output->tuning_command = TUNING_CMD_SAVE_RECORD_COGGING;
+                        break;
+                    case 'l':
+                        pdo_output->tuning_command = TUNING_CMD_LOAD_RECORD_COGGING;
+                        break;
+
+                    default:
+                        pdo_output->tuning_command = TUNING_CMD_AUTO_RECORD_COGGING;
+                        break;
+                    }
                     break;
                 case 'v':
                     pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;

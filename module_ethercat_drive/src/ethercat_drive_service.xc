@@ -656,15 +656,11 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 break;
 
             case S_SWITCH_ON_DISABLED:
-
                 /* we allow opmode change in this state */
                 opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);
-                if (state != state_old) {
-                    read_configuration = 1;
-                }
                 break;
 
             case S_READY_TO_SWITCH_ON:
@@ -816,6 +812,10 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
             statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
         }
 
+        /* update config when entering the S_SWITCH_ON_DISABLED state */
+        if (state == S_SWITCH_ON_DISABLED && state_old != S_SWITCH_ON_DISABLED) {
+            read_configuration = 1;
+        }
         state_old = state;
 
         /* wait 1 ms to respect timing */

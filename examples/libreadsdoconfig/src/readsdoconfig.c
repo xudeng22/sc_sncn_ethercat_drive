@@ -12,6 +12,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <math.h>
 
 #define MAX_INPUT_LINE    1024
 #define MAX_TOKEN_SIZE    255
@@ -84,9 +86,25 @@ static void tokenize_inbuf(char *buf, size_t bufsize, struct _token_t *token)
   free(b);
 }
 
-static long parse_token(char *token_str)
+static Value_t parse_token(char *token_str)
 {
-  long value = strtol(token_str, NULL, 0);
+  Value_t value = {0};
+
+  char *str_end = NULL;
+
+  value.integer = (uint32_t)strtol(token_str, &str_end, 0);
+  
+  if (*str_end == '.' && isdigit(*(str_end+1))) {
+    //we found a dot, parse as float value
+    char *str_end2 = NULL;
+    long frac = strtol(str_end+1, &str_end2, 0);
+    // value real = value before the dot + value after the dot / number of digits after the dot
+    // (str_end2-str_end-1) is the number of digits after the dot
+    value.real.f = (float)((double)value.integer + ((double)frac)/pow(10, str_end2-str_end-1));
+  } else {
+    // if value is an integer save the corresponding float in value.real
+    value.real.f = (float)value.integer;
+  }
 
   return value;
 }
@@ -94,9 +112,9 @@ static long parse_token(char *token_str)
 static void parse_token_for_node(struct _token_t *tokens, SdoParam_t *param,
                                  size_t node)
 {
-  param->index    = (uint16_t) parse_token(*(tokens->token));
-  param->subindex = (uint8_t)  parse_token(*(tokens->token + 1));
-  param->value    = (uint32_t) parse_token(*(tokens->token + 2 + node));
+  param->index    = (uint16_t) parse_token(*(tokens->token)).integer;
+  param->subindex = (uint8_t)  parse_token(*(tokens->token + 1)).integer;
+  param->value    = parse_token(*(tokens->token + 2 + node));
 }
 
 int read_sdo_config(const char *path, SdoConfigParameter_t *parameter)

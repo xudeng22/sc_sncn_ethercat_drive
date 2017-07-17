@@ -14,13 +14,24 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+union Data {
+   uint32_t i;
+   float    f;
+};
+
+typedef struct {
+  uint32_t   integer;
+  union Data real;
+} Value_t;
+  
+
 /**
  * \brief Structure describing a individual parameter
  */
 typedef struct {
   uint16_t index;      ///< Index of the associated object in the object dictionary
   uint8_t  subindex;   ///< Subindex of this object
-  uint32_t value;      ///< Value of the container /* FIXME hold values of arbitrary size! */
+  Value_t  value;      ///< Value of the container /* FIXME hold values of arbitrary size! */
   size_t   bytecount;  /* for this value I need access to the object dictionary! FIXME may remove from here! */
 } SdoParam_t;
 

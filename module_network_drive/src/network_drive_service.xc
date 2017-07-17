@@ -199,10 +199,10 @@ static int check_for_pid_updatate(
         return 0;
     }
 
-    uint32_t value = 0;
+    union sdo_value value;
     uint8_t od_err = 0;
 
-    {value, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+    {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
     if (od_err != 0) {
         return 0;
     }
@@ -211,39 +211,39 @@ static int check_for_pid_updatate(
     position_config = i_motion_control.get_motion_control_config();
     if (changed_index    == DICT_FILTER_COEFFICIENTS &&
         changed_subindex == SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT) {
-        position_config.filter = value;
+        position_config.filter = value.i;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KP) {
-        position_config.position_kp = value;
+        position_config.position_kp = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KI) {
-        position_config.position_ki = value;
+        position_config.position_ki = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KD) {
-        position_config.position_kd = value;
+        position_config.position_kd = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT) {
-        position_config.position_integral_limit = value;
+        position_config.position_integral_limit = value.i;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KP) {
-        position_config.velocity_kp = value;
+        position_config.velocity_kp = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KI) {
-        position_config.velocity_ki = value;
+        position_config.velocity_ki = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KD) {
-        position_config.velocity_kd = value;
+        position_config.velocity_kd = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT) {
-        position_config.velocity_integral_limit = value;
+        position_config.velocity_integral_limit = value.i;
         changed = 1;
     }
 
@@ -419,6 +419,7 @@ static void motioncontrol_enable(int opmode, int position_control_strategy,
 
 }
 
+#ifdef NETWORK_DRIVE_DEBUG_PRINT_STATE
 static void debug_print_state(DriveState_t state)
 {
     static DriveState_t oldstate = 0;
@@ -458,6 +459,7 @@ static void debug_print_state(DriveState_t state)
 
     oldstate = state;
 }
+#endif
 
 //#pragma xta command "analyze loop ecatloop"
 //#pragma xta command "set required - 1.0 ms"
@@ -512,8 +514,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
     int sensor_commutation = 1;     //sensor service used for commutation (1 or 2)
     int sensor_motion_control = 1;  //sensor service used for motion control (1 or 2)
 
-    int sensor_select = 1;
-
     int communication_active = 0;
     unsigned int c_time;
     int comm_inactive_flag = 0;
@@ -527,7 +527,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
-    //enum e_States state_old = state; /* necessary for something??? */
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     int controlword = 0;
@@ -778,7 +777,9 @@ void network_drive_service(ProfilerConfig &profiler_config,
         /*
          * new, perform actions according to state
          */
-//        debug_print_state(state);
+#ifdef NETWORK_DRIVE_DEBUG_PRINT_STATE
+        debug_print_state(state);
+#endif
 
         if (opmode == OPMODE_NONE) {
             statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
@@ -786,7 +787,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
             i_torque_control.set_brake_status(0);
 
             //check and update opmode
-            opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
+            opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity, read_configuration);
 
         } else if (opmode == OPMODE_CSP || opmode == OPMODE_CST || opmode == OPMODE_CSV) {
             /* FIXME Put this into a separate CSP, CST, CSV function! */
@@ -818,11 +819,15 @@ void network_drive_service(ProfilerConfig &profiler_config,
             case S_SWITCH_ON_DISABLED:
                 /* we allow opmode change in this state */
                 //check and update opmode
-                opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
-                read_configuration = 1;
+                opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity, read_configuration);
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);
+
+                /* update config on the S_SWITCH_ON_DISABLED -> S_READY_TO_SWITCH_ON transition */
+                if (state == S_READY_TO_SWITCH_ON) {
+                    read_configuration = 1;
+                }
                 break;
 
             case S_READY_TO_SWITCH_ON:
@@ -955,7 +960,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     i_motion_control, i_position_feedback_1, i_position_feedback_2);
 
             //check and update opmode
-            opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
+            opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity, read_configuration);
 
             //exit tuning mode
             if (opmode != OPMODE_SNCN_TUNING) {

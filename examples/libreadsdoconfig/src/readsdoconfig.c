@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
 
 #define MAX_INPUT_LINE    1024
 #define MAX_TOKEN_SIZE    255
@@ -95,12 +94,8 @@ static Value_t parse_token(char *token_str)
   value.integer = (uint32_t)strtol(token_str, &str_end, 0);
   
   if (*str_end == '.' && isdigit(*(str_end+1))) {
-    //we found a dot, parse as float value
-    char *str_end2 = NULL;
-    long frac = strtol(str_end+1, &str_end2, 0);
-    // value real = value before the dot + value after the dot / number of digits after the dot
-    // (str_end2-str_end-1) is the number of digits after the dot
-    value.real.f = (float)((double)value.integer + ((double)frac)/pow(10, str_end2-str_end-1));
+    // we found a dot, parse as float value
+    sscanf(token_str, "%f", &(value.real.f));
   } else {
     // if value is an integer save the corresponding float in value.real
     value.real.f = (float)value.integer;

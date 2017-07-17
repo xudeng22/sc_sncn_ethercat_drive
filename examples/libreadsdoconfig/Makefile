@@ -5,7 +5,7 @@ AR = ar
 WARNING = -Wall -Wextra
 OPTIMIZIE = 2
 CFLAGS = $(WARNING) -O$(OPTIMIZE) --std=c99 -g -Iinclude
-LDFLAGS = $(WARNING) -lm
+LDFLAGS = $(WARNING)
 ARFLAGS = rcs
 
 TARGETPATH = lib

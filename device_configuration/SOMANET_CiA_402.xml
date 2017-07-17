@@ -63,8 +63,8 @@
                 <BitSize>16</BitSize>
               </DataType>
               <DataType>
-                <Name>STRING(6)</Name>
-                <BitSize>48</BitSize>
+                <Name>STRING(8)</Name>
+                <BitSize>64</BitSize>
               </DataType>
               <DataType>
                 <Name>DT1018</Name>
@@ -2350,6 +2350,19 @@
                 </Flags>
               </Object>
               <Object>
+                <Index>#x100A</Index>
+                <Name>Manufacturer Software Version</Name>
+                <Type>STRING(8)</Type>
+                <BitSize>64</BitSize>
+                <Info>
+                  <DefaultData>332e31</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>ro</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
                 <Index>#x1018</Index>
                 <Name>Identity</Name>
                 <Type>DT1018</Type>
@@ -2454,7 +2467,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2466,7 +2479,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2478,7 +2491,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2490,7 +2503,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2598,7 +2611,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2610,7 +2623,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2622,7 +2635,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2634,7 +2647,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added)</Name>
                     <Info>
-                      <DefaultData>07000020</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3817,7 +3830,7 @@
                   <SubItem>
                     <Name>BISS Encoder 2</Name>
                     <Info>
-                      <DefaultData>0C</DefaultData>
+                      <DefaultData>0D</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>

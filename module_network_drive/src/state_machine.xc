@@ -298,7 +298,8 @@ int get_next_state(int in_state, check_list &checklist, int controlword, int loc
 int8_t update_opmode(int8_t opmode, int8_t opmode_request,
         client interface MotionControlInterface i_motion_control,
         MotionControlConfig &motion_control_config,
-        uint8_t polarity)
+        uint8_t polarity,
+        int &read_configuration)
 {
     if (opmode != opmode_request) {
         motion_control_config = i_motion_control.get_motion_control_config();
@@ -306,7 +307,9 @@ int8_t update_opmode(int8_t opmode, int8_t opmode_request,
         switch(opmode_request) {
         case OPMODE_NONE:
         case OPMODE_CST:
+            break;
         case OPMODE_SNCN_TUNING:
+            read_configuration = 1;
             break;
         //for CSP and CSV we also check the polarity object DICT_POLARITY (0x607E)
         case OPMODE_CSP:

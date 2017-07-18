@@ -74,7 +74,7 @@ int main(void)
     interface i_pdo_handler_exchange i_pdo;
     interface i_foe_communication i_foe;
     interface EtherCATRebootInterface i_ecat_reboot;
-
+    interface FileServiceInterface i_file_service[2];
     FlashDataInterface i_data[1];
     SPIFFSInterface i_spiffs[2];
     FlashBootInterface i_boot;
@@ -123,7 +123,7 @@ int main(void)
                             i_pdo,
                             i_co[1],
                             i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
 #endif
                 }
 
@@ -134,8 +134,8 @@ int main(void)
         {
             par
             {
-                file_service(i_spiffs[0], i_co[3], i_foe);
-                spiffs_service(i_data[0], i_spiffs, 1);
+                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
+                spiffs_service(i_data[0], i_spiffs, 2);
             }
         }
 

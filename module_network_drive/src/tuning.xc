@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <state_modes.h>
-
+#include <file_service.h>
+#include <string.h>
+#include <print.h>
 /*
  * Function to call while in tuning opmode
  *
@@ -31,7 +33,8 @@ int tuning_handler_ethercat(
         UpstreamControlData      &upstream_control_data,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+                client interface FileServiceInterface i_file_service
     )
 {
     uint8_t status_mux     = (tuning_status >> 16) & 0xff;
@@ -126,7 +129,7 @@ int tuning_handler_ethercat(
         tuning_command_handler(tuning_mode_state,
                 motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
                 sensor_commutation, sensor_motion_control,
-                i_motion_control, i_position_feedback_1, i_position_feedback_2);
+                i_motion_control, i_position_feedback_1, i_position_feedback_2, i_file_service);
 
         //update flags
         tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_ctrl_config,
@@ -151,7 +154,8 @@ void tuning_command_handler(
         int sensor_motion_control,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface FileServiceInterface i_file_service
 )
 {
 
@@ -461,6 +465,21 @@ void tuning_command_handler(
             motion_ctrl_config = i_motion_control.get_motion_control_config();
             motion_ctrl_config.enable_compensation_recording = 1;
             i_motion_control.set_motion_control_config(motion_ctrl_config);
+            break;
+
+        case TUNING_CMD_SAVE_RECORD_COGGING:
+
+            motorcontrol_config = i_motion_control.get_motorcontrol_config();
+            i_file_service.write_torque_array(motorcontrol_config.torque_offset);
+
+            break;
+
+        case TUNING_CMD_LOAD_RECORD_COGGING:
+
+            motorcontrol_config = i_motion_control.get_motorcontrol_config();
+            i_file_service.read_torque_array(motorcontrol_config.torque_offset);
+            i_motion_control.set_motorcontrol_config(motorcontrol_config);
+
             break;
 
         } /* end switch action command*/

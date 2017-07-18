@@ -9,7 +9,7 @@ sc_sncn_ethercat_drive Change Log
 3.1
 ---
 
-  * Add cogging torque calibration command
+  * Add cogging torque calibration command. Possibility to store it in the flash memory.
   * New Object Dictionary (OD) structure:
     * Arbitrary value sizes (type aware)
     * Detection of changed values by master

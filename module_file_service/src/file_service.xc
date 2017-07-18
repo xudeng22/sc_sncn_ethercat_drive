@@ -368,6 +368,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
 
 void file_service(
+        server interface FileServiceInterface i_file_service [2],
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
         client interface i_foe_communication ?i_foe)
@@ -396,6 +397,77 @@ void file_service(
     }
 
     while (1) {
+        select
+        {
+            case i_file_service[int i].write_torque_array(int array_in[]) -> int status:
+
+                    printf("Name written\n");
+                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+                    if (file_id < 0)
+                    {
+                        printstrln("Error opening file");
+                        status = file_id;
+                        break;
+                    }
+                    else
+                    {
+                        printstr("File created: ");
+                        printintln(file_id);
+                    }
+                    unsigned char data [2] ={0} ;
+                    for (int i = 0; i < 1024; i++)
+                    {
+                        data [0] = (array_in [i] & 0xFF00)>> 8;
+                        data [1] = array_in [i] & 0x00FF;
+                        int err_write = i_spiffs.write(file_id, data, 2);
+                        if (err_write < 0)
+                            printf("error : %d\n", err_write);
+
+                    }
+                    i_spiffs.close_file(file_id);
+                    break;
+
+            case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
+
+                    printf("Name written\n");
+                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
+                    if (file_id < 0)
+                    {
+                        printstrln("Error opening file");
+                        status = -1;
+                    }
+                    else
+                    {
+                        printstr("File opened: ");
+                        printintln(file_id);
+                        status = 1;
+                    }
+                    if (file_id == SPIFFS_ERR_NOT_FOUND)
+                    {
+                        status = SPIFFS_ERR_NOT_FOUND;
+                        break;
+                    }
+                    char buffer [2];
+                    for (int i = 0; i < 1024; i++)
+                    {
+                        int err_read = i_spiffs.read(file_id, buffer, 2);
+                        if (err_read < 0)
+                        {
+                            printf("error : %d\n", err_read);
+                            status = -1;
+                        }
+
+                        array_out[i] = (buffer[0] << 8) + buffer[1];
+                        if(array_out[i] >= 0x7FFF)
+                            array_out[i] -= 0x10000;
+                    }
+
+                    i_spiffs.close_file(file_id);
+                    break;
+
+            default:
+                  break;
+        }
 
         enum eSdoCommand command = i_canopen.command_ready();
         int command_result = 0;
@@ -419,6 +491,7 @@ void file_service(
         }
 
         select {
+
             case !isnull(i_foe) => i_foe.data_ready():
                 notify = i_foe.get_notification_type();
                 switch (notify) {

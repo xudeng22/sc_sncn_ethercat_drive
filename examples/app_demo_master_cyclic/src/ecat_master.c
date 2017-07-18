@@ -135,12 +135,25 @@ int pdo_handler(Ethercat_Master_t *master, PDOInput *pdo_input, PDOOutput *pdo_o
 
 int write_sdo(Ethercat_Slave_t *slave, SdoParam_t *conf)
 {
-    int ret = ecw_slave_set_sdo_value(slave, conf->index, conf->subindex, conf->value);
-    if (ret < 0) {
-        fprintf(stderr, "Error Slave %d, could not download object 0x%04x:%d, value: %d\n",
-                ecw_slave_get_slaveid(slave), conf->index, conf->subindex, conf->value);
-        return -1;
+    Sdo_t *sdo = ecw_slave_get_sdo(slave, conf->index, conf->subindex);
+
+    if (sdo->entry_type == 8) { // 8 is REAL32 type
+        int ret = ecw_slave_set_sdo_value(slave, conf->index, conf->subindex, conf->value.real.i);
+        if (ret < 0) {
+            fprintf(stderr, "Error Slave %d, could not download object 0x%04x:%d, value: %f\n",
+                    ecw_slave_get_slaveid(slave), conf->index, conf->subindex, conf->value.real.f);
+            return -1;
+        }
+    } else {
+        int ret = ecw_slave_set_sdo_value(slave, conf->index, conf->subindex, conf->value.integer);
+        if (ret < 0) {
+            fprintf(stderr, "Error Slave %d, could not download object 0x%04x:%d, value: %d\n",
+                    ecw_slave_get_slaveid(slave), conf->index, conf->subindex, conf->value.integer);
+            return -1;
+        }
     }
+
+    free(sdo);
 
     return 0;
 }
@@ -170,7 +183,7 @@ int read_local_sdo(int slave_number, SdoParam_t **config, size_t max_objects, in
 {
     for (int i=0 ; i<max_objects; i++) {
         if (config[slave_number][i].index == index && config[slave_number][i].subindex == subindex) {
-            return config[slave_number][i].value;
+            return config[slave_number][i].value.integer;
         }
     }
     return 0;

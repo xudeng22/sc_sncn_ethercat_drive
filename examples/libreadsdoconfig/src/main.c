@@ -53,8 +53,9 @@ int main(int argc, char *argv[])
     for (size_t k = 0; k < config_parameter.param_count; k++) {
       SdoParam_t *p = nparam + k;
 
-      printf("N%zu: 0x%04x:%d = %d\n",
-             i, p->index, p->subindex, p->value);
+      printf("N%zu: 0x%04x:%d = %d (%f)\n",
+             i, p->index, p->subindex,
+             p->value.integer, p->value.real.f);
     }
   }
 

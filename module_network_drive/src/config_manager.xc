@@ -190,11 +190,17 @@ int cm_sync_config_motor_control(
 
     motorcontrol_config = i_torque_control.get_config();
 
+    //convert float values
+    union sdo_value temp;
+    {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
+    motorcontrol_config.torque_P_gain = (int)temp.f;
+    {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
+    motorcontrol_config.torque_I_gain = (int)temp.f;
+    {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
+    motorcontrol_config.torque_D_gain = (int)temp.f;
+
     {motorcontrol_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
     {motorcontrol_config.phases_inverted, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
-    {motorcontrol_config.torque_P_gain, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
-    {motorcontrol_config.torque_I_gain, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
-    {motorcontrol_config.torque_D_gain, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
     {motorcontrol_config.pole_pairs, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
     motorcontrol_config.commutation_sensor       = sensor_commutation_type;
     {motorcontrol_config.commutation_angle_offset, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
@@ -259,16 +265,24 @@ void cm_sync_config_pos_velocity_control(
 
     {position_config.position_control_strategy, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0);
 
-    {position_config.position_kp, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KP);
-    {position_config.position_ki, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KI);
-    {position_config.position_kd, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KD);
     {position_config.position_integral_limit, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT);
+    {position_config.velocity_integral_limit, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
     {position_config.moment_of_inertia, void, void} = i_co.od_get_object_value(DICT_MOMENT_OF_INERTIA, 0);
 
-    {position_config.velocity_kp, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP);
-    {position_config.velocity_ki, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI);
-    {position_config.velocity_kd, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD);
-    {position_config.velocity_integral_limit, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
+    // convert float values
+    union sdo_value temp;
+    {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KP);
+    position_config.position_kp = (int)temp.f;
+    {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KI);
+    position_config.position_ki = (int)temp.f;
+    {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KD);
+    position_config.position_kd = (int)temp.f;
+    {temp.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP);
+    position_config.velocity_kp = (int)temp.f;
+    {temp.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI);
+    position_config.velocity_ki = (int)temp.f;
+    {temp.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD);
+    position_config.velocity_kd = (int)temp.f;
 
     /* Brake control settings */
     {position_config.brake_release_strategy, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY);
@@ -412,11 +426,17 @@ void cm_default_config_motor_control(
 
     motorcontrol_config = i_torque_control.get_config();
 
+    //convert float values
+    union sdo_value value;
+    value.f = (float)motorcontrol_config.torque_P_gain;
+    i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP, value.i);
+    value.f = (float)motorcontrol_config.torque_I_gain;
+    i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI, value.i);
+    value.f = (float)motorcontrol_config.torque_D_gain;
+    i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD, value.i);
+
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.dc_bus_voltage);
     i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED, motorcontrol_config.phases_inverted);
-    i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP, motorcontrol_config.torque_P_gain);
-    i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI, motorcontrol_config.torque_I_gain);
-    i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD, motorcontrol_config.torque_D_gain);
     i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, motorcontrol_config.pole_pairs);
     i_co.od_set_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0, motorcontrol_config.commutation_angle_offset);
     i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE, motorcontrol_config.phase_resistance);
@@ -471,18 +491,26 @@ void cm_default_config_pos_velocity_control(
 
     i_co.od_set_object_value(DICT_FILTER_COEFFICIENTS, SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT, position_config.filter);
 
-    //position PID
-    i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KP, position_config.position_kp);
-    i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KI, position_config.position_ki);
-    i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KD, position_config.position_kd);
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT, position_config.position_integral_limit);
+    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT, position_config.velocity_integral_limit);
     i_co.od_set_object_value(DICT_MOMENT_OF_INERTIA, 0, position_config.moment_of_inertia);
 
+    //convert float values
+    union sdo_value value;
+    //position PID
+    value.f = (float)position_config.position_kp;
+    i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KP, value.i);
+    value.f = (float)position_config.position_ki;
+    i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KI, value.i);
+    value.f = (float)position_config.position_kd;
+    i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_CONTROLLER_KD, value.i);
     //velocity PID
-    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP, position_config.velocity_kp);
-    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI, position_config.velocity_ki);
-    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD, position_config.velocity_kd);
-    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT, position_config.velocity_integral_limit);
+    value.f = (float)position_config.velocity_kp;
+    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP, value.i);
+    value.f = (float)position_config.velocity_ki;
+    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI, value.i);
+    value.f = (float)position_config.velocity_kd;
+    i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD, value.i);
 
     /* Brake control settings */
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_BRAKE_RELEASE_STRATEGY, position_config.brake_release_strategy);

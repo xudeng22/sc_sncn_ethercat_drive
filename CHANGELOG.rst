@@ -1,6 +1,11 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.1.1
+-----
+
+  * Fix data type of PID coefficients to use float.
+
 3.1
 ---
 

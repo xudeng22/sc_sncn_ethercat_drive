@@ -22,6 +22,19 @@ enum eProfileType {
     ,PROFILE_TYPE_VELOCITY
 };
 
+
+/* @brief Type for SDO value
+ *
+ *        The value is transfered as a 32 bit number over ethercat
+ *        but it can contain ether an int or a float.
+ *        This union allows to receive the value in an int and then
+ *        interpret it as float.
+ */
+union sdo_value {
+   int i;
+   float f;
+};
+
 /*
  * General, syncronize configuration with the object dictionary values provided
  * by the master.

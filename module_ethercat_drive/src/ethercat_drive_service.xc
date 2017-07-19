@@ -378,7 +378,6 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
     unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
-    //enum e_States state_old = state; /* necessary for something??? */
 
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     int controlword = 0;
@@ -657,12 +656,15 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
 
             case S_SWITCH_ON_DISABLED:
                 /* we allow opmode change in this state */
-                //check and update opmode
                 opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity);
-                read_configuration = 1;
 
                 /* communication active, idle no motor control; read opmode from PDO and set control accordingly */
                 state = get_next_state(state, checklist, controlword, 0);
+
+                /* update config on the S_SWITCH_ON_DISABLED -> S_READY_TO_SWITCH_ON transition */
+                if (state == S_READY_TO_SWITCH_ON) {
+                    read_configuration = 1;
+                }
                 break;
 
             case S_READY_TO_SWITCH_ON:

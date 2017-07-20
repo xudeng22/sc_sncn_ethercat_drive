@@ -252,6 +252,7 @@ int main(void) {
     interface i_foe_communication i_foe;
     interface i_co_communication i_co[CO_IF_COUNT];
     interface EtherCATRebootInterface i_ecat_reboot;
+    interface FileServiceInterface i_file_service[2];
 
     FlashDataInterface i_data[1];
     SPIFFSInterface i_spiffs[2];
@@ -275,7 +276,7 @@ int main(void) {
 #else
                 flash_service(p_spi_flash, i_boot, i_data, 1);
 #endif
-                file_service(i_spiffs[0], i_co[3], null);
+                file_service(i_file_service, i_spiffs[0], i_co[3], null);
 #endif
             }
         }

@@ -41,6 +41,7 @@ int main(void)
     interface EtherCATRebootInterface i_ecat_reboot;
     interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
+    interface FileServiceInterface i_file_service[2];
 
     FlashDataInterface i_data[MAX_FLASH_DATA_INTERFACES];
     FlashBootInterface i_boot;
@@ -63,7 +64,7 @@ int main(void)
                 reboot_service_ethercat(i_ecat_reboot);
 
                 flash_service(p_qspi_flash, i_boot, i_data, 1);
-                file_service(i_spiffs[0], i_co[3], i_foe);
+                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
             }
         }
 

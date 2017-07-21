@@ -3090,7 +3090,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>#xFD26A900</Unit>
+                  <Unit>#xFD260000</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>

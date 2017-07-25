@@ -77,7 +77,18 @@ The following one character commands are executed directly without pressing ente
 The rest of the commands can be up to 3 characters with an optional number. The command is then executed by pressing [enter].
 The number can be negative. Spaces are ignored. The default number value is 0.
 
-  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
+  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails it will print ``WRONG SENSOR POLARITY!``.
+
+   Some possible causes of failure of the offset detection are:
+     - The sensor polarity is wrong. This can be fixed by changing the sensor polarity with the ``s`` command.
+     - The torque applied during tuning is too low. This setting is set in the SDO config file. 20% should be enough for an open motor but a motor with gears or a load can need more.
+     - The motor is blocked. If the motor does not freely turn during the detection the offset will be wrong.
+     - The sensor is disconnected or not working properly. If the angle feedback is not working the offset will be wrong (but the motor will probably still turn during the tuning). Check the position feedback and the eventual sensor errors.
+     - The motor phases are not connected properly. This will maybe prevent the motor to turn correctly and give a wrong offset.
+     - The pole pairs setting is wrong. The motor will probably still turn during the tuning but the offset will be wrong.
+
+   After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment (by testing). Otherwise the position and velocity controller will not work. If this is not the case use the ``m`` command to change the phase inverted parameter.
+
   - ``ap2``: start the automatic tuning of cascaded position controller. while cascaded position controller is being tuned, the dynamic values of PID controllers are shown on the terminal.
   - ``ap3``: start the automatic tuning of limited-torque position controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
   - ``av``: start the automatic tuning of velocity controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
@@ -163,7 +174,10 @@ When the application has been compiled, the next step is to run it on the Linux 
         Position I          280 | Velocity I         20000
         Position D        41000 | Velocity D             0
         Position I lim     1000 | Velocity I lim       900
+        Autotune Period    2000 | Amplitude          20000
+        Filter                0
         * Motor Fault Under Voltage *
+
 
         Commands:
         b:          Release/Block Brake
@@ -177,7 +191,7 @@ When the application has been compiled, the next step is to run it on the Linux 
         L s/t/p + number: set speed/torque/position limit
         ** single press Enter for emergency stop **
 
-        > 
+        >
 
 
    #. Use the commands previously described to find the commutation offset then tune and test the position/velocity/torque controllers. After you found the optimal parameters please note them (don't quit the app!) and update your ``sdo_config.csv`` file. You can also test the CSP,CSV,CST CiA 402 operation modes with the ``app_master_cyclic``.

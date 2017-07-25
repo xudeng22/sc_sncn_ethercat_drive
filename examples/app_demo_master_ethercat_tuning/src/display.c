@@ -117,7 +117,11 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Torque %6d/%5d mNm | analog input 1: %8d", (int16_t)pdo_input.torque_value, ((int16_t)pdo_input.torque_value*input.rated_torque)/1000, pdo_input.analog_input1);
     //row 3
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);
+    if (input.offset >= 0 && input.offset <= 4096) {
+        wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);
+    } else {
+        wprintw(wnd, "WRONG SENSOR POLARITY!  | Pole pairs            %2d", input.offset, input.pole_pairs);
+    }
     //row 4
     wmoveclr(wnd, &row);
     if (input.motion_polarity == 0)

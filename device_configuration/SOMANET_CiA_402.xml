@@ -2790,7 +2790,6 @@
                   <MinData>00</MinData>
                   <MaxData>FF0F</MaxData>
                   <DefaultData>0000</DefaultData>
-                  <Unit>00</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>

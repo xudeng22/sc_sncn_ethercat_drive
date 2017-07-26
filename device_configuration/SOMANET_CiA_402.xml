@@ -3026,7 +3026,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
-                  <Unit>#x00004700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>

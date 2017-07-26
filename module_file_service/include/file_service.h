@@ -7,7 +7,9 @@
 #pragma once
 
 #include <flash_service.h>
+#ifdef COM_ETHERCAT
 #include <ethercat_service.h>
+#endif
 #include <co_interface.h>
 #include <spiffs_service.h>
 #include <config_parser.h>
@@ -88,8 +90,15 @@ interface FileServiceInterface
  * @param i_foe       FoE interface
  *
  */
+#ifdef COM_ETHERCAT
 void file_service(
         server FileServiceInterface i_file_service [2],
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
         client interface i_foe_communication ?i_foe);
+#else
+void file_service(
+        server FileServiceInterface i_file_service [2],
+        client SPIFFSInterface ?i_spiffs,
+        client interface i_co_communication i_canopen);
+#endif

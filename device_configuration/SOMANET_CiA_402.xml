@@ -7,9 +7,9 @@
   <Descriptions>
     <Groups>
       <Group>
-        <Type>Somanet</Type>
-        <Name LcId="1031">Somanet Device</Name>
-        <Name LcId="1033">Somanet Device</Name>
+        <Type>SOMANET</Type>
+        <Name LcId="1031">SOMANET Device</Name>
+        <Name LcId="1033">SOMANET Device</Name>
       </Group>
     </Groups>
     <Devices>
@@ -25,7 +25,7 @@
             </Timeout>
           </Mailbox>
         </Info>
-        <GroupType>Somanet</GroupType>
+        <GroupType>SOMANET</GroupType>
         <Profile>
           <ProfileNo>402</ProfileNo>
           <Dictionary>

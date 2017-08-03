@@ -48,11 +48,11 @@ Modules
     :maxdepth: 1
     :hidden:
 
-    Drive Module <module_ethercat_drive/doc/index>
-    EtherCAT PDO Handler Module <module_pdo_handler/doc/index>
+    Drive Module <module_network_drive/doc/index>
+    Canopen Interface Service <module_canopen_interface/doc/index>
 
-* `Drive Module <module_ethercat_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
-* `EtherCAT PDO Handler Module <module_pdo_handler/doc/index.html>`_: Provides the exchange of the current PDO values between :ref:`SOMANET EtherCAT <somanet_ethercat>` and the user application
+* `Drive Module <module_network_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
+* `Canopen Interface Service <module_canopen_interface/doc/index>`_: Provides a service to access the PDO values and accesses the object dictionary. This service is the connection point between the communication library or module, for example :ref:`SOMANET EtherCAT <somaent_ethercat>` and the user application.
 
 
 Examples

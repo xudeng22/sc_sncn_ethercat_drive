@@ -11,12 +11,12 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.xmos.cdt.core.ModulePathBuilder</name>
+			<name>com.xmos.cdt.core.ProjectInfoSyncBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.xmos.cdt.core.ProjectInfoSyncBuilder</name>
+			<name>com.xmos.cdt.core.ModulePathBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

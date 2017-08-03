@@ -10,12 +10,12 @@ INCLUDE += -Isdo_config
 LIB_PATH = -L/opt/etherlab/lib
 LIB_PATH += -L../libreadsdoconfig/lib
 
-LIBRARY =  -lethercat_wrapper -lethercat -lm -lreadsdoconfig
+LIBRARY =  -lethercat_wrapper -lethercat -lreadsdoconfig
 
 CFLAGS += $(FLAGS)
 CFLAGS += -Wall --std=c99 -g -O2 $(INCLUDE) -D_XOPEN_SOURCE
 LDFLAGS = -g -Wall -Wextra $(LIB_PATH) $(LIBRARY)
-LIBS_D += -g -Wall -Wextra -lncurses
+LIBS_D += -g -Wall -Wextra -lncurses -lm
 
 TARGET = bin/app_demo_master_cyclic
 

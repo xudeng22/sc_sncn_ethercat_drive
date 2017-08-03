@@ -1,6 +1,23 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.1.1
+-----
+
+  * Fix data type of PID coefficients to use float.
+
+3.1
+---
+
+  * Add cogging torque calibration command. Possibility to store it in the flash memory.
+  * New Object Dictionary (OD) structure:
+    * Arbitrary value sizes (type aware)
+    * Detection of changed values by master
+    * Min, Max, Default, Unit values
+  * Reading, storing, and automatic loading of OD (via file service of SPIFFS)
+  * Support for watchdog error for DC1K rev.D1
+  * Core C22 and C21-DX rev.A are no longer supported (memory limitation)
+
 3.0.3
 -----
 

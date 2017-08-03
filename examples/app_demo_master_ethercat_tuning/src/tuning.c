@@ -91,6 +91,7 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
     (*input).sensor_polarity = (flags >> TUNING_FLAG_SENSOR_POLARITY) & 1;
     input->phases_inverted = (flags >> TUNING_FLAG_PHASES_INVERTED) & 1;
     input->profiler = (flags >> TUNING_FLAG_INTEGRATED_PROFILER) & 1;
+    input->cogging_torque_flag = (flags >> TUNING_FLAG_COGGING_TORQUE) & 1;
     return ;
 }
 
@@ -221,6 +222,21 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     }
                     pdo_output->user_mosi = output->value;
                     break;
+
+                case 'c':
+                    switch(output->mode_3) {
+                    case 's':
+                        pdo_output->tuning_command = TUNING_CMD_SAVE_RECORD_COGGING;
+                        break;
+                    case 'l':
+                        pdo_output->tuning_command = TUNING_CMD_LOAD_RECORD_COGGING;
+                        break;
+
+                    default:
+                        pdo_output->tuning_command = TUNING_CMD_AUTO_RECORD_COGGING;
+                        break;
+                    }
+                    break;
                 case 'v':
                     pdo_output->tuning_command = TUNING_CMD_AUTO_VEL_CTRL_TUNE;
                     pdo_output->target_velocity = 0;
@@ -277,7 +293,14 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             // enable/disable motorcontrol commands
             case 'e':
                 pdo_output->tuning_command = TUNING_CMD_CONTROL_DISABLE;
-                if (output->value) {
+                if (output->mode_2 == 'c') {
+                    pdo_output->tuning_command = TUNING_CMD_COGGING_TORQUE;
+                    if (((pdo_input.tuning_status >> 8) >> TUNING_FLAG_COGGING_TORQUE) & 1) { //read cogging torque flag
+                        pdo_output->user_mosi = 0;
+                    } else {
+                        pdo_output->user_mosi = 1;
+                    }
+                } else if (output->value) {
                     switch(output->mode_2) {
                     case 'p':
                         pdo_output->tuning_command = TUNING_CMD_CONTROL_POSITION;

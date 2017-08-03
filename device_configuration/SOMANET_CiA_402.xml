@@ -7,9 +7,9 @@
   <Descriptions>
     <Groups>
       <Group>
-        <Type>SomanetC22</Type>
-        <Name LcId="1031">Somanet C22 Device</Name>
-        <Name LcId="1033">Somanet C22 Device</Name>
+        <Type>SOMANET</Type>
+        <Name LcId="1031">SOMANET Device</Name>
+        <Name LcId="1033">SOMANET Device</Name>
       </Group>
     </Groups>
     <Devices>
@@ -25,7 +25,7 @@
             </Timeout>
           </Mailbox>
         </Info>
-        <GroupType>SomanetC22</GroupType>
+        <GroupType>SOMANET</GroupType>
         <Profile>
           <ProfileNo>402</ProfileNo>
           <Dictionary>
@@ -63,8 +63,8 @@
                 <BitSize>16</BitSize>
               </DataType>
               <DataType>
-                <Name>STRING(6)</Name>
-                <BitSize>48</BitSize>
+                <Name>STRING(8)</Name>
+                <BitSize>64</BitSize>
               </DataType>
               <DataType>
                 <Name>DT1018</Name>
@@ -838,8 +838,8 @@
                 <SubItem>
                   <SubIdx>5</SubIdx>
                   <Name>Motor phases inverted</Name>
-                  <Type>USINT</Type>
-                  <BitSize>8</BitSize>
+                  <Type>BOOL</Type>
+                  <BitSize>1</BitSize>
                   <BitOffs>120</BitOffs>
                   <Flags>
                     <Access>rw</Access>
@@ -979,8 +979,8 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Recuperation enabled</Name>
-                  <Type>USINT</Type>
-                  <BitSize>8</BitSize>
+                  <Type>BOOL</Type>
+                  <BitSize>1</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
                     <Access>rw</Access>
@@ -1145,7 +1145,7 @@
               </DataType>
               <DataType>
                 <Name>DT2010ARR</Name>
-                <BaseType>DINT</BaseType>
+                <BaseType>REAL</BaseType>
                 <BitSize>96</BitSize>
                 <ArrayInfo>
                   <LBound>1</LBound>
@@ -1194,7 +1194,7 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Controller Kp</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
@@ -1205,7 +1205,7 @@
                 <SubItem>
                   <SubIdx>2</SubIdx>
                   <Name>Controller Ki</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
@@ -1216,7 +1216,7 @@
                 <SubItem>
                   <SubIdx>3</SubIdx>
                   <Name>Controller Kd</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
@@ -1253,7 +1253,7 @@
                 <SubItem>
                   <SubIdx>1</SubIdx>
                   <Name>Controller Kp</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>16</BitOffs>
                   <Flags>
@@ -1264,7 +1264,7 @@
                 <SubItem>
                   <SubIdx>2</SubIdx>
                   <Name>Controller Ki</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>48</BitOffs>
                   <Flags>
@@ -1275,7 +1275,7 @@
                 <SubItem>
                   <SubIdx>3</SubIdx>
                   <Name>Controller Kd</Name>
-                  <Type>DINT</Type>
+                  <Type>REAL</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>80</BitOffs>
                   <Flags>
@@ -2350,6 +2350,19 @@
                 </Flags>
               </Object>
               <Object>
+                <Index>#x100A</Index>
+                <Name>Manufacturer Software Version</Name>
+                <Type>STRING(8)</Type>
+                <BitSize>64</BitSize>
+                <Info>
+                  <DefaultData>332e31</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>ro</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
                 <Index>#x1018</Index>
                 <Name>Identity</Name>
                 <Type>DT1018</Type>
@@ -2454,7 +2467,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added) 0</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2466,7 +2479,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added) 1</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2478,7 +2491,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added) 2</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2490,7 +2503,7 @@
                   <SubItem>
                     <Name>padding entry (automatically added) 3</Name>
                     <Info>
-                      <DefaultData>07000000</DefaultData>
+                      <DefaultData>07000040</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3783,7 +3796,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
-                  <Unit>#x00b44700</Unit>
+                  <Unit>#x00B44700</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -3816,7 +3829,7 @@
                   <SubItem>
                     <Name>BISS Encoder 2</Name>
                     <Info>
-                      <DefaultData>0C</DefaultData>
+                      <DefaultData>0D</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4716,6 +4729,21 @@
                 <Index>#x6072</Index>
                 <Name>Max torque</Name>
                 <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
+		<Type>UINT</Type>
+                <BitSize>16</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+		  <PdoMapping>tr</PdoMapping>
+		</Flags>
+ 	      </Object>
+ 	      <Object>
+                <Index>#x2000</Index>
+                <Name>Command Object</Name>
+                <Comment></Comment>
                 <Type>UINT</Type>
                 <BitSize>16</BitSize>
                 <Info>
@@ -4724,7 +4752,6 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>o</Category>
-                  <PdoMapping>tr</PdoMapping>
                 </Flags>
               </Object>
             </Objects>
@@ -5027,8 +5054,8 @@
           </OpMode>
         </Dc>
         <Eeprom>
-          <ByteSize>15360</ByteSize>
-          <ConfigData>080E028800000000000000000000</ConfigData>
+          <ByteSize>32768</ByteSize>
+          <ConfigData>080C028800000000000000000000</ConfigData>
           <BootStrap>0010000400140004</BootStrap>
         </Eeprom>
       </Device>

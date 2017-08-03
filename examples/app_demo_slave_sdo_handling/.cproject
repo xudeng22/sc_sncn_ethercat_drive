@@ -176,13 +176,9 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_SERIAL}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_ECAT}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_GPIO-A}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_DC30}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
@@ -510,13 +506,9 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_SERIAL}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_ECAT}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_GPIO-A}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_DC30}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>
@@ -849,13 +841,9 @@
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/clang&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${XMOS_TOOL_PATH}/target/include/c++/v1&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_SERIAL}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/doc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/COM_ECAT}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_GPIO-A}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_pdo_handler/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_reboot/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/module_board-support/bsp/IFM_DC30}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_ethercat/doc}&quot;"/>

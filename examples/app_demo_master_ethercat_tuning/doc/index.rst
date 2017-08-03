@@ -9,6 +9,7 @@ SOMANET EtherCat Drive Special Tuning Mode Application
 
 This application is demonstrating the use of the tuning mode of SOMANET EtherCat Drive.
 It allows finding the commutation offset of the motor, tuning of the PID parameters and test the Position, Velocity and Torque controllers. 
+The application is given the functionnality to compensate :ref:`the cogging torque <Cogging-Torque-Feature>` of the motor, allowing a better control at low speed.
 
 .. cssclass:: github
 
@@ -77,7 +78,21 @@ The following one character commands are executed directly without pressing ente
 The rest of the commands can be up to 3 characters with an optional number. The command is then executed by pressing [enter].
 The number can be negative. Spaces are ignored. The default number value is 0.
 
-  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
+  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails it will print ``WRONG SENSOR POLARITY!``.
+
+   Some possible causes of failure of the offset detection are:
+     - The sensor polarity is wrong. This can be fixed by changing the sensor polarity with the ``s`` command.
+     - The torque applied during tuning is too low. This setting is set in the SDO config file. 20% should be enough for an open motor but a motor with gears or a load can need more.
+     - The motor is blocked. If the motor does not freely turn during the detection the offset will be wrong.
+     - The sensor is disconnected or not working properly. If the angle feedback is not working the offset will be wrong (but the motor will probably still turn during the tuning). Check the position feedback and the eventual sensor errors.
+     - The motor phases are not connected properly. This will maybe prevent the motor to turn correctly and give a wrong offset.
+     - The pole pairs setting is wrong. The motor will probably still turn during the tuning but the offset will be wrong.
+
+   After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment (by testing). Otherwise the position and velocity controller will not work. If this is not the case use the ``m`` command to change the phase inverted parameter.
+
+  - ``ac``:  start the cogging torque detection. It automatically records the cogging torque present in the motor in one mechanical rotation. After the torque is recorded, press “ec1” to enable the compensation of the cogging torque
+  - ``acs``:  save the cogging torque recorded in the flash memory in a binary file called 'cogging_torque.bin'
+  - ``acl``:  load the cogging torque previously stored in the flash memory
   - ``ap2``: start the automatic tuning of cascaded position controller. while cascaded position controller is being tuned, the dynamic values of PID controllers are shown on the terminal.
   - ``ap3``: start the automatic tuning of limited-torque position controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
   - ``av``: start the automatic tuning of velocity controller. During the automatic tuning procedure, the dynamic change of PID constants are updated on the terminal.
@@ -91,6 +106,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``ep[number]``: enable position control. The value is to set the position control mode. 1 is for simple PID, 2 for velocity cascaded, and 3 for limited torque position controller. The modes don't use the same parameters so check if the parameters are for the right mode before enabling.
   - ``ev1``: enable velocity control.
   - ``et1``: enable torque control.
+  - ``ec``: toggle cogging torque compensation.
   - ``e``: and any command starting with e like ep, ev, et will disable the motorcontrol. It's the same as the command [enter].
   - ``z``: reset the multiturn position to 0 (the number of turn). This doesn't change the offset. This command only works with the REM 16MT position sensor.
   - ``zz``: reset the multiturn and singleturn position to 0. The offset need to be found again. This command only works with the REM 16MT position sensor.
@@ -163,7 +179,10 @@ When the application has been compiled, the next step is to run it on the Linux 
         Position I          280 | Velocity I         20000
         Position D        41000 | Velocity D             0
         Position I lim     1000 | Velocity I lim       900
+        Autotune Period    2000 | Amplitude          20000
+        Filter                0
         * Motor Fault Under Voltage *
+
 
         Commands:
         b:          Release/Block Brake
@@ -177,11 +196,15 @@ When the application has been compiled, the next step is to run it on the Linux 
         L s/t/p + number: set speed/torque/position limit
         ** single press Enter for emergency stop **
 
-        > 
+        >
 
 
    #. Use the commands previously described to find the commutation offset then tune and test the position/velocity/torque controllers. After you found the optimal parameters please note them (don't quit the app!) and update your ``sdo_config.csv`` file. You can also test the CSP,CSV,CST CiA 402 operation modes with the ``app_master_cyclic``.
 
+   #. Once the controllers are tuned, you can test the cogging torque compensation. Use the command 'ac', the motor will start to calibrate, make two turns in each direction and stop. Once the compesator is calibrated, you can enable/disable it with the command ec. Note : to be able to calibrate, you need a good velocity tuning at 10 rpm. 
+   
+   #. Then you can save the cogging torque in the flash memory using the 'acs' command. When the node is powered off then on again, load it with the command 'acl'.
+   
 Examine the code
 ++++++++++++++++
 

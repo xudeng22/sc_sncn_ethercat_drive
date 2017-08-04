@@ -229,7 +229,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>9</SubIdx>
-                  <Name>padding 1</Name>
+                  <Name>padding entry (automatically added) 0</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>272</BitOffs>
@@ -251,7 +251,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>11</SubIdx>
-                  <Name>padding 2</Name>
+                  <Name>padding entry (automatically added) 1</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>336</BitOffs>
@@ -273,7 +273,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>13</SubIdx>
-                  <Name>padding 3</Name>
+                  <Name>padding entry (automatically added) 2</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>400</BitOffs>
@@ -295,7 +295,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>15</SubIdx>
-                  <Name>padding 4</Name>
+                  <Name>padding entry (automatically added) 3</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>464</BitOffs>
@@ -475,7 +475,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>14</SubIdx>
-                  <Name>padding 1</Name>
+                  <Name>padding entry (automatically added) 0</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>432</BitOffs>
@@ -497,7 +497,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>16</SubIdx>
-                  <Name>padding 2</Name>
+                  <Name>padding entry (automatically added) 1</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>496</BitOffs>
@@ -519,7 +519,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>18</SubIdx>
-                  <Name>padding 3</Name>
+                  <Name>padding entry (automatically added) 2</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>560</BitOffs>
@@ -541,7 +541,7 @@
                 </SubItem>
                 <SubItem>
                   <SubIdx>20</SubIdx>
-                  <Name>padding 4</Name>
+                  <Name>padding entry (automatically added) 3</Name>
                   <Type>UDINT</Type>
                   <BitSize>32</BitSize>
                   <BitOffs>624</BitOffs>
@@ -2465,9 +2465,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 0</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2477,9 +2477,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 1</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2489,9 +2489,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 2</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2501,9 +2501,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 3</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2609,9 +2609,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 0</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2621,9 +2621,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 1</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2633,9 +2633,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 2</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2645,9 +2645,9 @@
                     </Info>
                   </SubItem>
                   <SubItem>
-                    <Name>padding entry (automatically added)</Name>
+                    <Name>padding entry (automatically added) 3</Name>
                     <Info>
-                      <DefaultData>07000040</DefaultData>
+                      <DefaultData>07000000</DefaultData>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -2872,6 +2872,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
+                  <Unit>#x00B50000</Unit>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -2959,6 +2960,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00000000</DefaultData>
+                  <Unit>#x00B50000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -2982,12 +2984,14 @@
                     <Name>Min position limit</Name>
                     <Info>
                       <DefaultData>00000080</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max position limit</Name>
                     <Info>
                       <DefaultData>FFFFFF7F</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3012,12 +3016,14 @@
                     <Name>Min position range limit</Name>
                     <Info>
                       <DefaultData>00000080</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max position range limit</Name>
                     <Info>
                       <DefaultData>FFFFFF7F</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3177,6 +3183,7 @@
                 <BitSize>32</BitSize>
                 <Info>
                   <DefaultData>00</DefaultData>
+                  <Unit>#x00B50000</Unit>
                 </Info>
                 <Flags>
                   <Access>rw</Access>
@@ -3207,7 +3214,7 @@
                     <Name>Torque Constant</Name>
                     <Info>
                       <DefaultData>01</DefaultData>
-                      <Unit>#xFA560400</Unit>
+                      <Unit>#xFA210400</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3371,36 +3378,42 @@
                     <Name>Min battery energy</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max battery energy</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00260000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Min recuperation power</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00240000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Max recuperation power</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00240000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Minimum recuperation speed</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B44700</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Maximum recuperation speed</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B44700</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3465,13 +3478,15 @@
                   <SubItem>
                     <Name>Position filter coefficient</Name>
                     <Info>
-                      <DefaultData>64</DefaultData>
+                      <DefaultData>00000000</DefaultData>
+                      <Unit>#x00200000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity filter coefficient</Name>
                     <Info>
-                      <DefaultData>5A</DefaultData>
+                      <DefaultData>00000000</DefaultData>
+                      <Unit>#x00200000</Unit>
                     </Info>
                   </SubItem>
                 </Info>
@@ -3510,22 +3525,6 @@
                 <Flags>
                   <Access>rw</Access>
                   <Category>m</Category>
-                </Flags>
-              </Object>
-              <Object>
-                <Index>#x6072</Index>
-                <Name>Max torque</Name>
-                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
-                <Type>UINT</Type>
-                <BitSize>16</BitSize>
-                <Info>
-                  <MinData>00</MinData>
-                  <DefaultData>00</DefaultData>
-                </Info>
-                <Flags>
-                  <Access>rw</Access>
-                  <Category>o</Category>
-                  <PdoMapping>tr</PdoMapping>
                 </Flags>
               </Object>
               <Object>
@@ -3849,12 +3848,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3873,12 +3874,14 @@
                     <Name>Clock frequency</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#x03200000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Timeout</Name>
                     <Info>
                       <DefaultData>24</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -3946,12 +3949,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4001,12 +4006,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4074,12 +4081,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4135,12 +4144,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4196,12 +4207,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4281,12 +4294,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4605,12 +4620,14 @@
                     <Name>Resolution</Name>
                     <Info>
                       <DefaultData>00</DefaultData>
+                      <Unit>#x00B50000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Velocity calculation period</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4629,12 +4646,14 @@
                     <Name>Clock frequency</Name>
                     <Info>
                       <DefaultData>E803</DefaultData>
+                      <Unit>#x03200000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
                     <Name>Timeout</Name>
                     <Info>
                       <DefaultData>24</DefaultData>
+                      <Unit>#xFA030000</Unit>
                     </Info>
                   </SubItem>
                   <SubItem>
@@ -4707,6 +4726,21 @@
                 </Flags>
               </Object>
               <Object>
+                <Index>#x6072</Index>
+                <Name>Max torque</Name>
+                <Comment>Imported from profile. See Profile Documentation for more details.</Comment>
+		<Type>UINT</Type>
+                <BitSize>16</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+		  <PdoMapping>tr</PdoMapping>
+		</Flags>
+ 	      </Object>
+ 	      <Object>
                 <Index>#x2000</Index>
                 <Name>Command Object</Name>
                 <Comment></Comment>
@@ -4791,7 +4825,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 0</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4804,7 +4838,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 1</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4817,7 +4851,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 2</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4830,7 +4864,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 3</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4938,7 +4972,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 0</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4951,7 +4985,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 1</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4964,7 +4998,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 2</Name>
             <DataType></DataType>
           </Entry>
           <Entry>
@@ -4977,7 +5011,7 @@
           <Entry>
             <Index>0</Index>
             <BitLen>7</BitLen>
-            <Name>padding entry (automatically added)</Name>
+            <Name>padding entry (automatically added) 3</Name>
             <DataType></DataType>
           </Entry>
           <Entry>

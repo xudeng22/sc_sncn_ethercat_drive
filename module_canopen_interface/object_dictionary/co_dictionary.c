@@ -15,9 +15,9 @@
  */
 const size_t entry_values_length = 631;
 const size_t entry_default_values_length = 631;
-const size_t entry_min_values_length = 55;
+const size_t entry_min_values_length = 53;
 const size_t entry_max_values_length = 19;
-const size_t string_length = 143;
+const size_t string_length = 146;
 const size_t object_entries_length = 253;
 const size_t object_dictionary_length = 83;
 const size_t bookmark_length = 3;
@@ -55,13 +55,13 @@ uint8_t entry_values[entry_values_length] = {
     0x20, 0x0, 0x0, 0x23,                      /* 0x1600:6 Offset Torque - START: 51 */
     0x20, 0x0, 0x1, 0x2A,                      /* 0x1600:7 Tuning command - START: 55 */
     0x1, 0x0, 0x1, 0x26,                       /* 0x1600:8 Digital Output 1 - START: 59 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:9 padding entry (automatically added) - START: 63 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:9 padding entry (automatically added) 0 - START: 63 */
     0x1, 0x0, 0x2, 0x26,                       /* 0x1600:10 Digital Output 2 - START: 67 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:11 padding entry (automatically added) - START: 71 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:11 padding entry (automatically added) 1 - START: 71 */
     0x1, 0x0, 0x3, 0x26,                       /* 0x1600:12 Digital Output 3 - START: 75 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:13 padding entry (automatically added) - START: 79 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:13 padding entry (automatically added) 2 - START: 79 */
     0x1, 0x0, 0x4, 0x26,                       /* 0x1600:14 Digital Output 4 - START: 83 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:15 padding entry (automatically added) - START: 87 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:15 padding entry (automatically added) 3 - START: 87 */
     0x20, 0x0, 0xFE, 0x2F,                     /* 0x1600:16 User MOSI - START: 91 */
     0x16,                                      /* 0x1A00:0 SubIndex 000 - START: 95 */
     0x10, 0x0, 0x41, 0x60,                     /* 0x1A00:1 Statusword - START: 96 */
@@ -77,13 +77,13 @@ uint8_t entry_values[entry_values_length] = {
     0x10, 0x0, 0x4, 0x24,                      /* 0x1A00:11 Analog input 4 - START: 136 */
     0x20, 0x0, 0x3, 0x2A,                      /* 0x1A00:12 Tuning status - START: 140 */
     0x1, 0x0, 0x1, 0x25,                       /* 0x1A00:13 Digital Input 1 - START: 144 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:14 padding entry (automatically added) - START: 148 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:14 padding entry (automatically added) 0 - START: 148 */
     0x1, 0x0, 0x2, 0x25,                       /* 0x1A00:15 Digital Input 2 - START: 152 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:16 padding entry (automatically added) - START: 156 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:16 padding entry (automatically added) 1 - START: 156 */
     0x1, 0x0, 0x3, 0x25,                       /* 0x1A00:17 Digital Input 3 - START: 160 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:18 padding entry (automatically added) - START: 164 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:18 padding entry (automatically added) 2 - START: 164 */
     0x1, 0x0, 0x4, 0x25,                       /* 0x1A00:19 Digital Input 4 - START: 168 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:20 padding entry (automatically added) - START: 172 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:20 padding entry (automatically added) 3 - START: 172 */
     0x20, 0x0, 0xFF, 0x2F,                     /* 0x1A00:21 User MISO - START: 176 */
     0x20, 0x0, 0xFD, 0x2F,                     /* 0x1A00:22 Timestamp - START: 180 */
     0x4,                                       /* 0x1C00:0 SubIndex 000 - START: 184 */
@@ -126,8 +126,8 @@ uint8_t entry_values[entry_values_length] = {
     0x1, 0x0, 0x0, 0x0,                        /* 0x2006:2 Max DC Voltage - START: 253 */
     0x1, 0x0, 0x0, 0x0,                        /* 0x2006:3 Max Current - START: 257 */
     0x2,                                       /* 0x2007:0 Number of entries - START: 261 */
-    0x64, 0x0, 0x0, 0x0,                       /* 0x2007:1 Position filter coefficient - START: 262 */
-    0x5A, 0x0, 0x0, 0x0,                       /* 0x2007:2 Velocity filter coefficient - START: 266 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2007:1 Position filter coefficient - START: 262 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2007:2 Velocity filter coefficient - START: 266 */
     0x0, 0x0, 0x0, 0x0,                        /* 0x200A:0 Moment of inertia - START: 270 */
     0x3,                                       /* 0x2010:0 Number of entries - START: 274 */
     0x0, 0x0, 0x0, 0x0,                        /* 0x2010:1 Controller Kp - START: 275 */
@@ -314,13 +314,13 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x20, 0x0, 0x0, 0x23,                      /* 0x1600:6 Offset Torque - START: 51 */
     0x20, 0x0, 0x1, 0x2A,                      /* 0x1600:7 Tuning command - START: 55 */
     0x1, 0x0, 0x1, 0x26,                       /* 0x1600:8 Digital Output 1 - START: 59 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:9 padding entry (automatically added) - START: 63 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:9 padding entry (automatically added) 0 - START: 63 */
     0x1, 0x0, 0x2, 0x26,                       /* 0x1600:10 Digital Output 2 - START: 67 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:11 padding entry (automatically added) - START: 71 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:11 padding entry (automatically added) 1 - START: 71 */
     0x1, 0x0, 0x3, 0x26,                       /* 0x1600:12 Digital Output 3 - START: 75 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:13 padding entry (automatically added) - START: 79 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:13 padding entry (automatically added) 2 - START: 79 */
     0x1, 0x0, 0x4, 0x26,                       /* 0x1600:14 Digital Output 4 - START: 83 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:15 padding entry (automatically added) - START: 87 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:15 padding entry (automatically added) 3 - START: 87 */
     0x20, 0x0, 0xFE, 0x2F,                     /* 0x1600:16 User MOSI - START: 91 */
     0x16,                                      /* 0x1A00:0 SubIndex 000 - START: 95 */
     0x10, 0x0, 0x41, 0x60,                     /* 0x1A00:1 Statusword - START: 96 */
@@ -336,13 +336,13 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x10, 0x0, 0x4, 0x24,                      /* 0x1A00:11 Analog input 4 - START: 136 */
     0x20, 0x0, 0x3, 0x2A,                      /* 0x1A00:12 Tuning status - START: 140 */
     0x1, 0x0, 0x1, 0x25,                       /* 0x1A00:13 Digital Input 1 - START: 144 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:14 padding entry (automatically added) - START: 148 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:14 padding entry (automatically added) 0 - START: 148 */
     0x1, 0x0, 0x2, 0x25,                       /* 0x1A00:15 Digital Input 2 - START: 152 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:16 padding entry (automatically added) - START: 156 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:16 padding entry (automatically added) 1 - START: 156 */
     0x1, 0x0, 0x3, 0x25,                       /* 0x1A00:17 Digital Input 3 - START: 160 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:18 padding entry (automatically added) - START: 164 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:18 padding entry (automatically added) 2 - START: 164 */
     0x1, 0x0, 0x4, 0x25,                       /* 0x1A00:19 Digital Input 4 - START: 168 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1A00:20 padding entry (automatically added) - START: 172 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1A00:20 padding entry (automatically added) 3 - START: 172 */
     0x20, 0x0, 0xFF, 0x2F,                     /* 0x1A00:21 User MISO - START: 176 */
     0x20, 0x0, 0xFD, 0x2F,                     /* 0x1A00:22 Timestamp - START: 180 */
     0x4,                                       /* 0x1C00:0 SubIndex 000 - START: 184 */
@@ -385,8 +385,8 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x1, 0x0, 0x0, 0x0,                        /* 0x2006:2 Max DC Voltage - START: 253 */
     0x1, 0x0, 0x0, 0x0,                        /* 0x2006:3 Max Current - START: 257 */
     0x2,                                       /* 0x2007:0 Number of entries - START: 261 */
-    0x64, 0x0, 0x0, 0x0,                       /* 0x2007:1 Position filter coefficient - START: 262 */
-    0x5A, 0x0, 0x0, 0x0,                       /* 0x2007:2 Velocity filter coefficient - START: 266 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2007:1 Position filter coefficient - START: 262 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2007:2 Velocity filter coefficient - START: 266 */
     0x0, 0x0, 0x0, 0x0,                        /* 0x200A:0 Moment of inertia - START: 270 */
     0x3,                                       /* 0x2010:0 Number of entries - START: 274 */
     0x0, 0x0, 0x0, 0x0,                        /* 0x2010:1 Controller Kp - START: 275 */
@@ -570,7 +570,6 @@ const uint8_t entry_min_values[entry_min_values_length] = {
     0x0, 0x0,
     0x0, 0x0, 0x0, 0x0,
     0x0, 0x0,
-    0x0, 0x0,
     0x1, 0x0, 0x0, 0x0,
     0x1, 0x0, 0x0, 0x0,
     0x0, 0x0, 0x0, 0x0,
@@ -618,10 +617,13 @@ const char *string[] = {
     "Offset Torque",
     "Tuning command",
     "Digital Output 1",
-    "padding entry (automatically added)",
+    "padding entry (automatically added) 0",
     "Digital Output 2",
+    "padding entry (automatically added) 1",
     "Digital Output 3",
+    "padding entry (automatically added) 2",
     "Digital Output 4",
+    "padding entry (automatically added) 3",
     "User MOSI",
     "Statusword",
     "Op Mode Display",
@@ -935,14 +937,14 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1600, 9, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1600, 9, 0), /* padding entry (automatically added) 0 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[17]),
         &(entry_values[63]),
-        &(entry_default_values[63]), /* 0x40000007 */
+        &(entry_default_values[63]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -957,14 +959,14 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1600, 11, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1600, 11, 0), /* padding entry (automatically added) 1 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[17]),
+        &(string[19]),
         &(entry_values[71]),
-        &(entry_default_values[71]), /* 0x40000007 */
+        &(entry_default_values[71]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -973,20 +975,20 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[19]),
+        &(string[20]),
         &(entry_values[75]),
         &(entry_default_values[75]), /* 0x26030001 */
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1600, 13, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1600, 13, 0), /* padding entry (automatically added) 2 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[17]),
+        &(string[21]),
         &(entry_values[79]),
-        &(entry_default_values[79]), /* 0x40000007 */
+        &(entry_default_values[79]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -995,20 +997,20 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[20]),
+        &(string[22]),
         &(entry_values[83]),
         &(entry_default_values[83]), /* 0x26040001 */
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1600, 15, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1600, 15, 0), /* padding entry (automatically added) 3 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[17]),
+        &(string[23]),
         &(entry_values[87]),
-        &(entry_default_values[87]), /* 0x40000007 */
+        &(entry_default_values[87]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -1017,7 +1019,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[21]),
+        &(string[24]),
         &(entry_values[91]),
         &(entry_default_values[91]), /* 0x2FFE0020 */
         NULL,
@@ -1039,7 +1041,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[22]),
+        &(string[25]),
         &(entry_values[96]),
         &(entry_default_values[96]), /* 0x60410010 */
         NULL,
@@ -1050,7 +1052,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[23]),
+        &(string[26]),
         &(entry_values[100]),
         &(entry_default_values[100]), /* 0x60610008 */
         NULL,
@@ -1061,7 +1063,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[24]),
+        &(string[27]),
         &(entry_values[104]),
         &(entry_default_values[104]), /* 0x60640020 */
         NULL,
@@ -1072,7 +1074,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[25]),
+        &(string[28]),
         &(entry_values[108]),
         &(entry_default_values[108]), /* 0x606C0020 */
         NULL,
@@ -1083,7 +1085,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[26]),
+        &(string[29]),
         &(entry_values[112]),
         &(entry_default_values[112]), /* 0x60770010 */
         NULL,
@@ -1094,7 +1096,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[27]),
+        &(string[30]),
         &(entry_values[116]),
         &(entry_default_values[116]), /* 0x230A0020 */
         NULL,
@@ -1105,7 +1107,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[28]),
+        &(string[31]),
         &(entry_values[120]),
         &(entry_default_values[120]), /* 0x230B0020 */
         NULL,
@@ -1116,7 +1118,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[29]),
+        &(string[32]),
         &(entry_values[124]),
         &(entry_default_values[124]), /* 0x24010010 */
         NULL,
@@ -1127,7 +1129,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[30]),
+        &(string[33]),
         &(entry_values[128]),
         &(entry_default_values[128]), /* 0x24020010 */
         NULL,
@@ -1138,7 +1140,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[31]),
+        &(string[34]),
         &(entry_values[132]),
         &(entry_default_values[132]), /* 0x24030010 */
         NULL,
@@ -1149,7 +1151,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[32]),
+        &(string[35]),
         &(entry_values[136]),
         &(entry_default_values[136]), /* 0x24040010 */
         NULL,
@@ -1160,7 +1162,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[33]),
+        &(string[36]),
         &(entry_values[140]),
         &(entry_default_values[140]), /* 0x2A030020 */
         NULL,
@@ -1171,20 +1173,20 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[34]),
+        &(string[37]),
         &(entry_values[144]),
         &(entry_default_values[144]), /* 0x25010001 */
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1A00, 14, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1A00, 14, 0), /* padding entry (automatically added) 0 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[17]),
         &(entry_values[148]),
-        &(entry_default_values[148]), /* 0x40000007 */
+        &(entry_default_values[148]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -1193,20 +1195,20 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[35]),
+        &(string[38]),
         &(entry_values[152]),
         &(entry_default_values[152]), /* 0x25020001 */
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1A00, 16, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1A00, 16, 0), /* padding entry (automatically added) 1 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[17]),
+        &(string[19]),
         &(entry_values[156]),
-        &(entry_default_values[156]), /* 0x40000007 */
+        &(entry_default_values[156]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -1215,20 +1217,20 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[36]),
+        &(string[39]),
         &(entry_values[160]),
         &(entry_default_values[160]), /* 0x25030001 */
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1A00, 18, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1A00, 18, 0), /* padding entry (automatically added) 2 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[17]),
+        &(string[21]),
         &(entry_values[164]),
-        &(entry_default_values[164]), /* 0x40000007 */
+        &(entry_default_values[164]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -1237,20 +1239,20 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[37]),
+        &(string[40]),
         &(entry_values[168]),
         &(entry_default_values[168]), /* 0x25040001 */
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x1A00, 20, 0), /* padding entry (automatically added) */
+        CODE_SET_ENTRY_INDEX(0x1A00, 20, 0), /* padding entry (automatically added) 3 */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[17]),
+        &(string[23]),
         &(entry_values[172]),
-        &(entry_default_values[172]), /* 0x40000007 */
+        &(entry_default_values[172]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -1259,7 +1261,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[38]),
+        &(string[41]),
         &(entry_values[176]),
         &(entry_default_values[176]), /* 0x2FFF0020 */
         NULL,
@@ -1270,7 +1272,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[39]),
+        &(string[42]),
         &(entry_values[180]),
         &(entry_default_values[180]), /* 0x2FFD0020 */
         NULL,
@@ -1292,7 +1294,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[40]),
+        &(string[43]),
         &(entry_values[185]),
         &(entry_default_values[185]), /* 0x01 */
         NULL,
@@ -1303,7 +1305,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[41]),
+        &(string[44]),
         &(entry_values[186]),
         &(entry_default_values[186]), /* 0x02 */
         NULL,
@@ -1314,7 +1316,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[42]),
+        &(string[45]),
         &(entry_values[187]),
         &(entry_default_values[187]), /* 0x03 */
         NULL,
@@ -1325,7 +1327,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[43]),
+        &(string[46]),
         &(entry_values[188]),
         &(entry_default_values[188]), /* 0x04 */
         NULL,
@@ -1369,7 +1371,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[44]),
+        &(string[47]),
         &(entry_values[192]),
         &(entry_default_values[192]), /* 0x1600 */
         NULL,
@@ -1391,7 +1393,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[44]),
+        &(string[47]),
         &(entry_values[195]),
         &(entry_default_values[195]), /* 0x1A00 */
         NULL,
@@ -1402,7 +1404,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[45]),
+        &(string[48]),
         &(entry_values[197]),
         &(entry_default_values[197]), /* 0x0000 */
         NULL,
@@ -1413,7 +1415,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[46]),
+        &(string[49]),
         &(entry_values[199]),
         &(entry_default_values[199]), /* 0x0000 */
         &(entry_min_values[0]),
@@ -1424,7 +1426,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[47]),
+        &(string[50]),
         &(entry_values[201]),
         &(entry_default_values[201]), /* 0x0001 */
         &(entry_min_values[2]),
@@ -1435,7 +1437,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[203]),
         &(entry_default_values[203]), /* 0x05 */
         NULL,
@@ -1446,7 +1448,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[49]),
+        &(string[52]),
         &(entry_values[204]),
         &(entry_default_values[204]), /* 0x01 */
         NULL,
@@ -1456,8 +1458,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0xFA560400,
-        &(string[50]),
+        0xFA210400,
+        &(string[53]),
         &(entry_values[205]),
         &(entry_default_values[205]), /* 0x00000001 */
         NULL,
@@ -1468,7 +1470,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA280000,
-        &(string[51]),
+        &(string[54]),
         &(entry_values[209]),
         &(entry_default_values[209]), /* 0x00000001 */
         NULL,
@@ -1479,7 +1481,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA2C0000,
-        &(string[52]),
+        &(string[55]),
         &(entry_values[213]),
         &(entry_default_values[213]), /* 0x00000001 */
         NULL,
@@ -1490,7 +1492,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[53]),
+        &(string[56]),
         &(entry_values[217]),
         &(entry_default_values[217]), /* 0x00 */
         NULL,
@@ -1501,7 +1503,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[218]),
         &(entry_default_values[218]), /* 0x06 */
         NULL,
@@ -1512,7 +1514,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD260000,
-        &(string[54]),
+        &(string[57]),
         &(entry_values[219]),
         &(entry_default_values[219]), /* 0x00000000 */
         NULL,
@@ -1523,7 +1525,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD260000,
-        &(string[55]),
+        &(string[58]),
         &(entry_values[223]),
         &(entry_default_values[223]), /* 0x00000000 */
         NULL,
@@ -1534,7 +1536,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD030000,
-        &(string[56]),
+        &(string[59]),
         &(entry_values[227]),
         &(entry_default_values[227]), /* 0x0000 */
         NULL,
@@ -1545,7 +1547,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[57]),
+        &(string[60]),
         &(entry_values[229]),
         &(entry_default_values[229]), /* 0x00 */
         NULL,
@@ -1556,7 +1558,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD030000,
-        &(string[58]),
+        &(string[61]),
         &(entry_values[230]),
         &(entry_default_values[230]), /* 0x0000 */
         NULL,
@@ -1567,7 +1569,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x260000,
-        &(string[59]),
+        &(string[62]),
         &(entry_values[232]),
         &(entry_default_values[232]), /* 0x0000 */
         NULL,
@@ -1578,7 +1580,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[234]),
         &(entry_default_values[234]), /* 0x07 */
         NULL,
@@ -1589,7 +1591,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[60]),
+        &(string[63]),
         &(entry_values[235]),
         &(entry_default_values[235]), /* 0x01 */
         NULL,
@@ -1599,8 +1601,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[61]),
+        0x260000,
+        &(string[64]),
         &(entry_values[236]),
         &(entry_default_values[236]), /* 0x0000 */
         NULL,
@@ -1610,8 +1612,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[62]),
+        0x260000,
+        &(string[65]),
         &(entry_values[238]),
         &(entry_default_values[238]), /* 0x0000 */
         NULL,
@@ -1621,8 +1623,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[63]),
+        0x240000,
+        &(string[66]),
         &(entry_values[240]),
         &(entry_default_values[240]), /* 0x0000 */
         NULL,
@@ -1632,8 +1634,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[64]),
+        0x240000,
+        &(string[67]),
         &(entry_values[242]),
         &(entry_default_values[242]), /* 0x0000 */
         NULL,
@@ -1643,8 +1645,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[65]),
+        0xB44700,
+        &(string[68]),
         &(entry_values[244]),
         &(entry_default_values[244]), /* 0x0000 */
         NULL,
@@ -1654,8 +1656,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[66]),
+        0xB44700,
+        &(string[69]),
         &(entry_values[246]),
         &(entry_default_values[246]), /* 0x0000 */
         NULL,
@@ -1666,7 +1668,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[248]),
         &(entry_default_values[248]), /* 0x03 */
         NULL,
@@ -1677,7 +1679,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x260000,
-        &(string[67]),
+        &(string[70]),
         &(entry_values[249]),
         &(entry_default_values[249]), /* 0x00000000 */
         NULL,
@@ -1688,7 +1690,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x260000,
-        &(string[68]),
+        &(string[71]),
         &(entry_values[253]),
         &(entry_default_values[253]), /* 0x00000001 */
         NULL,
@@ -1699,7 +1701,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD040000,
-        &(string[69]),
+        &(string[72]),
         &(entry_values[257]),
         &(entry_default_values[257]), /* 0x00000001 */
         NULL,
@@ -1710,7 +1712,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[261]),
         &(entry_default_values[261]), /* 0x02 */
         NULL,
@@ -1720,10 +1722,10 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[70]),
+        0x200000,
+        &(string[73]),
         &(entry_values[262]),
-        &(entry_default_values[262]), /* 0x00000064 */
+        &(entry_default_values[262]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -1731,10 +1733,10 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[71]),
+        0x200000,
+        &(string[74]),
         &(entry_values[266]),
-        &(entry_default_values[266]), /* 0x0000005A */
+        &(entry_default_values[266]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -1743,7 +1745,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[72]),
+        &(string[75]),
         &(entry_values[270]),
         &(entry_default_values[270]), /* 0x00000000 */
         &(entry_min_values[4]),
@@ -1754,7 +1756,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[274]),
         &(entry_default_values[274]), /* 0x03 */
         NULL,
@@ -1765,7 +1767,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[73]),
+        &(string[76]),
         &(entry_values[275]),
         &(entry_default_values[275]), /* 0x00000000 */
         NULL,
@@ -1776,7 +1778,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[74]),
+        &(string[77]),
         &(entry_values[279]),
         &(entry_default_values[279]), /* 0x00000000 */
         NULL,
@@ -1787,7 +1789,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[75]),
+        &(string[78]),
         &(entry_values[283]),
         &(entry_default_values[283]), /* 0x00000000 */
         NULL,
@@ -1798,7 +1800,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[76]),
+        &(string[79]),
         &(entry_values[287]),
         &(entry_default_values[287]), /* 0x04 */
         NULL,
@@ -1809,7 +1811,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[73]),
+        &(string[76]),
         &(entry_values[288]),
         &(entry_default_values[288]), /* 0x00000000 */
         NULL,
@@ -1820,7 +1822,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[74]),
+        &(string[77]),
         &(entry_values[292]),
         &(entry_default_values[292]), /* 0x00000000 */
         NULL,
@@ -1831,7 +1833,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[75]),
+        &(string[78]),
         &(entry_values[296]),
         &(entry_default_values[296]), /* 0x00000000 */
         NULL,
@@ -1842,7 +1844,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[77]),
+        &(string[80]),
         &(entry_values[300]),
         &(entry_default_values[300]), /* 0x00000000 */
         NULL,
@@ -1853,7 +1855,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[78]),
+        &(string[81]),
         &(entry_values[304]),
         &(entry_default_values[304]), /* 0x04 */
         NULL,
@@ -1864,7 +1866,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[73]),
+        &(string[76]),
         &(entry_values[305]),
         &(entry_default_values[305]), /* 0x00000000 */
         NULL,
@@ -1875,7 +1877,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[74]),
+        &(string[77]),
         &(entry_values[309]),
         &(entry_default_values[309]), /* 0x00000000 */
         NULL,
@@ -1886,7 +1888,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[75]),
+        &(string[78]),
         &(entry_values[313]),
         &(entry_default_values[313]), /* 0x00000000 */
         NULL,
@@ -1897,7 +1899,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[79]),
+        &(string[82]),
         &(entry_values[317]),
         &(entry_default_values[317]), /* 0x00000000 */
         NULL,
@@ -1908,7 +1910,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[48]),
+        &(string[51]),
         &(entry_values[321]),
         &(entry_default_values[321]), /* 0x03 */
         NULL,
@@ -1919,7 +1921,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[80]),
+        &(string[83]),
         &(entry_values[322]),
         &(entry_default_values[322]), /* 0x0000 */
         NULL,
@@ -1930,7 +1932,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[81]),
+        &(string[84]),
         &(entry_values[324]),
         &(entry_default_values[324]), /* 0x0000 */
         NULL,
@@ -1941,7 +1943,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[82]),
+        &(string[85]),
         &(entry_values[326]),
         &(entry_default_values[326]), /* 0x0000 */
         NULL,
@@ -1952,7 +1954,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[83]),
+        &(string[86]),
         &(entry_values[328]),
         &(entry_default_values[328]), /* 0x0D */
         NULL,
@@ -1963,7 +1965,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[329]),
         &(entry_default_values[329]), /* 0x04 */
         NULL,
@@ -1974,7 +1976,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[330]),
         &(entry_default_values[330]), /* 0x00 */
         NULL,
@@ -1984,8 +1986,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[331]),
         &(entry_default_values[331]), /* 0x00000000 */
         NULL,
@@ -1995,8 +1997,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[335]),
         &(entry_default_values[335]), /* 0x03E8 */
         NULL,
@@ -2007,7 +2009,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[337]),
         &(entry_default_values[337]), /* 0x00 */
         NULL,
@@ -2018,7 +2020,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[89]),
+        &(string[92]),
         &(entry_values[338]),
         &(entry_default_values[338]), /* 0x00000000 */
         NULL,
@@ -2028,8 +2030,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[90]),
+        0x3200000,
+        &(string[93]),
         &(entry_values[342]),
         &(entry_default_values[342]), /* 0x000003E8 */
         NULL,
@@ -2039,8 +2041,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[91]),
+        0xFA030000,
+        &(string[94]),
         &(entry_values[346]),
         &(entry_default_values[346]), /* 0x00000024 */
         NULL,
@@ -2051,7 +2053,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[92]),
+        &(string[95]),
         &(entry_values[350]),
         &(entry_default_values[350]), /* 0x30 */
         NULL,
@@ -2062,7 +2064,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[93]),
+        &(string[96]),
         &(entry_values[351]),
         &(entry_default_values[351]), /* 0x00 */
         NULL,
@@ -2073,7 +2075,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[94]),
+        &(string[97]),
         &(entry_values[352]),
         &(entry_default_values[352]), /* 0x00 */
         NULL,
@@ -2084,7 +2086,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[95]),
+        &(string[98]),
         &(entry_values[353]),
         &(entry_default_values[353]), /* 0x00 */
         NULL,
@@ -2095,7 +2097,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[96]),
+        &(string[99]),
         &(entry_values[354]),
         &(entry_default_values[354]), /* 0x04 */
         NULL,
@@ -2106,7 +2108,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[97]),
+        &(string[100]),
         &(entry_values[355]),
         &(entry_default_values[355]), /* 0x0D */
         NULL,
@@ -2117,7 +2119,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[356]),
         &(entry_default_values[356]), /* 0x04 */
         NULL,
@@ -2128,7 +2130,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[357]),
         &(entry_default_values[357]), /* 0x00 */
         NULL,
@@ -2138,8 +2140,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[358]),
         &(entry_default_values[358]), /* 0x00000000 */
         NULL,
@@ -2149,8 +2151,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[362]),
         &(entry_default_values[362]), /* 0x03E8 */
         NULL,
@@ -2161,7 +2163,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[364]),
         &(entry_default_values[364]), /* 0x00 */
         NULL,
@@ -2172,7 +2174,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[89]),
+        &(string[92]),
         &(entry_values[365]),
         &(entry_default_values[365]), /* 0x00000000 */
         NULL,
@@ -2182,8 +2184,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[90]),
+        0x3200000,
+        &(string[93]),
         &(entry_values[369]),
         &(entry_default_values[369]), /* 0x000003E8 */
         NULL,
@@ -2193,8 +2195,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[91]),
+        0xFA030000,
+        &(string[94]),
         &(entry_values[373]),
         &(entry_default_values[373]), /* 0x00000024 */
         NULL,
@@ -2205,7 +2207,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[92]),
+        &(string[95]),
         &(entry_values[377]),
         &(entry_default_values[377]), /* 0x30 */
         NULL,
@@ -2216,7 +2218,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[93]),
+        &(string[96]),
         &(entry_values[378]),
         &(entry_default_values[378]), /* 0x00 */
         NULL,
@@ -2227,7 +2229,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[94]),
+        &(string[97]),
         &(entry_values[379]),
         &(entry_default_values[379]), /* 0x00 */
         NULL,
@@ -2238,7 +2240,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[95]),
+        &(string[98]),
         &(entry_values[380]),
         &(entry_default_values[380]), /* 0x00 */
         NULL,
@@ -2249,7 +2251,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[96]),
+        &(string[99]),
         &(entry_values[381]),
         &(entry_default_values[381]), /* 0x04 */
         NULL,
@@ -2260,7 +2262,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[98]),
+        &(string[101]),
         &(entry_values[382]),
         &(entry_default_values[382]), /* 0x06 */
         NULL,
@@ -2271,7 +2273,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[383]),
         &(entry_default_values[383]), /* 0x06 */
         NULL,
@@ -2282,7 +2284,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[384]),
         &(entry_default_values[384]), /* 0x00 */
         NULL,
@@ -2292,8 +2294,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[385]),
         &(entry_default_values[385]), /* 0x00000000 */
         NULL,
@@ -2303,8 +2305,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[389]),
         &(entry_default_values[389]), /* 0x03E8 */
         NULL,
@@ -2315,7 +2317,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[391]),
         &(entry_default_values[391]), /* 0x00 */
         NULL,
@@ -2326,7 +2328,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[99]),
+        &(string[102]),
         &(entry_values[392]),
         &(entry_default_values[392]), /* 0x02 */
         NULL,
@@ -2337,7 +2339,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[100]),
+        &(string[103]),
         &(entry_values[393]),
         &(entry_default_values[393]), /* 0x09 */
         NULL,
@@ -2348,7 +2350,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[394]),
         &(entry_default_values[394]), /* 0x05 */
         NULL,
@@ -2359,7 +2361,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[395]),
         &(entry_default_values[395]), /* 0x00 */
         NULL,
@@ -2369,8 +2371,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[396]),
         &(entry_default_values[396]), /* 0x00000000 */
         NULL,
@@ -2380,8 +2382,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[400]),
         &(entry_default_values[400]), /* 0x03E8 */
         NULL,
@@ -2392,7 +2394,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[402]),
         &(entry_default_values[402]), /* 0x00 */
         NULL,
@@ -2403,7 +2405,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[101]),
+        &(string[104]),
         &(entry_values[403]),
         &(entry_default_values[403]), /* 0x01 */
         NULL,
@@ -2414,7 +2416,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[102]),
+        &(string[105]),
         &(entry_values[404]),
         &(entry_default_values[404]), /* 0x00 */
         NULL,
@@ -2425,7 +2427,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[103]),
+        &(string[106]),
         &(entry_values[405]),
         &(entry_default_values[405]), /* 0x00 */
         NULL,
@@ -2436,7 +2438,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[104]),
+        &(string[107]),
         &(entry_values[406]),
         &(entry_default_values[406]), /* 0x00 */
         NULL,
@@ -2447,7 +2449,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[105]),
+        &(string[108]),
         &(entry_values[407]),
         &(entry_default_values[407]), /* 0x07 */
         NULL,
@@ -2458,7 +2460,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[408]),
         &(entry_default_values[408]), /* 0x02 */
         NULL,
@@ -2469,7 +2471,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[409]),
         &(entry_default_values[409]), /* 0x00 */
         NULL,
@@ -2479,8 +2481,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[410]),
         &(entry_default_values[410]), /* 0x00000000 */
         NULL,
@@ -2490,8 +2492,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[414]),
         &(entry_default_values[414]), /* 0x03E8 */
         NULL,
@@ -2502,7 +2504,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[416]),
         &(entry_default_values[416]), /* 0x00 */
         NULL,
@@ -2513,7 +2515,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[106]),
+        &(string[109]),
         &(entry_values[417]),
         &(entry_default_values[417]), /* 0x02 */
         NULL,
@@ -2524,7 +2526,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[107]),
+        &(string[110]),
         &(entry_values[418]),
         &(entry_default_values[418]), /* 0x00 */
         NULL,
@@ -2535,7 +2537,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[108]),
+        &(string[111]),
         &(entry_values[419]),
         &(entry_default_values[419]), /* 0x07 */
         NULL,
@@ -2546,7 +2548,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[420]),
         &(entry_default_values[420]), /* 0x02 */
         NULL,
@@ -2557,7 +2559,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[421]),
         &(entry_default_values[421]), /* 0x00 */
         NULL,
@@ -2567,8 +2569,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[422]),
         &(entry_default_values[422]), /* 0x00000000 */
         NULL,
@@ -2578,8 +2580,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[426]),
         &(entry_default_values[426]), /* 0x03E8 */
         NULL,
@@ -2590,7 +2592,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[428]),
         &(entry_default_values[428]), /* 0x00 */
         NULL,
@@ -2601,7 +2603,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[106]),
+        &(string[109]),
         &(entry_values[429]),
         &(entry_default_values[429]), /* 0x02 */
         NULL,
@@ -2612,7 +2614,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[107]),
+        &(string[110]),
         &(entry_values[430]),
         &(entry_default_values[430]), /* 0x00 */
         NULL,
@@ -2623,7 +2625,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[109]),
+        &(string[112]),
         &(entry_values[431]),
         &(entry_default_values[431]), /* 0x0B */
         NULL,
@@ -2634,7 +2636,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[432]),
         &(entry_default_values[432]), /* 0x01 */
         NULL,
@@ -2645,7 +2647,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[433]),
         &(entry_default_values[433]), /* 0x00 */
         NULL,
@@ -2655,8 +2657,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[434]),
         &(entry_default_values[434]), /* 0x00000000 */
         NULL,
@@ -2666,8 +2668,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[438]),
         &(entry_default_values[438]), /* 0x03E8 */
         NULL,
@@ -2678,7 +2680,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[440]),
         &(entry_default_values[440]), /* 0x00 */
         NULL,
@@ -2689,7 +2691,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[110]),
+        &(string[113]),
         &(entry_values[441]),
         &(entry_default_values[441]), /* 0x0000 */
         NULL,
@@ -2700,7 +2702,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[111]),
+        &(string[114]),
         &(entry_values[443]),
         &(entry_default_values[443]), /* 0x0000 */
         NULL,
@@ -2711,7 +2713,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[112]),
+        &(string[115]),
         &(entry_values[445]),
         &(entry_default_values[445]), /* 0x0000 */
         NULL,
@@ -2722,7 +2724,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
+        &(string[116]),
         &(entry_values[447]),
         &(entry_default_values[447]), /* 0x0000 */
         NULL,
@@ -2733,7 +2735,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
+        &(string[117]),
         &(entry_values[449]),
         &(entry_default_values[449]), /* 0x0000 */
         NULL,
@@ -2744,7 +2746,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[115]),
+        &(string[118]),
         &(entry_values[451]),
         &(entry_default_values[451]), /* 0x0000 */
         NULL,
@@ -2755,7 +2757,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[116]),
+        &(string[119]),
         &(entry_values[453]),
         &(entry_default_values[453]), /* 0x0B */
         NULL,
@@ -2766,7 +2768,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[84]),
+        &(string[87]),
         &(entry_values[454]),
         &(entry_default_values[454]), /* 0x01 */
         NULL,
@@ -2777,7 +2779,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[85]),
+        &(string[88]),
         &(entry_values[455]),
         &(entry_default_values[455]), /* 0x00 */
         NULL,
@@ -2787,8 +2789,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[86]),
+        0xB50000,
+        &(string[89]),
         &(entry_values[456]),
         &(entry_default_values[456]), /* 0x00000000 */
         NULL,
@@ -2798,8 +2800,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[87]),
+        0xFA030000,
+        &(string[90]),
         &(entry_values[460]),
         &(entry_default_values[460]), /* 0x03E8 */
         NULL,
@@ -2810,7 +2812,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[462]),
         &(entry_default_values[462]), /* 0x00 */
         NULL,
@@ -2821,7 +2823,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[110]),
+        &(string[113]),
         &(entry_values[463]),
         &(entry_default_values[463]), /* 0x0000 */
         NULL,
@@ -2832,7 +2834,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[111]),
+        &(string[114]),
         &(entry_values[465]),
         &(entry_default_values[465]), /* 0x0000 */
         NULL,
@@ -2843,7 +2845,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[112]),
+        &(string[115]),
         &(entry_values[467]),
         &(entry_default_values[467]), /* 0x0000 */
         NULL,
@@ -2854,7 +2856,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
+        &(string[116]),
         &(entry_values[469]),
         &(entry_default_values[469]), /* 0x0000 */
         NULL,
@@ -2865,7 +2867,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
+        &(string[117]),
         &(entry_values[471]),
         &(entry_default_values[471]), /* 0x0000 */
         NULL,
@@ -2876,7 +2878,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[115]),
+        &(string[118]),
         &(entry_values[473]),
         &(entry_default_values[473]), /* 0x0000 */
         NULL,
@@ -2887,7 +2889,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[117]),
+        &(string[120]),
         &(entry_values[475]),
         &(entry_default_values[475]), /* 0x04 */
         NULL,
@@ -2898,7 +2900,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[118]),
+        &(string[121]),
         &(entry_values[476]),
         &(entry_default_values[476]), /* 0x00 */
         NULL,
@@ -2909,7 +2911,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[119]),
+        &(string[122]),
         &(entry_values[477]),
         &(entry_default_values[477]), /* 0x00 */
         NULL,
@@ -2920,7 +2922,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[120]),
+        &(string[123]),
         &(entry_values[478]),
         &(entry_default_values[478]), /* 0x00 */
         NULL,
@@ -2931,7 +2933,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[121]),
+        &(string[124]),
         &(entry_values[479]),
         &(entry_default_values[479]), /* 0x00 */
         NULL,
@@ -2953,7 +2955,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[27]),
+        &(string[30]),
         &(entry_values[484]),
         &(entry_default_values[484]), /* 0x00000000 */
         NULL,
@@ -2964,7 +2966,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB44700,
-        &(string[28]),
+        &(string[31]),
         &(entry_values[488]),
         &(entry_default_values[488]), /* 0x00000000 */
         NULL,
@@ -2975,7 +2977,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[29]),
+        &(string[32]),
         &(entry_values[492]),
         &(entry_default_values[492]), /* 0x0000 */
         NULL,
@@ -2986,7 +2988,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[30]),
+        &(string[33]),
         &(entry_values[494]),
         &(entry_default_values[494]), /* 0x0000 */
         NULL,
@@ -2997,7 +2999,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[31]),
+        &(string[34]),
         &(entry_values[496]),
         &(entry_default_values[496]), /* 0x0000 */
         NULL,
@@ -3008,7 +3010,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[32]),
+        &(string[35]),
         &(entry_values[498]),
         &(entry_default_values[498]), /* 0x0000 */
         NULL,
@@ -3019,7 +3021,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[34]),
+        &(string[37]),
         &(entry_values[500]),
         &(entry_default_values[500]), /* 0x00 */
         &(entry_min_values[8]),
@@ -3030,7 +3032,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[35]),
+        &(string[38]),
         &(entry_values[501]),
         &(entry_default_values[501]), /* 0x00 */
         &(entry_min_values[9]),
@@ -3041,7 +3043,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[36]),
+        &(string[39]),
         &(entry_values[502]),
         &(entry_default_values[502]), /* 0x00 */
         &(entry_min_values[10]),
@@ -3052,7 +3054,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[37]),
+        &(string[40]),
         &(entry_values[503]),
         &(entry_default_values[503]), /* 0x00 */
         NULL,
@@ -3085,7 +3087,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[19]),
+        &(string[20]),
         &(entry_values[506]),
         &(entry_default_values[506]), /* 0x00 */
         &(entry_min_values[13]),
@@ -3096,7 +3098,7 @@ COD_Entry object_entries[] = {
         1,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[20]),
+        &(string[22]),
         &(entry_values[507]),
         &(entry_default_values[507]), /* 0x00 */
         &(entry_min_values[14]),
@@ -3107,7 +3109,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[122]),
+        &(string[125]),
         &(entry_values[508]),
         &(entry_default_values[508]), /* 0x003C */
         &(entry_min_values[15]),
@@ -3129,7 +3131,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[33]),
+        &(string[36]),
         &(entry_values[514]),
         &(entry_default_values[514]), /* 0x00000000 */
         NULL,
@@ -3140,7 +3142,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xFA030000,
-        &(string[39]),
+        &(string[42]),
         &(entry_values[518]),
         &(entry_default_values[518]), /* 0x00000000 */
         &(entry_min_values[17]),
@@ -3151,7 +3153,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[21]),
+        &(string[24]),
         &(entry_values[522]),
         &(entry_default_values[522]), /* 0x00000000 */
         NULL,
@@ -3162,7 +3164,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[38]),
+        &(string[41]),
         &(entry_values[526]),
         &(entry_default_values[526]), /* 0x00000000 */
         NULL,
@@ -3173,7 +3175,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[123]),
+        &(string[126]),
         &(entry_values[530]),
         &(entry_default_values[530]), /* 0x0000 */
         NULL,
@@ -3195,7 +3197,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[22]),
+        &(string[25]),
         &(entry_values[534]),
         &(entry_default_values[534]), /* 0x0000 */
         NULL,
@@ -3217,7 +3219,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[23]),
+        &(string[26]),
         &(entry_values[537]),
         &(entry_default_values[537]), /* 0x00 */
         NULL,
@@ -3227,8 +3229,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
-        0x0,
-        &(string[24]),
+        0xB50000,
+        &(string[27]),
         &(entry_values[538]),
         &(entry_default_values[538]), /* 0x00000000 */
         NULL,
@@ -3239,7 +3241,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB44700,
-        &(string[25]),
+        &(string[28]),
         &(entry_values[542]),
         &(entry_default_values[542]), /* 0x00000000 */
         NULL,
@@ -3261,10 +3263,10 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[124]),
+        &(string[127]),
         &(entry_values[548]),
         &(entry_default_values[548]), /* 0x0000 */
-        &(entry_min_values[21]),
+        NULL,
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6073, 0, 0), /* Max current */
@@ -3272,10 +3274,10 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[125]),
+        &(string[128]),
         &(entry_values[550]),
         &(entry_default_values[550]), /* 0x0000 */
-        &(entry_min_values[23]),
+        &(entry_min_values[21]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6075, 0, 0), /* Motor Rated Current */
@@ -3283,10 +3285,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD040000,
-        &(string[126]),
+        &(string[129]),
         &(entry_values[552]),
         &(entry_default_values[552]), /* 0x00000001 */
-        &(entry_min_values[25]),
+        &(entry_min_values[23]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6076, 0, 0), /* Motor Rated Torque */
@@ -3294,10 +3296,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD560000,
-        &(string[127]),
+        &(string[130]),
         &(entry_values[556]),
         &(entry_default_values[556]), /* 0x00000001 */
-        &(entry_min_values[29]),
+        &(entry_min_values[27]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6077, 0, 0), /* Torque Value */
@@ -3305,7 +3307,7 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[26]),
+        &(string[29]),
         &(entry_values[560]),
         &(entry_default_values[560]), /* 0x0000 */
         NULL,
@@ -3316,7 +3318,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0xFD260000,
-        &(string[128]),
+        &(string[131]),
         &(entry_values[562]),
         &(entry_default_values[562]), /* 0x00000000 */
         NULL,
@@ -3326,7 +3328,7 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
-        0x0,
+        0xB50000,
         &(string[12]),
         &(entry_values[566]),
         &(entry_default_values[566]), /* 0x00000000 */
@@ -3348,8 +3350,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[129]),
+        0xB50000,
+        &(string[132]),
         &(entry_values[571]),
         &(entry_default_values[571]), /* 0x80000000 */
         NULL,
@@ -3359,8 +3361,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[130]),
+        0xB50000,
+        &(string[133]),
         &(entry_values[575]),
         &(entry_default_values[575]), /* 0x7FFFFFFF */
         NULL,
@@ -3370,8 +3372,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[131]),
+        0xB50000,
+        &(string[134]),
         &(entry_values[579]),
         &(entry_default_values[579]), /* 0x00000000 */
         NULL,
@@ -3392,8 +3394,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[132]),
+        0xB50000,
+        &(string[135]),
         &(entry_values[584]),
         &(entry_default_values[584]), /* 0x80000000 */
         NULL,
@@ -3403,8 +3405,8 @@ COD_Entry object_entries[] = {
         DEFTYPE_INTEGER32,
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
-        0x0,
-        &(string[133]),
+        0xB50000,
+        &(string[136]),
         &(entry_values[588]),
         &(entry_default_values[588]), /* 0x7FFFFFFF */
         NULL,
@@ -3415,7 +3417,7 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[88]),
+        &(string[91]),
         &(entry_values[592]),
         &(entry_default_values[592]), /* 0x00 */
         NULL,
@@ -3426,10 +3428,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[134]),
+        &(string[137]),
         &(entry_values[593]),
         &(entry_default_values[593]), /* 0x00000000 */
-        &(entry_min_values[33]),
+        &(entry_min_values[31]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6080, 0, 0), /* Max motor speed */
@@ -3437,10 +3439,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[135]),
+        &(string[138]),
         &(entry_values[597]),
         &(entry_default_values[597]), /* 0x00000000 */
-        &(entry_min_values[37]),
+        &(entry_min_values[35]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6081, 0, 0), /* Profile velocity */
@@ -3448,7 +3450,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[136]),
+        &(string[139]),
         &(entry_values[601]),
         &(entry_default_values[601]), /* 0x00000000 */
         NULL,
@@ -3459,10 +3461,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[137]),
+        &(string[140]),
         &(entry_values[605]),
         &(entry_default_values[605]), /* 0x00000000 */
-        &(entry_min_values[41]),
+        &(entry_min_values[39]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6084, 0, 0), /* Profile deceleration */
@@ -3470,10 +3472,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[138]),
+        &(string[141]),
         &(entry_values[609]),
         &(entry_default_values[609]), /* 0x00000000 */
-        &(entry_min_values[45]),
+        &(entry_min_values[43]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6085, 0, 0), /* Quick stop deceleration */
@@ -3481,10 +3483,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[139]),
+        &(string[142]),
         &(entry_values[613]),
         &(entry_default_values[613]), /* 0x00000000 */
-        &(entry_min_values[49]),
+        &(entry_min_values[47]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6086, 0, 0), /* Motion profile type */
@@ -3492,10 +3494,10 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[140]),
+        &(string[143]),
         &(entry_values[617]),
         &(entry_default_values[617]), /* 0x0080 */
-        &(entry_min_values[53]),
+        &(entry_min_values[51]),
         &(entry_max_values[17])
     }, {
         CODE_SET_ENTRY_INDEX(0x60C5, 0, 0), /* Max acceleration */
@@ -3503,7 +3505,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[141]),
+        &(string[144]),
         &(entry_values[619]),
         &(entry_default_values[619]), /* 0x00000000 */
         NULL,
@@ -3525,7 +3527,7 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[142]),
+        &(string[145]),
         &(entry_values[627]),
         &(entry_default_values[627]), /* 0x00000380 */
         NULL,
@@ -3628,7 +3630,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[45]),
+        &(string[48]),
         &(object_entries[59])
     }, {
         0x2001, /* Commutation angle offset */
@@ -3636,7 +3638,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[46]),
+        &(string[49]),
         &(object_entries[60])
     }, {
         0x2002, /* Position control strategy */
@@ -3644,7 +3646,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[47]),
+        &(string[50]),
         &(object_entries[61])
     }, {
         0x2003, /* Number of entries */
@@ -3652,7 +3654,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         5,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[62])
     }, {
         0x2004, /* Number of entries */
@@ -3660,7 +3662,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         6,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[68])
     }, {
         0x2005, /* Number of entries */
@@ -3668,7 +3670,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         7,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[75])
     }, {
         0x2006, /* Number of entries */
@@ -3676,7 +3678,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         3,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[83])
     }, {
         0x2007, /* Number of entries */
@@ -3684,7 +3686,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         2,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[87])
     }, {
         0x200A, /* Moment of inertia */
@@ -3692,7 +3694,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[72]),
+        &(string[75]),
         &(object_entries[90])
     }, {
         0x2010, /* Number of entries */
@@ -3700,7 +3702,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         3,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[91])
     }, {
         0x2011, /* Velocity Controller */
@@ -3708,7 +3710,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         4,
-        &(string[76]),
+        &(string[79]),
         &(object_entries[95])
     }, {
         0x2012, /* Position Controller */
@@ -3716,7 +3718,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         4,
-        &(string[78]),
+        &(string[81]),
         &(object_entries[100])
     }, {
         0x2100, /* Number of entries */
@@ -3724,7 +3726,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         3,
-        &(string[48]),
+        &(string[51]),
         &(object_entries[105])
     }, {
         0x2201, /* BISS Encoder 1 */
@@ -3732,7 +3734,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         13,
-        &(string[83]),
+        &(string[86]),
         &(object_entries[109])
     }, {
         0x2202, /* BISS Encoder 2 */
@@ -3740,7 +3742,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         13,
-        &(string[97]),
+        &(string[100]),
         &(object_entries[123])
     }, {
         0x2203, /* REM 16MT Encoder */
@@ -3748,7 +3750,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         6,
-        &(string[98]),
+        &(string[101]),
         &(object_entries[137])
     }, {
         0x2204, /* REM 14 Encoder */
@@ -3756,7 +3758,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         9,
-        &(string[100]),
+        &(string[103]),
         &(object_entries[144])
     }, {
         0x2205, /* Incremental Encoder 1 */
@@ -3764,7 +3766,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         7,
-        &(string[105]),
+        &(string[108]),
         &(object_entries[154])
     }, {
         0x2206, /* Incremental Encoder 2 */
@@ -3772,7 +3774,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         7,
-        &(string[108]),
+        &(string[111]),
         &(object_entries[162])
     }, {
         0x2207, /* HALL Sensor 1 */
@@ -3780,7 +3782,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         11,
-        &(string[109]),
+        &(string[112]),
         &(object_entries[170])
     }, {
         0x2208, /* HALL Sensor 2 */
@@ -3788,7 +3790,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         11,
-        &(string[116]),
+        &(string[119]),
         &(object_entries[182])
     }, {
         0x2210, /* GPIO */
@@ -3796,7 +3798,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         4,
-        &(string[117]),
+        &(string[120]),
         &(object_entries[194])
     }, {
         0x2300, /* Offset Torque */
@@ -3812,7 +3814,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[27]),
+        &(string[30]),
         &(object_entries[200])
     }, {
         0x230B, /* Secondary velocity value */
@@ -3820,7 +3822,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[28]),
+        &(string[31]),
         &(object_entries[201])
     }, {
         0x2401, /* Analog input 1 */
@@ -3828,7 +3830,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[29]),
+        &(string[32]),
         &(object_entries[202])
     }, {
         0x2402, /* Analog input 2 */
@@ -3836,7 +3838,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[30]),
+        &(string[33]),
         &(object_entries[203])
     }, {
         0x2403, /* Analog input 3 */
@@ -3844,7 +3846,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[31]),
+        &(string[34]),
         &(object_entries[204])
     }, {
         0x2404, /* Analog input 4 */
@@ -3852,7 +3854,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[32]),
+        &(string[35]),
         &(object_entries[205])
     }, {
         0x2501, /* Digital Input 1 */
@@ -3860,7 +3862,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_BOOLEAN,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[34]),
+        &(string[37]),
         &(object_entries[206])
     }, {
         0x2502, /* Digital Input 2 */
@@ -3868,7 +3870,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_BOOLEAN,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[35]),
+        &(string[38]),
         &(object_entries[207])
     }, {
         0x2503, /* Digital Input 3 */
@@ -3876,7 +3878,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_BOOLEAN,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[36]),
+        &(string[39]),
         &(object_entries[208])
     }, {
         0x2504, /* Digital Input 4 */
@@ -3884,7 +3886,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_BOOLEAN,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[37]),
+        &(string[40]),
         &(object_entries[209])
     }, {
         0x2601, /* Digital Output 1 */
@@ -3908,7 +3910,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_BOOLEAN,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[19]),
+        &(string[20]),
         &(object_entries[212])
     }, {
         0x2604, /* Digital Output 4 */
@@ -3916,7 +3918,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_BOOLEAN,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[20]),
+        &(string[22]),
         &(object_entries[213])
     }, {
         0x2A00, /* Applied tuning torque percent */
@@ -3924,7 +3926,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[122]),
+        &(string[125]),
         &(object_entries[214])
     }, {
         0x2A01, /* Tuning command */
@@ -3940,7 +3942,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[33]),
+        &(string[36]),
         &(object_entries[216])
     }, {
         0x2FFD, /* Timestamp */
@@ -3948,7 +3950,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[39]),
+        &(string[42]),
         &(object_entries[217])
     }, {
         0x2FFE, /* User MOSI */
@@ -3956,7 +3958,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[21]),
+        &(string[24]),
         &(object_entries[218])
     }, {
         0x2FFF, /* User MISO */
@@ -3964,7 +3966,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[38]),
+        &(string[41]),
         &(object_entries[219])
     }, {
         0x603F, /* Error code */
@@ -3972,7 +3974,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[123]),
+        &(string[126]),
         &(object_entries[220])
     }, {
         0x6040, /* Controlword */
@@ -3988,7 +3990,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[22]),
+        &(string[25]),
         &(object_entries[222])
     }, {
         0x6060, /* Op Mode */
@@ -4004,7 +4006,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER8,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[23]),
+        &(string[26]),
         &(object_entries[224])
     }, {
         0x6064, /* Position Value */
@@ -4012,7 +4014,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[24]),
+        &(string[27]),
         &(object_entries[225])
     }, {
         0x606C, /* Velocity Value */
@@ -4020,7 +4022,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[25]),
+        &(string[28]),
         &(object_entries[226])
     }, {
         0x6071, /* Target Torque */
@@ -4036,7 +4038,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[124]),
+        &(string[127]),
         &(object_entries[228])
     }, {
         0x6073, /* Max current */
@@ -4044,7 +4046,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[125]),
+        &(string[128]),
         &(object_entries[229])
     }, {
         0x6075, /* Motor Rated Current */
@@ -4052,7 +4054,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[126]),
+        &(string[129]),
         &(object_entries[230])
     }, {
         0x6076, /* Motor Rated Torque */
@@ -4060,7 +4062,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[127]),
+        &(string[130]),
         &(object_entries[231])
     }, {
         0x6077, /* Torque Value */
@@ -4068,7 +4070,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[26]),
+        &(string[29]),
         &(object_entries[232])
     }, {
         0x6079, /* DC link circuit voltage */
@@ -4076,7 +4078,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[128]),
+        &(string[131]),
         &(object_entries[233])
     }, {
         0x607A, /* Target Position */
@@ -4100,7 +4102,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[131]),
+        &(string[134]),
         &(object_entries[238])
     }, {
         0x607D, /* SubIndex 000 */
@@ -4116,7 +4118,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[88]),
+        &(string[91]),
         &(object_entries[242])
     }, {
         0x607F, /* Max profile velocity */
@@ -4124,7 +4126,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[134]),
+        &(string[137]),
         &(object_entries[243])
     }, {
         0x6080, /* Max motor speed */
@@ -4132,7 +4134,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[135]),
+        &(string[138]),
         &(object_entries[244])
     }, {
         0x6081, /* Profile velocity */
@@ -4140,7 +4142,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[136]),
+        &(string[139]),
         &(object_entries[245])
     }, {
         0x6083, /* Profile acceleration */
@@ -4148,7 +4150,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[137]),
+        &(string[140]),
         &(object_entries[246])
     }, {
         0x6084, /* Profile deceleration */
@@ -4156,7 +4158,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[138]),
+        &(string[141]),
         &(object_entries[247])
     }, {
         0x6085, /* Quick stop deceleration */
@@ -4164,7 +4166,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[139]),
+        &(string[142]),
         &(object_entries[248])
     }, {
         0x6086, /* Motion profile type */
@@ -4172,7 +4174,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_INTEGER16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[140]),
+        &(string[143]),
         &(object_entries[249])
     }, {
         0x60C5, /* Max acceleration */
@@ -4180,7 +4182,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[141]),
+        &(string[144]),
         &(object_entries[250])
     }, {
         0x60FF, /* Target Velocity */
@@ -4196,8 +4198,7 @@ COD_Object object_dictionary[] = {
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
-        &(string[142]),
+        &(string[145]),
         &(object_entries[252])
     }
 };
-

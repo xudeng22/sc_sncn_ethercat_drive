@@ -55,13 +55,13 @@ uint8_t entry_values[entry_values_length] = {
     0x20, 0x0, 0x0, 0x23,                      /* 0x1600:6 Offset Torque - START: 51 */
     0x20, 0x0, 0x1, 0x2A,                      /* 0x1600:7 Tuning command - START: 55 */
     0x1, 0x0, 0x1, 0x26,                       /* 0x1600:8 Digital Output 1 - START: 59 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:9 padding entry (automatically added) 0 - START: 63 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:9 padding entry (automatically added) 0 - START: 63 */
     0x1, 0x0, 0x2, 0x26,                       /* 0x1600:10 Digital Output 2 - START: 67 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:11 padding entry (automatically added) 1 - START: 71 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:11 padding entry (automatically added) 1 - START: 71 */
     0x1, 0x0, 0x3, 0x26,                       /* 0x1600:12 Digital Output 3 - START: 75 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:13 padding entry (automatically added) 2 - START: 79 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:13 padding entry (automatically added) 2 - START: 79 */
     0x1, 0x0, 0x4, 0x26,                       /* 0x1600:14 Digital Output 4 - START: 83 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:15 padding entry (automatically added) 3 - START: 87 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:15 padding entry (automatically added) 3 - START: 87 */
     0x20, 0x0, 0xFE, 0x2F,                     /* 0x1600:16 User MOSI - START: 91 */
     0x16,                                      /* 0x1A00:0 SubIndex 000 - START: 95 */
     0x10, 0x0, 0x41, 0x60,                     /* 0x1A00:1 Statusword - START: 96 */
@@ -314,13 +314,13 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x20, 0x0, 0x0, 0x23,                      /* 0x1600:6 Offset Torque - START: 51 */
     0x20, 0x0, 0x1, 0x2A,                      /* 0x1600:7 Tuning command - START: 55 */
     0x1, 0x0, 0x1, 0x26,                       /* 0x1600:8 Digital Output 1 - START: 59 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:9 padding entry (automatically added) 0 - START: 63 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:9 padding entry (automatically added) 0 - START: 63 */
     0x1, 0x0, 0x2, 0x26,                       /* 0x1600:10 Digital Output 2 - START: 67 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:11 padding entry (automatically added) 1 - START: 71 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:11 padding entry (automatically added) 1 - START: 71 */
     0x1, 0x0, 0x3, 0x26,                       /* 0x1600:12 Digital Output 3 - START: 75 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:13 padding entry (automatically added) 2 - START: 79 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:13 padding entry (automatically added) 2 - START: 79 */
     0x1, 0x0, 0x4, 0x26,                       /* 0x1600:14 Digital Output 4 - START: 83 */
-    0x7, 0x0, 0x0, 0x40,                       /* 0x1600:15 padding entry (automatically added) 3 - START: 87 */
+    0x7, 0x0, 0x8, 0x20,                       /* 0x1600:15 padding entry (automatically added) 3 - START: 87 */
     0x20, 0x0, 0xFE, 0x2F,                     /* 0x1600:16 User MOSI - START: 91 */
     0x16,                                      /* 0x1A00:0 SubIndex 000 - START: 95 */
     0x10, 0x0, 0x41, 0x60,                     /* 0x1A00:1 Statusword - START: 96 */
@@ -944,7 +944,7 @@ COD_Entry object_entries[] = {
         0x0,
         &(string[17]),
         &(entry_values[63]),
-        &(entry_default_values[63]), /* 0x40000007 */
+        &(entry_default_values[63]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -966,7 +966,7 @@ COD_Entry object_entries[] = {
         0x0,
         &(string[19]),
         &(entry_values[71]),
-        &(entry_default_values[71]), /* 0x40000007 */
+        &(entry_default_values[71]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -988,7 +988,7 @@ COD_Entry object_entries[] = {
         0x0,
         &(string[21]),
         &(entry_values[79]),
-        &(entry_default_values[79]), /* 0x40000007 */
+        &(entry_default_values[79]), /* 0x00000007 */
         NULL,
         NULL
     }, {
@@ -1010,7 +1010,7 @@ COD_Entry object_entries[] = {
         0x0,
         &(string[23]),
         &(entry_values[87]),
-        &(entry_default_values[87]), /* 0x40000007 */
+        &(entry_default_values[87]), /* 0x00000007 */
         NULL,
         NULL
     }, {

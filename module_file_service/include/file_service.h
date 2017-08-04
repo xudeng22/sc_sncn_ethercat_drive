@@ -50,6 +50,11 @@
 #define TORQUE_OFFSET_FILE_NAME "cogging_torque.bin"
 
 /**
+ * \brief Name of binary file to store / read encoder non-linearity
+ */
+#define SENSOR_CALIBRATION_FILE_NAME "sensor_calibration.bin"
+
+/**
  * \brief FoE service timeout
  */
 #define FILE_SERVICE_DELAY_TIMEOUT 500000000
@@ -58,6 +63,11 @@
  * \brief Delay for file service to not overload cpu
  */
 #define FILE_SERVICE_INITIAL_DELAY 100000
+
+typedef enum {
+    TORQUE_OFFSET_FILE = 1,
+    SENSOR_CALIBRATION_FILE = 2
+}FileFunction;
 
 /**
  * \brief Structure for current opened file (name, size, current position in file, status opened/not opened, SPIFFS file descriptor)
@@ -74,9 +84,9 @@ typedef interface FileServiceInterface FileServiceInterface;
 
 interface FileServiceInterface
 {
-    [[guarded]] int write_torque_array(int array_in[]);
+    [[guarded]] int write_binary_array(int function, int array_in[]);
 
-    [[guarded]] int read_torque_array(int array_out[]);
+    [[guarded]] int read_binary_array(int function, int array_out[]);
 };
 
 

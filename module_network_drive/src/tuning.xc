@@ -470,18 +470,38 @@ void tuning_command_handler(
         case TUNING_CMD_SAVE_RECORD_COGGING:
 
             motorcontrol_config = i_motion_control.get_motorcontrol_config();
-            i_file_service.write_torque_array(motorcontrol_config.torque_offset);
+            i_file_service.write_binary_array(TORQUE_OFFSET_FILE, motorcontrol_config.torque_offset);
 
             break;
 
         case TUNING_CMD_LOAD_RECORD_COGGING:
 
             motorcontrol_config = i_motion_control.get_motorcontrol_config();
-            i_file_service.read_torque_array(motorcontrol_config.torque_offset);
+            i_file_service.read_binary_array(TORQUE_OFFSET_FILE, motorcontrol_config.torque_offset);
             i_motion_control.set_motorcontrol_config(motorcontrol_config);
 
             break;
+        case TUNING_CMD_AUTO_CALIBRATE_SENSOR:
+            int status = i_motion_control.sensor_calibration();
+            int sensor_lookup_table[128] = {0};
+            i_motion_control.save_sensor_linearization(sensor_lookup_table);
+            i_file_service.write_binary_array(SENSOR_CALIBRATION_FILE, sensor_lookup_table);
+            for (int i = 0; i < 128; i++)
+            {
+                pos_feedback_config_1.non_linearity[i] = sensor_lookup_table[i];
+            }
+            i_position_feedback_1.set_config(pos_feedback_config_1);
 
+            break;
+
+        case TUNING_CMD_SENSOR_CALIBRATION :
+
+            if (tuning_mode_state.value == 1 || tuning_mode_state.value == 0) {
+                pos_feedback_config_1.linearization_enabled = tuning_mode_state.value;
+                i_position_feedback_1.set_config(pos_feedback_config_1);
+                tuning_mode_state.sensor_calibration_flag = tuning_mode_state.value;
+            }
+            break;
         } /* end switch action command*/
     } /* end if setting/action command */
 }
@@ -514,5 +534,5 @@ uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
     if (motion_ctrl_config.enable_profiler) {
         integrated_profiler = 1;
     }
-    return (uint8_t)( (tuning_mode_state.cogging_torque_flag<<TUNING_FLAG_COGGING_TORQUE) | (integrated_profiler<<TUNING_FLAG_INTEGRATED_PROFILER) | (phases_inverted<<TUNING_FLAG_PHASES_INVERTED) | (sensor_polarity<<TUNING_FLAG_SENSOR_POLARITY) | (motion_polarity<<TUNING_FLAG_MOTION_POLARITY) | (tuning_mode_state.brake_flag<<TUNING_FLAG_BRAKE) );
+    return (uint8_t)( (tuning_mode_state.sensor_calibration_flag<<TUNING_FLAG_SENSOR_CALIBRATION) | (tuning_mode_state.cogging_torque_flag<<TUNING_FLAG_COGGING_TORQUE) | (integrated_profiler<<TUNING_FLAG_INTEGRATED_PROFILER) | (phases_inverted<<TUNING_FLAG_PHASES_INVERTED) | (sensor_polarity<<TUNING_FLAG_SENSOR_POLARITY) | (motion_polarity<<TUNING_FLAG_MOTION_POLARITY) | (tuning_mode_state.brake_flag<<TUNING_FLAG_BRAKE) );
 }

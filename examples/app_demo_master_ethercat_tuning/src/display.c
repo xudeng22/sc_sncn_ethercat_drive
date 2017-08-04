@@ -188,6 +188,12 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     } else {
         wprintw(wnd, "Cogging torque compensation OFF");
     }
+    wmoveclr(wnd, &row);
+    if (input.sensor_calibration_flag == 1) {
+        wprintw(wnd, "Sensor Calibration ON");
+    } else {
+        wprintw(wnd, "Sensor Calibration OFF");
+    }
     //row 16
     wmoveclr(wnd, &row);
     //motorcontrol fault

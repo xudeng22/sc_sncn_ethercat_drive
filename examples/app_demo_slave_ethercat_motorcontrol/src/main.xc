@@ -306,6 +306,13 @@ int main(void)
                     position_feedback_config_1.hall_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
                     position_feedback_config_1.hall_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
 
+
+                    for (int i = 0; i<128; i++)
+                    {
+                        position_feedback_config_1.non_linearity[i] = 0;
+                    }
+                    position_feedback_config_1.linearization_enabled = 0;
+
                     //setting second sensor
                     PositionFeedbackConfig position_feedback_config_2 = position_feedback_config_1;
                     position_feedback_config_2.sensor_type = 0;

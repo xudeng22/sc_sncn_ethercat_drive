@@ -613,11 +613,19 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     quick_stop_deceleration
                     );
             //Load cogging torque data
-            char filename [] = "cogging_torque.bin";
-            int status = i_file_service.read_torque_array(motorcontrol_config.torque_offset);
+            int status = i_file_service.read_binary_array(TORQUE_OFFSET_FILE, motorcontrol_config.torque_offset);
             if (status != SPIFFS_ERR_NOT_FOUND)
                 i_motion_control.enable_cogging_compensation(1);
 
+            //Load cogging torque data
+            int array_calibration [128];
+            status = i_file_service.read_binary_array(SENSOR_CALIBRATION_FILE, array_calibration);
+            for (int i = 0 ; i< 128; i++)
+            {
+                position_feedback_config_1.non_linearity[i] = array_calibration[i];
+            }
+            if (status != SPIFFS_ERR_NOT_FOUND)
+                position_feedback_config_1.linearization_enabled = 1;
 
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);

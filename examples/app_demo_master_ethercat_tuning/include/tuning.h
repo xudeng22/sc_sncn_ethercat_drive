@@ -60,7 +60,9 @@ typedef enum {
     TUNING_CMD_COGGING_TORQUE             = 0x0D,
     TUNING_CMD_AUTO_RECORD_COGGING        = 0x0E,
     TUNING_CMD_SAVE_RECORD_COGGING        = 0x0F,
-    TUNING_CMD_LOAD_RECORD_COGGING        = 0X10,
+    TUNING_CMD_LOAD_RECORD_COGGING        = 0x10,
+    TUNING_CMD_AUTO_CALIBRATE_SENSOR      = 0x11,
+    TUNING_CMD_SENSOR_CALIBRATION         = 0x12,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,
@@ -118,7 +120,8 @@ typedef enum {
     TUNING_FLAG_SENSOR_POLARITY     = 2,
     TUNING_FLAG_PHASES_INVERTED     = 3,
     TUNING_FLAG_INTEGRATED_PROFILER = 4,
-    TUNING_FLAG_COGGING_TORQUE      = 5
+    TUNING_FLAG_COGGING_TORQUE      = 5,
+    TUNING_FLAG_SENSOR_CALIBRATION  = 6
 } TuningFlagsBit;
 
 typedef enum {
@@ -127,7 +130,7 @@ typedef enum {
     TUNING_MOTORCTRL_POSITION_PID_VELOCITY_CASCADED = 2,
     TUNING_MOTORCTRL_POSITION_LT                    = 3,
     TUNING_MOTORCTRL_VELOCITY                       = 4,
-    TUNING_MOTORCTRL_TORQUE                         = 5
+    TUNING_MOTORCTRL_TORQUE                         = 5,
 } TuningMotorCtrlStatus;
 
 typedef enum {
@@ -148,6 +151,7 @@ typedef struct {
     int brake_release_strategy;
     int brake_flag;
     int cogging_torque_flag;
+    int sensor_calibration_flag;
     int error_status;
     int sensor_error;
     int motion_control_error;

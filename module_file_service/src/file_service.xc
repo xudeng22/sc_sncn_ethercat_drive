@@ -399,11 +399,27 @@ void file_service(
     while (1) {
         select
         {
-            case i_file_service[int i].write_torque_array(int array_in[]) -> int status:
+            case i_file_service[int i].write_binary_array(int function, int array_in[]) -> int status:
 
-                    printf("Name written\n");
-                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-                    if (file_id < 0)
+                    int file_id = 0;
+                    char header [3]  = {0};
+
+                    unsigned char data_char [1] = {0}, data_short [2] ={0}, data_int[4] = {0} ;
+
+                    //number of members of the array
+                    int file_size = 0;
+                    //number of bytes taken by each member of the array
+                    int data_format = 0;
+
+                    if (function == TORQUE_OFFSET_FILE)
+                    {
+                        file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+                    }
+                    else if (function == SENSOR_CALIBRATION_FILE)
+                    {
+                        file_id = i_spiffs.open_file(SENSOR_CALIBRATION_FILE_NAME, strlen(SENSOR_CALIBRATION_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+                    }
+                          if (file_id < 0)
                     {
                         printstrln("Error opening file");
                         status = file_id;
@@ -414,23 +430,75 @@ void file_service(
                         printstr("File created: ");
                         printintln(file_id);
                     }
-                    unsigned char data [2] ={0} ;
-                    for (int i = 0; i < 1024; i++)
-                    {
-                        data [0] = (array_in [i] & 0xFF00)>> 8;
-                        data [1] = array_in [i] & 0x00FF;
-                        int err_write = i_spiffs.write(file_id, data, 2);
-                        if (err_write < 0)
-                            printf("error : %d\n", err_write);
 
+                    switch (function)
+                    {
+                    case TORQUE_OFFSET_FILE :
+                        file_size = 1024;
+                        data_format = 2;
+                        break;
+                    case SENSOR_CALIBRATION_FILE :
+                        file_size = 128;
+                        data_format = 2;
+                        break;
                     }
+                    if (file_size >= 0)
+                    {
+                        int err_write = 0;
+                        char buff [3];
+                        buff [0] = (file_size & 0xFF00) >> 8;
+                        buff [1] = (file_size & 0xFF);
+                        buff [2] = (data_format);
+
+                        err_write = i_spiffs.write(file_id, buff, 3);
+                        for (int i = 0; i < file_size; i++)
+                        {
+                            switch (data_format)
+                            {
+                            case 1:
+                                data_char[0] = array_in[i]& 0xFF;
+                                err_write = i_spiffs.write(file_id, data_char, 1);
+                                break;
+                            case 2:
+                                data_short [0] = (array_in [i] & 0xFF00)>> 8;
+                                data_short [1] = array_in [i] & 0x00FF;
+                                err_write = i_spiffs.write(file_id, data_short, 2);
+                                break;
+                            case 3 :
+                                data_int [0] = (array_in [i] & 0xFF000000)>> 24;
+                                data_int [1] = (array_in [i] & 0xFF0000)>> 16;
+                                data_int [2] = (array_in [i] & 0xFF00)>> 8;
+                                data_int [3] = array_in [i] & 0xFF;
+                                err_write = i_spiffs.write(file_id, data_int, 4);
+                                break;
+                            }
+
+                            if (err_write < 0)
+                                printf("error : %d\n", err_write);
+
+                        }
+                    }
+
                     i_spiffs.close_file(file_id);
                     break;
 
-            case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
+            case i_file_service[int i].read_binary_array(int function, int array_out[]) -> int status:
 
-                    printf("Name written\n");
-                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
+                    char buffer_char[1];
+                    char buffer_short [2];
+                    char buffer_int [4];
+                    char buffer_double [8];
+                    short size_file = 0;
+                    char data_format = 0;
+                    int file_id = 0;
+                    if (function == TORQUE_OFFSET_FILE)
+                    {
+                        file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
+                    }
+                    else if (function == SENSOR_CALIBRATION_FILE)
+                    {
+                        file_id = i_spiffs.open_file(SENSOR_CALIBRATION_FILE_NAME, strlen(SENSOR_CALIBRATION_FILE_NAME), (SPIFFS_RDONLY));
+                    }
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
@@ -447,19 +515,54 @@ void file_service(
                         status = SPIFFS_ERR_NOT_FOUND;
                         break;
                     }
-                    char buffer [2];
-                    for (int i = 0; i < 1024; i++)
+                    //First 2 bytes are the number of members of the array
+                    int err_read = i_spiffs.read(file_id, buffer_short, 2);
+                    if (err_read < 0)
                     {
-                        int err_read = i_spiffs.read(file_id, buffer, 2);
+                        printf("error : %d\n", err_read);
+                        status = -1;
+                    }
+                    size_file = (buffer_short[0] << 8) + buffer_short[1];
+
+                    //Next byte is the format of the data
+                    err_read = i_spiffs.read(file_id, buffer_char, 1);
+                    if (err_read < 0)
+                    {
+                        printf("error : %d\n", err_read);
+                        status = -1;
+                    }
+                    data_format = buffer_char[0];
+
+                    for (int i = 0; i < size_file; i++)
+                    {
+                        switch (data_format)
+                        {
+                        case 1:
+                            err_read = i_spiffs.read(file_id, buffer_char, 1);
+                            array_out[i] = buffer_char[0];
+                            if(array_out[i] >= 0x7F)
+                                array_out[i] -= 0x100;
+                            break;
+                        case 2:
+                            err_read = i_spiffs.read(file_id, buffer_short, 2);
+                            array_out[i] = (buffer_short[0] << 8) + buffer_short[1];
+                            if(array_out[i] >= 0x7FFF)
+                                array_out[i] -= 0x10000;
+                            break;
+                        case 4:
+                            err_read = i_spiffs.read(file_id, buffer_int, 4);
+                            array_out[i] = (buffer_int[0] << 24) + (buffer_int[1] << 16) + (buffer_int[2] << 8) + buffer_int[3];
+//                            if(array_out[i] >= 0x7FFFFFFF)
+//                                array_out[i] -= 0x100000000;
+                            break;
+                        }
                         if (err_read < 0)
                         {
                             printf("error : %d\n", err_read);
                             status = -1;
                         }
 
-                        array_out[i] = (buffer[0] << 8) + buffer[1];
-                        if(array_out[i] >= 0x7FFF)
-                            array_out[i] -= 0x10000;
+
                     }
 
                     i_spiffs.close_file(file_id);

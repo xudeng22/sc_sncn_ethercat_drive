@@ -655,7 +655,8 @@ void network_drive_service(ProfilerConfig &profiler_config,
             read_configuration = 0;
             i_co.configuration_done();
             // check if there is there is any object that changed but was not read and if so read them to clear the flag
-            int changed_index, changed_subindex;
+            uint16_t changed_index = 0;
+            uint8_t changed_subindex = 0;
             { changed_index, changed_subindex } = i_co.od_get_next_changed_element();
             int timeout = 1000;
             while (changed_index && timeout>0) {

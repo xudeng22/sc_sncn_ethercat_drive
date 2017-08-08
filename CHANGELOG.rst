@@ -5,6 +5,7 @@ sc_sncn_ethercat_drive Change Log
 -----
 
   * Fix data type of PID coefficients to use float.
+  * Fix reload configuration from object dictionary
 
 3.1
 ---

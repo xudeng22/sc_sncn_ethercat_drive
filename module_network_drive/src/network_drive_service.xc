@@ -203,47 +203,78 @@ static int check_for_pid_updatate(
     union sdo_value value;
     uint8_t od_err = 0;
 
-    {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-    if (od_err != 0) {
-        return 0;
-    }
-
     int changed = 0;
     position_config = i_motion_control.get_motion_control_config();
     if (changed_index    == DICT_FILTER_COEFFICIENTS &&
         changed_subindex == SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.filter = value.i;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KP) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.position_kp = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KI) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.position_ki = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KD) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.position_kd = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_POSITION_CONTROLLER &&
                changed_subindex == SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.position_integral_limit = value.i;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KP) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.velocity_kp = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KI) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.velocity_ki = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KD) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.velocity_kd = (int)value.f;
         changed = 1;
     } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
                changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT) {
+        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+        if (od_err != 0) {
+            return 0;
+        }
         position_config.velocity_integral_limit = value.i;
         changed = 1;
     }
@@ -623,6 +654,15 @@ void network_drive_service(ProfilerConfig &profiler_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
             read_configuration = 0;
             i_co.configuration_done();
+            // check if there is there is any object that changed but was not read and if so read them to clear the flag
+            int changed_index, changed_subindex;
+            { changed_index, changed_subindex } = i_co.od_get_next_changed_element();
+            int timeout = 1000;
+            while (changed_index && timeout>0) {
+                i_co.od_get_object_value(changed_index, changed_subindex);
+                { changed_index, changed_subindex } = i_co.od_get_next_changed_element();
+                timeout--;
+            }
         } else {
             /* if there is no "read the whole configuration", just check if single values changed.
              * More precisely, the PID configuration values, one at time. */
@@ -835,7 +875,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 state = get_next_state(state, checklist, controlword, 0);
 
                 /* update config on the S_SWITCH_ON_DISABLED -> S_READY_TO_SWITCH_ON transition */
-                if (state == S_READY_TO_SWITCH_ON) {
+                if (state == S_READY_TO_SWITCH_ON && i_co.od_changed_values_count()) {
                     read_configuration = 1;
                 }
                 break;
@@ -900,6 +940,11 @@ void network_drive_service(ProfilerConfig &profiler_config,
                 break;
 
             case S_FAULT:
+                // check if the object dictionary has changed
+                if (i_co.od_changed_values_count()) {
+                    read_configuration = 1; //reload config
+                }
+
                 /* Wait until fault reset from the control device appears.
                  * When we receive the fault reset, start a timer
                  * and send the fault reset commands.

@@ -13,6 +13,9 @@ sc_sncn_ethercat_drive Change Log
   * Bug fixes and improvement in app_master_cyclic.
   * Fix units in ESI
   * Add position controller automatic tuning command options to master tuning app
+  * Reload slave configuration on S_SWITCH_ON_DISABLED -> S_READY_TO_SWITCH_ON transition
+  * Fix offset display when sensor polarity is wrong
+  * Fix number of subitems for objects 0x2202
 
 
 3.0.2

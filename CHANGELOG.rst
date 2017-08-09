@@ -11,6 +11,8 @@ sc_sncn_ethercat_drive Change Log
   * Do not change the integral limits of position/velocity controllers in case automatic tuners are called
   * Fix bug in position feedback config manager in switching from dual sensor to one sensor.
   * Bug fixes and improvement in app_master_cyclic.
+  * Fix units in ESI
+  * Add position controller automatic tuning command options to master tuning app
 
 
 3.0.2

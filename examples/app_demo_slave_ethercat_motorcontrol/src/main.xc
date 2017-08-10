@@ -175,7 +175,7 @@ int main(void)
                     motion_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
                     motion_ctrl_config.enable_velocity_auto_tuner =           ENABLE_VELOCITY_AUTO_TUNER;
                     motion_ctrl_config.enable_compensation_recording =        ENABLE_COMPENSATION_RECORDING;
-
+                    motion_ctrl_config.enable_open_phase_detection =          ENABLE_OPEN_PHASE_DETECTION;
 
                     motion_ctrl_config.brake_release_strategy =               BRAKE_RELEASE_STRATEGY;
                     motion_ctrl_config.brake_release_delay =                  BRAKE_RELEASE_DELAY;

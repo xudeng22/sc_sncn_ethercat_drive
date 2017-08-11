@@ -91,7 +91,7 @@ static unsigned get_configuration_from_dictionary(
 
     int count = 0;
     uint32_t value = 0;
-    uint8_t error = 0;
+    //uint8_t error = 0;
     for (unsigned i = 0; i < list_lengths[0]; i++) {
         /* Skip objects below index 0x2000 */
         if (all_od_objects[i] < 0x2000) {
@@ -456,7 +456,8 @@ static void debug_print_state(DriveState_t state)
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
-void ethercat_drive_service(ProfilerConfig &profiler_config,
+void ethercat_drive_service(server SDO_Config sdo_config,
+                            ProfilerConfig &profiler_config,
                             client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,
@@ -586,6 +587,18 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                 break;
             default:
                 break;
+        }
+
+        select {
+            case !isnull(i_spiffs) => sdo_config.write_od_config() -> int res:
+
+                    res = flash_write_od_config(i_spiffs, i_coe);
+                    break;
+
+           case !isnull(i_spiffs) => sdo_config.read_od_config() -> int res:
+
+                   res = flash_read_od_config(i_spiffs, i_coe);
+                   break;
         }
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
@@ -962,7 +975,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
  * super simple test function for debugging without actual ethercat communication to just
  * test if the motor will move.
  */
-void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
+void ethercat_drive_service_debug(server SDO_Config sdo_config,
+                            ProfilerConfig &profiler_config,
                             client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,

@@ -49,6 +49,17 @@ struct _sdoinfo_entry_description {
 
 #define MAX_CONFIG_SDO_ENTRIES   250
 
+typedef interface SDO_Config SDO_Config;
+
+
+interface SDO_Config {
+
+    [[guarded]] int write_od_config(void);
+
+    [[guarded]] int read_od_config(void);
+
+};
+
 
 /**
  * @brief This Service enables motor drive functions via EtherCAT.
@@ -61,7 +72,8 @@ struct _sdoinfo_entry_description {
  * @param i_position_feedback_1 Interface to the fisrt sensor service
  * @param i_position_feedback_2 Interface to the second sensor service
  */
-void ethercat_drive_service(ProfilerConfig &profiler_config,
+void ethercat_drive_service(server SDO_Config sdo_config,
+                            ProfilerConfig &profiler_config,
                             client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,
@@ -70,7 +82,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
                             client SPIFFSInterface i_spiffs);
 
-void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
+void ethercat_drive_service_debug(server SDO_Config sdo_config,
+                            ProfilerConfig &profiler_config,
                             client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,

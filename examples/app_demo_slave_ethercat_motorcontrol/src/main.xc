@@ -69,6 +69,8 @@ int main(void)
     interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
+    interface SDO_Config sdo_config;
+
     FlashDataInterface i_data[1];
     SPIFFSInterface i_spiffs[2];
     FlashBootInterface i_boot;
@@ -104,12 +106,14 @@ int main(void)
             profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
 #if 0
-            ethercat_drive_service_debug( profiler_config,
+            ethercat_drive_service_debug(sdo_config,
+                                    profiler_config,
                                     i_pdo, i_coe[0],
                                     i_torque_control[1],
                                     i_motion_control[0], i_position_feedback[0], i_spiffs[0]);
 #else
-            ethercat_drive_service( profiler_config,
+            ethercat_drive_service( sdo_config,
+                                    profiler_config,
                                     i_pdo, i_coe,
                                     i_torque_control[1],
                                     i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_spiffs[0]);

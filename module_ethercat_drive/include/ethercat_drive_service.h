@@ -11,6 +11,7 @@
 
 #include <motion_control_service.h>
 #include <position_feedback_service.h>
+#include <spiffs_service.h>
 
 #include <profile_control.h>
 
@@ -66,11 +67,13 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
-                            client interface PositionFeedbackInterface ?i_position_feedback_2);
+                            client interface PositionFeedbackInterface ?i_position_feedback_2,
+                            client SPIFFSInterface i_spiffs);
 
 void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
-                            client interface PositionFeedbackInterface i_position_feedback);
+                            client interface PositionFeedbackInterface i_position_feedback,
+                            client SPIFFSInterface i_spiffs);

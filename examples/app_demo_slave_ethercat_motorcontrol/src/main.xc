@@ -31,9 +31,6 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
-#include <flash_service.h>
-#include <spiffs_service.h>
-#include <config_parser.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -110,12 +107,12 @@ int main(void)
             ethercat_drive_service_debug( profiler_config,
                                     i_pdo, i_coe[0],
                                     i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback[0]);
+                                    i_motion_control[0], i_position_feedback[0], i_spiffs[0]);
 #else
             ethercat_drive_service( profiler_config,
                                     i_pdo, i_coe,
                                     i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0]);
+                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_spiffs[0]);
 #endif
         }
 

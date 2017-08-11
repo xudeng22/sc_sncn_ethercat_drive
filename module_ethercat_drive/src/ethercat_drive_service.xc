@@ -80,9 +80,9 @@ static unsigned get_configuration_from_dictionary(
     uint16_t list_lengths[5];
     //i_canopen.od_get_all_list_length(list_lengths);
 
-    if (list_lengths[0] > MAX_CONFIG_SDO_ENTRIES) {
+   /* if (list_lengths[0] > MAX_CONFIG_SDO_ENTRIES) {
         printstrln("Warning OD to large, only get what fits.");
-    }
+    }*/
 
     uint16_t all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
     //i_canopen.od_get_list(all_od_objects, list_lengths[0], OD_LIST_ALL);
@@ -166,6 +166,8 @@ static int flash_read_od_config(
     }
     return result;
 }
+
+
 
 
 
@@ -460,7 +462,8 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
-                            client interface PositionFeedbackInterface ?i_position_feedback_2)
+                            client interface PositionFeedbackInterface ?i_position_feedback_2,
+                            client SPIFFSInterface i_spiffs)
 {
 
     //int target_torque = 0; /* used for CST */
@@ -540,18 +543,21 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         tile_usec = USEC_FAST;
     }
 
-    /*
-     * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
-     */
-    cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
-    if (!isnull(i_position_feedback_2)) {
-        cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
-    }
-    cm_default_config_profiler(i_coe, profiler_config);
-    cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
-    cm_default_config_pos_velocity_control(i_coe, i_motion_control);
-    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+    if (flash_read_od_config(i_spiffs, i_coe) != 0) {
+          printstrln("Warning: Could not read object dictionary from file system.");
 
+        /*
+         * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
+         */
+        cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
+        if (!isnull(i_position_feedback_2)) {
+            cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
+        }
+        cm_default_config_profiler(i_coe, profiler_config);
+        cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
+        cm_default_config_pos_velocity_control(i_coe, i_motion_control);
+        i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+    }
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
      *
@@ -961,7 +967,8 @@ void ethercat_drive_service_debug(ProfilerConfig &profiler_config,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
-                            client interface PositionFeedbackInterface i_position_feedback)
+                            client interface PositionFeedbackInterface i_position_feedback,
+                            client SPIFFSInterface i_spiffs)
 {
     MotionControlConfig motion_control_config = i_motion_control.get_motion_control_config();
     PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();

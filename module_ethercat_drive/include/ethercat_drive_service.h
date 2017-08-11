@@ -14,6 +14,41 @@
 
 #include <profile_control.h>
 
+
+/**
+ * \brief Exchange object for object and entry description
+ */
+struct _sdoinfo_entry_description {
+    uint16_t index; ///< 16 bit int should be sufficient
+    uint8_t subindex; ///< 16 bit int should be sufficient
+    uint8_t objectDataType;
+    uint8_t dataType;
+    uint8_t objectCode;
+    uint8_t bitLength;
+    uint16_t objectAccess;
+    uint32_t value; ///< real data type is defined by .dataType
+    uint8_t name[50];
+};
+
+
+/**
+ * \brief Name of config file to store / read device configuration
+ */
+#define CONFIG_FILE_NAME "config.csv"
+
+
+#define MAX_TIME_TO_WAIT_SDO      100000
+
+/**
+ * \brief OD definitions
+ */
+#ifndef CANOD_TYPE_VAR
+#define CANOD_TYPE_VAR        0x7
+#endif
+
+#define MAX_CONFIG_SDO_ENTRIES   250
+
+
 /**
  * @brief This Service enables motor drive functions via EtherCAT.
  *

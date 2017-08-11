@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <IFM_DC1K-rev-c3.bsp>
 
 /**
  * @file test_ethercat-mode.xc
@@ -30,6 +30,10 @@
 //Position control + profile libs
 #include <motion_control_service.h>
 #include <profile_control.h>
+
+#include <flash_service.h>
+#include <spiffs_service.h>
+#include <config_parser.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
@@ -68,6 +72,10 @@ int main(void)
     interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
+    FlashDataInterface i_data[1];
+    SPIFFSInterface i_spiffs[2];
+    FlashBootInterface i_boot;
+
     par
     {
         /************************************************************
@@ -81,6 +89,8 @@ int main(void)
                 ethercat_service(i_ecat_reboot, i_coe, null,
                                     i_foe, i_pdo, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
+
+                flash_service(p_spi_flash, i_boot, i_data, 1);
             }
         }
 
@@ -98,7 +108,7 @@ int main(void)
 
 #if 0
             ethercat_drive_service_debug( profiler_config,
-                                    i_pdo, i_coe,
+                                    i_pdo, i_coe[0],
                                     i_torque_control[1],
                                     i_motion_control[0], i_position_feedback[0]);
 #else
@@ -158,6 +168,8 @@ int main(void)
                     motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
                     motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
+
+                    spiffs_service(i_data[0], i_spiffs, 2);
                 }
             }
         }

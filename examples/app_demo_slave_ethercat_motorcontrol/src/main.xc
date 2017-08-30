@@ -72,7 +72,7 @@ int main(void)
     interface SDO_Config sdo_config;
 
     FlashDataInterface i_data[1];
-    SPIFFSInterface i_spiffs[2];
+    SPIFFSInterface i_spiffs[1];
     FlashBootInterface i_boot;
 
     par
@@ -96,34 +96,39 @@ int main(void)
         /* EtherCAT Motor Drive Loop */
         on tile[APP_TILE_1] :
         {
-            ProfilerConfig profiler_config;
 
-            profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-            profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+            par
+            {
 
-            profiler_config.max_velocity = MOTOR_MAX_SPEED;
-            profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-            profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
+                {
+                    ProfilerConfig profiler_config;
 
-#if 0
-            ethercat_drive_service_debug(sdo_config,
-                                    profiler_config,
-                                    i_pdo, i_coe[0],
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback[0], i_spiffs[0]);
-#else
-            ethercat_drive_service( sdo_config,
-                                    profiler_config,
-                                    i_pdo, i_coe,
-                                    i_torque_control[1],
-                                    i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_spiffs[0]);
-#endif
+                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
+
+                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
+                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
+                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
+
+                     ethercat_drive_service( sdo_config,
+                                             profiler_config,
+                                             i_pdo, i_coe,
+                                             i_torque_control[1],
+                                             i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_spiffs[0]);
+                  }
+
+                  {
+                       spiffs_service(i_data[0], i_spiffs, 1);
+                  }
+ }
+
         }
 
         on tile[APP_TILE_2]:
         {
             par
             {
+
                 /* Motion Control Loop */
                 {
                     MotionControlConfig motion_ctrl_config;
@@ -170,8 +175,9 @@ int main(void)
 
                     motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
 
-                    spiffs_service(i_data[0], i_spiffs, 2);
                 }
+
+
             }
         }
 

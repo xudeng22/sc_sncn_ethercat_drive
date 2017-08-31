@@ -118,7 +118,7 @@
 0x2206,        3,        4000,        4000,        4000,        4000,        4000,      262144 # ENCODER_RESOLUTION [encoder increments (ticks)]
 0x2206,        4,        1000,        1000,        1000,        1000,        1000,        1000 # ENCODER_VELOCITY_CALCULATION_PERIOD [usec]
 0x2206,        5,           0,           0,           0,           0,           0,           0 # ENCODER_POLARITY (0 normal,  1 inverted)
-0x2205,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [2:3] - 2: AB (2 channels), 3: ABI (3 channels)
+0x2206,        6,           3,           3,           3,           3,           3,           3 # ENCODER_NUMBER_OF_CHANNELS [2:3] - 2: AB (2 channels), 3: ABI (3 channels)
 0x2206,        7,           0,           0,           0,           0,           0,           0 # ENCODER_SENSOR_SIGNAL_TYPE [0:1] - 0: RS422, 1: TTL
 #hall sensor 1
 0x2207,        1,           1,           1,           1,           1,           1,           1 # SENSOR TYPE (1 is Hall)

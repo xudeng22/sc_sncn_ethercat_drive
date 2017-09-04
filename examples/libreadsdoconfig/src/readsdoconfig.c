@@ -92,7 +92,7 @@ static Value_t parse_token(char *token_str)
   char *str_end = NULL;
 
   value.integer = (uint32_t)strtol(token_str, &str_end, 0);
-  
+
   if (*str_end == '.' && isdigit(*(str_end+1))) {
     // we found a dot, parse as float value
     sscanf(token_str, "%f", &(value.real.f));

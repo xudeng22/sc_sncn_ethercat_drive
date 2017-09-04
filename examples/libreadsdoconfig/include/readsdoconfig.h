@@ -23,7 +23,6 @@ typedef struct {
   uint32_t   integer;
   union Data real;
 } Value_t;
-  
 
 /**
  * \brief Structure describing a individual parameter

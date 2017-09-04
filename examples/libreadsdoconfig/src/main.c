@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   }
 
   for (size_t i = 0; i < config_parameter.node_count; i++) {
-    SdoParam_t *nparam = *paramlist + i;
+    SdoParam_t *nparam = *(paramlist + i);
     if (nparam == NULL) {
       fprintf(stderr, "Error parameter list of node is empty\n");
       return -1;

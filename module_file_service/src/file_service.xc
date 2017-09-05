@@ -118,7 +118,7 @@ static int flash_write_od_config(
 
     get_configuration_from_dictionary(i_canopen, &Config);
 
-    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
+    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -135,7 +135,7 @@ static int flash_read_od_config(
     int result = 0;
     ConfigParameter_t Config;
 
-    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
+    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -434,7 +434,11 @@ void file_service(
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
-                        status = -1;
+                        if (file_id == SPIFFS_ERR_NOT_FOUND)
+                            status = SPIFFS_ERR_NOT_FOUND;
+                        else
+                            status = -1;
+                        break;
                     }
                     else
                     {
@@ -442,11 +446,7 @@ void file_service(
                         printintln(file_id);
                         status = 1;
                     }
-                    if (file_id == SPIFFS_ERR_NOT_FOUND)
-                    {
-                        status = SPIFFS_ERR_NOT_FOUND;
-                        break;
-                    }
+
                     char buffer [2];
                     for (int i = 0; i < 1024; i++)
                     {

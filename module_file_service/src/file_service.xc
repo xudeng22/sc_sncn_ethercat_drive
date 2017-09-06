@@ -406,13 +406,14 @@ void file_service(
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
-                        status = file_id;
+                        status = FS_TORQUE_ERR;
                         break;
                     }
                     else
                     {
                         printstr("File created: ");
                         printintln(file_id);
+                        status = FS_TORQUE_OK;
                     }
                     unsigned char data [2] ={0} ;
                     for (int i = 0; i < 1024; i++)
@@ -421,7 +422,10 @@ void file_service(
                         data [1] = array_in [i] & 0x00FF;
                         int err_write = i_spiffs.write(file_id, data, 2);
                         if (err_write < 0)
+                        {
                             printf("error : %d\n", err_write);
+                            status = FS_TORQUE_ERR;
+                        }
 
                     }
                     i_spiffs.close_file(file_id);
@@ -437,14 +441,14 @@ void file_service(
                         if (file_id == SPIFFS_ERR_NOT_FOUND)
                             status = SPIFFS_ERR_NOT_FOUND;
                         else
-                            status = -1;
+                            status = FS_TORQUE_ERR;
                         break;
                     }
                     else
                     {
                         printstr("File opened: ");
                         printintln(file_id);
-                        status = 1;
+                        status = FS_TORQUE_OK;
                     }
 
                     char buffer [2];
@@ -454,7 +458,7 @@ void file_service(
                         if (err_read < 0)
                         {
                             printf("error : %d\n", err_read);
-                            status = -1;
+                            status = FS_TORQUE_ERR;
                         }
 
                         array_out[i] = (buffer[0] << 8) + buffer[1];

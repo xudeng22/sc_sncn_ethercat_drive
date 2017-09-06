@@ -59,6 +59,13 @@
  */
 #define FILE_SERVICE_INITIAL_DELAY 100000
 
+
+/**
+ * \brief Status of accessing to torque array file
+ */
+#define FS_TORQUE_OK   1
+#define FS_TORQUE_ERR -1
+
 /**
  * \brief Structure for current opened file (name, size, current position in file, status opened/not opened, SPIFFS file descriptor)
  */

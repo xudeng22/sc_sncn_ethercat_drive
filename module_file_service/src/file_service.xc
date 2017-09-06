@@ -118,7 +118,7 @@ static int flash_write_od_config(
 
     get_configuration_from_dictionary(i_canopen, &Config);
 
-    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
+    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -135,7 +135,7 @@ static int flash_read_od_config(
     int result = 0;
     ConfigParameter_t Config;
 
-    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
+    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -406,13 +406,14 @@ void file_service(
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
-                        status = file_id;
+                        status = FS_TORQUE_ERR;
                         break;
                     }
                     else
                     {
                         printstr("File created: ");
                         printintln(file_id);
+                        status = FS_TORQUE_OK;
                     }
                     unsigned char data [2] ={0} ;
                     for (int i = 0; i < 1024; i++)
@@ -421,7 +422,10 @@ void file_service(
                         data [1] = array_in [i] & 0x00FF;
                         int err_write = i_spiffs.write(file_id, data, 2);
                         if (err_write < 0)
+                        {
                             printf("error : %d\n", err_write);
+                            status = FS_TORQUE_ERR;
+                        }
 
                     }
                     i_spiffs.close_file(file_id);
@@ -434,19 +438,19 @@ void file_service(
                     if (file_id < 0)
                     {
                         printstrln("Error opening file");
-                        status = -1;
+                        if (file_id == SPIFFS_ERR_NOT_FOUND)
+                            status = SPIFFS_ERR_NOT_FOUND;
+                        else
+                            status = FS_TORQUE_ERR;
+                        break;
                     }
                     else
                     {
                         printstr("File opened: ");
                         printintln(file_id);
-                        status = 1;
+                        status = FS_TORQUE_OK;
                     }
-                    if (file_id == SPIFFS_ERR_NOT_FOUND)
-                    {
-                        status = SPIFFS_ERR_NOT_FOUND;
-                        break;
-                    }
+
                     char buffer [2];
                     for (int i = 0; i < 1024; i++)
                     {
@@ -454,7 +458,7 @@ void file_service(
                         if (err_read < 0)
                         {
                             printf("error : %d\n", err_read);
-                            status = -1;
+                            status = FS_TORQUE_ERR;
                         }
 
                         array_out[i] = (buffer[0] << 8) + buffer[1];

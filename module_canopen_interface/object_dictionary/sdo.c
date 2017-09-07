@@ -104,8 +104,9 @@ int sdo_entry_get_position(uint16_t index, uint8_t subindex)
  * Read entry value changed flag
  */
 
-/* can start at 0x2000 since there start the config parameters */
-#define SEARCH_START    0x2000
+/* can start at 0x2001 since there start the config parameters,
+ * the command object is at 0x2000 currently. */
+#define SEARCH_START    0x2001
 static size_t entries_updated = 0;
 static uint32_t last_read_entry = SEARCH_START;
 
@@ -153,7 +154,7 @@ int sdo_entry_get_next_unread(uint16_t *index, uint8_t *subindex)
         }
 
         i++;
-        if (i >= object_entries_length) {
+        if (i > object_entries_length) {
             i = search_head;
             end_search = start_search; /* necessary to check if the same object changed twice */
         }
@@ -224,7 +225,8 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
         return (int)sdo_error;
     }
 
-    if (master_request) {
+    /* Only the object after SEARCH_START are important to be notified by change. */
+    if (master_request && (index >= SEARCH_START)) {
         if (!(CODE_GET_FLAGS(entry->index) & 0x1)) {
             entries_updated++;
         }

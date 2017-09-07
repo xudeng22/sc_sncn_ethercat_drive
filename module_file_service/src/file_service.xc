@@ -432,8 +432,7 @@ void file_service(
                     break;
 
             case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
-
-                    printf("Name written\n");
+                    printf("Read torque array\n");
                     int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
                     if (file_id < 0)
                     {

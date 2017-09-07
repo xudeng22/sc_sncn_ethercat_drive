@@ -116,6 +116,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``m``: toggle the phase inverted parameter. Use this if after finding the offset you have a positive torque resulting in a negative velocity.
   - ``P[number]``: set the pole pairs. If when using torque control and the motor moves a little bit then "hold" a position it can be because the pole pairs are incorrect. (it can also be caused by the position sensor).
   - ``f``: reset the motorcontrol fault. If the motor stops because of over/under current. Try adjusting you power supply settings and maybe set a lower maximum torque.
+  - ``g[number]``: set the GPIO output. The number to input must be four ``0`` or ``1``. GPIO port 1 is the rightmost bit.
   - ``tss``: set the torque safe mode. in this mode all the phases are disconnected and the motor is free to move. Use this if you want to manually move the axis.
   - ``kpp [number]``: set the P coefficient of the Position controller.
   - ``kpi [number]``: set the I coefficient of the Position controller.
@@ -180,7 +181,7 @@ When the application has been compiled, the next step is to run it on the Linux 
         Position D        41000 | Velocity D             0
         Position I lim     1000 | Velocity I lim       900
         Autotune Period    2000 | Amplitude          20000
-        Filter                0
+        Filter                0 | GPIO input: xxxx / output: xxxx
         * Motor Fault Under Voltage *
 
 

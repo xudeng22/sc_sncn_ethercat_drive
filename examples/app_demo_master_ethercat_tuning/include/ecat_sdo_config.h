@@ -17,6 +17,20 @@
 extern "C" {
 #endif
 
+
+/*
+ * Indexes of SDO elements
+ */
+#define DICT_GPIO                                     0x2210
+#define SUB_GPIO_PIN_1                                     1
+#define SUB_GPIO_PIN_2                                     2
+#define SUB_GPIO_PIN_3                                     3
+#define SUB_GPIO_PIN_4                                     4
+#define DICT_FEEDBACK_SENSOR_PORTS                    0x2100
+#define SUB_ENCODER_FUNCTION                               2
+#define SUB_ENCODER_RESOLUTION                             3
+
+
 /**
  * @brief configuration object for SDO download
  */
@@ -58,7 +72,19 @@ int write_sdo_config(Ethercat_Master_t *master, int slave_number, SdoParam_t *co
  *
  * @return value of the object, 0 or if not found
  */
-int read_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex);
+int read_sdo_from_file(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex);
+
+/**
+ * @brief Read a sdo object from a slave
+ *
+ * @param master  pointer to the master device
+ * @param slave_number   slave number
+ * @param index of the object
+ * @param subindex of the object
+ *
+ * @return value of the object, -1 or if not found
+ */
+int read_sdo(Ethercat_Master_t *master, int slave_number, int index, int subindex);
 
 #ifdef __cplusplus
 }

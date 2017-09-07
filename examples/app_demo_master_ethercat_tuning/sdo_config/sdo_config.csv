@@ -54,6 +54,12 @@
 0x2010,        3,           0,           0,           0,           0,           0,           0 # TORQUE_Kd
 0x200A,        0,           0,           0,           0,           0,           0,           0 # MOMENT_OF_INERTIA [g·m2]
 
+#GPIO config
+0x2210,        1,           0,           0,           0,           0,           0,           0 # GPIO 1 [0:3] - 0: disabled, 1:input (without pull-down), 2: input active high (pull-down resistor activated), 3: output
+0x2210,        2,           0,           0,           0,           0,           0,           0 # GPIO 2 [0:3] - 0: disabled, 1:input (without pull-down), 2: input active high (pull-down resistor activated), 3: output
+0x2210,        3,           0,           0,           0,           0,           0,           0 # GPIO 3 [0:3] - 0: disabled, 1:input (without pull-down), 2: input active high (pull-down resistor activated), 3: output
+0x2210,        4,           0,           0,           0,           0,           0,           0 # GPIO 4 [0:3] - 0: disabled, 1:input (without pull-down), 2: input active high (pull-down resistor activated), 3: output
+
 #sensor config
 0x607C,        0,           0,           0,           0,           0,           0,           0 # HOME_OFFSET [encoder increments (ticks)]
 0x2100,        1,           0,           0,           0,           0,           0,           0 # FEEDBACK_SENSOR_PORTS - IFM HW port 1: assign here your used sensor object

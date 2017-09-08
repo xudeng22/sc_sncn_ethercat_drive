@@ -5,6 +5,7 @@ sc_sncn_ethercat_drive Change Log
 -----
 
   * Integrate GPIO service in ethercat drive enabled for SDK 3.0.4
+  * Fix loading torque array from flash
   
 
 3.1.1

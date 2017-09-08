@@ -240,7 +240,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         }
         else
         {
-            printstr("Writed: ");
+            printstr("Written: ");
             printintln(write_result);
 
             if (stat == FOE_STAT_EOF) {
@@ -423,7 +423,7 @@ void file_service(
                         int err_write = i_spiffs.write(file_id, data, 2);
                         if (err_write < 0)
                         {
-                            printf("error : %d\n", err_write);
+                            printf("error writing torque array: %d\n", err_write);
                             status = FS_TORQUE_ERR;
                         }
 
@@ -432,11 +432,9 @@ void file_service(
                     break;
 
             case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
-                    printf("Read torque array\n");
                     int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
                     if (file_id < 0)
                     {
-                        printstrln("Error opening file");
                         if (file_id == SPIFFS_ERR_NOT_FOUND)
                             status = SPIFFS_ERR_NOT_FOUND;
                         else
@@ -445,8 +443,6 @@ void file_service(
                     }
                     else
                     {
-                        printstr("File opened: ");
-                        printintln(file_id);
                         status = FS_TORQUE_OK;
                     }
 
@@ -456,7 +452,7 @@ void file_service(
                         int err_read = i_spiffs.read(file_id, buffer, 2);
                         if (err_read < 0)
                         {
-                            printf("error : %d\n", err_read);
+                            printf("error reading torque array: %d\n", err_read);
                             status = FS_TORQUE_ERR;
                         }
 

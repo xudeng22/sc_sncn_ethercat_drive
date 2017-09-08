@@ -657,8 +657,11 @@ void network_drive_service(ProfilerConfig &profiler_config,
             //Load cogging torque data
             char filename [] = "cogging_torque.bin";
             int status = i_file_service.read_torque_array(motorcontrol_config.torque_offset);
-            if (status != SPIFFS_ERR_NOT_FOUND)
+            if (status != SPIFFS_ERR_NOT_FOUND) {
+                i_torque_control.set_config(motorcontrol_config);
                 i_motion_control.enable_cogging_compensation(1);
+                tuning_mode_state.cogging_torque_flag = 1;
+            }
 
 
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,

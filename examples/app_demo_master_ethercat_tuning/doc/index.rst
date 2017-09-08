@@ -182,6 +182,7 @@ When the application has been compiled, the next step is to run it on the Linux 
         Position I lim     1000 | Velocity I lim       900
         Autotune Period    2000 | Amplitude          20000
         Filter                0 | GPIO input: xxxx / output: xxxx
+        Cogging torque compensation OFF
         * Motor Fault Under Voltage *
 
 

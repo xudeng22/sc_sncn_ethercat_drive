@@ -58,7 +58,9 @@ typedef struct {
     uint32_t user_mosi;
 } PDOOutput;
 
-
+/*
+ * Indexes of PDO elements
+ */
 #define PDO_INDEX_STATUSWORD                  0
 #define PDO_INDEX_OPMODEDISP                  1
 #define PDO_INDEX_POSITION_VALUE              2

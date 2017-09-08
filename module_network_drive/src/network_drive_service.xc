@@ -593,12 +593,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
         tile_usec = USEC_FAST;
     }
 
-#if STARTUP_READ_FLASH_OBJECTS == 1
-    /* Before anything else, read the object data values from flash - if existing. */
-    if (initial_object_dictionary_read(i_co) != 0) {
-        printstrln("Warning: Could not read object dictionary from file system.");
-#endif /* STARTUP_READ_FLASH_OBJECTS */
-
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
@@ -607,16 +601,33 @@ void network_drive_service(ProfilerConfig &profiler_config,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
     }
-
     cm_default_config_profiler(i_co, profiler_config);
     cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_co, i_motion_control);
+    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+
 
 #if STARTUP_READ_FLASH_OBJECTS == 1
+    /* Try to read the object data values from flash
+     * if it fails reload the default config
+     */
+    if (initial_object_dictionary_read(i_co) != 0) {
+        printstrln("Warning: Could not read object dictionary from file system.");
+
+        /*
+         * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
+         */
+        /* FIXME add support for more than one feedback sensor */
+        cm_default_config_position_feedback(i_co, i_position_feedback_1, position_feedback_config_1, 1);
+        if (!isnull(i_position_feedback_2)) {
+            cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
+        }
+        cm_default_config_profiler(i_co, profiler_config);
+        cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
+        cm_default_config_pos_velocity_control(i_co, i_motion_control);
+        i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
     }
 #endif /* STARTUP_READ_FLASH_OBJECTS */
-
-    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.

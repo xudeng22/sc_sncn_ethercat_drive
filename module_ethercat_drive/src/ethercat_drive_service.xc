@@ -590,15 +590,17 @@ void ethercat_drive_service(server SDO_Config sdo_config,
         }
 
         select {
-            case !isnull(i_spiffs) => sdo_config.write_od_config() -> int res:
+            case sdo_config.write_od_config() -> int res:
 
                     res = flash_write_od_config(i_spiffs, i_coe);
                     break;
 
-           case !isnull(i_spiffs) => sdo_config.read_od_config() -> int res:
+           case sdo_config.read_od_config() -> int res:
 
                    res = flash_read_od_config(i_spiffs, i_coe);
                    break;
+           default:
+               break;
         }
 
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */

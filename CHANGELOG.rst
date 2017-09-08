@@ -4,7 +4,7 @@ sc_sncn_ethercat_drive Change Log
 3.1.2
 -----
 
-  * Add GPIO support in ethercat drive
+  * Integrate GPIO service in ethercat drive enabled for SDK 3.0.4
   
 
 3.1.1

@@ -185,6 +185,21 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     //row 14
     wmoveclr(wnd, &row);
     wprintw(wnd, "Filter         %8d", input.filter);
+    char gpio_input[5];
+    char gpio_output[5];
+    sprintf(gpio_input, "%c%c%c%c", '0'+pdo_input.digital_input4,  '0'+pdo_input.digital_input3, '0'+pdo_input.digital_input2, '0'+pdo_input.digital_input1);
+    sprintf(gpio_output, "%c%c%c%c", '0'+pdo_output.digital_output4, '0'+pdo_output.digital_output3, '0'+pdo_output.digital_output2, '0'+pdo_output.digital_output1);
+    for (int i=0; i<4; i++) {
+        if (input.gpio_config[i] == GPIO_OFF) {
+            gpio_input[3-i] = 'x';
+            gpio_output[3-i] = 'x';
+        } else if (input.gpio_config[i] == GPIO_OUTPUT) {
+            gpio_input[3-i] = 'x';
+        } else if (input.gpio_config[i] == GPIO_INPUT || input.gpio_config[i] == GPIO_INPUT_PULLDOWN) {
+            gpio_output[3-i] = 'x';
+        }
+    }
+    wprintw(wnd, " | GPIO input: %s / output: %s", gpio_input, gpio_output);
     //row 15
     wmoveclr(wnd, &row);
     if (input.cogging_torque_flag == 1) {

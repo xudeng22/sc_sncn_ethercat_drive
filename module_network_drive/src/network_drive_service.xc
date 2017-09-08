@@ -593,12 +593,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
         tile_usec = USEC_FAST;
     }
 
-#if STARTUP_READ_FLASH_OBJECTS == 1
-    /* Before anything else, read the object data values from flash - if existing. */
-    if (initial_object_dictionary_read(i_co) != 0) {
-        printstrln("Warning: Could not read object dictionary from file system.");
-#endif /* STARTUP_READ_FLASH_OBJECTS */
-
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
@@ -607,16 +601,33 @@ void network_drive_service(ProfilerConfig &profiler_config,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
     }
-
     cm_default_config_profiler(i_co, profiler_config);
     cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_co, i_motion_control);
+    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+
 
 #if STARTUP_READ_FLASH_OBJECTS == 1
+    /* Try to read the object data values from flash
+     * if it fails reload the default config
+     */
+    if (initial_object_dictionary_read(i_co) != 0) {
+        printstrln("Warning: Could not read object dictionary from file system.");
+
+        /*
+         * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
+         */
+        /* FIXME add support for more than one feedback sensor */
+        cm_default_config_position_feedback(i_co, i_position_feedback_1, position_feedback_config_1, 1);
+        if (!isnull(i_position_feedback_2)) {
+            cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
+        }
+        cm_default_config_profiler(i_co, profiler_config);
+        cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
+        cm_default_config_pos_velocity_control(i_co, i_motion_control);
+        i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
     }
 #endif /* STARTUP_READ_FLASH_OBJECTS */
-
-    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
@@ -679,6 +690,8 @@ void network_drive_service(ProfilerConfig &profiler_config,
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
         send_to_control.offset_torque = (pdo_get_offset_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //offset torque received in 1/1000 of rated torque
+        send_to_control.gpio_output = ((pdo_get_digital_output4(InOut)&1) << 3) | ((pdo_get_digital_output3(InOut)&1) << 2)
+                                    | ((pdo_get_digital_output2(InOut)&1) << 1)| (pdo_get_digital_output1(InOut) & 1);
 
         /* tuning pdos */
         tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
@@ -795,6 +808,11 @@ void network_drive_service(ProfilerConfig &profiler_config,
         pdo_set_tuning_status(tuning_status, InOut);
         pdo_set_user_miso(user_miso, InOut);
         pdo_set_timestamp(send_to_master.sensor_timestamp, InOut);
+        // send gpio input to master
+        pdo_set_digital_input1(send_to_master.gpio[0], InOut);
+        pdo_set_digital_input2(send_to_master.gpio[1], InOut);
+        pdo_set_digital_input3(send_to_master.gpio[2], InOut);
+        pdo_set_digital_input4(send_to_master.gpio[3], InOut);
 
 //        xscope_int(ACTUAL_VELOCITY, actual_velocity);
 //        xscope_int(ACTUAL_POSITION, actual_position);

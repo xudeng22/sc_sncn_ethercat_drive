@@ -1,6 +1,12 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.1.2
+-----
+
+  * Integrate GPIO service in ethercat drive enabled for SDK 3.0.4
+  
+
 3.1.1
 -----
 
@@ -18,6 +24,13 @@ sc_sncn_ethercat_drive Change Log
   * Reading, storing, and automatic loading of OD (via file service of SPIFFS)
   * Support for watchdog error for DC1K rev.D1
   * Core C22 and C21-DX rev.A are no longer supported (memory limitation)
+
+
+3.0.4
+-----
+
+  * Add GPIO support in ethercat drive
+  
 
 3.0.3
 -----

@@ -475,22 +475,22 @@ uint32_t pdo_get_tuning_command(pdo_values_t inout)
     return inout.tuning_command;
 }
 
-uint8_t pdo_get_dgitial_output1(pdo_values_t inout)
+uint8_t pdo_get_digital_output1(pdo_values_t inout)
 {
     return inout.digital_output1;
 }
 
-uint8_t pdo_get_dgitial_output2(pdo_values_t inout)
+uint8_t pdo_get_digital_output2(pdo_values_t inout)
 {
     return inout.digital_output2;
 }
 
-uint8_t pdo_get_dgitial_output3(pdo_values_t inout)
+uint8_t pdo_get_digital_output3(pdo_values_t inout)
 {
     return inout.digital_output3;
 }
 
-uint8_t pdo_get_dgitial_output4(pdo_values_t inout)
+uint8_t pdo_get_digital_output4(pdo_values_t inout)
 {
     return inout.digital_output4;
 }

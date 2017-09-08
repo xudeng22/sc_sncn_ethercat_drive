@@ -480,6 +480,25 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 } /* end mode_2 */
                 break;
 
+            //GPIO output
+            case 'g':
+                if (output->value <= 1111) {
+                    char * input = malloc(5*sizeof(char));
+                    sprintf(input, "%04d", output->value);
+                    uint8_t gpio_output = 0;
+                    for (int i=3; i>=0; i--) {
+                        if (input[i] != '0') {
+                            gpio_output |= 0b1000 >> i;
+                        }
+                    }
+                    free(input);
+                    pdo_output->digital_output1 = (gpio_output & 0b0001);
+                    pdo_output->digital_output2 = (gpio_output & 0b0010) >> 1;
+                    pdo_output->digital_output3 = (gpio_output & 0b0100) >> 2;
+                    pdo_output->digital_output4 = (gpio_output & 0b1000) >> 3;
+                }
+                break;
+
 
             // default is enable torque control and set torque command
             // if the value is 0 stop everything. So just pressing Enter without a command act as an emergency stop

@@ -423,7 +423,7 @@ void file_service(
                         int err_write = i_spiffs.write(file_id, data, 2);
                         if (err_write < 0)
                         {
-                            printf("error writting torque array: %d\n", err_write);
+                            printf("error writing torque array: %d\n", err_write);
                             status = FS_TORQUE_ERR;
                         }
 

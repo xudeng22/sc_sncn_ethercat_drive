@@ -6,6 +6,12 @@ sc_sncn_ethercat_drive Change Log
 
   * Integrate GPIO service in ethercat drive enabled for SDK 3.0.4
   * Fix loading torque array from flash
+  * Fix sdo read and write handling causing service hanging in some cases
+  * Fix CSV parser to handle read/write float
+  * Fix copy/paste object nummber error in sdo_config.csv
+  * Introduced enable open phase detection parameter
+    * Is set disabled by default due to frequent false positive cases
+
   
 
 3.1.1

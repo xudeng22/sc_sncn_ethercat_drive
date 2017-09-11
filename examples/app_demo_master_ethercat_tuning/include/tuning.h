@@ -132,6 +132,16 @@ typedef enum {
     CS_MODE
 } AppMode;
 
+/**
+ * @brief GPIO port type
+ */
+typedef enum {
+    GPIO_OFF=0,             /**< GPIO port off */
+    GPIO_INPUT,             /**< Input GPIO port */
+    GPIO_INPUT_PULLDOWN,    /**< Input GPIO port with pulldown */
+    GPIO_OUTPUT             /**< Output GPIO port */
+} GPIOType;
+
 typedef struct {
     TuningMotorCtrlStatus motorctrl_status;
     int offset;
@@ -161,6 +171,7 @@ typedef struct {
     int filter;
     int tune_amplitude;
     int tune_period;
+    GPIOType gpio_config[4];        /**< GPIO configuration */
 } InputValues;
 
 typedef struct {

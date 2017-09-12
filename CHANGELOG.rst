@@ -5,6 +5,7 @@ sc_sncn_ethercat_drive Change Log
 -----
 
   * Add GPIO support in ethercat drive
+  * Fix bugs in setting/getting motion_control_config struct in config manager
 
 
 3.0.3

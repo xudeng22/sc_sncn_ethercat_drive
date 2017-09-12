@@ -11,31 +11,6 @@
 #include "config_manager.h"
 #include <xs1.h>
 
-void cm_sync_config_hall_states(
-        client interface i_coe_communication i_coe,
-        client interface PositionFeedbackInterface i_pos_feedback,
-        interface TorqueControlInterface client ?i_torque_control,
-        PositionFeedbackConfig &feedback_config,
-        MotorcontrolConfig &motorcontrol_config,
-        int sensor_index)
-{
-    if (feedback_config.sensor_type != HALL_SENSOR) {
-        return;
-    }
-
-    uint16_t feedback_sensor_object = i_coe.get_object_value(DICT_FEEDBACK_SENSOR_PORTS, sensor_index);
-
-    /* See Wrike https://www.wrike.com/workspace.htm#path=folder&id=127649023&a=1384194&c=list&t=135832278&ot=135832278&so=5&sd=0
-     * for more information.
-     */
-    motorcontrol_config.commutation_sensor  = feedback_config.sensor_type;
-    motorcontrol_config.hall_state_angle[0] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_0);
-    motorcontrol_config.hall_state_angle[1] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_1);
-    motorcontrol_config.hall_state_angle[2] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_2);
-    motorcontrol_config.hall_state_angle[3] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_3);
-    motorcontrol_config.hall_state_angle[4] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_4);
-    motorcontrol_config.hall_state_angle[5] = i_coe.get_object_value(feedback_sensor_object, SUB_HALL_SENSOR_STATE_ANGLE_5);
-}
 
 int cm_sync_config_position_feedback(
         client interface i_coe_communication i_coe,
@@ -243,7 +218,7 @@ void cm_sync_config_pos_velocity_control(
         int sensor_resolution,
         int max_torque)
 {
-    i_motion_control.get_motion_control_config();
+    position_config = i_motion_control.get_motion_control_config();
 
     //limits
     position_config.min_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
@@ -450,10 +425,11 @@ void cm_default_config_profiler(
 
 void cm_default_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
-        client interface MotionControlInterface i_motion_control
+        client interface MotionControlInterface i_motion_control,
+        MotionControlConfig &position_config
         )
 {
-    MotionControlConfig position_config = i_motion_control.get_motion_control_config();
+    position_config = i_motion_control.get_motion_control_config();
 
     //limits
     i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
@@ -491,6 +467,4 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE, position_config.pull_brake_voltage);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME, position_config.pull_brake_time);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE, position_config.hold_brake_voltage);
-
-  //  i_motion_control.set_motion_control_config(position_config);
 }

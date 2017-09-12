@@ -70,12 +70,6 @@ int main(int argc, char **argv)
             }
         }
     }
-
-    // Activate master and start operation
-    if (ecw_master_start(master) != 0) {
-        fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
-        return -1;
-    }
 /****************************************************/
 
     /* Init pdos */
@@ -121,14 +115,15 @@ int main(int argc, char **argv)
         profile_config[i].max_position = 0x7fffffff;
         profile_config[i].min_position = -0x7fffffff;
         profile_config[i].ticks_per_turn = 65536; //default value
-        if (sdo_enable) { //try to find the correct ticks_per_turn in the sdo config
-            for (int sensor_port=1; sensor_port<=3; sensor_port++) {
-                //get sensor config
-                int sensor_config = read_local_sdo(i, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
-                int sensor_function = read_local_sdo(i, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
+        //try to find the correct ticks_per_turn in the sdo config
+        for (int sensor_port=1; sensor_port<=3; sensor_port++) {
+            //get sensor config
+            int sensor_config = read_sdo(master, i, DICT_FEEDBACK_SENSOR_PORTS, sensor_port);
+            if (sensor_config != 0) {
+                int sensor_function = read_sdo(master, i, sensor_config, SUB_ENCODER_FUNCTION);
                 //check sensor function
                 if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
-                    profile_config[i].ticks_per_turn = read_local_sdo(i, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
+                    profile_config[i].ticks_per_turn = read_sdo(master, i, sensor_config, SUB_ENCODER_RESOLUTION);
                     break;
                 }
             }
@@ -138,6 +133,14 @@ int main(int argc, char **argv)
                 profile_config[i].max_acceleration, profile_config[i].max_speed,
                 profile_config[i].max_position, profile_config[i].min_position, profile_config[i].ticks_per_turn);
     }
+
+
+/********* ethercat start master **************/
+    if (ecw_master_start(master) != 0) {
+        fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
+        return -1;
+    }
+/****************************************************/
 
     //init ncurses
     WINDOW *wnd;

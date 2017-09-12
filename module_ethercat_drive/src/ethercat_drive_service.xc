@@ -627,6 +627,8 @@ void ethercat_drive_service(server SDO_Config sdo_config,
         target_velocity = pdo_get_target_velocity(InOut);
         target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
         send_to_control.offset_torque = (pdo_get_offset_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //offset torque received in 1/1000 of rated torque
+        send_to_control.gpio_output = ((pdo_get_digital_output4(InOut)&1) << 3) | ((pdo_get_digital_output3(InOut)&1) << 2)
+                                    | ((pdo_get_digital_output2(InOut)&1) << 1)| (pdo_get_digital_output1(InOut) & 1);
 
         /* tuning pdos */
         tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
@@ -739,6 +741,11 @@ void ethercat_drive_service(server SDO_Config sdo_config,
         pdo_set_tuning_status(tuning_status, InOut);
         pdo_set_user_miso(user_miso, InOut);
         pdo_set_timestamp(send_to_master.sensor_timestamp, InOut);
+        // send gpio input to master
+        pdo_set_digital_input1(send_to_master.gpio[0], InOut);
+        pdo_set_digital_input2(send_to_master.gpio[1], InOut);
+        pdo_set_digital_input3(send_to_master.gpio[2], InOut);
+        pdo_set_digital_input4(send_to_master.gpio[3], InOut);
 
 //        xscope_int(ACTUAL_VELOCITY, actual_velocity);
 //        xscope_int(ACTUAL_POSITION, actual_position);

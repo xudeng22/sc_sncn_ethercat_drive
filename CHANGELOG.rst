@@ -1,6 +1,12 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.0.4
+-----
+
+  * Add GPIO support in ethercat drive
+
+
 3.0.3
 -----
 

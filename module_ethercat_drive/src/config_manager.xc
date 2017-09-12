@@ -492,5 +492,5 @@ void cm_default_config_pos_velocity_control(
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME, position_config.pull_brake_time);
     i_coe.set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE, position_config.hold_brake_voltage);
 
-    i_motion_control.set_motion_control_config(position_config);
+  //  i_motion_control.set_motion_control_config(position_config);
 }

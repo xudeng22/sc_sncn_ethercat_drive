@@ -544,20 +544,22 @@ void ethercat_drive_service(server SDO_Config sdo_config,
         tile_usec = USEC_FAST;
     }
 
+    /*
+            * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
+            */
+    cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
+    if (!isnull(i_position_feedback_2)) {
+        cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
+    }
+    cm_default_config_profiler(i_coe, profiler_config);
+    cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
+    cm_default_config_pos_velocity_control(i_coe, i_motion_control);
+    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+
+
     if (flash_read_od_config(i_spiffs, i_coe) != 0) {
           printstrln("Warning: Could not read object dictionary from file system.");
 
-        /*
-         * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
-         */
-        cm_default_config_position_feedback(i_coe, i_position_feedback_1, position_feedback_config_1, 1);
-        if (!isnull(i_position_feedback_2)) {
-            cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
-        }
-        cm_default_config_profiler(i_coe, profiler_config);
-        cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
-        cm_default_config_pos_velocity_control(i_coe, i_motion_control);
-        i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
     }
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.

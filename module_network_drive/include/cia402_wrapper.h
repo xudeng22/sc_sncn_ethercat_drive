@@ -24,16 +24,6 @@
 void print_object_dictionary(client interface i_co_communication i_co);
 
 /**
- * @brief read homing parameters from CANopen object dictionary
- *
- * @param i_co CANopen service communication Interface
- * @return homing_method
- * @return limit_switch_type
- *
- */
-{int, int} homing_sdo_update(client interface i_co_communication i_co);
-
-/**
  * @brief read profile velocity params from CANopen object dictionary
  *
  * @param i_co CANopen service communication Interface

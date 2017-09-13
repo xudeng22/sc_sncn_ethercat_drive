@@ -12,24 +12,6 @@
 #include <stdint.h>
 #include <xs1.h>
 
-struct _config_object {
-    uint16_t index;
-    uint8_t subindex;
-    uint8_t type;
-};
-
-
-static int tick2bits(int tick_resolution)
-{
-    unsigned r = 0;
-
-    while (tick_resolution >>= 1) {
-        r++;
-    }
-
-    return r;
-}
-
 
 int cm_sync_config_position_feedback(
         client interface i_co_communication i_co,
@@ -470,10 +452,11 @@ void cm_default_config_profiler(
 
 void cm_default_config_pos_velocity_control(
         client interface i_co_communication i_co,
-        client interface MotionControlInterface i_motion_control
+        client interface MotionControlInterface i_motion_control,
+        MotionControlConfig &position_config
         )
 {
-    MotionControlConfig position_config = i_motion_control.get_motion_control_config();
+    position_config = i_motion_control.get_motion_control_config();
 
     //limits
     i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
@@ -519,6 +502,4 @@ void cm_default_config_pos_velocity_control(
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_VOLTAGE, position_config.pull_brake_voltage);
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_PULL_BRAKE_TIME, position_config.pull_brake_time);
     i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_HOLD_BRAKE_VOLTAGE, position_config.hold_brake_voltage);
-
-    i_motion_control.set_motion_control_config(position_config);
 }

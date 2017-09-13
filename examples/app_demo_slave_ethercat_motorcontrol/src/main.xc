@@ -112,19 +112,11 @@ int main(void)
                     profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
                     profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
-#if 0
-                    network_drive_service_debug( profiler_config,
-                            i_pdo,
-                            i_co[1],
-                            i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0]);
-#else
                     network_drive_service( profiler_config,
                             i_pdo,
                             i_co[1],
                             i_torque_control[1],
                             i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
-#endif
                 }
 
             }

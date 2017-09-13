@@ -1,5 +1,9 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
+3.1.3
+-----
+
+  * Implement new pwm structure with 15 kHz, and use 100 MHz ref_clk_frq
 
 3.1.2
 -----

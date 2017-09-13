@@ -603,7 +603,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
     }
     cm_default_config_profiler(i_co, profiler_config);
     cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
-    cm_default_config_pos_velocity_control(i_co, i_motion_control);
+    cm_default_config_pos_velocity_control(i_co, i_motion_control, motion_control_config);
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
 
 
@@ -624,7 +624,7 @@ void network_drive_service(ProfilerConfig &profiler_config,
         }
         cm_default_config_profiler(i_co, profiler_config);
         cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
-        cm_default_config_pos_velocity_control(i_co, i_motion_control);
+        cm_default_config_pos_velocity_control(i_co, i_motion_control, motion_control_config);
         i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
     }
 #endif /* STARTUP_READ_FLASH_OBJECTS */
@@ -1065,74 +1065,5 @@ void network_drive_service(ProfilerConfig &profiler_config,
         t when timerafter(time + tile_usec*1000) :> time;
 
 //#pragma xta endpoint "ecatloop_stop"
-    }
-}
-
-/*
- * super simple test function for debugging without actual ethercat communication to just
- * test if the motor will move.
- */
-void network_drive_service_debug(ProfilerConfig &profiler_config,
-                            client interface i_pdo_handler_exchange i_pdo,
-                            client interface i_co_communication i_co,
-                            client interface TorqueControlInterface i_torque_control,
-                            client interface MotionControlInterface i_motion_control,
-                            client interface PositionFeedbackInterface i_position_feedback)
-{
-    MotionControlConfig motion_control_config = i_motion_control.get_motion_control_config();
-    PositionFeedbackConfig position_feedback_config = i_position_feedback.get_config();
-    MotorcontrolConfig motorcontrol_config = i_torque_control.get_config();
-
-    UpstreamControlData   send_to_master;
-    DownstreamControlData send_to_control;
-    send_to_control.position_cmd = 0;
-    send_to_control.velocity_cmd = 0;
-    send_to_control.torque_cmd = 0;
-    send_to_control.offset_torque = 0;
-
-    int enabled = 0;
-
-    timer t;
-    unsigned time;
-
-    printstr("Motorconfig\n");
-    printstr("pole pair: "); printintln(motorcontrol_config.pole_pairs);
-    printstr("commutation offset: "); printintln(motorcontrol_config.commutation_angle_offset);
-
-    printstr("Protecction limit over current: "); printintln(motorcontrol_config.protection_limit_over_current);
-    printstr("Protecction limit over voltage: "); printintln(motorcontrol_config.protection_limit_over_voltage);
-    printstr("Protecction limit under voltage: "); printintln(motorcontrol_config.protection_limit_under_voltage);
-
-    t :> time;
-//    i_torque_control.set_offset_detection_enabled();
-//    delay_milliseconds(30000);
-
-    while (1) {
-
-        send_to_master = i_motion_control.update_control_data(send_to_control);
-
-//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-//        xscope_int(ACTUAL_POSITION, send_to_master.position);
-//        xscope_int(FAMOUS_FAULT,    send_to_master.error_status * 1000);
-
-        if (enabled == 0) {
-            //delay_milliseconds(2000);
-//            i_torque_control.set_torque_control_enabled();
-//            i_motion_control.enable_torque_ctrl();
-           //i_motion_control.enable_velocity_ctrl();
-           //printstr("enable\n");
-            i_motion_control.enable_position_ctrl(POS_PID_CONTROLLER);
-            enabled = 1;
-        }
-        else {
-//            i_torque_control.set_torque(100);
-//            i_motion_control.set_velocity(0);
-//            i_motion_control.set_position(0);
-//            i_motion_control.set_velocity(500);
-            send_to_control.position_cmd = 100000;
-//            send_to_control.offset_torque = 0;
-        }
-
-        t when timerafter(time + MSEC_STD) :> time;
     }
 }

@@ -78,21 +78,6 @@ void print_object_dictionary(client interface i_co_communication i_co)
 //    printstr("HOMING METHOD: ");printintln(sdo_value);
 }
 
-/* FIXME what happend here? Is this function still in use? If no please remove
-* and don't return some undefined values! */
-{int, int} homing_sdo_update(client interface i_co_communication i_co)
-{
-	int homing_method = 0;
-	int limit_switch_type = 0;
-	int index;
-	int error;
-
-//    {limit_switch_type, void, void} = i_co.od_get_object_value(LIMIT_SWITCH_TYPE, 0);
-//    {homing_method, void, void} = i_co.od_get_object_value(CIA402_HOMING_METHOD, 0);
-
-	return {homing_method, limit_switch_type};
-}
-
 
 {int, int, int, int, int} pv_sdo_update(client interface i_co_communication i_co)
 {

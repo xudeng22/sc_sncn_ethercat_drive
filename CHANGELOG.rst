@@ -4,6 +4,7 @@ sc_sncn_ethercat_drive Change Log
 -----
 
   * Implement new pwm structure with 15 kHz, and use 100 MHz ref_clk_frq
+  * Fix bugs in setting/getting motion_control_config struct in config manager
 
 3.1.2
 -----

@@ -41,10 +41,3 @@ void network_drive_service(ProfilerConfig &profiler_config,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
                                     client interface FileServiceInterface i_file_service);
-
-void network_drive_service_debug(ProfilerConfig &profiler_config,
-                            client interface i_pdo_handler_exchange i_pdo,
-                            client interface i_co_communication i_co,
-                            client interface TorqueControlInterface i_torque_control,
-                            client interface MotionControlInterface i_motion_control,
-                            client interface PositionFeedbackInterface i_position_feedback);

@@ -96,4 +96,5 @@ void cm_default_config_profiler(
 
 void cm_default_config_pos_velocity_control(
         client interface i_co_communication i_co,
-        client interface MotionControlInterface i_motion_control);
+        client interface MotionControlInterface i_motion_control,
+        MotionControlConfig &position_config);

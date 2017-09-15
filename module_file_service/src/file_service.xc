@@ -171,10 +171,11 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
     if (file_list[file_item].obj_id == 0)
     {
         file_item = 0;
-        return -1;
+        stat = FOE_STAT_EOF;
     }
 
-    return 0;
+    stat = FOE_STAT_DATA;
+    return stat;
 }
 
 
@@ -189,16 +190,14 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
 
     //space instead of "="
     eq_pos = strchr(cmd, '=');
-    if (eq_pos)
-        *eq_pos = ' ';
+    if (eq_pos) *eq_pos = ' ';
 
     par_num = sscanf(cmd, "fs-%s %s", par1, par2);
 
     if ((strcmp(par1, "getlist") == 0)||(file_item > 0))
     {
-        res = get_file_list(i_foe, i_spiffs);
-        return res;
-
+        stat = get_file_list(i_foe, i_spiffs);
+        return stat;
     }
     else
     if (strcmp(par1, "remove") == 0)
@@ -207,30 +206,18 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
         {
              fd =  i_spiffs.open_file(par2, strlen(par2), SPIFFS_RDWR);
              if (fd < 0)
-             {
                  strcpy(msg_text, "Error removing file\n");
-                 {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
-                 return -1;
-             }
-
-             res = i_spiffs.remove_file(fd);
-             if (res < 0)
+             else
              {
-                 strcpy(msg_text, "Error removing file\n");
-                 {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
-                 return -1;
+                 res = i_spiffs.remove_file(fd);
+                 if (res < 0)
+                     strcpy(msg_text, "Error removing file\n");
+                 else
+                     strcpy(msg_text, "File successfully removed\n");
              }
-
-             strcpy(msg_text, "File successfully removed\n");
-             {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
-             return -1;
         }
         else
-        {
             strcpy(msg_text, "Error: argument missing\n");
-            {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
-            return -1;
-        }
     }
     else
     if (strcmp(par1, "info") == 0)
@@ -239,23 +226,16 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
 
         res = i_spiffs.fs_info(total, used);
         if (res < 0)
-        {
-            printf("errno %i\n", res);
-            return res;
-        }
-        sprintf(msg_text, "Memory usage:\n Total: %u \n Used:  %u \n", total, used);
-        {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
-
-        return -1;
+            strcpy(msg_text, "Error getting FS info\n");
+        else
+            sprintf(msg_text, "Memory usage:\n Total: %u \n Used:  %u \n", total, used);
     }
     else
-    {
         strcpy(msg_text, "Unknown FS command\n");
-        {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
-        return -1;
-    }
 
-return -1;
+    {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
+    stat = FOE_STAT_EOF;
+    return stat;
 }
 
 
@@ -361,8 +341,9 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         // if "fs-" prefix on begin of string
         if ((strstr(file.filename, "fs-") == file.filename))
         {
-            if (process_fs_command(file.filename, i_foe, i_spiffs) < 0)
-                stat = FOE_STAT_EOF;
+            stat = process_fs_command(file.filename, i_foe, i_spiffs);
+            if (stat == FOE_STAT_ERROR)
+                foe_error = FOE_ERROR_PROGRAM_ERROR;
         }
         else
         {

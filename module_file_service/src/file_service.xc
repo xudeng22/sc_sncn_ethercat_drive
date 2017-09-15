@@ -178,6 +178,62 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
 }
 
 
+int process_fs_command(char cmd[], client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
+{
+    char par1[16], par2[SPIFFS_MAX_FILENAME_SIZE];
+    int par_num, res, fd;
+
+    par_num = sscanf(cmd, "fs-%s %s", par1, par2);
+
+    if ((strcmp(par1, "getlist") == 0)||(file_item > 0))
+    {
+        res = get_file_list(i_foe, i_spiffs);
+        if (res < 0)
+        {
+             printf("errno %i\n", res);
+             return res;
+        }
+    }
+    else
+    if (strcmp(par1, "remove") == 0)
+    {
+        if (par_num == 2)
+        {
+             fd =  i_spiffs.open_file(par2, strlen(par2), SPIFFS_RDWR);
+             if (fd < 0)
+             {
+                printf("errno %i\n", res);
+                return fd;
+             }
+
+             res = i_spiffs.remove_file(fd);
+             if (res < 0)
+             {
+                  printf("errno %i\n", res);
+                  return res;
+             }
+        }
+    }
+    else
+    if (strcmp(par1, "info") == 0)
+    {
+        char info_text[MAX_FOE_DATA];
+        unsigned int total, used;
+
+        res = i_spiffs.fs_info(total, used);
+        if (res < 0)
+        {
+            printf("errno %i\n", res);
+            return res;
+        }
+        sprintf(info_text, "Memory usage:\n Total: %u \n Used:  %u \n", total, used);
+        i_foe.write_data((int8_t *)info_text, strlen(info_text), FOE_ERROR_NONE);
+    }
+
+return 0;
+}
+
+
 static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
 {
     int wait_for_reply = 0;
@@ -277,9 +333,10 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        if ((strcmp(file.filename, "fs-getlist") == 0)||(file_item > 0))
+        // if "fs-" prefix on begin of string
+        if ((strstr(file.filename, "fs-") == file.filename))
         {
-            if (get_file_list(i_foe, i_spiffs) != 0)
+            if (process_fs_command(file.filename, i_foe, i_spiffs) < 0)
                 stat = FOE_STAT_EOF;
         }
         else
@@ -400,8 +457,6 @@ void file_service(
         select
         {
             case i_file_service[int i].write_torque_array(int array_in[]) -> int status:
-
-                    printf("Name written\n");
                     int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
                     if (file_id < 0)
                     {

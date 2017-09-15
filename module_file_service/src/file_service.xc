@@ -172,6 +172,7 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
     {
         file_item = 0;
         stat = FOE_STAT_EOF;
+        return stat;
     }
 
     stat = FOE_STAT_DATA;
@@ -224,16 +225,18 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
     {
         unsigned int total, used;
 
-        res = i_spiffs.fs_info(total, used);
-        if (res < 0)
-            strcpy(msg_text, "Error getting FS info\n");
-        else
-            sprintf(msg_text, "Memory usage:\n Total: %u b\n Used:  %u b\n", total, used);
+        i_spiffs.fs_info(total, used);
+        sprintf(msg_text, "Memory usage:\n Total: %u b\n Used:  %u b\n", total, used);
+    }
+    else
+    if (strcmp(par1, "help") == 0)
+    {
+        strcpy(msg_text, "Usage: ethercat foe_read fs-[command]=[argument]\nCommands:\n getlist - Print out all files in file system;\n info - Print out size of file system and used space;\n remove - remove file from file system (argument - file name).\n");
     }
     else
         strcpy(msg_text, "Unknown FS command\n");
 
-    {wsize, res} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
+    {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
     stat = FOE_STAT_EOF;
     return stat;
 }

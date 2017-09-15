@@ -228,12 +228,12 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
         if (res < 0)
             strcpy(msg_text, "Error getting FS info\n");
         else
-            sprintf(msg_text, "Memory usage:\n Total: %u \n Used:  %u \n", total, used);
+            sprintf(msg_text, "Memory usage:\n Total: %u b\n Used:  %u b\n", total, used);
     }
     else
         strcpy(msg_text, "Unknown FS command\n");
 
-    {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
+    {wsize, res} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
     stat = FOE_STAT_EOF;
     return stat;
 }
@@ -342,8 +342,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         if ((strstr(file.filename, "fs-") == file.filename))
         {
             stat = process_fs_command(file.filename, i_foe, i_spiffs);
-            if (stat == FOE_STAT_ERROR)
-                foe_error = FOE_ERROR_PROGRAM_ERROR;
         }
         else
         {

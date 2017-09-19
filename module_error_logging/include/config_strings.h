@@ -26,30 +26,14 @@
 #define CONFIG_MAX_DATA_TITLES 23
 #define CONFIG_MAX_DATA_TITLES_SIZE 20
 
-const char DataValuesTitles[CONFIG_MAX_DATA_TITLES][CONFIG_MAX_DATA_TITLES_SIZE] =
+const char ErrTitles[6][22] =
 {
-    "COMP_TORQ",
-    "SET_TORQ",
-    "V_DC",
-    "I_B",
-    "I_C",
-    "ANGLE",
-    "HALL",
-    "QEI_INDEX",
-    "AGLE_VEL",
-    "POS",
-    "SINGLET",
-    "VEL",
-    "SENS_TSTAMP",
-    "SEC_POS",
-    "SEC_SINGLET",
-    "SEC_VEL",
-    "SEC_SENS_TSTAMP",
-    "TEMP",
-    "AI_A1",
-    "AI_A2",
-    "AI_A3",
-    "AI_A4"
+   "Error status        ",
+   "Motion error        ",
+   "Sensor error        ",
+   "Second. sensor error",
+   "Angle sensor error  ",
+   "Watchdog error      "
 };
 
 #endif

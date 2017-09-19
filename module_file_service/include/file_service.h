@@ -12,6 +12,7 @@
 #include <co_interface.h>
 #include <spiffs_service.h>
 #include <config_parser.h>
+#include <error_logging.h>
 
 #include <stdint.h>
 #include <stddef.h>

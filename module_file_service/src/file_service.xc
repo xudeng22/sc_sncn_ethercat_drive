@@ -461,6 +461,8 @@ void file_service(
         break;
     }
 
+    error_logging_init(i_spiffs);
+
     while (1) {
 
         select {
@@ -469,8 +471,7 @@ void file_service(
                 int status;
                 status = i_motion_control.get_last_error(ErrItem);
                 if (status == 0)
-                    printf(" %d, 0x%x, type: %d, stat: %d\n", ErrItem.timestamp, ErrItem.err_code, ErrItem.sensor_type, status);
-
+                    error_msg_save(i_spiffs, ErrItem);
                 break;
 
             default:

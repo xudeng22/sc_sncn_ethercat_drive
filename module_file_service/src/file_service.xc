@@ -435,7 +435,8 @@ void file_service(
         server interface FileServiceInterface i_file_service [2],
         client SPIFFSInterface ?i_spiffs,
         client interface i_co_communication i_canopen,
-        client interface i_foe_communication ?i_foe)
+        client interface i_foe_communication ?i_foe,
+        client interface MotionControlInterface i_motion_control)
 {
     timer t;
     unsigned time = 0, time2 = 0;
@@ -461,6 +462,22 @@ void file_service(
     }
 
     while (1) {
+
+        select {
+            case i_motion_control.new_error():
+                ErrItem_t ErrItem;
+                int status;
+                status = i_motion_control.get_last_error(ErrItem);
+                if (status == 0)
+                    printf(" %d, 0x%x, type: %d, stat: %d\n", ErrItem.timestamp, ErrItem.err_code, ErrItem.sensor_type, status);
+
+                break;
+
+            default:
+                break;
+        }
+
+
         select
         {
             case i_file_service[int i].write_torque_array(int array_in[]) -> int status:

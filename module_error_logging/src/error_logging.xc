@@ -271,7 +271,7 @@ int error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
 
     memset(log_buf, 0, sizeof(log_buf));
 
-    sprintf(log_buf, "%10d %s 0x%x\n", ErrItem.timestamp, ErrTitles[ErrItem.err_type], ErrItem.err_code);
+    sprintf(log_buf, "%9d %s 0x%x\n", ErrItem.timestamp, ErrTitles[ErrItem.err_type - 1], ErrItem.err_code);
     printf(log_buf);
 
     res = i_spiffs.write(file_descriptor, log_buf, strlen(log_buf));
@@ -281,104 +281,4 @@ int error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
 }
 
 
-/*void data_logging_service(
-        interface DataLoggingInterface server ?i_logif[n_logif],
-        client SPIFFSInterface ?i_spiffs,
-        client interface MotionControlInterface i_motion_control,
-        unsigned n_logif)
-{
-    timer timer_data_logging;
-    timer timer_error_logging;
-    unsigned time_data = 0;
-    unsigned time_error = 0;
-    unsigned start_time, end_time;
-
-    if (isnull(i_spiffs)) {
-            // error spiffs
-            return;
-        }
-
-    if (isnull(i_motion_control)) {
-              // error shared_memory
-              return;
-          }
-
-    select {
-        case i_spiffs.service_ready():
-        break;
-    }
-
-    printstrln(">>   DATA LOGGING SERVICE STARTING...");
-
-    if (data_logging_init(i_spiffs) != 0)
-    {
-       //service init
-       return;
-    }
-    else
-    {
-        log_data_timer_active = 1;
-        log_error_timer_active = 1;
-    }
-
-    while (1) {
-
-        select {
-
-            case !isnull(i_logif) => i_logif[int i].log_user_command(void) -> unsigned short res:
-                    char command_buf[128];
-                    UpstreamControlData ucd;
-                    DownstreamControlData dcd;
-                    {ucd, dcd} = i_motion_control.read_control_data();
-
-                    memset(command_buf, 0, sizeof(command_buf));
-                    sprintf(command_buf, "User command: Position: %d, Velocity %d, Torque: %d, Offset Torque: %d\n", dcd.position_cmd, dcd.velocity_cmd, dcd.torque_cmd, dcd.offset_torque);
-                    res = i_spiffs.write(file_descriptor, command_buf, strlen(command_buf));
-                    i_spiffs.flush(file_descriptor);
-
-                    printintln(res);
-
-                break;
-
-            case !isnull(i_logif) => i_logif[int i].log_error(unsigned error_code) -> unsigned short res:
-
-                break;
-
-            case timer_data_logging when timerafter(time_data + Config.data_timer_interval) :> void :
-                if (log_data_timer_active)
-                {
-                     if (check_log_file_size(i_spiffs, 1) != 0)
-                     {
-                         log_data_timer_active = 0;
-                         log_error_timer_active = 0;
-                     }
-                     data_logging_save(i_spiffs, i_motion_control);
-                }
-                timer_data_logging :> time_data;
-
-                break;
-
-            case timer_error_logging when timerafter(time_error + Config.error_timer_interval) :> void :
-                if (log_error_timer_active)
-                {
-                    if (check_log_file_size(i_spiffs, 1) != 0)
-                    {
-                         log_data_timer_active = 0;
-                         log_error_timer_active = 0;
-                    }
-
-                }
-                timer_error_logging :> time_error;
-
-                break;
-
-            default:
-                break;
-
-
-            }
-
-
-    }
-}*/
 

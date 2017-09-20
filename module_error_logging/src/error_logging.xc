@@ -88,7 +88,6 @@ int get_config_string(char title[], char end_marker[], char buffer[], char out_b
 int read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
 {
     char config_buffer[SPIFFS_MAX_DATA_BUFFER_SIZE];
-    char err_title_buf[CONFIG_MAX_STRING_SIZE];
     int file_size;
     int res;
 
@@ -132,20 +131,6 @@ int read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
 
     get_config_string(CONFIG_LOG_FILE_NAME2_TITLE, CONFIG_END_OF_STRING_MARKER, config_buffer, config->log_file_name[1]);
 
-    int i = 0;
-    memset(err_title_buf, '\0', CONFIG_MAX_STRING_SIZE);
-    sprintf(err_title_buf, CONFIG_LOG_ERR_TITLE, i + 1);
-    //checking of all error titles
-    while (get_config_string(err_title_buf, CONFIG_END_OF_STRING_MARKER, config_buffer, config->errors_titles[i]) == 0)
-    {
-        memset(err_title_buf, '\0', CONFIG_MAX_STRING_SIZE);
-        i++;
-        if (i >= CONFIG_MAX_ERROR_TITLES)
-            break;
-
-        sprintf(err_title_buf, CONFIG_LOG_ERR_TITLE, i + 1);
-    }
-
     return 0;
 
 }
@@ -166,17 +151,15 @@ int open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
     if (file_descriptor > 0) i_spiffs.close_file(file_descriptor);
 
     //Trying to open existing LOG file
-    //file_descriptor = i_spiffs.open_file(Config.log_file_name[curr_log_file_no], strlen(Config.log_file_name[curr_log_file_no]), flags);
-    file_descriptor = i_spiffs.open_file(LOG_FILE_NAME1, strlen(LOG_FILE_NAME1), flags);
+    file_descriptor = i_spiffs.open_file(Config.log_file_name[curr_log_file_no], strlen(Config.log_file_name[curr_log_file_no]), flags);
 
     if (file_descriptor < 0)
     {
            if (file_descriptor == SPIFFS_ERR_NOT_FOUND)
            {
                 printstr("LOG file not found, creating of new file: ");
-                //printstrln(Config.log_file_name[curr_log_file_no]);
-                //file_descriptor = i_spiffs.open_file(Config.log_file_name[curr_log_file_no], strlen(Config.log_file_name[curr_log_file_no]), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-                file_descriptor = i_spiffs.open_file(LOG_FILE_NAME1, strlen(LOG_FILE_NAME1), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+                printstrln(Config.log_file_name[curr_log_file_no]);
+                file_descriptor = i_spiffs.open_file(Config.log_file_name[curr_log_file_no], strlen(Config.log_file_name[curr_log_file_no]), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
                 if (file_descriptor < 0)
                 {
                     printstrln("Error opening file");
@@ -241,11 +224,13 @@ int check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existing_fi
 int error_logging_init(client SPIFFSInterface ?i_spiffs)
 {
 
-    /*if (read_log_config(i_spiffs, &Config) != 0)
+    if (read_log_config(i_spiffs, &Config) != 0)
     {
-        //error in config file
-        return -1;
-    }*/
+        //If config file failed or not found, use default config
+        Config.max_log_file_size = DEFAILT_LOG_FILE_MAX;
+        strcpy(Config.log_file_name[0], DEFAULT_LOG_FILE_NAME1);
+        strcpy(Config.log_file_name[1], DEFAULT_LOG_FILE_NAME2);
+    }
 
     if (open_log_file(i_spiffs, 0) != 0)
     {
@@ -253,11 +238,11 @@ int error_logging_init(client SPIFFSInterface ?i_spiffs)
         return -1;
     }
 
-    /*if (check_log_file_size(i_spiffs, 0) != 0)
+    if (check_log_file_size(i_spiffs, 0) != 0)
     {
         //error checking of file
         return -1;
-    }*/
+    }
 
     return 0;
 }
@@ -268,6 +253,9 @@ int error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
 {
     int res;
     char log_buf[256];
+
+    res = check_log_file_size(i_spiffs, 1);
+    if (res != 0) return res;
 
     memset(log_buf, 0, sizeof(log_buf));
 

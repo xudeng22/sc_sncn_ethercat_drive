@@ -16,9 +16,7 @@
 typedef struct {
 
     int max_log_file_size;
-    char err_codes_count;
     char log_file_name[2][SPIFFS_MAX_FILENAME_SIZE];
-    char errors_titles[CONFIG_MAX_ERROR_TITLES][CONFIG_MAX_STRING_SIZE];
 
 } ErrLoggingConfig;
 

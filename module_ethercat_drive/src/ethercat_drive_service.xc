@@ -193,7 +193,6 @@ static void inline update_configuration(
         PositionFeedbackConfig    &position_feedback_config_1,
         PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &motorcontrol_config,
-        ProfilerConfig            &profiler_config,
         int &sensor_commutation, int &sensor_motion_control,
         int &limit_switch_type,
         int &sensor_resolution,
@@ -221,7 +220,7 @@ static void inline update_configuration(
         i_pos_feedback_1.exit();
     }
 
-    // set sensor resolution from the resolution of the sensor used for motion control (used by profiler)
+    // set sensor resolution from the resolution of the sensor used for motion control (used for quick stop profiler)
     if (sensor_motion_control == 2) {
         sensor_resolution = position_feedback_config_2.resolution;
     } else {
@@ -236,12 +235,10 @@ static void inline update_configuration(
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
 
-    cm_sync_config_profiler(i_coe, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
     int max_torque = cm_sync_config_motor_control(i_coe, i_torque_control, motorcontrol_config, sensor_commutation, sensor_commutation_type);
     cm_sync_config_pos_velocity_control(i_coe, i_motion_control, position_config, sensor_resolution, max_torque);
 
     /* Update values with current configuration */
-    profiler_config.ticks_per_turn = sensor_resolution;
     nominal_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     limit_switch_type = 0; //i_coe.get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
     homing_method     = 0; //i_coe.get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
@@ -322,8 +319,7 @@ static void debug_print_state(DriveState_t state)
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
-void ethercat_drive_service(ProfilerConfig &profiler_config,
-                            client interface i_pdo_communication i_pdo,
+void ethercat_drive_service(client interface i_pdo_communication i_pdo,
                             client interface i_coe_communication i_coe,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
@@ -415,10 +411,9 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_coe, i_position_feedback_2, position_feedback_config_2, 2);
     }
-    cm_default_config_profiler(i_coe, profiler_config);
     cm_default_config_motor_control(i_coe, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_coe, i_motion_control, motion_control_config);
-    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+    i_coe.set_object_value(DICT_QUICK_STOP_DECELERATION, 0, motion_control_config.max_deceleration_profiler);
 
     /* check if the slave enters the operation mode. If this happens we assume the configuration values are
      * written into the object dictionary. So we read the object dictionary values and continue operation.
@@ -453,7 +448,7 @@ void ethercat_drive_service(ProfilerConfig &profiler_config,
         /* FIXME: When to update configuration values from OD? only do this in state "Ready to Switch on"? */
         if (read_configuration) {
             update_configuration(i_coe, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
-                    motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
+                    motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config,
                     sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
                     quick_stop_deceleration
                     );

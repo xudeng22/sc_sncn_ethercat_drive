@@ -9,7 +9,7 @@ TARGET = SOMANET-C21-DX_G2
 APP_NAME = app_demo_slave_ethercat_motorcontrol
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = configuration_parameters module_autotune lib_limited_torque_position_control module_adc module_biss_encoder module_board-support module_controllers module_canopen_interface lib_ethercat lib_bldc_torque_control module_network_drive module_filters module_gpio module_hall_sensor module_utils module_motion_control module_position_feedback module_profiles module_pwm module_incremental_encoder module_reboot module_encoder_rem_14 module_encoder_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog module_flash_service module_file_service module_spiffs module_config_parser
+USED_MODULES = configuration_parameters module_autotune lib_limited_torque_position_control module_adc module_biss_encoder module_board-support module_controllers module_canopen_interface lib_ethercat lib_bldc_torque_control module_network_drive module_filters module_gpio module_hall_sensor module_utils module_motion_control module_position_feedback module_profiles module_pwm module_incremental_encoder module_reboot module_encoder_rem_14 module_encoder_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog module_flash_service module_file_service module_spiffs module_config_parser module_error_logging
 
 # When running the app with xtime (or xrun) you need to use the ethercat_service_standalone library.
 # When flashing the node you need to use the ethercat_service library (selected by default).
@@ -28,8 +28,8 @@ endif
 # xcc for the final link (mapping) stage.
 #XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -DSTARTUP_READ_FLASH_OBJECTS=1 -lflash -report
 #XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lflash -report -save-temps
-XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lquadflash -report -save-temps -DXCORE200=1
-XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lquadflash -DXCORE200=1
+XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lquadflash -report -save-temps -DXCORE200=1 -DSPIFFS_CACHE=0
+XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lquadflash -DXCORE200=1 -DSPIFFS_CACHE=0
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
 VERBOSE = 1

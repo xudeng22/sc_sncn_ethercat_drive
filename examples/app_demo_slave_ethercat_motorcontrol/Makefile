@@ -28,8 +28,8 @@ endif
 # xcc for the final link (mapping) stage.
 #XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -DSTARTUP_READ_FLASH_OBJECTS=1 -lflash -report
 #XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lflash -report -save-temps
-XCC_FLAGS_Debug = -g -O3 -DCOM_ETHERCAT -lquadflash -report -save-temps -DXCORE200=1 -DSPIFFS_CACHE=0
-XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT -lquadflash -DXCORE200=1 -DSPIFFS_CACHE=0
+XCC_FLAGS_Debug = -g -Os -DCOM_ETHERCAT -lquadflash -report -save-temps -DXCORE200=1 -DSPIFFS_CACHE=0
+XCC_FLAGS_Release = -g -Os -DCOM_ETHERCAT -lquadflash -DXCORE200=1 -DSPIFFS_CACHE=0
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
 VERBOSE = 1

@@ -25,8 +25,8 @@
 #include <adc_service.h>
 #include <watchdog_service.h>
 #include <motor_control_interfaces.h>
-#include <motion_control_service.h>
 #include <advanced_motor_control.h>
+#include <motion_control_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
 PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;

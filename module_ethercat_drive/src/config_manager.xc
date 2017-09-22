@@ -206,8 +206,8 @@ void cm_sync_config_pos_velocity_control(
     position_config = i_motion_control.get_motion_control_config();
 
     //limits
-    position_config.min_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
-    position_config.max_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
+    position_config.min_pos_range_limit = i_coe.get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
+    position_config.max_pos_range_limit = i_coe.get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
     position_config.max_motor_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     position_config.max_torque          = max_torque;
 
@@ -404,8 +404,8 @@ void cm_default_config_pos_velocity_control(
     position_config = i_motion_control.get_motion_control_config();
 
     //limits
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_config.max_pos_range_limit);
+    i_coe.set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
+    i_coe.set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_config.max_pos_range_limit);
     i_coe.set_object_value(DICT_MAX_MOTOR_SPEED, 0, position_config.max_motor_speed);
 
     //if the internal polarity is inverted enable inverted position and velocity polarity bits in the DICT_POLARITY object

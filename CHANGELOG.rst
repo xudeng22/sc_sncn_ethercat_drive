@@ -6,6 +6,7 @@ sc_sncn_ethercat_drive Change Log
 
   * Add GPIO support in ethercat drive
   * Fix bugs in setting/getting motion_control_config struct in config manager
+  * Fix usage of Position range limit (0x607B) and Software position limit (0x607D) objects
 
 
 3.0.3

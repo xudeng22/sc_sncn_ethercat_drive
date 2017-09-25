@@ -29,10 +29,7 @@
 #include <watchdog_service.h>
 #include <motor_control_interfaces.h>
 #include <advanced_motor_control.h>
-
-//Position control + profile libs
 #include <motion_control_service.h>
-#include <profile_control.h>
 
 #include <flash_service.h>
 #include <spiffs_service.h>
@@ -103,16 +100,7 @@ int main(void)
 
 
                 {
-                    ProfilerConfig profiler_config;
-
-                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-
-                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
-                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
-
-                    network_drive_service( profiler_config,
+                    network_drive_service(
                             i_pdo,
                             i_co[1],
                             i_torque_control[1],

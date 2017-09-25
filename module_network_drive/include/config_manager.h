@@ -53,11 +53,6 @@ int cm_sync_config_motor_control(
         MotorcontrolConfig &commutation_params,
         int sensor_commutation_type);
 
-void cm_sync_config_profiler(
-        client interface i_co_communication i_co,
-        ProfilerConfig &profiler,
-        enum eProfileType type);
-
 void cm_sync_config_pos_velocity_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
@@ -89,10 +84,6 @@ void cm_default_config_motor_control(
         client interface i_co_communication i_co,
         client interface TorqueControlInterface ?i_torque_control,
         MotorcontrolConfig &commutation_params);
-
-void cm_default_config_profiler(
-        client interface i_co_communication i_co,
-        ProfilerConfig &profiler);
 
 void cm_default_config_pos_velocity_control(
         client interface i_co_communication i_co,

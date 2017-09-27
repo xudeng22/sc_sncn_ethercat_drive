@@ -33,7 +33,7 @@ int cm_sync_config_position_feedback(
             {sensor_function, void, void} = i_co.od_get_object_value(feedback_sensor_object, 2);
             if (sensor_function != SENSOR_FUNCTION_DISABLED) {
                 // detect which position feedback service (1 or 2) is used for commutation or motion control
-                // this is used later for multiple things like: sensor resolution (for profiler), tuning (for setting the pole pairs)
+                // this is used later for multiple things like: sensor resolution (for quick stop, tuningc, setting the pole pairs)
                 switch(sensor_function) {
                 case SENSOR_FUNCTION_COMMUTATION_AND_MOTION_CONTROL:
                     sensor_commutation = feedback_service_index;
@@ -209,23 +209,6 @@ int cm_sync_config_motor_control(
     return motorcontrol_config.max_torque;
 }
 
-void cm_sync_config_profiler(
-        client interface i_co_communication i_co,
-        ProfilerConfig &profiler,
-        enum eProfileType type)
-{
-    {profiler.min_position, void, void} = i_co.od_get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 1);
-    {profiler.max_position, void, void} = i_co.od_get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 2);
-    {profiler.acceleration, void, void} = i_co.od_get_object_value(DICT_PROFILE_ACCELERATION, 0);
-    {profiler.deceleration, void, void} = i_co.od_get_object_value(DICT_PROFILE_DECELERATION, 0);
-    {profiler.max_velocity, void, void} = i_co.od_get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    /* FIXME this profiler is only used for Quick Stop so the max_deceleration is read from the quick stop deceleration */
-    profiler.max_deceleration =  profiler.deceleration;
-    //{profiler.max_deceleration, void, void} = i_co.od_get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
-    {profiler.max_acceleration, void, void} = i_co.od_get_object_value(DICT_PROFILE_ACCELERATION, 0);
-    {profiler.velocity, void, void} = i_co.od_get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-}
-
 void cm_sync_config_pos_velocity_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
@@ -236,8 +219,8 @@ void cm_sync_config_pos_velocity_control(
     position_config = i_motion_control.get_motion_control_config();
 
     //limits
-    {position_config.min_pos_range_limit, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
-    {position_config.max_pos_range_limit, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
+    {position_config.min_pos_range_limit, void, void} = i_co.od_get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_MAX_SOFTWARE_POSITION_RANGE_LIMIT_MIN_POSITION_LIMIT);
+    {position_config.max_pos_range_limit, void, void} = i_co.od_get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_MAX_SOFTWARE_POSITION_RANGE_LIMIT_MAX_POSITION_LIMIT);
     {position_config.max_motor_speed, void, void} = i_co.od_get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     position_config.max_torque          = max_torque;
 
@@ -436,20 +419,6 @@ void cm_default_config_motor_control(
     //FIXME: missing motorcontrol_config.protection_limit_over_temperature
 }
 
-void cm_default_config_profiler(
-        client interface i_co_communication i_co,
-        ProfilerConfig &profiler)
-{
-    i_co.od_set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 1, profiler.min_position);
-    i_co.od_set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 2, profiler.max_position);
-    i_co.od_set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.acceleration);
-    i_co.od_set_object_value(DICT_PROFILE_DECELERATION, 0, profiler.deceleration);
-    i_co.od_set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.max_velocity);
-    i_co.od_set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.max_acceleration);
-    i_co.od_set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.velocity);
-    i_co.od_set_object_value(DICT_MAX_ACCELERATION, 0, profiler.max_acceleration);
-}
-
 void cm_default_config_pos_velocity_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
@@ -459,8 +428,8 @@ void cm_default_config_pos_velocity_control(
     position_config = i_motion_control.get_motion_control_config();
 
     //limits
-    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
-    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_config.max_pos_range_limit);
+    i_co.od_set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_MAX_SOFTWARE_POSITION_RANGE_LIMIT_MIN_POSITION_LIMIT, position_config.min_pos_range_limit);
+    i_co.od_set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_MAX_SOFTWARE_POSITION_RANGE_LIMIT_MAX_POSITION_LIMIT, position_config.max_pos_range_limit);
     i_co.od_set_object_value(DICT_MAX_MOTOR_SPEED, 0, position_config.max_motor_speed);
 
     //if the internal polarity is inverted enable inverted position and velocity polarity bits in the DICT_POLARITY object

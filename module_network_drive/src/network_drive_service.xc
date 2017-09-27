@@ -371,14 +371,11 @@ static void inline update_configuration(
         PositionFeedbackConfig    &position_feedback_config_1,
         PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &motorcontrol_config,
-        ProfilerConfig            &profiler_config,
         int &sensor_commutation, int &sensor_motion_control,
-        int &limit_switch_type,
         int &sensor_resolution,
         uint8_t &polarity,
-        int &nominal_speed,
-        int &homing_method,
-        int &quick_stop_deceleration)
+        int &quick_stop_deceleration,
+        int &position_range_limit_min, int &position_range_limit_max)
 {
 
     // set position feedback services parameters
@@ -400,7 +397,7 @@ static void inline update_configuration(
         i_pos_feedback_1.exit();
     }
 
-    // set sensor resolution from the resolution of the sensor used for motion control (used by profiler)
+    // set sensor resolution from the resolution of the sensor used for motion control (used by quick stop)
     if (sensor_motion_control == 2) {
         sensor_resolution = position_feedback_config_2.resolution;
     } else {
@@ -415,18 +412,25 @@ static void inline update_configuration(
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
 
-    cm_sync_config_profiler(i_co, profiler_config, PROFILE_TYPE_POSITION); /* FIXME currently only one profile type is used! */
     int max_torque = cm_sync_config_motor_control(i_co, i_torque_control, motorcontrol_config, sensor_commutation_type);
     cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution, max_torque);
 
-    /* Update values with current configuration */
-    profiler_config.ticks_per_turn = sensor_resolution;
-
-    {nominal_speed, void, void}     = i_co.od_get_object_value(DICT_MAX_MOTOR_SPEED, 0);
-    limit_switch_type = 0; //i_co.od_get_object_value(LIMIT_SWITCH_TYPE, 0); /* not used now */
-    homing_method     = 0; //i_co.od_get_object_value(CIA402_HOMING_METHOD, 0); /* not used now */
     {polarity, void, void}          = i_co.od_get_object_value(DICT_POLARITY, 0);
     {quick_stop_deceleration, void, void} = i_co.od_get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
+    {position_range_limit_min, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
+    {position_range_limit_max, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
+    // add home offset to range limit and check overflow
+    int home_offset = 0;
+    {home_offset, void, void} = i_co.od_get_object_value(DICT_HOME_OFFSET, 0);
+    int temp = 0;
+    temp = position_range_limit_min + home_offset;
+    if ( (home_offset >= 0 && temp >= position_range_limit_min) || (home_offset < 0 && temp < position_range_limit_min) ) { //no overflow
+        position_range_limit_min = temp;
+    }
+    temp = position_range_limit_max + home_offset;
+    if ( (home_offset >= 0 && temp >= position_range_limit_max) || (home_offset < 0 && temp < position_range_limit_max) ) { //no overflow
+        position_range_limit_max = temp;
+    }
 }
 
 static void motioncontrol_enable(int opmode, int position_control_strategy,
@@ -505,8 +509,7 @@ static void debug_print_state(DriveState_t state)
  * - op mode change only when we are in "Ready to Swtich on" state or below (basically op mode is set locally in this state).
  * - if the op mode signal changes in any other state it is ignored until we fall back to "Ready to switch on" state (Transition 2, 6 and 8)
  */
-void network_drive_service(ProfilerConfig &profiler_config,
-                            client interface i_pdo_handler_exchange i_pdo,
+void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                             client interface i_co_communication i_co,
                             client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
@@ -534,7 +537,6 @@ void network_drive_service(ProfilerConfig &profiler_config,
 
     enum eDirection direction = DIRECTION_NEUTRAL;
 
-    int nominal_speed;
     timer t;
 
     int opmode = OPMODE_NONE;
@@ -569,11 +571,10 @@ void network_drive_service(ProfilerConfig &profiler_config,
     check_list checklist = init_checklist();
     unsigned int fault_reset_wait_time;
 
-    int limit_switch_type;
-    int homing_method;
-
     int sensor_resolution = 0;
     uint8_t polarity = 0;
+    int position_range_limit_min = motion_control_config.min_pos_range_limit;
+    int position_range_limit_max = motion_control_config.max_pos_range_limit;
 
     PositionFeedbackConfig position_feedback_config_1 = i_position_feedback_1.get_config();
     PositionFeedbackConfig position_feedback_config_2;
@@ -601,10 +602,12 @@ void network_drive_service(ProfilerConfig &profiler_config,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
     }
-    cm_default_config_profiler(i_co, profiler_config);
     cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_co, i_motion_control, motion_control_config);
-    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, profiler_config.max_deceleration); //we use profiler.max_deceleration as the default value for quick stop deceleration
+    //we use motion_control_config.max_deceleration_profiler as the default value for quick stop deceleration
+    i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, motion_control_config.max_deceleration_profiler);
+    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_range_limit_min);
+    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_range_limit_max);
 
 
 #if STARTUP_READ_FLASH_OBJECTS == 1
@@ -638,9 +641,9 @@ void network_drive_service(ProfilerConfig &profiler_config,
         /* Read the configuration in SWITCH_ON_DISABLE */
         if (read_configuration) {
             update_configuration(i_co, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
-                    motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config, profiler_config,
-                    sensor_commutation, sensor_motion_control, limit_switch_type, sensor_resolution, polarity, nominal_speed, homing_method,
-                    quick_stop_deceleration
+                    motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config,
+                    sensor_commutation, sensor_motion_control, sensor_resolution, polarity,
+                    quick_stop_deceleration, position_range_limit_min, position_range_limit_max
                     );
             //Load cogging torque data
             char filename [] = "cogging_torque.bin";
@@ -687,6 +690,21 @@ void network_drive_service(ProfilerConfig &profiler_config,
         /* tuning pdos */
         tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
         tuning_mode_state.value = pdo_get_user_mosi(InOut); // value of tuning command
+
+        /* position limit */
+        // first test Software position limit
+        if (target_position > motion_control_config.max_pos_range_limit) {
+            target_position = motion_control_config.max_pos_range_limit;
+        } else if (target_position < motion_control_config.min_pos_range_limit) {
+            target_position = motion_control_config.min_pos_range_limit;
+        } else {
+            // then test Position range limit (and wrap-around)
+            if (target_position > position_range_limit_max) {
+                target_position = position_range_limit_min + (target_position - position_range_limit_max)%(position_range_limit_max - position_range_limit_min);
+            } else if (target_position < position_range_limit_min) {
+                target_position = position_range_limit_max - (position_range_limit_min - target_position)%(position_range_limit_max - position_range_limit_min);
+            }
+        }
 
         /*
         printint(state);

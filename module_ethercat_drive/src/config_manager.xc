@@ -196,21 +196,6 @@ int cm_sync_config_motor_control(
     return motorcontrol_config.max_torque;
 }
 
-void cm_sync_config_profiler(
-        client interface i_coe_communication i_coe,
-        ProfilerConfig &profiler,
-        enum eProfileType type)
-{
-    profiler.min_position     =  i_coe.get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 1);
-    profiler.max_position     =  i_coe.get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 2);
-    profiler.acceleration     =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
-    profiler.deceleration     =  i_coe.get_object_value(DICT_PROFILE_DECELERATION, 0);
-    profiler.max_velocity     =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-    profiler.max_deceleration =  profiler.deceleration;
-    profiler.max_acceleration =  i_coe.get_object_value(DICT_PROFILE_ACCELERATION, 0);
-    profiler.velocity         =  i_coe.get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);
-}
-
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface MotionControlInterface i_motion_control,
@@ -221,8 +206,8 @@ void cm_sync_config_pos_velocity_control(
     position_config = i_motion_control.get_motion_control_config();
 
     //limits
-    position_config.min_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
-    position_config.max_pos_range_limit = i_coe.get_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
+    position_config.min_pos_range_limit = i_coe.get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT);
+    position_config.max_pos_range_limit = i_coe.get_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT);
     position_config.max_motor_speed     = i_coe.get_object_value(DICT_MAX_MOTOR_SPEED, 0);
     position_config.max_torque          = max_torque;
 
@@ -410,19 +395,6 @@ void cm_default_config_motor_control(
     //FIXME: missing motorcontrol_config.protection_limit_over_temperature
 }
 
-void cm_default_config_profiler(
-        client interface i_coe_communication i_coe,
-        ProfilerConfig &profiler)
-{
-    i_coe.set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 1, profiler.min_position);
-    i_coe.set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, 2, profiler.max_position);
-    i_coe.set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.acceleration);
-    i_coe.set_object_value(DICT_PROFILE_DECELERATION, 0, profiler.deceleration);
-    i_coe.set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.max_velocity);
-    i_coe.set_object_value(DICT_PROFILE_ACCELERATION, 0, profiler.max_acceleration);
-    i_coe.set_object_value(DICT_MAX_PROFILE_VELOCITY, 0, profiler.velocity);
-}
-
 void cm_default_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
         client interface MotionControlInterface i_motion_control,
@@ -432,8 +404,8 @@ void cm_default_config_pos_velocity_control(
     position_config = i_motion_control.get_motion_control_config();
 
     //limits
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
-    i_coe.set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_config.max_pos_range_limit);
+    i_coe.set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_config.min_pos_range_limit);
+    i_coe.set_object_value(DICT_MAX_SOFTWARE_POSITION_RANGE_LIMIT, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_config.max_pos_range_limit);
     i_coe.set_object_value(DICT_MAX_MOTOR_SPEED, 0, position_config.max_motor_speed);
 
     //if the internal polarity is inverted enable inverted position and velocity polarity bits in the DICT_POLARITY object

@@ -101,10 +101,8 @@ int main(void)
 
                 {
                     network_drive_service(
-                            i_pdo,
-                            i_co[1],
-                            i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
+                            i_pdo, i_co[1], i_motion_control[0],
+                            i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
                 }
 
             }

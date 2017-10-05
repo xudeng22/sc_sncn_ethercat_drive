@@ -363,7 +363,6 @@ static int quick_stop_init(int opmode,
 
 static void inline update_configuration(
         client interface i_co_communication           i_co,
-        client interface TorqueControlInterface         i_torque_control,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface i_pos_feedback_1,
         client interface PositionFeedbackInterface ?i_pos_feedback_2,
@@ -412,7 +411,7 @@ static void inline update_configuration(
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
 
-    int max_torque = cm_sync_config_motor_control(i_co, i_torque_control, motorcontrol_config, sensor_commutation_type);
+    int max_torque = cm_sync_config_motor_control(i_co, i_motion_control, motorcontrol_config, sensor_commutation_type);
     cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution, max_torque);
 
     {polarity, void, void}          = i_co.od_get_object_value(DICT_POLARITY, 0);
@@ -511,7 +510,6 @@ static void debug_print_state(DriveState_t state)
  */
 void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                             client interface i_co_communication i_co,
-                            client interface TorqueControlInterface i_torque_control,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
@@ -573,13 +571,13 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
     int sensor_resolution = 0;
     uint8_t polarity = 0;
-    int position_range_limit_min = motion_control_config.min_pos_range_limit;
-    int position_range_limit_max = motion_control_config.max_pos_range_limit;
+    int position_range_limit_min = 0;
+    int position_range_limit_max = 0;
 
     PositionFeedbackConfig position_feedback_config_1 = i_position_feedback_1.get_config();
     PositionFeedbackConfig position_feedback_config_2;
+    MotorcontrolConfig motorcontrol_config = i_motion_control.get_motorcontrol_config();
 
-    MotorcontrolConfig motorcontrol_config = i_torque_control.get_config();
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
 
@@ -602,12 +600,12 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
     }
-    cm_default_config_motor_control(i_co, i_torque_control, motorcontrol_config);
+    cm_default_config_motor_control(i_co, i_motion_control, motorcontrol_config);
     cm_default_config_pos_velocity_control(i_co, i_motion_control, motion_control_config);
     //we use motion_control_config.max_deceleration_profiler as the default value for quick stop deceleration
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, motion_control_config.max_deceleration_profiler);
-    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, position_range_limit_min);
-    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, position_range_limit_max);
+    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, motion_control_config.min_pos_range_limit);
+    i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, motion_control_config.max_pos_range_limit);
 
 
 #if STARTUP_READ_FLASH_OBJECTS == 1
@@ -640,7 +638,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
         /* Read the configuration in SWITCH_ON_DISABLE */
         if (read_configuration) {
-            update_configuration(i_co, i_torque_control, i_motion_control, i_position_feedback_1, i_position_feedback_2,
+            update_configuration(i_co, i_motion_control, i_position_feedback_1, i_position_feedback_2,
                     motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config,
                     sensor_commutation, sensor_motion_control, sensor_resolution, polarity,
                     quick_stop_deceleration, position_range_limit_min, position_range_limit_max
@@ -649,7 +647,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
             char filename [] = "cogging_torque.bin";
             int status = i_file_service.read_torque_array(motorcontrol_config.torque_offset);
             if (status != SPIFFS_ERR_NOT_FOUND) {
-                i_torque_control.set_config(motorcontrol_config);
+                i_motion_control.set_motorcontrol_config(motorcontrol_config);
                 i_motion_control.enable_cogging_compensation(1);
                 tuning_mode_state.cogging_torque_flag = 1;
             }
@@ -860,8 +858,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
         if (opmode == OPMODE_NONE) {
             statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
-            /* for safety considerations, if no opmode choosen, the brake should blocking. */
-            i_torque_control.set_brake_status(0);
 
             //check and update opmode
             opmode = update_opmode(opmode, opmode_request, i_motion_control, motion_control_config, polarity, read_configuration);
@@ -982,7 +978,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                 if (read_controlword_fault_reset(controlword) && checklist.fault_reset_wait == false) {
                     //reset fault in motorcontrol
                     if (motorcontrol_fault != NO_FAULT || watchdog_error != WATCHDOG_NO_ERROR) {
-                        i_torque_control.reset_faults();
+                        i_motion_control.reset_motorcontrol_faults();
                         checklist.fault_reset_wait = true;
                     }
                     //reset fault in position feedback
@@ -1060,9 +1056,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
             }
         } else {
             /* if a unknown or unsupported opmode is requested we simply return
-             * no opmode and don't allow any operation.
-             * For safety reasons, if no opmode is selected the brake is closed! */
-            i_torque_control.set_brake_status(0);
+             * no opmode and don't allow any operation. */
             opmode = OPMODE_NONE;
             statusword      = update_statusword(statusword, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
         }

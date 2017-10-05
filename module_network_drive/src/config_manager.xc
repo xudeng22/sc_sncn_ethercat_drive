@@ -163,14 +163,11 @@ int cm_sync_config_position_feedback(
 
 int cm_sync_config_motor_control(
         client interface i_co_communication i_co,
-        interface TorqueControlInterface client ?i_torque_control,
+        client interface MotionControlInterface i_motion_control,
         MotorcontrolConfig &motorcontrol_config,
         int sensor_commutation_type)
 {
-    if (isnull(i_torque_control))
-        return motorcontrol_config.max_torque;
-
-    motorcontrol_config = i_torque_control.get_config();
+    motorcontrol_config = i_motion_control.get_motorcontrol_config();
 
     //convert float values
     union sdo_value temp;
@@ -204,7 +201,7 @@ int cm_sync_config_motor_control(
     {motorcontrol_config.protection_limit_over_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
     //FIXME: missing motorcontrol_config.protection_limit_over_temperature
 
-    i_torque_control.set_config(motorcontrol_config);
+    i_motion_control.set_motorcontrol_config(motorcontrol_config);
 
     return motorcontrol_config.max_torque;
 }
@@ -382,14 +379,11 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_co_communication i_co,
-        interface TorqueControlInterface client ?i_torque_control,
+        client interface MotionControlInterface i_motion_control,
         MotorcontrolConfig &motorcontrol_config)
 
 {
-    if (isnull(i_torque_control))
-        return;
-
-    motorcontrol_config = i_torque_control.get_config();
+    motorcontrol_config = i_motion_control.get_motorcontrol_config();
 
     //convert float values
     union sdo_value value;

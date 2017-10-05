@@ -21,27 +21,6 @@
 #include <xscope.h>
 #include <tuning.h>
 
-/* FIXME move to some stdlib */
-#define ABSOLUTE_VALUE(x)   (x < 0 ? -x : x)
-
-const char * state_names[] = {"u shouldn't see me",
-"S_NOT_READY_TO_SWITCH_ON",
-"S_SWITCH_ON_DISABLED",
-"S_READY_TO_SWITCH_ON",
-"S_SWITCH_ON",
-"S_OPERATION_ENABLE",
-"S_QUICK_STOP_ACTIVE",
-"S_FAULT"
-};
-
-enum eDirection {
-    DIRECTION_NEUTRAL = 0
-    ,DIRECTION_CLK    = 1
-    ,DIRECTION_CCLK   = -1
-};
-
-#define MAX_TIME_TO_WAIT_SDO      100000
-
 static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError watchdog_error,
                                  SensorError motion_sensor_error, SensorError commutation_sensor_error,
                                  MotionControlError motion_control_error,
@@ -148,7 +127,7 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError wat
 static void sdo_wait_first_config(client interface i_co_communication i_co)
 {
     while (!i_co.configuration_get());
-        //printstrln("Master requests OP mode - cyclic operation is about to start.");
+    //printstrln("Master requests OP mode - cyclic operation is about to start.");
 
     /* comment in the read_od_config() function to print the object values */
     //read_od_config(i_co);
@@ -496,9 +475,6 @@ static void debug_print_state(DriveState_t state)
 }
 #endif
 
-//#pragma xta command "analyze loop ecatloop"
-//#pragma xta command "set required - 1.0 ms"
-
 #define UPDATE_POSITION_GAIN    0x0000000f
 #define UPDATE_VELOCITY_GAIN    0x000000f0
 #define UPDATE_TORQUE_GAIN      0x00000f00
@@ -515,10 +491,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
                                     client interface FileServiceInterface i_file_service)
 {
-
-
-    //int target_torque = 0; /* used for CST */
-    //int target_velocity = 0; /* used for CSV */
     int target_position = 0;
     int target_velocity = 0;
     int target_torque   = 0;
@@ -530,17 +502,9 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     int actual_torque = 0;
     int actual_velocity = 0;
     int actual_position = 0;
-    int follow_error = 0;
-    //int target_position_progress = 0; /* is current target_position necessary to remember??? */
-
-    enum eDirection direction = DIRECTION_NEUTRAL;
 
     timer t;
-
-    int opmode = OPMODE_NONE;
-    int opmode_request = OPMODE_NONE;
-
-    MotionControlConfig motion_control_config = i_motion_control.get_motion_control_config();
+    unsigned int time;
 
     pdo_values_t InOut = i_pdo.pdo_init();
 
@@ -558,31 +522,32 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     uint32_t user_miso = 0;
     TuningModeState tuning_mode_state = {0};
 
-    unsigned int time;
     enum e_States state     = S_NOT_READY_TO_SWITCH_ON;
-
     uint16_t statusword = update_statusword(0, state, 0, 0, 0);
     int controlword = 0;
+    int opmode = OPMODE_NONE;
+    int opmode_request = OPMODE_NONE;
     uint16_t error_code = 0;
 
-    //int torque_offstate = 0;
     check_list checklist = init_checklist();
     unsigned int fault_reset_wait_time;
+    int read_configuration = 1;
 
     int sensor_resolution = 0;
     uint8_t polarity = 0;
     int position_range_limit_min = 0;
     int position_range_limit_max = 0;
 
-    PositionFeedbackConfig position_feedback_config_1 = i_position_feedback_1.get_config();
+    PositionFeedbackConfig position_feedback_config_1;
     PositionFeedbackConfig position_feedback_config_2;
+    MotionControlConfig motion_control_config;
     MotorcontrolConfig motorcontrol_config = i_motion_control.get_motorcontrol_config();
 
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
 
     /* read tile frequency
-     * this needs to be after the first call to i_torque_control
+     * this needs to be after the first call to i_torque_control (via i_motion_control.get_motorcontrol_config)
      * so when we read it the frequency has already been changed by the torque controller
      */
     unsigned int tile_usec = USEC_STD;
@@ -595,7 +560,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     /*
      * copy the current default configuration into the object dictionary, this will avoid ET_ARITHMETIC in motorcontrol service.
      */
-    /* FIXME add support for more than one feedback sensor */
     cm_default_config_position_feedback(i_co, i_position_feedback_1, position_feedback_config_1, 1);
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
@@ -609,12 +573,9 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
 
 #if STARTUP_READ_FLASH_OBJECTS == 1
-    /* Try to read the object data values from flash
-     * if it fails reload the default config
-     */
+    /* Try to read the object data values from flash */
     if (initial_object_dictionary_read(i_co) != 0) {
         printstrln("Warning: Could not read object dictionary from file system.");
-
     }
 #endif /* STARTUP_READ_FLASH_OBJECTS */
 
@@ -625,18 +586,10 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
      */
     sdo_wait_first_config(i_co);
 
-
-    /* if we reach this point the EtherCAT service is considered in OPMODE */
-    int drive_in_opstate = 1;
-
     /* start operation */
-    int read_configuration = 1;
-
     t :> time;
     while (1) {
-//#pragma xta endpoint "ecatloop"
-
-        /* Read the configuration in SWITCH_ON_DISABLE */
+        /* Read the configuration, triggered when switching to S_READY_TO_SWITCH_ON or to tuning mode */
         if (read_configuration) {
             update_configuration(i_co, i_motion_control, i_position_feedback_1, i_position_feedback_2,
                     motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config,
@@ -651,7 +604,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                 i_motion_control.enable_cogging_compensation(1);
                 tuning_mode_state.cogging_torque_flag = 1;
             }
-
 
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
@@ -686,7 +638,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                                     | ((pdo_get_digital_output2(InOut)&1) << 1)| (pdo_get_digital_output1(InOut) & 1);
 
         /* tuning pdos */
-        tuning_command = pdo_get_tuning_command(InOut); // mode 3, 2 and 1 in tuning command
+        tuning_command = pdo_get_tuning_command(InOut);     // tuning command
         tuning_mode_state.value = pdo_get_user_mosi(InOut); // value of tuning command
 
         /* position limit */
@@ -703,13 +655,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                 target_position = position_range_limit_max - (position_range_limit_min - target_position)%(position_range_limit_max - position_range_limit_min);
             }
         }
-
-        /*
-        printint(state);
-        printstr(" ");
-        printhexln(statusword);
-        */
-
 
         if (quick_stop_steps == 0) {
             send_to_control.position_cmd = target_position;
@@ -737,16 +682,13 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                     send_to_control.torque_cmd = qs_target;
                 }
                 break;
-
-            /* FIXME what to do for the default? */
             }
         }
 
         send_to_master = i_motion_control.update_control_data(send_to_control);
 
-        /* i_motion_control.get_all_feedbacks; */
-        actual_velocity = send_to_master.velocity; //i_motion_control.get_velocity();
-        actual_position = send_to_master.position; //i_motion_control.get_position();
+        actual_velocity = send_to_master.velocity;
+        actual_position = send_to_master.position;
         actual_torque   = (send_to_master.computed_torque*1000) / motorcontrol_config.rated_torque; //torque sent to master in 1/1000 of rated torque
         FaultCode motorcontrol_fault = send_to_master.error_status;
         SensorError motion_sensor_error = send_to_master.last_sensor_error;
@@ -754,9 +696,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
         MotionControlError motion_control_error = send_to_master.motion_control_error;
         WatchdogError watchdog_error = send_to_master.watchdog_error;
 
-//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-//        xscope_int(ACTUAL_POSITION, actual_position);
-//        xscope_int(FAMOUS_FAULT, motorcontrol_fault * 1000);
 
         /*
          * Check states of the motor drive, sensor drive and control servers
@@ -796,10 +735,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
             user_miso = error_code;
         }
 
-        follow_error = target_position - actual_position; /* FIXME only relevant in OP_ENABLED - used for what??? */
-
-        direction = (actual_velocity < 0) ? DIRECTION_CCLK : DIRECTION_CLK;
-
         /*
          *  update values to send
          */
@@ -810,19 +745,18 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
         pdo_set_position_value(actual_position, InOut);
         pdo_set_secondary_position_value(send_to_master.secondary_position, InOut);
         pdo_set_secondary_velocity_value(send_to_master.secondary_velocity, InOut);
-        // FIXME this is one of the analog inputs?
-        pdo_set_analog_input1((1000 * 5 * send_to_master.analogue_input_a_1) / 4096, InOut); /* ticks to (edit:) milli-volt */
         pdo_set_tuning_status(tuning_status, InOut);
         pdo_set_user_miso(user_miso, InOut);
         pdo_set_timestamp(send_to_master.sensor_timestamp, InOut);
+        pdo_set_analog_input1(send_to_master.analogue_input_a_1, InOut);
+        pdo_set_analog_input2(send_to_master.analogue_input_a_2, InOut);
+        pdo_set_analog_input3(send_to_master.analogue_input_b_1, InOut);
+        pdo_set_analog_input4(send_to_master.analogue_input_b_2, InOut);
         // send gpio input to master
         pdo_set_digital_input1(send_to_master.gpio[0], InOut);
         pdo_set_digital_input2(send_to_master.gpio[1], InOut);
         pdo_set_digital_input3(send_to_master.gpio[2], InOut);
         pdo_set_digital_input4(send_to_master.gpio[3], InOut);
-
-//        xscope_int(ACTUAL_VELOCITY, actual_velocity);
-//        xscope_int(ACTUAL_POSITION, actual_position);
 
 
         /* Read/Write packets to ethercat Master application */
@@ -841,19 +775,15 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                     inactive_timeout_flag = 1;
                 }
             }
-        } else if (communication_active != 0 && drive_in_opstate != 1) {
-            state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
-            inactive_timeout_flag = 1;
         } else {
             comm_inactive_flag = 0;
         }
 
-
-        /*
-         * new, perform actions according to state
-         */
 #ifdef NETWORK_DRIVE_DEBUG_PRINT_STATE
         debug_print_state(state);
+        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+        xscope_int(ACTUAL_POSITION, actual_position);
+        xscope_int(ACTUAL_VELOCITY, actual_velocity);
 #endif
 
         if (opmode == OPMODE_NONE) {
@@ -1023,8 +953,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                 break;
 
             default: /* should never happen! */
-                //printstrln("Should never happen happend.");
-                state = get_next_state(state, checklist, 0, FAULT_RESET_CONTROL);
                 break;
             }
 
@@ -1063,7 +991,5 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
         /* wait 1 ms to respect timing */
         t when timerafter(time + tile_usec*1000) :> time;
-
-//#pragma xta endpoint "ecatloop_stop"
     }
 }

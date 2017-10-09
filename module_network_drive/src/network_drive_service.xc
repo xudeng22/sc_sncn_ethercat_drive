@@ -21,7 +21,7 @@
 #include <xscope.h>
 #include <tuning.h>
 
-static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError watchdog_error,
+static int get_cia402_error_code(FaultCode torque_control_fault, WatchdogError watchdog_error,
                                  SensorError motion_sensor_error, SensorError commutation_sensor_error,
                                  MotionControlError motion_control_error,
                                  int inactive_timeout_flag)
@@ -57,7 +57,7 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError wat
         error_code = ERROR_CODE_CONTROL;
         break;
     case WATCHDOG_NO_ERROR://if there is no watchdog fault check motorcontrol fault
-        switch (motorcontrol_fault) {
+        switch (torque_control_fault) {
         case DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1:
             error_code = ERROR_CODE_CONTINUOUS_OVER_CURRENT_DEVICE_INTERNAL;
             break;
@@ -114,7 +114,7 @@ static int get_cia402_error_code(FaultCode motorcontrol_fault, WatchdogError wat
         default: /* a fault occured but could not be specified further */
             error_code = ERROR_CODE_CONTROL;
             break;
-        } // end switch motorcontrol_fault
+        } // end switch torque_control_fault
         break;
     default: /* a fault occured but could not be specified further */
         error_code = ERROR_CODE_CONTROL;
@@ -348,7 +348,7 @@ static void inline update_configuration(
         MotionControlConfig  &position_config,
         PositionFeedbackConfig    &position_feedback_config_1,
         PositionFeedbackConfig    &position_feedback_config_2,
-        MotorcontrolConfig        &motorcontrol_config,
+        MotorcontrolConfig        &torque_control_config,
         int &sensor_commutation, int &sensor_motion_control,
         int &sensor_resolution,
         uint8_t &polarity,
@@ -390,7 +390,7 @@ static void inline update_configuration(
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
 
-    int max_torque = cm_sync_config_motor_control(i_co, i_motion_control, motorcontrol_config, sensor_commutation_type);
+    int max_torque = cm_sync_config_motor_control(i_co, i_motion_control, torque_control_config, sensor_commutation_type);
     cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution, max_torque);
 
     {polarity, void, void}          = i_co.od_get_object_value(DICT_POLARITY, 0);
@@ -541,13 +541,13 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     PositionFeedbackConfig position_feedback_config_1;
     PositionFeedbackConfig position_feedback_config_2;
     MotionControlConfig motion_control_config;
-    MotorcontrolConfig motorcontrol_config = i_motion_control.get_motorcontrol_config();
+    MotorcontrolConfig torque_control_config = i_motion_control.get_motorcontrol_config();
 
     UpstreamControlData   send_to_master = { 0 };
     DownstreamControlData send_to_control = { 0 };
 
     /* read tile frequency
-     * this needs to be after the first call to i_torque_control (via i_motion_control.get_motorcontrol_config)
+     * this needs to be after the first call to i_torque_control (via i_motion_control.get_torque_control_config)
      * so when we read it the frequency has already been changed by the torque controller
      */
     unsigned int tile_usec = USEC_STD;
@@ -564,7 +564,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
     }
-    cm_default_config_motor_control(i_co, i_motion_control, motorcontrol_config);
+    cm_default_config_motor_control(i_co, i_motion_control, torque_control_config);
     cm_default_config_pos_velocity_control(i_co, i_motion_control, motion_control_config);
     //we use motion_control_config.max_deceleration_profiler as the default value for quick stop deceleration
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, motion_control_config.max_deceleration_profiler);
@@ -592,20 +592,20 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
         /* Read the configuration, triggered when switching to S_READY_TO_SWITCH_ON or to tuning mode */
         if (read_configuration) {
             update_configuration(i_co, i_motion_control, i_position_feedback_1, i_position_feedback_2,
-                    motion_control_config, position_feedback_config_1, position_feedback_config_2, motorcontrol_config,
+                    motion_control_config, position_feedback_config_1, position_feedback_config_2, torque_control_config,
                     sensor_commutation, sensor_motion_control, sensor_resolution, polarity,
                     quick_stop_deceleration, position_range_limit_min, position_range_limit_max
                     );
             //Load cogging torque data
             char filename [] = "cogging_torque.bin";
-            int status = i_file_service.read_torque_array(motorcontrol_config.torque_offset);
+            int status = i_file_service.read_torque_array(torque_control_config.torque_offset);
             if (status != SPIFFS_ERR_NOT_FOUND) {
-                i_motion_control.set_motorcontrol_config(motorcontrol_config);
+                i_motion_control.set_motorcontrol_config(torque_control_config);
                 i_motion_control.enable_cogging_compensation(1);
                 tuning_mode_state.cogging_torque_flag = 1;
             }
 
-            tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
+            tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, torque_control_config, motion_control_config,
                     position_feedback_config_1, position_feedback_config_2, sensor_commutation);
             read_configuration = 0;
             i_co.configuration_done();
@@ -632,8 +632,8 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
         opmode_request  = pdo_get_op_mode(InOut);
         target_position = pdo_get_target_position(InOut);
         target_velocity = pdo_get_target_velocity(InOut);
-        target_torque   = (pdo_get_target_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
-        send_to_control.offset_torque = (pdo_get_offset_torque(InOut)*motorcontrol_config.rated_torque) / 1000; //offset torque received in 1/1000 of rated torque
+        target_torque   = (pdo_get_target_torque(InOut)*torque_control_config.rated_torque) / 1000; //target torque received in 1/1000 of rated torque
+        send_to_control.offset_torque = (pdo_get_offset_torque(InOut)*torque_control_config.rated_torque) / 1000; //offset torque received in 1/1000 of rated torque
         send_to_control.gpio_output = ((pdo_get_digital_output4(InOut)&1) << 3) | ((pdo_get_digital_output3(InOut)&1) << 2)
                                     | ((pdo_get_digital_output2(InOut)&1) << 1)| (pdo_get_digital_output1(InOut) & 1);
 
@@ -689,8 +689,8 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
         actual_velocity = send_to_master.velocity;
         actual_position = send_to_master.position;
-        actual_torque   = (send_to_master.computed_torque*1000) / motorcontrol_config.rated_torque; //torque sent to master in 1/1000 of rated torque
-        FaultCode motorcontrol_fault = send_to_master.error_status;
+        actual_torque   = (send_to_master.computed_torque*1000) / torque_control_config.rated_torque; //torque sent to master in 1/1000 of rated torque
+        FaultCode torque_control_fault = send_to_master.error_status;
         SensorError motion_sensor_error = send_to_master.last_sensor_error;
         SensorError commutation_sensor_error = send_to_master.angle_last_sensor_error;
         MotionControlError motion_control_error = send_to_master.motion_control_error;
@@ -701,7 +701,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
          * Check states of the motor drive, sensor drive and control servers
          * Fault signaling to the master in the manufacturer specifc bit in the the statusword
          */
-        if ( motorcontrol_fault != NO_FAULT ||
+        if ( torque_control_fault != NO_FAULT ||
              motion_sensor_error != SENSOR_NO_ERROR ||
              commutation_sensor_error != SENSOR_NO_ERROR ||
              motion_control_error != MOTION_CONTROL_NO_ERROR ||
@@ -709,18 +709,18 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
              inactive_timeout_flag)
         {
             update_checklist(checklist, opmode, 1);
-            if (motorcontrol_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1 || watchdog_error == WATCHDOG_OVER_CURRENT_ERROR) {
+            if (torque_control_fault == DEVICE_INTERNAL_CONTINOUS_OVER_CURRENT_NO_1 || watchdog_error == WATCHDOG_OVER_CURRENT_ERROR) {
                 SET_BIT(statusword, SW_FAULT_OVER_CURRENT);
-            } else if (motorcontrol_fault == UNDER_VOLTAGE_NO_1 || watchdog_error == WATCHDOG_OVER_UNDER_VOLTAGE_OVER_TEMP_ERROR) {
+            } else if (torque_control_fault == UNDER_VOLTAGE_NO_1 || watchdog_error == WATCHDOG_OVER_UNDER_VOLTAGE_OVER_TEMP_ERROR) {
                 SET_BIT(statusword, SW_FAULT_UNDER_VOLTAGE);
-            } else if (motorcontrol_fault == OVER_VOLTAGE_NO_1) {
+            } else if (torque_control_fault == OVER_VOLTAGE_NO_1) {
                 SET_BIT(statusword, SW_FAULT_OVER_VOLTAGE);
-            } else if (motorcontrol_fault == 99/*OVER_TEMPERATURE*/) {
+            } else if (torque_control_fault == 99/*OVER_TEMPERATURE*/) {
                 SET_BIT(statusword, SW_FAULT_OVER_TEMPERATURE);
             }
 
             /* Write error code to object dictionary */
-            error_code = get_cia402_error_code(motorcontrol_fault, watchdog_error,
+            error_code = get_cia402_error_code(torque_control_fault, watchdog_error,
                                                motion_sensor_error, commutation_sensor_error,
                                                motion_control_error, inactive_timeout_flag);
             i_co.od_set_object_value(DICT_ERROR_CODE, 0, error_code);
@@ -907,7 +907,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                  */
                 if (read_controlword_fault_reset(controlword) && checklist.fault_reset_wait == false) {
                     //reset fault in motorcontrol
-                    if (motorcontrol_fault != NO_FAULT || watchdog_error != WATCHDOG_NO_ERROR) {
+                    if (torque_control_fault != NO_FAULT || watchdog_error != WATCHDOG_NO_ERROR) {
                         i_motion_control.reset_motorcontrol_faults();
                         checklist.fault_reset_wait = true;
                     }
@@ -932,7 +932,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                     if (timeafter(time, fault_reset_wait_time)) {
                         checklist.fault_reset_wait = false;
                         /* recheck fault to see if it's realy removed */
-                        if ( motorcontrol_fault != NO_FAULT ||
+                        if ( torque_control_fault != NO_FAULT ||
                              motion_sensor_error != SENSOR_NO_ERROR ||
                              commutation_sensor_error != SENSOR_NO_ERROR ||
                              watchdog_error != WATCHDOG_NO_ERROR )
@@ -961,7 +961,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
             tuning_handler_ethercat(tuning_command,
                     user_miso, tuning_status,
                     tuning_mode_state,
-                    motorcontrol_config, motion_control_config, position_feedback_config_1, position_feedback_config_2,
+                    torque_control_config, motion_control_config, position_feedback_config_1, position_feedback_config_2,
                     sensor_commutation, sensor_motion_control,
                     send_to_master,
                     i_motion_control, i_position_feedback_1, i_position_feedback_2, i_file_service);
@@ -977,7 +977,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                 statusword      = update_statusword(0, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */
                 //reset tuning status
                 tuning_mode_state.brake_flag = 0;
-                tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_control_config,
+                tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, torque_control_config, motion_control_config,
                         position_feedback_config_1, position_feedback_config_2, sensor_commutation);
                 tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
                 user_miso = 0;

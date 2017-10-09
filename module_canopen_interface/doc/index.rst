@@ -87,7 +87,7 @@ How to use CANopen Interface Service
             interface update_pwm i_update_pwm;
             interface update_brake i_update_brake;
             interface ADCInterface i_adc[2];
-            interface MotorcontrolInterface i_motorcontrol[2];
+            interface MotorcontrolInterface i_torque_control[2];
             interface PositionVelocityCtrlInterface i_position_control[3];
             interface PositionFeedbackInterface i_position_feedback_1[3];
             interface PositionFeedbackInterface i_position_feedback_2[3];
@@ -152,12 +152,12 @@ How to use CANopen Interface Service
         
                             network_drive_service_debug( profiler_config,
                                                     i_co[1],
-                                                    i_motorcontrol[0],
+                                                    i_torque_control[0],
                                                     i_position_control[0], i_position_feedback_1[0]);
                 #else
                             network_drive_service( profiler_config,
                                                     i_co[1],
-                                                    i_motorcontrol[0],
+                                                    i_torque_control[0],
                                                     i_position_control[0], i_position_feedback_1[0], null);
                 #endif
                         }
@@ -211,7 +211,7 @@ How to use CANopen Interface Service
                             pos_velocity_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                             pos_velocity_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
         
-                             motion_control_service(APP_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[1], 
+                             motion_control_service(APP_TILE_USEC, pos_velocity_ctrl_config, i_torque_control[1], 
                              i_position_control, i_update_brake);
                         }
                     }
@@ -249,37 +249,37 @@ How to use CANopen Interface Service
         
                         /* Motor Control Service */
                         {
-                            MotorcontrolConfig motorcontrol_config;
+                            MotorcontrolConfig torque_control_config;
         
-                            motorcontrol_config.v_dc =  DC_BUS_VOLTAGE;
-                            motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
-                            motorcontrol_config.torque_P_gain =  TORQUE_P_VALUE;
-                            motorcontrol_config.torque_I_gain =  TORQUE_I_VALUE;
-                            motorcontrol_config.torque_D_gain =  TORQUE_D_VALUE;
-                            motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
-                            motorcontrol_config.commutation_sensor=SENSOR_1_TYPE;
-                            motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-                            motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
-                            motorcontrol_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
-                            motorcontrol_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
-                            motorcontrol_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
-                            motorcontrol_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
-                            motorcontrol_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
-                            motorcontrol_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
-                            motorcontrol_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
-                            motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
-                            motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
-                            motorcontrol_config.current_ratio =  CURRENT_RATIO;
-                            motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
-                            motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
-                            motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
-                            motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
-                            motorcontrol_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
-                            motorcontrol_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
-                            motorcontrol_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
+                            torque_control_config.v_dc =  DC_BUS_VOLTAGE;
+                            torque_control_config.phases_inverted = MOTOR_PHASES_NORMAL;
+                            torque_control_config.torque_P_gain =  TORQUE_P_VALUE;
+                            torque_control_config.torque_I_gain =  TORQUE_I_VALUE;
+                            torque_control_config.torque_D_gain =  TORQUE_D_VALUE;
+                            torque_control_config.pole_pairs =  MOTOR_POLE_PAIRS;
+                            torque_control_config.commutation_sensor=SENSOR_1_TYPE;
+                            torque_control_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
+                            torque_control_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
+                            torque_control_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
+                            torque_control_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
+                            torque_control_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
+                            torque_control_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
+                            torque_control_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
+                            torque_control_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
+                            torque_control_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
+                            torque_control_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
+                            torque_control_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
+                            torque_control_config.current_ratio =  CURRENT_RATIO;
+                            torque_control_config.voltage_ratio =  VOLTAGE_RATIO;
+                            torque_control_config.rated_current =  MOTOR_RATED_CURRENT;
+                            torque_control_config.rated_torque  =  MOTOR_RATED_TORQUE;
+                            torque_control_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
+                            torque_control_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
+                            torque_control_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
+                            torque_control_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
         
-                            motor_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
-                                    i_watchdog[0], i_motorcontrol, i_update_pwm, IFM_TILE_USEC);
+                            motor_control_service(torque_control_config, i_adc[0], i_shared_memory[2],
+                                    i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC);
                         }
         
                         /* Shared memory Service */

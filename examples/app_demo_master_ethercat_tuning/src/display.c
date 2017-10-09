@@ -209,7 +209,7 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     }
     //row 16
     wmoveclr(wnd, &row);
-    //motorcontrol fault
+    //torque controller fault
     if (input.error_status != 0) {
         wprintw(wnd, "* Motor Fault ");
         print_motor_fault(wnd, input.error_status);

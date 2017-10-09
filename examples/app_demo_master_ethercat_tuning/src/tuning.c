@@ -203,7 +203,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             output->value *= output->sign;
             switch(output->mode_1) {
 
-            // enable/disable motorcontrol commands
+            // offset finding, position/velocity control auto tune, and cogging torque commands
             case 'a':
                 pdo_output->tuning_command = TUNING_CMD_AUTO_OFFSET;
                 switch(output->mode_2) {

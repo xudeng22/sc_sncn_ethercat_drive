@@ -49,7 +49,7 @@ int cm_sync_config_position_feedback(
 
 int cm_sync_config_motor_control(
         client interface i_co_communication i_co,
-        client interface TorqueControlInterface ?i_torque_control,
+        client interface MotionControlInterface i_motion_control,
         MotorcontrolConfig &commutation_params,
         int sensor_commutation_type);
 
@@ -59,15 +59,6 @@ void cm_sync_config_pos_velocity_control(
         MotionControlConfig &position_config,
         int sensor_resolution,
         int max_torque);
-
-/* This function is a workaround until the hall and motorconfig is reorganized. */
-void cm_sync_config_hall_states(
-        client interface i_co_communication i_co,
-        client interface PositionFeedbackInterface i_pos_feedback,
-        client interface TorqueControlInterface ?i_torque_control,
-        PositionFeedbackConfig &feedback_config,
-        MotorcontrolConfig &motorcontrol_config,
-        int sensor_index);
 
 /*
  * Set default configuration of the modules in the object dictionary. If nothing
@@ -82,7 +73,7 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_co_communication i_co,
-        client interface TorqueControlInterface ?i_torque_control,
+        client interface MotionControlInterface i_motion_control,
         MotorcontrolConfig &commutation_params);
 
 void cm_default_config_pos_velocity_control(

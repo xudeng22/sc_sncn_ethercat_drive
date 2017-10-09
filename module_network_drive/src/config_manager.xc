@@ -163,50 +163,47 @@ int cm_sync_config_position_feedback(
 
 int cm_sync_config_motor_control(
         client interface i_co_communication i_co,
-        interface TorqueControlInterface client ?i_torque_control,
-        MotorcontrolConfig &motorcontrol_config,
+        client interface MotionControlInterface i_motion_control,
+        MotorcontrolConfig &torque_control_config,
         int sensor_commutation_type)
 {
-    if (isnull(i_torque_control))
-        return motorcontrol_config.max_torque;
-
-    motorcontrol_config = i_torque_control.get_config();
+    torque_control_config = i_motion_control.get_motorcontrol_config();
 
     //convert float values
     union sdo_value temp;
     {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
-    motorcontrol_config.torque_P_gain = (int)temp.f;
+    torque_control_config.torque_P_gain = (int)temp.f;
     {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
-    motorcontrol_config.torque_I_gain = (int)temp.f;
+    torque_control_config.torque_I_gain = (int)temp.f;
     {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
-    motorcontrol_config.torque_D_gain = (int)temp.f;
+    torque_control_config.torque_D_gain = (int)temp.f;
 
-    {motorcontrol_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
-    {motorcontrol_config.phases_inverted, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
-    {motorcontrol_config.pole_pairs, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
-    motorcontrol_config.commutation_sensor       = sensor_commutation_type;
-    {motorcontrol_config.commutation_angle_offset, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
-    {motorcontrol_config.rated_torque, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
-    if (motorcontrol_config.rated_torque == 0) {
-        motorcontrol_config.rated_torque = 1;
+    {torque_control_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE);
+    {torque_control_config.phases_inverted, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
+    {torque_control_config.pole_pairs, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS);
+    torque_control_config.commutation_sensor       = sensor_commutation_type;
+    {torque_control_config.commutation_angle_offset, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0);
+    {torque_control_config.rated_torque, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_TORQUE, 0);
+    if (torque_control_config.rated_torque == 0) {
+        torque_control_config.rated_torque = 1;
     }
     int tmp = 0;
     {tmp, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0);
-    motorcontrol_config.max_torque = (tmp  * motorcontrol_config.rated_torque) / 1000; // in 1/1000 of rated torque;
-    {motorcontrol_config.phase_resistance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE);
-    {motorcontrol_config.phase_inductance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE);
-    {motorcontrol_config.torque_constant, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
-    {motorcontrol_config.rated_current, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
-    {motorcontrol_config.percent_offset_torque, void, void} = i_co.od_get_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0);
+    torque_control_config.max_torque = (tmp  * torque_control_config.rated_torque) / 1000; // in 1/1000 of rated torque;
+    {torque_control_config.phase_resistance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE);
+    {torque_control_config.phase_inductance, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE);
+    {torque_control_config.torque_constant, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT);
+    {torque_control_config.rated_current, void, void} = i_co.od_get_object_value(DICT_MOTOR_RATED_CURRENT, 0);
+    {torque_control_config.percent_offset_torque, void, void} = i_co.od_get_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0);
     /* Read protection limits */
-    {motorcontrol_config.protection_limit_over_current, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
-    {motorcontrol_config.protection_limit_under_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE);
-    {motorcontrol_config.protection_limit_over_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
-    //FIXME: missing motorcontrol_config.protection_limit_over_temperature
+    {torque_control_config.protection_limit_over_current, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT);
+    {torque_control_config.protection_limit_under_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE);
+    {torque_control_config.protection_limit_over_voltage, void, void} = i_co.od_get_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE);
+    //FIXME: missing torque_control_config.protection_limit_over_temperature
 
-    i_torque_control.set_config(motorcontrol_config);
+    i_motion_control.set_motorcontrol_config(torque_control_config);
 
-    return motorcontrol_config.max_torque;
+    return torque_control_config.max_torque;
 }
 
 void cm_sync_config_pos_velocity_control(
@@ -382,41 +379,38 @@ void cm_default_config_position_feedback(
 
 void cm_default_config_motor_control(
         client interface i_co_communication i_co,
-        interface TorqueControlInterface client ?i_torque_control,
-        MotorcontrolConfig &motorcontrol_config)
+        client interface MotionControlInterface i_motion_control,
+        MotorcontrolConfig &torque_control_config)
 
 {
-    if (isnull(i_torque_control))
-        return;
-
-    motorcontrol_config = i_torque_control.get_config();
+    torque_control_config = i_motion_control.get_motorcontrol_config();
 
     //convert float values
     union sdo_value value;
-    value.f = (float)motorcontrol_config.torque_P_gain;
+    value.f = (float)torque_control_config.torque_P_gain;
     i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP, value.i);
-    value.f = (float)motorcontrol_config.torque_I_gain;
+    value.f = (float)torque_control_config.torque_I_gain;
     i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI, value.i);
-    value.f = (float)motorcontrol_config.torque_D_gain;
+    value.f = (float)torque_control_config.torque_D_gain;
     i_co.od_set_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD, value.i);
 
-    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, motorcontrol_config.dc_bus_voltage);
-    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED, motorcontrol_config.phases_inverted);
-    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, motorcontrol_config.pole_pairs);
-    i_co.od_set_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0, motorcontrol_config.commutation_angle_offset);
-    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE, motorcontrol_config.phase_resistance);
-    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE, motorcontrol_config.phase_inductance);
-    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT, motorcontrol_config.torque_constant);
-    i_co.od_set_object_value(DICT_MOTOR_RATED_CURRENT, 0, motorcontrol_config.rated_current);
-    i_co.od_set_object_value(DICT_MOTOR_RATED_TORQUE, 0, motorcontrol_config.rated_torque);
-    i_co.od_set_object_value(DICT_MAX_TORQUE, 0, (motorcontrol_config.max_torque * 1000) / motorcontrol_config.rated_torque); // in 1/1000 of rated torque
-    i_co.od_set_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0, motorcontrol_config.percent_offset_torque);
+    i_co.od_set_object_value(DICT_BREAK_RELEASE, SUB_BREAK_RELEASE_DC_BUS_VOLTAGE, torque_control_config.dc_bus_voltage);
+    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED, torque_control_config.phases_inverted);
+    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_POLE_PAIRS, torque_control_config.pole_pairs);
+    i_co.od_set_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0, torque_control_config.commutation_angle_offset);
+    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_RESISTANCE, torque_control_config.phase_resistance);
+    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_PHASE_INDUCTANCE, torque_control_config.phase_inductance);
+    i_co.od_set_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_TORQUE_CONSTANT, torque_control_config.torque_constant);
+    i_co.od_set_object_value(DICT_MOTOR_RATED_CURRENT, 0, torque_control_config.rated_current);
+    i_co.od_set_object_value(DICT_MOTOR_RATED_TORQUE, 0, torque_control_config.rated_torque);
+    i_co.od_set_object_value(DICT_MAX_TORQUE, 0, (torque_control_config.max_torque * 1000) / torque_control_config.rated_torque); // in 1/1000 of rated torque
+    i_co.od_set_object_value(DICT_APPLIED_TUNING_TORQUE_PERCENT, 0, torque_control_config.percent_offset_torque);
     /* Write protection limits */
-    i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, motorcontrol_config.protection_limit_over_current);
-    i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE, motorcontrol_config.protection_limit_under_voltage);
-    i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE, motorcontrol_config.protection_limit_over_voltage);
+    i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_CURRENT, torque_control_config.protection_limit_over_current);
+    i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MIN_DC_VOLTAGE, torque_control_config.protection_limit_under_voltage);
+    i_co.od_set_object_value(DICT_PROTECTION, SUB_PROTECTION_MAX_DC_VOLTAGE, torque_control_config.protection_limit_over_voltage);
 
-    //FIXME: missing motorcontrol_config.protection_limit_over_temperature
+    //FIXME: missing torque_control_config.protection_limit_over_temperature
 }
 
 void cm_default_config_pos_velocity_control(

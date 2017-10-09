@@ -6,6 +6,8 @@ sc_sncn_ethercat_drive Change Log
   * Implement new pwm structure with 15 kHz, and use 100 MHz ref_clk_frq
   * Fix bugs in setting/getting motion_control_config struct in config manager
   * Fix usage of Position range limit (0x607B) and Software position limit (0x607D) objects
+  * Remove unnecessary calls to torque controller and do some cleanup in Network drive service
+  * Rename motorcontrol_config to torque_control_config
 
 3.1.2
 -----

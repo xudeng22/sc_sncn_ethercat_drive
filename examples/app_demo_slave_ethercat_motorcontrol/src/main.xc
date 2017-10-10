@@ -10,7 +10,7 @@
  * @author Synapticon GmbH (www.synapticon.com)
  */
 
-// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
+// Please configure your slave's default parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 #include <user_config.h>
 
@@ -29,10 +29,7 @@
 #include <watchdog_service.h>
 #include <motor_control_interfaces.h>
 #include <advanced_motor_control.h>
-
-//Position control + profile libs
 #include <motion_control_service.h>
-#include <profile_control.h>
 
 #include <flash_service.h>
 #include <spiffs_service.h>
@@ -103,20 +100,9 @@ int main(void)
 
 
                 {
-                    ProfilerConfig profiler_config;
-
-                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-
-                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
-                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
-
-                    network_drive_service( profiler_config,
-                            i_pdo,
-                            i_co[1],
-                            i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
+                    network_drive_service(
+                            i_pdo, i_co[1], i_motion_control[0],
+                            i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
                 }
 
             }
@@ -216,38 +202,38 @@ int main(void)
                     watchdog_service(wd_ports, i_watchdog, IFM_TILE_USEC);
                 }
 
-                /* Motor Control Service */
+                /* Torque Control Service */
                 {
-                    MotorcontrolConfig motorcontrol_config;
+                    MotorcontrolConfig torque_control_config;
 
-                    motorcontrol_config.dc_bus_voltage =  DC_BUS_VOLTAGE;
-                    motorcontrol_config.phases_inverted = MOTOR_PHASES_CONFIGURATION;
-                    motorcontrol_config.torque_P_gain =  TORQUE_Kp;
-                    motorcontrol_config.torque_I_gain =  TORQUE_Ki;
-                    motorcontrol_config.torque_D_gain =  TORQUE_Kd;
-                    motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
-                    motorcontrol_config.commutation_sensor=SENSOR_1_TYPE;
-                    motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-                    motorcontrol_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
-                    motorcontrol_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
-                    motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
-                    motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
-                    motorcontrol_config.current_ratio =  CURRENT_RATIO;
-                    motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
-                    motorcontrol_config.temperature_ratio =  TEMPERATURE_RATIO;
-                    motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
-                    motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
-                    motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
-                    motorcontrol_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
-                    motorcontrol_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
-                    motorcontrol_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
-                    motorcontrol_config.protection_limit_over_temperature = TEMP_BOARD_MAX;
+                    torque_control_config.dc_bus_voltage =  DC_BUS_VOLTAGE;
+                    torque_control_config.phases_inverted = MOTOR_PHASES_CONFIGURATION;
+                    torque_control_config.torque_P_gain =  TORQUE_Kp;
+                    torque_control_config.torque_I_gain =  TORQUE_Ki;
+                    torque_control_config.torque_D_gain =  TORQUE_Kd;
+                    torque_control_config.pole_pairs =  MOTOR_POLE_PAIRS;
+                    torque_control_config.commutation_sensor=SENSOR_1_TYPE;
+                    torque_control_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
+                    torque_control_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
+                    torque_control_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
+                    torque_control_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
+                    torque_control_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
+                    torque_control_config.current_ratio =  CURRENT_RATIO;
+                    torque_control_config.voltage_ratio =  VOLTAGE_RATIO;
+                    torque_control_config.temperature_ratio =  TEMPERATURE_RATIO;
+                    torque_control_config.rated_current =  MOTOR_RATED_CURRENT;
+                    torque_control_config.rated_torque  =  MOTOR_RATED_TORQUE;
+                    torque_control_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
+                    torque_control_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
+                    torque_control_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
+                    torque_control_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
+                    torque_control_config.protection_limit_over_temperature = TEMP_BOARD_MAX;
 
                     for (int i = 0; i < 1024; i++)
                     {
-                        motorcontrol_config.torque_offset[i] = 0;
+                        torque_control_config.torque_offset[i] = 0;
                     }
-                    torque_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
+                    torque_control_service(torque_control_config, i_adc[0], i_shared_memory[2],
                             i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC, /*gpio_port_0*/null);
                 }
 

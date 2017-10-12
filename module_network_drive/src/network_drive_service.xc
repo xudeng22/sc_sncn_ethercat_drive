@@ -166,10 +166,11 @@ static int initial_object_dictionary_read(client interface i_co_communication i_
  * Return 0 if nothing changed
  *        1 if a value is updated
  */
-static int check_for_pid_updatate(
+static int check_for_pid_update(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
-        MotionControlConfig &position_config)
+        MotionControlConfig &motion_control_config,
+        int opmode)
 {
     uint16_t changed_index = 0;
     uint8_t  changed_subindex = 0;
@@ -183,82 +184,125 @@ static int check_for_pid_updatate(
     uint8_t od_err = 0;
 
     int changed = 0;
-    position_config = i_motion_control.get_motion_control_config();
+    motion_control_config = i_motion_control.get_motion_control_config();
+
     if (changed_index    == DICT_FILTER_COEFFICIENTS &&
-        changed_subindex == SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT) {
+            changed_subindex == SUB_FILTER_COEFFICIENTS_POSITION_FILTER_COEFFICIENT) {
+            {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
+            if (od_err != 0) {
+                return 0;
+            }
+            motion_control_config.filter = value.i;
+            changed = 1;
+    } else if (changed_index == DICT_POSITION_CONTROLLER) {
         {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
         if (od_err != 0) {
             return 0;
         }
-        position_config.filter = value.i;
         changed = 1;
-    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
-               changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KP) {
+        switch(changed_subindex) {
+        case SUB_POSITION_CONTROLLER_POSITION_LOOP_KP:
+            motion_control_config.position_kp = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_POSITION_LOOP_KI:
+            motion_control_config.position_ki = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_POSITION_LOOP_KD:
+            motion_control_config.position_kd = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_POSITION_LOOP_INTEGRAL_LIMIT:
+            motion_control_config.position_integral_limit = value.i;
+            break;
+        }
+        if (opmode != OPMODE_CSV) { //do not apply position's velocity pid gains when in velocity control
+            switch(changed_subindex) {
+            case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KP:
+                motion_control_config.velocity_kp = (int)value.f;
+                break;
+            case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KI:
+                motion_control_config.velocity_ki = (int)value.f;
+                break;
+            case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KD:
+                motion_control_config.velocity_kd = (int)value.f;
+                break;
+            case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_INTEGRAL_LIMIT:
+                motion_control_config.velocity_integral_limit = value.i;
+                break;
+            }
+        }
+    } else if (changed_index == DICT_VELOCITY_CONTROLLER && opmode != OPMODE_CSP) {
         {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
         if (od_err != 0) {
             return 0;
         }
-        position_config.position_kp = (int)value.f;
         changed = 1;
-    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
-               changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KI) {
+        switch(changed_subindex) {
+        case SUB_VELOCITY_CONTROLLER_CONTROLLER_KP:
+            motion_control_config.velocity_kp = (int)value.f;
+            break;
+        case SUB_VELOCITY_CONTROLLER_CONTROLLER_KI:
+            motion_control_config.velocity_ki = (int)value.f;
+            break;
+        case SUB_VELOCITY_CONTROLLER_CONTROLLER_KD:
+            motion_control_config.velocity_kd = (int)value.f;
+            break;
+        case SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT:
+            motion_control_config.velocity_integral_limit = value.i;
+            break;
+        }
+    } else if (changed_index == DICT_POSITION_CONTROLLER_GAIN_SCHEDULING) {
         {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
         if (od_err != 0) {
             return 0;
         }
-        position_config.position_ki = (int)value.f;
         changed = 1;
-    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
-               changed_subindex == SUB_POSITION_CONTROLLER_CONTROLLER_KD) {
-        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-        if (od_err != 0) {
-            return 0;
+        switch(changed_subindex) {
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_0:
+            motion_control_config.position_kp_l = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_0:
+            motion_control_config.position_ki_l = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_0:
+            motion_control_config.position_kd_l = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_1:
+            motion_control_config.position_kp_h = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_1:
+            motion_control_config.position_ki_h = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_1:
+            motion_control_config.position_kd_h = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_0:
+            motion_control_config.velocity_kp_l = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_0:
+            motion_control_config.velocity_ki_l = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_0:
+            motion_control_config.velocity_kd_l = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_1:
+            motion_control_config.velocity_kp_h = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_1:
+            motion_control_config.velocity_ki_h = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1:
+            motion_control_config.velocity_kd_h = (int)value.f;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_0:
+            motion_control_config.velocity_lo_l = value.i;
+            break;
+        case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_1:
+            motion_control_config.velocity_hi_l = value.i;
+            break;
         }
-        position_config.position_kd = (int)value.f;
-        changed = 1;
-    } else if (changed_index    == DICT_POSITION_CONTROLLER &&
-               changed_subindex == SUB_POSITION_CONTROLLER_POSITION_INTEGRAL_LIMIT) {
-        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-        if (od_err != 0) {
-            return 0;
-        }
-        position_config.position_integral_limit = value.i;
-        changed = 1;
-    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
-               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KP) {
-        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-        if (od_err != 0) {
-            return 0;
-        }
-        position_config.velocity_kp = (int)value.f;
-        changed = 1;
-    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
-               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KI) {
-        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-        if (od_err != 0) {
-            return 0;
-        }
-        position_config.velocity_ki = (int)value.f;
-        changed = 1;
-    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
-               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_KD) {
-        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-        if (od_err != 0) {
-            return 0;
-        }
-        position_config.velocity_kd = (int)value.f;
-        changed = 1;
-    } else if (changed_index    == DICT_VELOCITY_CONTROLLER &&
-               changed_subindex == SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT) {
-        {value.i, void, od_err} = i_co.od_get_object_value(changed_index, changed_subindex);
-        if (od_err != 0) {
-            return 0;
-        }
-        position_config.velocity_integral_limit = value.i;
-        changed = 1;
     }
 
-    i_motion_control.set_motion_control_config(position_config);
+    i_motion_control.set_motion_control_config(motion_control_config);
 
     return changed;
 }
@@ -345,15 +389,15 @@ static void inline update_configuration(
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface i_pos_feedback_1,
         client interface PositionFeedbackInterface ?i_pos_feedback_2,
-        MotionControlConfig  &position_config,
+        MotionControlConfig  &motion_control_config,
         PositionFeedbackConfig    &position_feedback_config_1,
         PositionFeedbackConfig    &position_feedback_config_2,
         MotorcontrolConfig        &torque_control_config,
         int &sensor_commutation, int &sensor_motion_control,
-        int &sensor_resolution,
-        uint8_t &polarity,
+        int &sensor_resolution, uint8_t &polarity,
         int &quick_stop_deceleration,
-        int &position_range_limit_min, int &position_range_limit_max)
+        int &position_range_limit_min, int &position_range_limit_max,
+        int opmode)
 {
 
     // set position feedback services parameters
@@ -390,8 +434,8 @@ static void inline update_configuration(
         sensor_commutation_type = position_feedback_config_1.sensor_type;
     }
 
-    int max_torque = cm_sync_config_motor_control(i_co, i_motion_control, torque_control_config, sensor_commutation_type);
-    cm_sync_config_pos_velocity_control(i_co, i_motion_control, position_config, sensor_resolution, max_torque);
+    int max_torque = cm_sync_config_torque_control(i_co, i_motion_control, torque_control_config, sensor_commutation_type);
+    cm_sync_config_motion_control(i_co, i_motion_control, motion_control_config, sensor_resolution, max_torque, opmode);
 
     {polarity, void, void}          = i_co.od_get_object_value(DICT_POLARITY, 0);
     {quick_stop_deceleration, void, void} = i_co.od_get_object_value(DICT_QUICK_STOP_DECELERATION, 0);
@@ -564,8 +608,8 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     if (!isnull(i_position_feedback_2)) {
         cm_default_config_position_feedback(i_co, i_position_feedback_2, position_feedback_config_2, 2);
     }
-    cm_default_config_motor_control(i_co, i_motion_control, torque_control_config);
-    cm_default_config_pos_velocity_control(i_co, i_motion_control, motion_control_config);
+    cm_default_config_torque_control(i_co, i_motion_control, torque_control_config);
+    cm_default_config_motion_control(i_co, i_motion_control, motion_control_config);
     //we use motion_control_config.max_deceleration_profiler as the default value for quick stop deceleration
     i_co.od_set_object_value(DICT_QUICK_STOP_DECELERATION, 0, motion_control_config.max_deceleration_profiler);
     i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, motion_control_config.min_pos_range_limit);
@@ -594,7 +638,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
             update_configuration(i_co, i_motion_control, i_position_feedback_1, i_position_feedback_2,
                     motion_control_config, position_feedback_config_1, position_feedback_config_2, torque_control_config,
                     sensor_commutation, sensor_motion_control, sensor_resolution, polarity,
-                    quick_stop_deceleration, position_range_limit_min, position_range_limit_max
+                    quick_stop_deceleration, position_range_limit_min, position_range_limit_max, opmode
                     );
             //Load cogging torque data
             char filename [] = "cogging_torque.bin";
@@ -622,7 +666,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
         } else {
             /* if there is no "read the whole configuration", just check if single values changed.
              * More precisely, the PID configuration values, one at time. */
-            check_for_pid_updatate(i_co, i_motion_control, motion_control_config);
+            check_for_pid_update(i_co, i_motion_control, motion_control_config, opmode);
         }
 
         /*
@@ -971,7 +1015,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
             //exit tuning mode
             if (opmode != OPMODE_SNCN_TUNING) {
-                opmode = opmode_request; /* stop tuning and switch to new opmode */
                 i_motion_control.disable();
                 state = S_SWITCH_ON_DISABLED;
                 statusword      = update_statusword(0, state, 0, quick_stop_steps, 0); /* FiXME update ack and shutdown_ack */

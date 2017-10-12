@@ -47,18 +47,19 @@ int cm_sync_config_position_feedback(
         int &sensor_commutation, int &sensor_motion_control,
         int number_of_ports, int &port_index);
 
-int cm_sync_config_motor_control(
+int cm_sync_config_torque_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
-        MotorcontrolConfig &commutation_params,
+        MotorcontrolConfig &torque_control_config,
         int sensor_commutation_type);
 
-void cm_sync_config_pos_velocity_control(
+void cm_sync_config_motion_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
-        MotionControlConfig &position_config,
+        MotionControlConfig &motion_control_config,
         int sensor_resolution,
-        int max_torque);
+        int max_torque,
+        int opmode);
 
 /*
  * Set default configuration of the modules in the object dictionary. If nothing
@@ -71,12 +72,12 @@ void cm_default_config_position_feedback(
         PositionFeedbackConfig &config,
         int feedback_service_index);
 
-void cm_default_config_motor_control(
+void cm_default_config_torque_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
-        MotorcontrolConfig &commutation_params);
+        MotorcontrolConfig &torque_control_config);
 
-void cm_default_config_pos_velocity_control(
+void cm_default_config_motion_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
-        MotionControlConfig &position_config);
+        MotionControlConfig &motion_control_config);

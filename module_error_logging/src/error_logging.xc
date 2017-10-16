@@ -26,13 +26,13 @@ int get_config_value(char title[], char end_marker[], char buffer[])
         end_pos =  strstr(begin_pos,  end_marker);
     else
     {
-        return -1;
+        return 0;
     }
 
     value_str_length = end_pos - (begin_pos  + strlen(title));
     if (value_str_length >= CONFIG_MAX_STRING_SIZE)
     {
-        return -1;
+        return 0;
     }
 
     memset(value_buffer, '\0', CONFIG_MAX_STRING_SIZE);
@@ -45,7 +45,7 @@ int get_config_value(char title[], char end_marker[], char buffer[])
 }
 
 
-int get_config_string(char title[], char end_marker[], char buffer[], char out_buffer[])
+LogStat get_config_string(char title[], char end_marker[], char buffer[], char out_buffer[])
 {
     char * begin_pos;
     char * end_pos;
@@ -57,13 +57,13 @@ int get_config_string(char title[], char end_marker[], char buffer[], char out_b
         end_pos =  strstr(begin_pos,  end_marker);
     else
     {
-        return -1;
+        return LOG_ERROR;
     }
 
     data_str_length = end_pos - (begin_pos  + strlen(title));
     if (data_str_length >= CONFIG_MAX_STRING_SIZE)
     {
-         return -1;
+         return LOG_ERROR;
     }
 
     memset(data_buffer, '\0', CONFIG_MAX_STRING_SIZE);
@@ -72,12 +72,12 @@ int get_config_string(char title[], char end_marker[], char buffer[], char out_b
     memset(begin_pos, ' ', (end_pos - begin_pos) + 1);
     memcpy(out_buffer, data_buffer, strlen(data_buffer));
 
-    return 0;
+    return LOG_OK;
 }
 
 
 
-int read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
+LogStat read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
 {
     char config_buffer[SPIFFS_MAX_DATA_BUFFER_SIZE];
     int file_size;
@@ -87,44 +87,48 @@ int read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
 
     if (file_descriptor < 0)
     {
-        if (file_descriptor == SPIFFS_ERR_NOT_FOUND)
-        {
-            return -1;
-        }
-        else
-        {
-            return -1;
-        }
-    }
-    else
-    {
-        printintln(file_descriptor);
+        return LOG_ERROR;
     }
 
     file_size = i_spiffs.get_file_size(file_descriptor);
     if (file_size > SPIFFS_MAX_DATA_BUFFER_SIZE)
     {
         i_spiffs.close_file(file_descriptor);
-        return -1;
+        return LOG_ERROR;
     }
 
     memset(config_buffer, '\0', SPIFFS_MAX_DATA_BUFFER_SIZE);
     res = i_spiffs.read(file_descriptor, config_buffer, file_size);
+    if (res < 0)
+    {
+        return LOG_ERROR;
+    }
     i_spiffs.close_file(file_descriptor);
     config_buffer[file_size] = CONFIG_END_OF_STRING_MARKER[0];
 
     config->max_log_file_size = get_config_value(CONFIG_LOG_FILE_MAX_TITLE, CONFIG_END_OF_STRING_MARKER, config_buffer);
+    if (config->max_log_file_size <= 0)
+    {
+        return LOG_ERROR;
+    }
 
-    get_config_string(CONFIG_LOG_FILE_NAME1_TITLE, CONFIG_END_OF_STRING_MARKER, config_buffer, config->log_file_name[0]);
+    res = get_config_string(CONFIG_LOG_FILE_NAME1_TITLE, CONFIG_END_OF_STRING_MARKER, config_buffer, config->log_file_name[0]);
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
 
-    get_config_string(CONFIG_LOG_FILE_NAME2_TITLE, CONFIG_END_OF_STRING_MARKER, config_buffer, config->log_file_name[1]);
+    res = get_config_string(CONFIG_LOG_FILE_NAME2_TITLE, CONFIG_END_OF_STRING_MARKER, config_buffer, config->log_file_name[1]);
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
 
-    return 0;
-
+    return LOG_OK;
 }
 
 
-int open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
+LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
 {
     unsigned short flags = 0;
 
@@ -148,25 +152,28 @@ int open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
                 file_descriptor = i_spiffs.open_file(Config.log_file_name[curr_log_file_no], strlen(Config.log_file_name[curr_log_file_no]), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
                 if (file_descriptor < 0)
                 {
-                    return -1;
-                 }
+                    return LOG_ERROR;
+                }
+                else
+                    printstrln("LOG File opened");
            }
            else
            {
-               return -1;
+               return LOG_ERROR;
            }
     }
     else
     {
+        printstrln("LOG File opened");
         i_spiffs.seek(file_descriptor, 0, SPIFFS_SEEK_END);
     }
 
-    return 0;
+    return LOG_OK;
 }
 
 
 
-int check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
+LogStat check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
 {
     int res;
 
@@ -174,28 +181,32 @@ int check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existing_fi
 
     if (res < 0)
     {
-        return -1;
+        return LOG_ERROR;
     }
 
     if (res > Config.max_log_file_size)
     {
         if (curr_log_file_no == 0)
+        {
             curr_log_file_no = 1;
+        }
         else
           if (curr_log_file_no == 1)
+          {
               curr_log_file_no = 0;
+          }
 
         if (open_log_file(i_spiffs, reset_existing_file) != 0)
         {
             //error opening file
-            return -1;
+            return LOG_ERROR;
         }
     }
 
-    return 0;
+    return LOG_OK;
 }
 
-int error_logging_init(client SPIFFSInterface ?i_spiffs)
+LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
 {
 
     if (read_log_config(i_spiffs, &Config) != 0)
@@ -209,36 +220,45 @@ int error_logging_init(client SPIFFSInterface ?i_spiffs)
     if (open_log_file(i_spiffs, 0) != 0)
     {
         //error opening file
-        return -1;
+        return LOG_ERROR;
     }
 
     if (check_log_file_size(i_spiffs, 0) != 0)
     {
         //error checking of file
-        return -1;
+        return LOG_ERROR;
     }
 
-    return 0;
+    return LOG_OK;
 }
 
 
-
-int error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
+LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
 {
     int res;
     char log_buf[256];
 
     res = check_log_file_size(i_spiffs, 1);
-    if (res != 0) return res;
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
 
     memset(log_buf, 0, sizeof(log_buf));
 
-    sprintf(log_buf, "%9d %s 0x%x\n", ErrItem.timestamp, ErrTitles[ErrItem.err_type - 1], ErrItem.err_code);
+    sprintf(log_buf, "%5d %9d %s 0x%x\n",ErrItem.index, ErrItem.timestamp, ErrTypeTitles[ErrItem.err_type - 1], ErrItem.err_code);
 
     res = i_spiffs.write(file_descriptor, log_buf, strlen(log_buf));
-    if (res < 0) return res;
+    if (res < 0)
+    {
+        return LOG_ERROR;
+    }
     res = i_spiffs.flush(file_descriptor);
-    return res;
+    if (res < 0)
+    {
+        return LOG_ERROR;
+    }
+    return LOG_OK;
 }
 
 

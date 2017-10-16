@@ -440,6 +440,7 @@ void file_service(
 {
     timer t;
     unsigned time = 0, time2 = 0;
+    LogStat logging_status;
 
     file.length = 0;
     file.opened = 0;
@@ -461,21 +462,24 @@ void file_service(
         break;
     }
 
-    error_logging_init(i_spiffs);
+    logging_status = error_logging_init(i_spiffs);
 
     while (1) {
 
-        select {
-            case i_motion_control.new_error():
-                ErrItem_t ErrItem;
-                int status;
-                status = i_motion_control.get_last_error(ErrItem);
-                if (status == 0)
-                    error_msg_save(i_spiffs, ErrItem);
-                break;
+        if (logging_status == LOG_OK)
+        {
+            select {
+                case i_motion_control.new_error():
+                    ErrItem_t ErrItem;
+                    int status;
+                    status = i_motion_control.get_last_error(ErrItem);
+                    if (status == LOG_OK)
+                        logging_status = error_msg_save(i_spiffs, ErrItem);
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
 
 

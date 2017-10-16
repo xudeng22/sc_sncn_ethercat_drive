@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C21-DX_G2.bsp>
-#include <IFM_DC1K-rev-c4.bsp>
+#include <IFM_BOARD_REQUIRED>
 
 
 /**

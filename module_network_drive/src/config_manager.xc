@@ -170,13 +170,13 @@ int cm_sync_config_torque_control(
     torque_control_config = i_motion_control.get_motorcontrol_config();
 
     //convert float values
-    union sdo_value temp;
-    {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
-    torque_control_config.torque_P_gain = (int)temp.f;
-    {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
-    torque_control_config.torque_I_gain = (int)temp.f;
-    {temp.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
-    torque_control_config.torque_D_gain = (int)temp.f;
+    union sdo_value value;
+    {value.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KP);
+    torque_control_config.torque_P_gain = value.f;
+    {value.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KI);
+    torque_control_config.torque_I_gain = value.f;
+    {value.i, void, void} = i_co.od_get_object_value(DICT_TORQUE_CONTROLLER, SUB_TORQUE_CONTROLLER_CONTROLLER_KD);
+    torque_control_config.torque_D_gain = value.f;
 
     {torque_control_config.dc_bus_voltage, void, void} = i_co.od_get_object_value(DICT_BRAKE_RELEASE, SUB_BRAKE_RELEASE_DC_BUS_VOLTAGE);
     {torque_control_config.phases_inverted, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, SUB_MOTOR_SPECIFIC_SETTINGS_MOTOR_PHASES_INVERTED);
@@ -232,57 +232,57 @@ void cm_sync_config_motion_control(
     {motion_control_config.moment_of_inertia, void, void} = i_co.od_get_object_value(DICT_MOMENT_OF_INERTIA, 0);
 
     // convert float values
-    union sdo_value temp;
+    union sdo_value value;
     // position
-    {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KP);
-    motion_control_config.position_kp = (int)temp.f;
-    {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KI);
-    motion_control_config.position_ki = (int)temp.f;
-    {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KD);
-    motion_control_config.position_kd = (int)temp.f;
+    {value.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KP);
+    motion_control_config.position_kp = value.f;
+    {value.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KI);
+    motion_control_config.position_ki = value.f;
+    {value.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KD);
+    motion_control_config.position_kd = value.f;
     // velocity
     if (opmode != OPMODE_CSV) {
-        {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KP);
-        motion_control_config.velocity_kp = (int)temp.f;
-        {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KI);
-        motion_control_config.velocity_ki = (int)temp.f;
-        {temp.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KD);
-        motion_control_config.velocity_kd = (int)temp.f;
+        {value.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KP);
+        motion_control_config.velocity_kp = value.f;
+        {value.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KI);
+        motion_control_config.velocity_ki = value.f;
+        {value.i, void, void}        = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KD);
+        motion_control_config.velocity_kd = value.f;
         {motion_control_config.velocity_integral_limit, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_INTEGRAL_LIMIT);
     } else {
-        {temp.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP);
-        motion_control_config.velocity_kp = (int)temp.f;
-        {temp.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI);
-        motion_control_config.velocity_ki = (int)temp.f;
-        {temp.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD);
-        motion_control_config.velocity_kd = (int)temp.f;
+        {value.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP);
+        motion_control_config.velocity_kp = value.f;
+        {value.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI);
+        motion_control_config.velocity_ki = value.f;
+        {value.i, void, void}        = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD);
+        motion_control_config.velocity_kd = value.f;
         {motion_control_config.velocity_integral_limit, void, void} = i_co.od_get_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT);
     }
     // gain scheduling
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_0);
-    motion_control_config.position_kp_l = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_0);
-    motion_control_config.position_ki_l = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_0);
-    motion_control_config.position_kd_l = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_1);
-    motion_control_config.position_kp_h = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_1);
-    motion_control_config.position_ki_h = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_1);
-    motion_control_config.position_kd_h = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_0);
-    motion_control_config.velocity_kp_l = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_0);
-    motion_control_config.velocity_ki_l = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_0);
-    motion_control_config.velocity_kd_l = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_1);
-    motion_control_config.velocity_kp_h = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_1);
-    motion_control_config.velocity_ki_h = (int)temp.f;
-    {temp.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1);
-    motion_control_config.velocity_kd_h = (int)temp.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_0);
+    motion_control_config.position_kp_l = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_0);
+    motion_control_config.position_ki_l = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_0);
+    motion_control_config.position_kd_l = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_1);
+    motion_control_config.position_kp_h = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_1);
+    motion_control_config.position_ki_h = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_1);
+    motion_control_config.position_kd_h = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_0);
+    motion_control_config.velocity_kp_l = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_0);
+    motion_control_config.velocity_ki_l = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_0);
+    motion_control_config.velocity_kd_l = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_1);
+    motion_control_config.velocity_kp_h = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_1);
+    motion_control_config.velocity_ki_h = value.f;
+    {value.i, void, void}                = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1);
+    motion_control_config.velocity_kd_h = value.f;
     {motion_control_config.velocity_lo_l, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_0);
     {motion_control_config.velocity_hi_l, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_1);
     //TODO: integral limit for gain scheduling are not implemented yet
@@ -486,46 +486,46 @@ void cm_default_config_motion_control(
     //convert float values
     union sdo_value value;
     //position PID
-    value.f = (float)motion_control_config.position_kp;
+    value.f = motion_control_config.position_kp;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KP, value.i);
-    value.f = (float)motion_control_config.position_ki;
+    value.f = motion_control_config.position_ki;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KI, value.i);
-    value.f = (float)motion_control_config.position_kd;
+    value.f = motion_control_config.position_kd;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_POSITION_LOOP_KD, value.i);
     //velocity PID, we also use the velocity pid params as the default for velocity pid of cascaded position controller
-    value.f = (float)motion_control_config.velocity_kp;
+    value.f = motion_control_config.velocity_kp;
     i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KP, value.i);
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KP, value.i);
-    value.f = (float)motion_control_config.velocity_ki;
+    value.f = motion_control_config.velocity_ki;
     i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KI, value.i);
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KI, value.i);
-    value.f = (float)motion_control_config.velocity_kd;
+    value.f = motion_control_config.velocity_kd;
     i_co.od_set_object_value(DICT_VELOCITY_CONTROLLER, SUB_VELOCITY_CONTROLLER_CONTROLLER_KD, value.i);
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER, SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KD, value.i);
     //gain scheduling
-    value.f = (float)motion_control_config.position_kp_l;
+    value.f = motion_control_config.position_kp_l;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_0, value.i);
-    value.f = (float)motion_control_config.position_ki_l;
+    value.f = motion_control_config.position_ki_l;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_0, value.i);
-    value.f = (float)motion_control_config.position_kd_l;
+    value.f = motion_control_config.position_kd_l;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_0, value.i);
-    value.f = (float)motion_control_config.velocity_kp_l;
+    value.f = motion_control_config.velocity_kp_l;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_0, value.i);
-    value.f = (float)motion_control_config.velocity_ki_l;
+    value.f = motion_control_config.velocity_ki_l;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_0, value.i);
-    value.f = (float)motion_control_config.velocity_kd_l;
+    value.f = motion_control_config.velocity_kd_l;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_0, value.i);
-    value.f = (float)motion_control_config.position_kp_h;
+    value.f = motion_control_config.position_kp_h;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_1, value.i);
-    value.f = (float)motion_control_config.position_ki_h;
+    value.f = motion_control_config.position_ki_h;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_1, value.i);
-    value.f = (float)motion_control_config.position_kd_h;
+    value.f = motion_control_config.position_kd_h;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_1, value.i);
-    value.f = (float)motion_control_config.velocity_kp_h;
+    value.f = motion_control_config.velocity_kp_h;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_1, value.i);
-    value.f = (float)motion_control_config.velocity_ki_h;
+    value.f = motion_control_config.velocity_ki_h;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_1, value.i);
-    value.f = (float)motion_control_config.velocity_kd_h;
+    value.f = motion_control_config.velocity_kd_h;
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1, value.i);
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_0, motion_control_config.velocity_lo_l);
     i_co.od_set_object_value(DICT_POSITION_CONTROLLER_GAIN_SCHEDULING, SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_1, motion_control_config.velocity_hi_l);

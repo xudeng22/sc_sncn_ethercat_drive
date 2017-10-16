@@ -202,13 +202,13 @@ static int check_for_pid_update(
         changed = 1;
         switch(changed_subindex) {
         case SUB_POSITION_CONTROLLER_POSITION_LOOP_KP:
-            motion_control_config.position_kp = (int)value.f;
+            motion_control_config.position_kp = value.f;
             break;
         case SUB_POSITION_CONTROLLER_POSITION_LOOP_KI:
-            motion_control_config.position_ki = (int)value.f;
+            motion_control_config.position_ki = value.f;
             break;
         case SUB_POSITION_CONTROLLER_POSITION_LOOP_KD:
-            motion_control_config.position_kd = (int)value.f;
+            motion_control_config.position_kd = value.f;
             break;
         case SUB_POSITION_CONTROLLER_POSITION_LOOP_INTEGRAL_LIMIT:
             motion_control_config.position_integral_limit = value.i;
@@ -217,13 +217,13 @@ static int check_for_pid_update(
         if (opmode != OPMODE_CSV) { //do not apply position's velocity pid gains when in velocity control
             switch(changed_subindex) {
             case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KP:
-                motion_control_config.velocity_kp = (int)value.f;
+                motion_control_config.velocity_kp = value.f;
                 break;
             case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KI:
-                motion_control_config.velocity_ki = (int)value.f;
+                motion_control_config.velocity_ki = value.f;
                 break;
             case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_KD:
-                motion_control_config.velocity_kd = (int)value.f;
+                motion_control_config.velocity_kd = value.f;
                 break;
             case SUB_POSITION_CONTROLLER_VELOCITY_LOOP_INTEGRAL_LIMIT:
                 motion_control_config.velocity_integral_limit = value.i;
@@ -238,13 +238,13 @@ static int check_for_pid_update(
         changed = 1;
         switch(changed_subindex) {
         case SUB_VELOCITY_CONTROLLER_CONTROLLER_KP:
-            motion_control_config.velocity_kp = (int)value.f;
+            motion_control_config.velocity_kp = value.f;
             break;
         case SUB_VELOCITY_CONTROLLER_CONTROLLER_KI:
-            motion_control_config.velocity_ki = (int)value.f;
+            motion_control_config.velocity_ki = value.f;
             break;
         case SUB_VELOCITY_CONTROLLER_CONTROLLER_KD:
-            motion_control_config.velocity_kd = (int)value.f;
+            motion_control_config.velocity_kd = value.f;
             break;
         case SUB_VELOCITY_CONTROLLER_CONTROLLER_INTEGRAL_LIMIT:
             motion_control_config.velocity_integral_limit = value.i;
@@ -258,40 +258,40 @@ static int check_for_pid_update(
         changed = 1;
         switch(changed_subindex) {
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_0:
-            motion_control_config.position_kp_l = (int)value.f;
+            motion_control_config.position_kp_l = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_0:
-            motion_control_config.position_ki_l = (int)value.f;
+            motion_control_config.position_ki_l = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_0:
-            motion_control_config.position_kd_l = (int)value.f;
+            motion_control_config.position_kd_l = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KP_1:
-            motion_control_config.position_kp_h = (int)value.f;
+            motion_control_config.position_kp_h = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KI_1:
-            motion_control_config.position_ki_h = (int)value.f;
+            motion_control_config.position_ki_h = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_POSITION_LOOP_KD_1:
-            motion_control_config.position_kd_h = (int)value.f;
+            motion_control_config.position_kd_h = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_0:
-            motion_control_config.velocity_kp_l = (int)value.f;
+            motion_control_config.velocity_kp_l = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_0:
-            motion_control_config.velocity_ki_l = (int)value.f;
+            motion_control_config.velocity_ki_l = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_0:
-            motion_control_config.velocity_kd_l = (int)value.f;
+            motion_control_config.velocity_kd_l = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KP_1:
-            motion_control_config.velocity_kp_h = (int)value.f;
+            motion_control_config.velocity_kp_h = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_1:
-            motion_control_config.velocity_ki_h = (int)value.f;
+            motion_control_config.velocity_ki_h = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1:
-            motion_control_config.velocity_kd_h = (int)value.f;
+            motion_control_config.velocity_kd_h = value.f;
             break;
         case SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_GAIN_SCHEDULING_THRESHOLD_VELOCITY_0:
             motion_control_config.velocity_lo_l = value.i;

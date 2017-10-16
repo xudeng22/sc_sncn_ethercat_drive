@@ -9,6 +9,7 @@ sc_sncn_ethercat_drive Change Log
   * Remove unnecessary calls to torque controller and do some cleanup in Network drive service
   * Rename motorcontrol_config to torque_control_config
   * Add SDO objects for Gain scheduling and separate Position gains from the Velocity controller
+  * Add support for float PID parameters in tuning app.
 
 3.1.2
 -----

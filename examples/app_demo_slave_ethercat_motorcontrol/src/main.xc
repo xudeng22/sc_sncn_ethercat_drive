@@ -124,7 +124,6 @@ int main(void)
             {
                 /* Motion Control Loop */
                 {
-
                     MotionControlConfig motion_ctrl_config;
 
                     motion_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
@@ -154,6 +153,21 @@ int main(void)
                     motion_ctrl_config.enable_velocity_auto_tuner =           ENABLE_VELOCITY_AUTO_TUNER;
                     motion_ctrl_config.enable_compensation_recording =        ENABLE_COMPENSATION_RECORDING;
                     motion_ctrl_config.enable_open_phase_detection =          ENABLE_OPEN_PHASE_DETECTION;
+
+                    motion_ctrl_config.position_kp_l =                        GAIN_SCHEDULING_POSITION_Kp_0;
+                    motion_ctrl_config.position_ki_l =                        GAIN_SCHEDULING_POSITION_Ki_0;
+                    motion_ctrl_config.position_kd_l =                        GAIN_SCHEDULING_POSITION_Kd_0;
+                    motion_ctrl_config.position_kp_h =                        GAIN_SCHEDULING_POSITION_Kp_1;
+                    motion_ctrl_config.position_ki_h =                        GAIN_SCHEDULING_POSITION_Ki_1;
+                    motion_ctrl_config.position_kd_h =                        GAIN_SCHEDULING_POSITION_Kd_1;
+                    motion_ctrl_config.velocity_kp_l =                        GAIN_SCHEDULING_VELOCITY_Kp_0;
+                    motion_ctrl_config.velocity_ki_l =                        GAIN_SCHEDULING_VELOCITY_Ki_0;
+                    motion_ctrl_config.velocity_kd_l =                        GAIN_SCHEDULING_VELOCITY_Kd_0;
+                    motion_ctrl_config.velocity_kp_h =                        GAIN_SCHEDULING_VELOCITY_Kp_1;
+                    motion_ctrl_config.velocity_ki_h =                        GAIN_SCHEDULING_VELOCITY_Ki_1;
+                    motion_ctrl_config.velocity_kd_h =                        GAIN_SCHEDULING_VELOCITY_Kd_1;
+                    motion_ctrl_config.velocity_lo_l =                        GAIN_SCHEDULING_VELOCITY_THRESHOLD_0;
+                    motion_ctrl_config.velocity_hi_l =                        GAIN_SCHEDULING_VELOCITY_THRESHOLD_1;
 
                     motion_ctrl_config.brake_release_strategy =               BRAKE_RELEASE_STRATEGY;
                     motion_ctrl_config.brake_release_delay =                  BRAKE_RELEASE_DELAY;

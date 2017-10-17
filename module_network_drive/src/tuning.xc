@@ -11,6 +11,7 @@
 #include <file_service.h>
 #include <string.h>
 #include <print.h>
+#include <config_manager.h>
 /*
  * Function to call while in tuning opmode
  *
@@ -42,6 +43,7 @@ int tuning_handler_ethercat(
     motion_ctrl_config = i_motion_control.get_motion_control_config();
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
+    union sdo_value value;
     status_mux++;
     if (status_mux > TUNING_STATUS_MUX_TUNE_PERIOD) {
         status_mux = 1;
@@ -66,25 +68,31 @@ int tuning_handler_ethercat(
         user_miso = (motion_ctrl_config.max_torque*1000)/torque_control_config.rated_torque;
         break;
     case TUNING_STATUS_MUX_POS_KP: //P_pos
-        user_miso = motion_ctrl_config.position_kp;
+        value.f = motion_ctrl_config.position_kp;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_POS_KI: //I_pos
-        user_miso = motion_ctrl_config.position_ki;
+        value.f = motion_ctrl_config.position_ki;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_POS_KD: //D_pos
-        user_miso = motion_ctrl_config.position_kd;
+        value.f = motion_ctrl_config.position_kd;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_POS_I_LIM: //integral_limit_pos
         user_miso = motion_ctrl_config.position_integral_limit;
         break;
     case TUNING_STATUS_MUX_VEL_KP: //P vel
-        user_miso = motion_ctrl_config.velocity_kp;
+        value.f = motion_ctrl_config.velocity_kp;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_VEL_KI: //I vel
-        user_miso = motion_ctrl_config.velocity_ki;
+        value.f = motion_ctrl_config.velocity_ki;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_VEL_KD: //D vel
-        user_miso = motion_ctrl_config.velocity_kd;
+        value.f = motion_ctrl_config.velocity_kd;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_VEL_I_LIM: //integral_limit_vel
         user_miso = motion_ctrl_config.velocity_integral_limit;
@@ -161,15 +169,19 @@ void tuning_command_handler(
 
     /* execute command */
     if (tuning_mode_state.command & TUNING_CMD_SET_PARAM_MASK) { //set parameter commands
+        union sdo_value value;
         switch(tuning_mode_state.command) {
         case TUNING_CMD_POSITION_KP:
-            motion_ctrl_config.position_kp = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.position_kp = value.f;
             break;
         case TUNING_CMD_POSITION_KI:
-            motion_ctrl_config.position_ki = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.position_ki = value.f;
             break;
         case TUNING_CMD_POSITION_KD:
-            motion_ctrl_config.position_kd = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.position_kd = value.f;
             break;
         case TUNING_CMD_POSITION_I_LIM:
             motion_ctrl_config.position_integral_limit = tuning_mode_state.value;
@@ -181,13 +193,16 @@ void tuning_command_handler(
             motion_ctrl_config.enable_profiler = tuning_mode_state.value;
             break;
         case TUNING_CMD_VELOCITY_KP:
-            motion_ctrl_config.velocity_kp = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.velocity_kp = value.f;
             break;
         case TUNING_CMD_VELOCITY_KI:
-            motion_ctrl_config.velocity_ki = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.velocity_ki = value.f;
             break;
         case TUNING_CMD_VELOCITY_KD:
-            motion_ctrl_config.velocity_kd = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.velocity_kd = value.f;
             break;
         case TUNING_CMD_VELOCITY_I_LIM:
             motion_ctrl_config.velocity_integral_limit = tuning_mode_state.value;

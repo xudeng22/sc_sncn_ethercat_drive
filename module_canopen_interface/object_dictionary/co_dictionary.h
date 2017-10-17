@@ -1,10 +1,3 @@
-/**
- * \file co_dictionary.h
- * \brief Main implementation of the CANopen object dictionary
- *
- * Copyright 2017 Synapticon GmbH <support@synapticon.com>
- */
-
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -83,7 +76,6 @@
 #define DEFTYPE_INTEGER8         0x0002
 #define DEFTYPE_INTEGER16        0x0003
 #define DEFTYPE_INTEGER32        0x0004
-#define DEFTYPE_INTEGER64        0x0015
 #define DEFTYPE_UNSIGNED8        0x0005
 #define DEFTYPE_UNSIGNED16       0x0006
 #define DEFTYPE_UNSIGNED32       0x0007
@@ -106,8 +98,8 @@
 #define CODE_GET_FLAGS(a)        (a         & 0xff)
 #define CODE_SET_ENTRY_INDEX(i,s,f)   (((i & 0xffff) << 16) | ((s & 0xff) << 8) | (f & 0xff))
 
-#define CODE_SET_ENTRY_FLAG(i)    (i | 0x1)
-#define CODE_CLR_ENTRY_FLAG(i)    (i & ~0x1)
+#define CODE_SET_ENTRY_FLAG(i)    (i | 1)
+#define CODE_CLR_ENTRY_FLAG(i)    (i & ~1)
 
 #define OD_COMMUNICATION_AREA     0x1000
 #define OD_MANUFACTURER_AREA      0x2000

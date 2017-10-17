@@ -9,9 +9,11 @@
 #include "display.h"
 #include <ctype.h>
 #include <string.h>
+#include <readsdoconfig.h>
 
 void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
 {
+    union Data value;
     switch((pdo_input.tuning_status >> 16) & 0xff) {
     case TUNING_STATUS_MUX_OFFSET://offset
         (*input).offset = pdo_input.user_miso;
@@ -32,25 +34,31 @@ void tuning_input(struct _pdo_cia402_input pdo_input, InputValues *input)
         (*input).max_torque = pdo_input.user_miso;
         break;
     case TUNING_STATUS_MUX_POS_KP:
-        (*input).P_pos = pdo_input.user_miso;
+        value.i = pdo_input.user_miso;
+        (*input).P_pos = value.f;
         break;
     case TUNING_STATUS_MUX_POS_KI:
-        (*input).I_pos = pdo_input.user_miso;
+        value.i = pdo_input.user_miso;
+        (*input).I_pos = value.f;
         break;
     case TUNING_STATUS_MUX_POS_KD:
-        (*input).D_pos = pdo_input.user_miso;
+        value.i = pdo_input.user_miso;
+        (*input).D_pos = value.f;
         break;
     case TUNING_STATUS_MUX_POS_I_LIM:
         (*input).integral_limit_pos = pdo_input.user_miso;
         break;
     case TUNING_STATUS_MUX_VEL_KP:
-        (*input).P_velocity = pdo_input.user_miso;
+        value.i = pdo_input.user_miso;
+        (*input).P_velocity = value.f;
         break;
     case TUNING_STATUS_MUX_VEL_KI:
-        (*input).I_velocity = pdo_input.user_miso;
+        value.i = pdo_input.user_miso;
+        (*input).I_velocity = value.f;
         break;
     case TUNING_STATUS_MUX_VEL_KD:
-        (*input).D_velocity = pdo_input.user_miso;
+        value.i = pdo_input.user_miso;
+        (*input).D_velocity = value.f;
         break;
     case TUNING_STATUS_MUX_VEL_I_LIM:
         (*input).integral_limit_velocity = pdo_input.user_miso;
@@ -99,6 +107,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         PositionProfileConfig *profile_config, RecordConfig *record_config, Cursor *cursor)
 {
     //read user input
+    union Data value;
     wmove(wnd, (*cursor).row, (*cursor).col);
     int c = wgetch(wnd); // curses call to input from keyboard
     switch(c) {
@@ -127,7 +136,7 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         break;
 
     //record
-    case '.':
+    case ',':
         if (record_config->state == RECORD_ON) {
             record_config->state = RECORD_OFF;
         } else {
@@ -173,6 +182,8 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
         output->mode_2 = 1;
         output->mode_3 = 1;
         output->value = 0;
+        output->value_float = 0;
+        output->float_count = 0;
         output->sign = 1;
         break;
 
@@ -184,10 +195,18 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
             //parse input
             if(isdigit(c)>0) {
-                output->value *= 10;
-                output->value += c - '0';
+                if (output->float_count == 0) {
+                    output->value *= 10;
+                    output->value += c - '0';
+                } else {
+                    output->float_count *= 10;
+                    output->value_float +=  (float)(c - '0') / (float)output->float_count;
+                }
             } else if (c == '-') {
                 output->sign = -1;
+            } else if (c == '.' && output->float_count == 0) {
+                output->float_count = 1;
+                output->value_float = output->value;
             } else if (c != ' ' && c != '\n') {
                 if (output->mode_1 == 1) {
                     output->mode_1 = c;
@@ -200,7 +219,11 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
 
         //(enter): parse and execute the whole command
         } else if (c == '\n') {
+            if (output->float_count == 0) {
+                output->value_float = (float)output->value;
+            }
             output->value *= output->sign;
+            output->value_float *= output->sign;
             switch(output->mode_1) {
 
             // offset finding, position/velocity control auto tune, and cogging torque commands
@@ -389,18 +412,22 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
 
             //change pid coefficients
             case 'k':
+                value.f = output->value_float;
                 pdo_output->user_mosi = output->value;
                 switch(output->mode_2) {
                 case 'p': //position
                     switch(output->mode_3) {
                     case 'p':
                         pdo_output->tuning_command = TUNING_CMD_POSITION_KP;
+                        pdo_output->user_mosi = value.i;
                         break;
                     case 'i':
                         pdo_output->tuning_command = TUNING_CMD_POSITION_KI;
+                        pdo_output->user_mosi = value.i;
                         break;
                     case 'd':
                         pdo_output->tuning_command = TUNING_CMD_POSITION_KD;
+                        pdo_output->user_mosi = value.i;
                         break;
                     case 'l':
                         pdo_output->tuning_command = TUNING_CMD_POSITION_I_LIM;
@@ -422,12 +449,15 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                     switch(output->mode_3) {
                     case 'p':
                         pdo_output->tuning_command = TUNING_CMD_VELOCITY_KP;
+                        pdo_output->user_mosi = value.i;
                         break;
                     case 'i':
                         pdo_output->tuning_command = TUNING_CMD_VELOCITY_KI;
+                        pdo_output->user_mosi = value.i;
                         break;
                     case 'd':
                         pdo_output->tuning_command = TUNING_CMD_VELOCITY_KD;
+                        pdo_output->user_mosi = value.i;
                         break;
                     case 'l':
                         pdo_output->tuning_command = TUNING_CMD_VELOCITY_I_LIM;
@@ -528,6 +558,8 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             output->mode_2 = 1;
             output->mode_3 = 1;
             output->value = 0;
+            output->value_float = 0;
+            output->float_count = 0;
             output->sign = 1;
 
             //reset prompt

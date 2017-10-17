@@ -166,13 +166,13 @@ typedef struct {
     int max_speed;
     int max_torque;
     int rated_torque;
-    int P_pos;
-    int I_pos;
-    int D_pos;
+    float P_pos;
+    float I_pos;
+    float D_pos;
     int integral_limit_pos;
-    int P_velocity;
-    int I_velocity;
-    int D_velocity;
+    float P_velocity;
+    float I_velocity;
+    float D_velocity;
     int integral_limit_velocity;
     int filter;
     int tune_amplitude;
@@ -185,6 +185,8 @@ typedef struct {
     int mode_2;
     int mode_3;
     int value;
+    float value_float;
+    int float_count;
     int sign;
     int last_command;
     int last_value;

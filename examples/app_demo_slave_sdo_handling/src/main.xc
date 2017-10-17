@@ -565,7 +565,7 @@ int main(void)
 	par
 	{
 		/* EtherCAT Communication Handler Loop */
-		on tile[COM_TILE] :
+		on tile[IF1_TILE] :
 		{
 		    par
 		    {

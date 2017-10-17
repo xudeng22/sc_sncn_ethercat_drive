@@ -80,11 +80,11 @@ int main(void)
     par
     {
         /************************************************************
-         *                          COM_TILE
+         *                          IF1_TILE
          ************************************************************/
 
         /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] :
+        on tile[IF1_TILE] :
         {
             par
             {

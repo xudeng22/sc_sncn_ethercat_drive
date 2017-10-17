@@ -13,9 +13,6 @@
 #include <pdo_handler.h>
 #include <ethercat_service.h>
 #include <reboot.h>
-#include <file_service.h>
-#include <spiffs_service.h>
-#include <flash_service.h>
 
 #define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
@@ -252,11 +249,6 @@ int main(void) {
     interface i_foe_communication i_foe;
     interface i_co_communication i_co[CO_IF_COUNT];
     interface EtherCATRebootInterface i_ecat_reboot;
-    interface FileServiceInterface i_file_service[2];
-
-    FlashDataInterface i_data[1];
-    SPIFFSInterface i_spiffs[2];
-    FlashBootInterface i_boot; /* FIXME necessary? */
 
     par
     {
@@ -268,16 +260,6 @@ int main(void) {
                         i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
 
-#ifdef NO_SPIFFS_SERVICE
-                file_service(null, i_co[3]);
-#else
-#ifdef XCORE200
-                flash_service(p_qspi_flash, i_boot, i_data, 1);
-#else
-                flash_service(p_spi_flash, i_boot, i_data, 1);
-#endif
-                file_service(i_file_service, i_spiffs[0], i_co[3], null);
-#endif
             }
         }
 
@@ -287,12 +269,6 @@ int main(void) {
             pdo_service(i_pdo, i_co[1]);
         }
 
-        on tile[IFM_TILE] :
-        {
-#ifndef NO_SPIFFS_SERIVCE
-            spiffs_service(i_data[0], i_spiffs, 1);
-#endif
-        }
     }
 
     return 0;

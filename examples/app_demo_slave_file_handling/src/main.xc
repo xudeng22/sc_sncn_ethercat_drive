@@ -68,7 +68,7 @@ int main(void)
             }
         }
 
-       on tile[IFM_TILE] :
+       on tile[IF2_TILE] :
        {
            spiffs_service(i_data[0], i_spiffs, 1);
        }

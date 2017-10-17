@@ -604,7 +604,7 @@ int main(void)
             }
         }
 
-        on tile[IFM_TILE] :
+        on tile[IF2_TILE] :
         {
             par
             {

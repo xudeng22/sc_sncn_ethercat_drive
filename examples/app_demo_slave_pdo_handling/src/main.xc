@@ -287,7 +287,7 @@ int main(void) {
             pdo_service(i_pdo, i_co[1]);
         }
 
-        on tile[IFM_TILE] :
+        on tile[IF2_TILE] :
         {
 #ifndef NO_SPIFFS_SERIVCE
             spiffs_service(i_data[0], i_spiffs, 1);

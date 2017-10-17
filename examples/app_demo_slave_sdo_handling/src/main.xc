@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <ComEtherCAT-rev-a.bsp>
 #include <CoreC2X.bsp>
+#include <ComEtherCAT-rev-a.bsp>
 
 /**
  * @file main.xc
@@ -586,6 +586,14 @@ int main(void)
 #elif SDO_SERVICE == SDO_SERVICE_MONITOR
                 sdo_monitor_service(i_co[2]);
 #endif /* SDO_SERVICE selection */
+            }
+        }
+
+        on tile[IFM_TILE] :
+        {
+            par
+            {
+                spiffs_service(i_data[0], i_spiffs, 1);
             }
         }
     }

@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <ComEtherCAT-rev-a.bsp>
 #include <CoreC2X.bsp>
+#include <ComEtherCAT-rev-a.bsp>
 
 /**
  * @file main.xc

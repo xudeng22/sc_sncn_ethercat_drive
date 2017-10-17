@@ -1,6 +1,6 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
-#include <COM_ECAT-rev-a.bsp>
-#include <CORE_C21-DX_G2.bsp>
+#include <ComEtherCAT-rev-a.bsp>
+#include <CoreC2X.bsp>
 #include <IFM_BOARD_REQUIRED>
 
 
@@ -84,7 +84,7 @@ int main(void)
          ************************************************************/
 
         /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] :
+        on tile[IF1_TILE] :
         {
             par
             {
@@ -192,7 +192,7 @@ int main(void)
         /************************************************************
          *                          IFM_TILE
          ************************************************************/
-        on tile[IFM_TILE]:
+        on tile[IF2_TILE]:
         {
             par
             {

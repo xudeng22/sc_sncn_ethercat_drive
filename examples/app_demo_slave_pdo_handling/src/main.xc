@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <CORE_C21-DX_G2.bsp>
-#include <COM_ECAT-rev-a.bsp>
+#include <ComEtherCAT-rev-a.bsp>
+#include <CoreC2X.bsp>
 
 /**
  * @file main.xc
@@ -253,7 +253,7 @@ int main(void) {
     par
     {
         /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] :
+        on tile[IF1_TILE] :
         {
             par {
                 ethercat_service(i_ecat_reboot, i_pdo, i_co, null,

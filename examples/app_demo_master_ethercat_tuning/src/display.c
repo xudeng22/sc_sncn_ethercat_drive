@@ -165,16 +165,16 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Torque max %6d / %5d mNm", input.max_torque,  (input.max_torque*input.rated_torque)/1000);
     //row 9
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position P    %9d | ", input.P_pos);
-    wprintw(wnd, "Velocity P     %9d", input.P_velocity);
+    wprintw(wnd, "Position P   %10f | ", input.P_pos);
+    wprintw(wnd, "Velocity P    %10f", input.P_velocity);
     //row 10
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position I    %9d | ", input.I_pos);
-    wprintw(wnd, "Velocity I     %9d", input.I_velocity);
+    wprintw(wnd, "Position I   %10f | ", input.I_pos);
+    wprintw(wnd, "Velocity I    %10f", input.I_velocity);
     //row 11
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position D    %9d | ", input.D_pos);
-    wprintw(wnd, "Velocity D     %9d", input.D_velocity);
+    wprintw(wnd, "Position D   %10f | ", input.D_pos);
+    wprintw(wnd, "Velocity D    %10f", input.D_velocity);
     //row 12
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position I lim    %5d | ", input.integral_limit_pos);
@@ -249,7 +249,7 @@ int display_tuning_help(WINDOW *wnd, int row)
     wmoveclr(wnd, &row);
     printw("P + number: Set pole pairs");
     wmoveclr(wnd, &row);
-    printw(".:          Start/stop recording");
+    printw(",:          Start/stop recording");
     wmoveclr(wnd, &row);
     printw("L s/t/p + number: set speed/torque/position limit");
     wmoveclr(wnd, &row);

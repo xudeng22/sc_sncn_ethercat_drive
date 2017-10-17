@@ -72,11 +72,11 @@ The following one character commands are executed directly without pressing ente
   - ``[enter]``: just pressing enter will disable the torque controller block the brake.
   - ``0``: pressing 0 will switch to torque control mode with a 0 torque command. Which stops the motor slower than by disabling the torque controller with ``[enter]``. Be careful if the axis is loaded it could fall.
   - ``r``: reverse the current torque/velocity command
-  - ``.``: start/stop record. this record the position/velocity/torque to a csv formated file.
+  - ``,``: start/stop record. this record the position/velocity/torque to a csv formated file.
   - ``[backspace]``: discard current command
 
 The rest of the commands can be up to 3 characters with an optional number. The command is then executed by pressing [enter].
-The number can be negative. Spaces are ignored. The default number value is 0.
+The number can be negative or decimal (for example ``1.2``). Spaces are ignored. The default number value is 0.
 
   - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails it will print ``WRONG SENSOR POLARITY!``.
 
@@ -176,9 +176,9 @@ When the application has been compiled, the next step is to run it on the Linux 
         Brake blocking
         Speed  limit       5000 | Position min/max -2147483647 /  2147483647
         Torque rated    270 mNm | Torque max    100 /    27 mNm
-        Position P        16000 | Velocity P        700000
-        Position I          280 | Velocity I         20000
-        Position D        41000 | Velocity D             0
+        Position P     0.120000 | Velocity P      1.780000
+        Position I     0.340000 | Velocity I      9.120000
+        Position D     0.560000 | Velocity D      3.450000
         Position I lim     1000 | Velocity I lim       900
         Autotune Period    2000 | Amplitude          20000
         Filter                0 | GPIO input: xxxx / output: xxxx

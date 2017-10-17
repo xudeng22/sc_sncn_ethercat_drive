@@ -433,14 +433,14 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
 void file_service(
         server interface FileServiceInterface i_file_service [2],
-        client SPIFFSInterface ?i_spiffs,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen,
         client interface i_foe_communication ?i_foe,
-        client interface MotionControlInterface i_motion_control)
+        client interface MotionControlInterface ?i_motion_control)
 {
     timer t;
     unsigned time = 0, time2 = 0;
-    LogStat logging_status;
+    LogStat logging_status = LOG_ERR;
 
     file.length = 0;
     file.opened = 0;
@@ -462,14 +462,16 @@ void file_service(
         break;
     }
 
-    logging_status = error_logging_init(i_spiffs);
+    if (!isnull(i_motion_control)) {
+        logging_status = error_logging_init(i_spiffs);
+    }
 
     while (1) {
 
         if (logging_status == LOG_OK)
         {
             select {
-                case i_motion_control.new_error():
+                case !isnull(i_motion_control) => i_motion_control.new_error():
                     ErrItem_t ErrItem;
                     int status;
                     status = i_motion_control.get_last_error(ErrItem);

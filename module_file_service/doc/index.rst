@@ -101,7 +101,7 @@ int main(void)
            spiffs_service(i_data[0], i_spiffs, 1);
        }
 
-       on tile[IFM_TILE] :
+       on tile[IF2_TILE] :
        {
            file_service(i_spiffs[0], i_co[3], i_foe);
        }

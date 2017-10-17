@@ -1,5 +1,11 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
+
+3.2.0
+-----
+
+  * Renamed board support packages and targets to reflect new product naming conventions
+
 3.1.3
 -----
 

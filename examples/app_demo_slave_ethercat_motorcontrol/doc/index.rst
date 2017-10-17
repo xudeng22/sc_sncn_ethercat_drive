@@ -39,7 +39,7 @@ Quick How-to
 6. Set the **user_config.h** configuration file. Most of the parameters can be update over EtherCat by the master so you can leave default values.
    Some parameters which need to be set at compile time are:
 
-   - IFM_TILE_USEC
+   - IF2_TILE_USEC
    - PROTECTION_MAXIMUM_CURRENT
    - PROTECTION_MINIMUM_VOLTAGE 
    - PROTECTION_MAXIMUM_VOLTAGE

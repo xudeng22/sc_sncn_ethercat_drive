@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
-#include <COM_ECAT-rev-a.bsp>
-#include <CORE_C21-DX_G2.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <ComEtherCAT-rev-a.bsp>
+#include <CoreC2X.bsp>
+#include <DRIVE_BOARD_REQUIRED>
 
 
 /**
@@ -36,18 +36,18 @@
 #include <file_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
-PwmPortsGeneral pwm_ports = SOMANET_IFM_PWM_PORTS_GENERAL;
-WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
-ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
-FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
-SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
-HallEncSelectPort hall_enc_select_port = SOMANET_IFM_ENCODER_PORTS_INPUT_MODE_SELECTION;
-port ? qei_hall_port_1 = SOMANET_IFM_ENCODER_1_PORT;
-port ? qei_hall_port_2 = SOMANET_IFM_ENCODER_2_PORT;
-port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
-port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
-port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
-port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
+PwmPortsGeneral pwm_ports = SOMANET_DRIVE_PWM_PORTS_GENERAL;
+WatchdogPorts wd_ports = SOMANET_DRIVE_WATCHDOG_PORTS;
+ADCPorts adc_ports = SOMANET_DRIVE_ADC_PORTS;
+FetDriverPorts fet_driver_ports = SOMANET_DRIVE_FET_DRIVER_PORTS;
+SPIPorts spi_ports = SOMANET_DRIVE_SPI_PORTS;
+HallEncSelectPort hall_enc_select_port = SOMANET_DRIVE_ENCODER_PORTS_INPUT_MODE_SELECTION;
+port ? qei_hall_port_1 = SOMANET_DRIVE_ENCODER_1_PORT;
+port ? qei_hall_port_2 = SOMANET_DRIVE_ENCODER_2_PORT;
+port ?gpio_port_0 = SOMANET_DRIVE_GPIO_D0;
+port ?gpio_port_1 = SOMANET_DRIVE_GPIO_D1;
+port ?gpio_port_2 = SOMANET_DRIVE_GPIO_D2;
+port ?gpio_port_3 = SOMANET_DRIVE_GPIO_D3;
 #ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
 port c21watchdog = WD_PORT_TICK;
 port c21led = LED_PORT_4BIT_X_nG_nB_nR;
@@ -80,11 +80,11 @@ int main(void)
     par
     {
         /************************************************************
-         *                          COM_TILE
+         *                          IF1_TILE
          ************************************************************/
 
         /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] :
+        on tile[IF1_TILE] :
         {
             par
             {
@@ -190,9 +190,9 @@ int main(void)
         }
 
         /************************************************************
-         *                          IFM_TILE
+         *                          IF2_TILE
          ************************************************************/
-        on tile[IFM_TILE]:
+        on tile[IF2_TILE]:
         {
             par
             {
@@ -208,12 +208,12 @@ int main(void)
 
                 /* ADC Service */
                 {
-                    adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IFM_TILE_USEC, SINGLE_ENDED);
+                    adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IF2_TILE_USEC, SINGLE_ENDED);
                 }
 
                 /* Watchdog Service */
                 {
-                    watchdog_service(wd_ports, i_watchdog, IFM_TILE_USEC);
+                    watchdog_service(wd_ports, i_watchdog, IF2_TILE_USEC);
                 }
 
                 /* Torque Control Service */
@@ -248,7 +248,7 @@ int main(void)
                         torque_control_config.torque_offset[i] = 0;
                     }
                     torque_control_service(torque_control_config, i_adc[0], i_shared_memory[2],
-                            i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC, /*gpio_port_0*/null);
+                            i_watchdog[0], i_torque_control, i_update_pwm, IF2_TILE_USEC, /*gpio_port_0*/null);
                 }
 
                 /* Shared memory Service */
@@ -262,7 +262,7 @@ int main(void)
                     position_feedback_config_1.polarity    = SENSOR_1_POLARITY;
                     position_feedback_config_1.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
                     position_feedback_config_1.pole_pairs  = MOTOR_POLE_PAIRS;
-                    position_feedback_config_1.ifm_usec    = IFM_TILE_USEC;
+                    position_feedback_config_1.ifm_usec    = IF2_TILE_USEC;
                     position_feedback_config_1.max_ticks   = SENSOR_MAX_TICKS;
                     position_feedback_config_1.offset      = HOME_OFFSET;
                     position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;

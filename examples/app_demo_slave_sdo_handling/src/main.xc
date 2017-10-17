@@ -589,13 +589,6 @@ int main(void)
             }
         }
 
-        on tile[IFM_TILE] :
-        {
-            par
-            {
-                spiffs_service(i_data[0], i_spiffs, 1);
-            }
-        }
     }
 
     return 0;

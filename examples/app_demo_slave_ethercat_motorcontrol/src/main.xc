@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <ComEtherCAT-rev-a.bsp>
-#include <CoreC2X.bsp>
 #include <DRIVE_BOARD_REQUIRED>
+#include <CoreC2X.bsp>
 
 
 /**
@@ -112,7 +112,7 @@ int main(void)
         {
             par
             {
-                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
+                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe, i_motion_control[1]);
                 spiffs_service(i_data[0], i_spiffs, 2);
             }
         }

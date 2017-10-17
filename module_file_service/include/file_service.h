@@ -7,10 +7,12 @@
 #pragma once
 
 #include <flash_service.h>
+#include <motion_control_service.h>
 #include <ethercat_service.h>
 #include <co_interface.h>
 #include <spiffs_service.h>
 #include <config_parser.h>
+#include <error_logging.h>
 
 #include <stdint.h>
 #include <stddef.h>
@@ -97,6 +99,7 @@ interface FileServiceInterface
  */
 void file_service(
         server FileServiceInterface i_file_service [2],
-        client SPIFFSInterface ?i_spiffs,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen,
-        client interface i_foe_communication ?i_foe);
+        client interface i_foe_communication ?i_foe,
+        client interface MotionControlInterface ?i_motion_control);

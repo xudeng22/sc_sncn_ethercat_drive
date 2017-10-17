@@ -64,7 +64,7 @@ int main(void)
                 reboot_service_ethercat(i_ecat_reboot);
 
                 flash_service(p_qspi_flash, i_boot, i_data, 1);
-                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
+                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe, null);
             }
         }
 

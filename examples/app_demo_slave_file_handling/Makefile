@@ -9,7 +9,7 @@ TARGET = SOMANET-CoreC2X
 APP_NAME = app_demo_slave_file_handling
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = module_board-support module_canopen_interface module_spiffs lib_ethercat module_reboot module_file_service module_flash_service module_config_parser
+USED_MODULES = configuration_parameters module_autotune lib_limited_torque_position_control module_adc module_biss_encoder module_board-support module_controllers module_canopen_interface lib_ethercat lib_bldc_torque_control module_network_drive module_filters module_gpio module_hall_sensor module_utils module_motion_control module_position_feedback module_profiles module_pwm module_incremental_encoder module_reboot module_encoder_rem_14 module_encoder_rem_16mt module_serial_encoder module_shared_memory module_spi_master module_watchdog module_flash_service module_file_service module_spiffs module_config_parser module_error_logging
 
 ifeq ($(CONFIG), Debug)
 MODULE_LIBRARIES = ethercat_service_standalone

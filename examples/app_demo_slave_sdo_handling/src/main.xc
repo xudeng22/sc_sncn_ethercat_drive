@@ -10,13 +10,10 @@
 
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
-#include <file_service.h>
 #include <reboot.h>
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
-#include <spiffs_service.h>
-#include <flash_service.h>
 
 /*
  * Select SDO service to run
@@ -556,11 +553,6 @@ int main(void)
     interface EtherCATRebootInterface i_ecat_reboot;
     interface i_co_communication i_co[CO_IF_COUNT];
     interface i_pdo_handler_exchange i_pdo;
-    interface FileServiceInterface i_file_service[2];
-
-    FlashDataInterface i_data[1];
-    SPIFFSInterface i_spiffs[2];
-    FlashBootInterface i_boot; /* FIXME necessary? */
 
 	par
 	{
@@ -577,13 +569,6 @@ int main(void)
                                    ethercat_ports);
 
                 reboot_service_ethercat(i_ecat_reboot);
-
-#ifdef XCORE200
-                flash_service(p_qspi_flash, i_boot, i_data, 1);
-#else
-                flash_service(p_spi_flash, i_boot, i_data, 1);
-#endif
-                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
             }
         }
 
@@ -604,13 +589,6 @@ int main(void)
             }
         }
 
-        on tile[IF2_TILE] :
-        {
-            par
-            {
-                spiffs_service(i_data[0], i_spiffs, 1);
-            }
-        }
     }
 
     return 0;

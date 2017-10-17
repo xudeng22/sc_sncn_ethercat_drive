@@ -1,6 +1,6 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
-#include <COM_ECAT-rev-a.bsp>
-#include <CORE_C21-DX_G2.bsp>
+#include <ComEtherCAT-rev-a.bsp>
+#include <CoreC2X.bsp>
 #include <DRIVE_BOARD_REQUIRED>
 
 

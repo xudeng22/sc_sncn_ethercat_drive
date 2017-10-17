@@ -440,7 +440,7 @@ void file_service(
 {
     timer t;
     unsigned time = 0, time2 = 0;
-    LogStat logging_status = LOG_ERR;
+    LogStat logging_status = LOG_ERROR;
 
     file.length = 0;
     file.opened = 0;

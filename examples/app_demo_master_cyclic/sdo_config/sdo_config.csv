@@ -42,17 +42,17 @@
 0x6086,        0,           0,           0,           0,           0,           0,           0 # MOTION_PROFILE_TYPE #enable integrated profiler, 0: disabled, 1: trapezoidal
 0x2007,        1,           0,           0,           0,           0,           0,           0 # FILTER_CUT_OFF_FREQ in [Hz] (0 to disable)
 #Position Controller
-0x2012,        1,       16000,       16000,       16000,       16000,       16000,       16000 # POSITION_Kp - [1/1e6]
-0x2012,        2,         280,         280,         280,         280,         280,         280 # POSITION_Ki - [1/1e6]
-0x2012,        3,       41000,       41000,       41000,       41000,       41000,       41000 # POSITION_Kd - [1/1e6]
+0x2012,        1,           0,           0,           0,           0,           0,           0 # POSITION_Kp
+0x2012,        2,           0,           0,           0,           0,           0,           0 # POSITION_Ki
+0x2012,        3,           0,           0,           0,           0,           0,           0 # POSITION_Kd
 0x2012,        4,        1000,        1000,        1000,        1000,        1000,        1000 # POSITION_INTEGRAL_LIMIT - integral limit [1/1]
-0x2012,        5,      700000,      700000,      700000,      700000,      700000,      700000 # POSITION Loop VELOCITY_Kp
-0x2012,        6,       20000,       20000,       20000,       20000,       20000,       20000 # POSITION Loop VELOCITY_Ki
+0x2012,        5,         0.5,         0.5,         0.5,         0.5,         0.5,         0.5 # POSITION Loop VELOCITY_Kp
+0x2012,        6,           1,           1,           1,           1,           1,           1 # POSITION Loop VELOCITY_Ki
 0x2012,        7,           0,           0,           0,           0,           0,           0 # POSITION Loop VELOCITY_Kd
 0x2012,        8,         900,         900,         900,         900,         900,         900 # POSITION Loop VELOCITY_INTEGRAL_LIMIT - integral limit [1/1]
 #Velocity Controller
-0x2011,        1,      700000,      700000,      700000,      700000,      700000,      700000 # VELOCITY_Kp
-0x2011,        2,       20000,       20000,       20000,       20000,       20000,       20000 # VELOCITY_Ki
+0x2011,        1,         0.5,         0.5,         0.5,         0.5,         0.5,         0.5 # VELOCITY_Kp
+0x2011,        2,           1,           1,           1,           1,           1,           1 # VELOCITY_Ki
 0x2011,        3,           0,           0,           0,           0,           0,           0 # VELOCITY_Kd
 0x2011,        4,         900,         900,         900,         900,         900,         900 # VELOCITY_INTEGRAL_LIMIT - integral limit [1/1]
 #Position Controller Gain Scheduling

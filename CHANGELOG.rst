@@ -5,10 +5,6 @@ sc_sncn_ethercat_drive Change Log
 -----
 
   * Renamed board support packages and targets to reflect new product naming conventions
-
-3.1.3
------
-
   * Implement new pwm structure with 15 kHz, and use 100 MHz ref_clk_frq
   * Fix bugs in setting/getting motion_control_config struct in config manager
   * Fix usage of Position range limit (0x607B) and Software position limit (0x607D) objects

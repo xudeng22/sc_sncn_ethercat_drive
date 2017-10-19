@@ -116,15 +116,15 @@ void pd_set(Ethercat_Master_t *master, int slaveid, PDOOutput pdo_output)
 }
 
 
-int pdo_handler(Ethercat_Master_t *master, PDOInput *pdo_input, PDOOutput *pdo_output, int slaveid)
+int pdo_handler(Ethercat_Master_t *master, PDOInput *pdo_input, PDOOutput *pdo_output, unsigned slaveid)
 {
     size_t number_of_slaves = ecw_master_slave_count(master);
 
-    if (slaveid >= 0 && slaveid < number_of_slaves) {
+    if (slaveid < number_of_slaves) {
         pd_get(master, slaveid, &pdo_input[slaveid]);
         pd_set(master, slaveid, pdo_output[slaveid]);
     } else {
-        for (int i = 0; i < number_of_slaves; i++) {
+        for (unsigned i = 0; i < number_of_slaves; i++) {
             pd_get(master, i, &pdo_input[i]);
             pd_set(master, i, pdo_output[i]);
         }

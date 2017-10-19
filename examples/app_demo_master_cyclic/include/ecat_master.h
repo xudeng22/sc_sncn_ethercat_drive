@@ -122,7 +122,7 @@ void pd_set(Ethercat_Master_t *master, int slaveid, PDOOutput pdo_output);
 
 
 
-int pdo_handler(Ethercat_Master_t *master, PDOInput *pdo_input, PDOOutput *pdo_output, unsigned slaveid);
+int pdo_handler(Ethercat_Master_t *master, PDOInput *pdo_input, PDOOutput *pdo_output, int slaveid);
 
 
 /**

@@ -48,10 +48,8 @@ port ?gpio_port_0 = SOMANET_DRIVE_GPIO_D0;
 port ?gpio_port_1 = SOMANET_DRIVE_GPIO_D1;
 port ?gpio_port_2 = SOMANET_DRIVE_GPIO_D2;
 port ?gpio_port_3 = SOMANET_DRIVE_GPIO_D3;
-#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
 port c21watchdog = WD_PORT_TICK;
 port c21led = LED_PORT_4BIT_X_nG_nB_nR;
-#endif
 
 int main(void)
 {
@@ -92,11 +90,7 @@ int main(void)
                                     i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
 
-#ifdef CORE_C21_DX_G2
                 flash_service(p_qspi_flash, i_boot, i_data, 1);
-#else
-                flash_service(p_spi_flash, i_boot, i_data, 1);
-#endif
 
 
                 {
@@ -108,7 +102,7 @@ int main(void)
             }
         }
 
-        on tile[APP_TILE_1] :
+        on tile[IF1_TILE] :
         {
             par
             {
@@ -118,7 +112,7 @@ int main(void)
         }
 
 
-        on tile[APP_TILE_2]:
+        on tile[IF2_TILE]:
         {
             par
             {

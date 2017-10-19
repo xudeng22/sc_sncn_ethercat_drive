@@ -28,7 +28,7 @@ static unsigned int set_configuration_to_dictionary(
     unsigned int i;
 
     for (i = 0; i < Config->param_count; i++) {
-        i_canopen.od_set_object_value(Config->parameter[i][0].index, Config->parameter[i][0].subindex, Config->parameter[i][0].value);
+        i_canopen.od_set_object_value(Config->parameter[i].index, Config->parameter[i].subindex, Config->parameter[i].value);
     }
     return i;
 }
@@ -89,22 +89,21 @@ static unsigned get_configuration_from_dictionary(
         if (od_entry.objectCode != CANOD_TYPE_VAR && od_entry.value > 0) {
             for (unsigned k = 1; k <= od_entry.value; k++) {
                 {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], k);
-                Config->parameter[count][0].index    = all_od_objects[i];
-                Config->parameter[count][0].subindex = k;
-                Config->parameter[count][0].value    = value;
+                Config->parameter[count].index    = all_od_objects[i];
+                Config->parameter[count].subindex = k;
+                Config->parameter[count].value    = value;
                 count++;
             }
         } else { /* simple variable object */
             {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], 0);
-            Config->parameter[count][0].index    = od_entry.index;
-            Config->parameter[count][0].subindex = 0;
-            Config->parameter[count][0].value    = value;
+            Config->parameter[count].index    = od_entry.index;
+            Config->parameter[count].subindex = 0;
+            Config->parameter[count].value    = value;
             count++;
         }
     }
 
     Config->param_count = count;
-    Config->node_count = 1;
 
     return count;
 }

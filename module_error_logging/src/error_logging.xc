@@ -2,7 +2,6 @@
 #include <error_logging.h>
 #include <config_strings.h>
 #include <xs1.h>
-#include <print.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -154,8 +153,6 @@ LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file
                 {
                     return LOG_ERROR;
                 }
-                else
-                    printstrln("LOG File opened");
            }
            else
            {
@@ -164,7 +161,6 @@ LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file
     }
     else
     {
-        printstrln("LOG File opened");
         i_spiffs.seek(file_descriptor, 0, SPIFFS_SEEK_END);
     }
 

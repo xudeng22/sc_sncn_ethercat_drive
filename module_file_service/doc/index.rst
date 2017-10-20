@@ -25,8 +25,8 @@ Dependent modules:
 
 The module provides access to files in the SPIFFS file system via Ethercat, downloading data into OD and uploading data from OD to the human-readable csv file using the config parser module. To read or write files use standard commands: ethercat "foe_read (<file name>)", ethercat "foe_write (<file name>)". To load and save data from OD,use a special object-command 0x2000. The file name for OD data is "config.csv". To upload data from OD to a file, use the command "download 0x2000 1". To download data from a file to OD, use the command "download 0x2000 2". Also, when the system starts and if there is a "config.csv" file in the file system, data will be loaded automatically. If there is no file, OD uses default values.
 
-The module provides basic operations with SPIFFS using special commands via EtherCAT FoE:
-Put in console:
+**The module provides basic operations with SPIFFS using special commands via EtherCAT FoE:**
+ Put in console:
  $ethercat foe_read fs-[command]=[argument]
  Where commands:
  - getlist - Print out all files in file system;
@@ -34,7 +34,7 @@ Put in console:
  - remove - remove file from file system (argument - file name);
  - help - print out help.
 
-The module provides a server interface (i_file_service) to store and read torque array values.
+**The module provides a server interface (i_file_service) to store and read torque array values.**
  -To store torque array to file system call interface i_file_service.write_torque_array(int array_in[]);
  -To read torque array from file system call interface i_file_service.read_torque_array(int array_out[]);
 

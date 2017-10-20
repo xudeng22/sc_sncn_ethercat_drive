@@ -40,7 +40,7 @@ struct _bookmarks bookmark[bookmark_length] = {
 uint8_t entry_values[entry_values_length] = {
     0x92, 0x1, 0x2, 0x0,                       /* 0x1000:0 Device Type - START: 0 */
     0x0,                                       /* 0x1001:0 Error Register - START: 4 */
-    0x33, 0x2E, 0x31, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 5 */
+    0x33, 0x2E, 0x32, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 5 */
     0x4,                                       /* 0x1018:0 Identity - START: 13 */
     0xD2, 0x22, 0x0, 0x0,                      /* 0x1018:1 Vendor ID - START: 14 */
     0x1, 0x2, 0x0, 0x0,                        /* 0x1018:2 Product Code - START: 18 */
@@ -322,7 +322,7 @@ uint8_t entry_values[entry_values_length] = {
 const uint8_t entry_default_values[entry_default_values_length] = {
     0x92, 0x1, 0x2, 0x0,                       /* 0x1000:0 Device Type - START: 0 */
     0x0,                                       /* 0x1001:0 Error Register - START: 4 */
-    0x33, 0x2E, 0x31, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 5 */
+    0x33, 0x2E, 0x32, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 5 */
     0x4,                                       /* 0x1018:0 Identity - START: 13 */
     0xD2, 0x22, 0x0, 0x0,                      /* 0x1018:1 Vendor ID - START: 14 */
     0x1, 0x2, 0x0, 0x0,                        /* 0x1018:2 Product Code - START: 18 */
@@ -851,7 +851,7 @@ COD_Entry object_entries[] = {
         0x0,
         &(string[2]),
         &(entry_values[5]),
-        &(entry_default_values[5]), /* 0x0000000000312E33 */
+        &(entry_default_values[5]), /* 0x0000000000322E33 */
         NULL,
         NULL
     }, {

@@ -21,6 +21,8 @@
 #include <xscope.h>
 #include <tuning.h>
 
+#define MANUFACTURER_SOFTWARE_VERSION "3.2"
+
 static int get_cia402_error_code(FaultCode torque_control_fault, WatchdogError watchdog_error,
                                  SensorError motion_sensor_error, SensorError commutation_sensor_error,
                                  MotionControlError motion_control_error,
@@ -615,6 +617,9 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MIN_POSITION_RANGE_LIMIT, motion_control_config.min_pos_range_limit);
     i_co.od_set_object_value(DICT_POSITION_RANGE_LIMITS, SUB_POSITION_RANGE_LIMITS_MAX_POSITION_RANGE_LIMIT, motion_control_config.max_pos_range_limit);
 
+    //set version
+    char version[8] = MANUFACTURER_SOFTWARE_VERSION;
+    i_co.od_set_object_value_buffer(0x100a, 0, version);
 
 #if STARTUP_READ_FLASH_OBJECTS == 1
     /* Try to read the object data values from flash */

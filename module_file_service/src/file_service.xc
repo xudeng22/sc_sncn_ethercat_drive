@@ -11,7 +11,6 @@
 
 #include <file_service.h>
 #include <xs1.h>
-#include <print.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -59,10 +58,6 @@ static unsigned get_configuration_from_dictionary(
 {
     uint16_t list_lengths[5];
     i_canopen.od_get_all_list_length(list_lengths);
-
-    if (list_lengths[0] > MAX_CONFIG_SDO_ENTRIES) {
-        printstrln("Warning OD to large, only get what fits.");
-    }
 
     uint16_t all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
     i_canopen.od_get_list(all_od_objects, list_lengths[0], OD_LIST_ALL);
@@ -253,11 +248,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     memset(foedata, '\0', MAX_FOE_DATA);
     {size, packetnumber, stat} = i_foe.read_data(foedata);
 
-    printstr("Received packet: "); printint(packetnumber);
-    printstr(" of size: "); printintln(size);
-
     if (stat == FOE_STAT_ERROR) {
-        printstrln("Error Transmission - Aborting!");
         if (file.opened)
         {
             file.opened = 0;
@@ -272,14 +263,11 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
         if (file.cfd < 0)
         {
-            printstrln("Error opening file");
             foe_error = FOE_ERROR_PROGRAM_ERROR;
             stat = FOE_STAT_ERROR;
         }
         else
         {
-            printstr("File created: ");
-            printintln(file.cfd);
             file.opened = 1;
         }
     }
@@ -303,11 +291,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         }
         else
         {
-            printstr("Written: ");
-            printintln(write_result);
-
             if (stat == FOE_STAT_EOF) {
-                printstrln("Read Transmission finished!");
                 i_spiffs.close_file(file.cfd);
                 file.opened = 0;
                 file.current = 0;
@@ -352,14 +336,11 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
             {
                 if (file.cfd == SPIFFS_ERR_NOT_FOUND)
                 {
-                    printstrln("Error opening file not found");
                     foe_error = FOE_ERROR_NOT_FOUND;
                     stat = FOE_STAT_ERROR;
                 }
                 else
                 {
-                    printstr("Error opening file: code ");
-                    printintln(file.cfd);
                     foe_error = FOE_ERROR_PROGRAM_ERROR;
                     stat = FOE_STAT_ERROR;
                 }
@@ -367,8 +348,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
             else
              {
                  file.opened = 1;
-                 printstr("File opened: ");
-                 printintln(file.cfd);
                  file.length = i_spiffs.get_file_size(file.cfd);
              }
         }
@@ -396,13 +375,9 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
             /* If writed data size less than readed (from file) data size , we are seeking back and trying to send lost data again */
             if (wsize < size) i_spiffs.seek(file.cfd, wsize , SPIFFS_SEEK_SET);
-
-            printstr("Send packet of size: ");
-            printintln(size);
         }
 
         if (stat == FOE_STAT_EOF) {
-            printstrln("Write Transmission finished!");
             i_spiffs.close_file(file.cfd);
             file.opened = 0;
             file.current = 0;
@@ -411,7 +386,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         }
 
         if (stat == FOE_STAT_ERROR) {
-            printstrln("Error Write Transmission!");
             i_spiffs.close_file(file.cfd);
             file.opened = 0;
             file.current = 0;
@@ -490,14 +464,11 @@ void file_service(
                     int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
                     if (file_id < 0)
                     {
-                        printstrln("Error opening file");
                         status = FS_TORQUE_ERR;
                         break;
                     }
                     else
                     {
-                        printstr("File created: ");
-                        printintln(file_id);
                         status = FS_TORQUE_OK;
                     }
                     unsigned char data [2] ={0} ;
@@ -537,7 +508,6 @@ void file_service(
                         int err_read = i_spiffs.read(file_id, buffer, 2);
                         if (err_read < 0)
                         {
-                            printf("error reading torque array: %d\n", err_read);
                             status = FS_TORQUE_ERR;
                         }
 
@@ -600,7 +570,6 @@ void file_service(
 
            case t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void :
                 if (wait_for_reply) {
-                    printstrln("[foe_testing()] Timeout catched");
                     i_spiffs.close_file(file.cfd);
                     file.length = 0;
                     file.opened = 0;

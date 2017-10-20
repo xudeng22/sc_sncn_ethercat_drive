@@ -2612,7 +2612,7 @@
                 <Type>STRING(8)</Type>
                 <BitSize>64</BitSize>
                 <Info>
-                  <DefaultData>332E31</DefaultData>
+                  <DefaultData>332E32</DefaultData>
                 </Info>
                 <Flags>
                   <Access>ro</Access>

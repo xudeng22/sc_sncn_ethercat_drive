@@ -52,6 +52,16 @@
 #define TORQUE_OFFSET_FILE_NAME "cogging_torque.bin"
 
 /**
+ * \brief Prefix of firmware file name. Should be checked to avoid downloading of FW to file system
+ */
+#define FW_FILE_NAME_PREFIX "app_"
+
+/**
+ * \brief Suffix of firmware file name. Should be checked to avoid downloading of FW to file system
+ */
+#define FW_FILE_NAME_SUFFIX ".bin"
+
+/**
  * \brief FoE service timeout
  */
 #define FILE_SERVICE_DELAY_TIMEOUT 500000000

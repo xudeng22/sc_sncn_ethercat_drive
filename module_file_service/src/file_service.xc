@@ -236,6 +236,31 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
 }
 
 
+static int check_fw_filename(char filename[], client SPIFFSInterface ?i_spiffs)
+{
+    char * prefix = null;
+    char * suffix = null;
+
+    int prefix_pos = 0;
+    int suffix_pos = 0;
+
+    //checking of firmware file name
+    prefix = strstr(filename, FW_FILE_NAME_PREFIX);
+    suffix = strstr(filename, FW_FILE_NAME_SUFFIX);
+
+    if ((!prefix)||(!suffix))
+        return 1;
+
+    prefix_pos = prefix - filename;
+    suffix_pos = suffix - filename;
+
+    if ((prefix_pos != 0)||((strlen(filename) - suffix_pos - strlen(FW_FILE_NAME_SUFFIX)) != 0))
+        return 1;
+
+    return 0;
+}
+
+
 static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
 {
     int wait_for_reply = 0;
@@ -260,15 +285,23 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-        if (file.cfd < 0)
+        if (check_fw_filename(file.filename, i_spiffs) == 0)
         {
-            foe_error = FOE_ERROR_PROGRAM_ERROR;
             stat = FOE_STAT_ERROR;
+            foe_error = FOE_ERROR_ACCESS_DENIED;
         }
         else
         {
-            file.opened = 1;
+            file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+            if (file.cfd < 0)
+            {
+                foe_error = FOE_ERROR_PROGRAM_ERROR;
+                stat = FOE_STAT_ERROR;
+            }
+            else
+            {
+                file.opened = 1;
+            }
         }
     }
 

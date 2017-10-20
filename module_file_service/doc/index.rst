@@ -27,16 +27,23 @@ The module provides access to files in the SPIFFS file system via Ethercat, down
 
 **The module provides basic operations with SPIFFS using special commands via EtherCAT FoE:**
  Put in console:
+
  $ethercat foe_read fs-[command]=[argument]
+
  Where commands:
+
  - getlist - Print out all files in file system;
+
  - info - Print out size of file system and used space;
+
  - remove - remove file from file system (argument - file name);
+
  - help - print out help.
 
 **The module provides a server interface (i_file_service) to store and read torque array values.**
- -To store torque array to file system call interface i_file_service.write_torque_array(int array_in[]);
- -To read torque array from file system call interface i_file_service.read_torque_array(int array_out[]);
+ - To store torque array to file system call interface i_file_service.write_torque_array(int array_in[]);
+
+ - To read torque array from file system call interface i_file_service.read_torque_array(int array_out[]);
 
 **Valid parameters for the service:**
  - server interface to store and read torque array values

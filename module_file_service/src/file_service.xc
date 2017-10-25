@@ -138,7 +138,7 @@ static int flash_read_od_config(
     return result;
 }
 
-#ifdef COM_ETHERCAT
+
 int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
 {
     spiffs_stat file_list[SPIFFS_MAX_FILELIST_ITEMS];
@@ -259,7 +259,6 @@ static int check_fw_filename(char filename[], client SPIFFSInterface ?i_spiffs)
 
     return 0;
 }
-
 
 
 static int received_filechunk_from_master(struct _file_t &file, client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
@@ -627,131 +626,4 @@ void file_service(
         t when timerafter(time2 + FILE_SERVICE_INITIAL_DELAY) :> void;
     }
 }
-#endif
 
-void file_service(
-        server interface FileServiceInterface i_file_service [2],
-        client SPIFFSInterface ?i_spiffs,
-        client interface i_co_communication i_canopen)
-{
-    timer t;
-    unsigned time = 0, time2 = 0;
-
-    file.length = 0;
-    file.opened = 0;
-    file.current = 0;
-    file.cfd = 0;
-    memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
-
-    //enum eFoeNotificationType notify = FOE_NTYPE_UNDEF;
-
-    int wait_for_reply = 0;
-
-    if (isnull(i_spiffs)) {
-            i_canopen.command_set_result(OD_COMMAND_STATE_ERROR);
-            return;
-        }
-
-    select {
-        case i_spiffs.service_ready():
-        break;
-    }
-
-    while (1) {
-        select
-        {
-            case i_file_service[int i].write_torque_array(int array_in[]) -> int status:
-
-                    printf("Name written\n");
-                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-                    if (file_id < 0)
-                    {
-                        printstrln("Error opening file");
-                        status = file_id;
-                        break;
-                    }
-                    else
-                    {
-                        printstr("File created: ");
-                        printintln(file_id);
-                    }
-                    unsigned char data [2] ={0} ;
-                    for (int i = 0; i < 1024; i++)
-                    {
-                        data [0] = (array_in [i] & 0xFF00)>> 8;
-                        data [1] = array_in [i] & 0x00FF;
-                        int err_write = i_spiffs.write(file_id, data, 2);
-                        if (err_write < 0)
-                            printf("error : %d\n", err_write);
-
-                    }
-                    i_spiffs.close_file(file_id);
-                    break;
-
-            case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
-
-                    printf("Name written\n");
-                    int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
-                    if (file_id < 0)
-                    {
-                        printstrln("Error opening file");
-                        status = -1;
-                    }
-                    else
-                    {
-                        printstr("File opened: ");
-                        printintln(file_id);
-                        status = 1;
-                    }
-                    if (file_id == SPIFFS_ERR_NOT_FOUND)
-                    {
-                        status = SPIFFS_ERR_NOT_FOUND;
-                        break;
-                    }
-                    char buffer [2];
-                    for (int i = 0; i < 1024; i++)
-                    {
-                        int err_read = i_spiffs.read(file_id, buffer, 2);
-                        if (err_read < 0)
-                        {
-                            printf("error : %d\n", err_read);
-                            status = -1;
-                        }
-
-                        array_out[i] = (buffer[0] << 8) + buffer[1];
-                        if(array_out[i] >= 0x7FFF)
-                            array_out[i] -= 0x10000;
-                    }
-
-                    i_spiffs.close_file(file_id);
-                    break;
-
-            default:
-                  break;
-        }
-
-        enum eSdoCommand command = i_canopen.command_ready();
-        int command_result = 0;
-        switch (command) {
-            case OD_COMMAND_WRITE_CONFIG:
-                command_result = flash_write_od_config(i_spiffs, i_canopen);
-                i_canopen.command_set_result(command_result);
-                command_result = 0;
-                break;
-            case OD_COMMAND_READ_CONFIG:
-                command_result = flash_read_od_config(i_spiffs, i_canopen);
-                i_canopen.command_set_result(command_result);
-                command_result = 0;
-                break;
-
-            case OD_COMMAND_NONE:
-               break;
-
-            default:
-              break;
-        }
-
-        t :> time2;
-        t when timerafter(time2 + FILE_SERVICE_INITIAL_DELAY) :> void;
-    }
-}

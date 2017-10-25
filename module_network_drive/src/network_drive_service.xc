@@ -21,6 +21,8 @@
 #include <xscope.h>
 #include <tuning.h>
 
+#define NETWORK_DRIVE_DEBUG_PRINT_STATE
+
 #define MANUFACTURER_SOFTWARE_VERSION "3.2"
 
 static int get_cia402_error_code(FaultCode torque_control_fault, WatchdogError watchdog_error,
@@ -535,7 +537,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
-                                    client interface FileServiceInterface i_file_service)
+                                    client interface FileServiceInterface ?i_file_service)
 {
     int target_position = 0;
     int target_velocity = 0;
@@ -645,13 +647,16 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                     sensor_commutation, sensor_motion_control, sensor_resolution, polarity,
                     quick_stop_deceleration, position_range_limit_min, position_range_limit_max, opmode
                     );
+            print_object_dictionary(i_co);
             //Load cogging torque data
             char filename [] = "cogging_torque.bin";
-            int status = i_file_service.read_torque_array(torque_control_config.torque_offset);
-            if (status != SPIFFS_ERR_NOT_FOUND) {
-                i_motion_control.set_motorcontrol_config(torque_control_config);
-                i_motion_control.enable_cogging_compensation(1);
-                tuning_mode_state.cogging_torque_flag = 1;
+            if (!isnull(i_file_service)) {
+                int status = i_file_service.read_torque_array(torque_control_config.torque_offset);
+                if (status != SPIFFS_ERR_NOT_FOUND) {
+                    i_motion_control.set_motorcontrol_config(torque_control_config);
+                    i_motion_control.enable_cogging_compensation(1);
+                    tuning_mode_state.cogging_torque_flag = 1;
+                }
             }
 
             tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, torque_control_config, motion_control_config,
@@ -830,9 +835,9 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
 #ifdef NETWORK_DRIVE_DEBUG_PRINT_STATE
         debug_print_state(state);
-        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
-        xscope_int(ACTUAL_POSITION, actual_position);
-        xscope_int(ACTUAL_VELOCITY, actual_velocity);
+//        xscope_int(TARGET_POSITION, send_to_control.position_cmd);
+//        xscope_int(ACTUAL_POSITION, actual_position);
+//        xscope_int(ACTUAL_VELOCITY, actual_velocity);
 #endif
 
         if (opmode == OPMODE_NONE) {

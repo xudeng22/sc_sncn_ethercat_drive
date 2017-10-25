@@ -98,6 +98,64 @@ interface FileServiceInterface
     [[guarded]] int read_torque_array(int array_out[]);
 };
 
+interface i_foe_communication {
+    /* handle FoE upload / write request */
+    /**
+     * @brief Read data from FoE service
+     *
+     * These fetches the packet the master send to this device.
+     *
+     * @param[out] data  array of bytes received, maximum FOE_DATA_SIZE
+     * @return  the size of the acutal received bytes (last packet is a incomplete read)
+     *          the packet number received (this must be confirmed with @see result()
+     *          state of the FoE transfer @see eFoeStat
+     */
+    [[guarded]] {size_t, uint32_t, enum eFoeStat} read_data(int8_t data[]);
+
+    /**
+     * @brief Result of the recently received packet
+     *
+     * @param packet_number  The packet_number of the recently processed packet.
+     * @param error          For valid error values @see eFoeError
+     */
+    [[guarded]] void result(uint32_t packet_number, enum eFoeError error);
+
+    /* handle FoE download / read request */
+    /**
+     * @brief Write data to the FoE handler to fullfill a FoE read request
+     *
+     * If foedata and byte_count is larger than FOE_DATA_SIZE only the first
+     * FOE_DATA_SIZE bytes are transfered. The calling function needs to make
+     * sure that the next chunk of data will start appropreatly.
+     *
+     * If write data returns with FOE_STAT_FOE it indicates the caller that the
+     * Transfer is finished (aborted because of a error or fully transfered). A
+     * proper error handling is not usefull on the slave side.
+     */
+    [[guarded]] {size_t, enum eFoeStat} write_data(int8_t foedata[], size_t byte_count, enum eFoeError foe_error);
+
+    /**
+     * @brief Get the requested filename to write to the master.
+     *
+     * @param[out]  foename filename of the request (max FOE_MAX_FILENAME_SIZE long)
+     */
+    [[guarded]] void requested_filename(uint8_t foename[]);
+
+    /**
+     * @brief Get notification type
+     *
+     * It is mandatory to call this command after every notification raised by @see data_read().
+     *
+     * @return Type of notification @see eFoeNotificationType
+     */
+    [[guarded]] [[clears_notification]] int get_notification_type(void);
+
+    /**
+     * @brief Notification call when a new FoE request occures.
+     */
+    [[notification]] slave void data_ready(void);
+};
+
 
 /**
  * @brief This Service reads / stores configuration parameters to flash via SPIFFS

@@ -1,10 +1,36 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.2.0
+-----
+
+  * Renamed board support packages and targets to reflect new product naming conventions
+  * Implement new pwm structure with 15 kHz, and use 100 MHz ref_clk_frq
+  * Fix bugs in setting/getting motion_control_config struct in config manager
+  * Fix usage of Position range limit (0x607B) and Software position limit (0x607D) objects
+  * Remove unnecessary calls to torque controller and do some cleanup in Network drive service
+  * Rename motorcontrol_config to torque_control_config
+  * Add SDO objects for Gain scheduling and separate Position gains from the Velocity controller
+  * Add support for float PID parameters in tuning app.
+
+3.1.2
+-----
+
+  * Integrate GPIO service in ethercat drive enabled for SDK 3.0.4
+  * Fix loading torque array from flash
+  * Fix sdo read and write handling causing service hanging in some cases
+  * Fix CSV parser to handle read/write float
+  * Fix copy/paste object nummber error in sdo_config.csv
+  * Introduced enable open phase detection parameter
+    * Is set disabled by default due to frequent false positive cases
+
+  
+
 3.1.1
 -----
 
   * Fix data type of PID coefficients to use float.
+  * Fix reload configuration from object dictionary
 
 3.1
 ---
@@ -18,6 +44,13 @@ sc_sncn_ethercat_drive Change Log
   * Support for watchdog error for DC1K rev.D1
   * Core C22 and C21-DX rev.A are no longer supported (memory limitation)
 
+
+3.0.4
+-----
+
+  * Add GPIO support in ethercat drive
+  
+
 3.0.3
 -----
 
@@ -28,6 +61,11 @@ sc_sncn_ethercat_drive Change Log
   * Do not change the integral limits of position/velocity controllers in case automatic tuners are called
   * Fix bug in position feedback config manager in switching from dual sensor to one sensor.
   * Bug fixes and improvement in app_master_cyclic.
+  * Fix units in ESI
+  * Add position controller automatic tuning command options to master tuning app
+  * Reload slave configuration on S_SWITCH_ON_DISABLED -> S_READY_TO_SWITCH_ON transition
+  * Fix offset display when sensor polarity is wrong
+  * Fix number of subitems for objects 0x2202
 
 
 3.0.2

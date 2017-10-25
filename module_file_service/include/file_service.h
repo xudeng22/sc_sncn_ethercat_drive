@@ -7,12 +7,12 @@
 #pragma once
 
 #include <flash_service.h>
-#ifdef COM_ETHERCAT
+#include <motion_control_service.h>
 #include <ethercat_service.h>
-#endif
 #include <co_interface.h>
 #include <spiffs_service.h>
 #include <config_parser.h>
+#include <error_logging.h>
 
 #include <stdint.h>
 #include <stddef.h>
@@ -52,6 +52,16 @@
 #define TORQUE_OFFSET_FILE_NAME "cogging_torque.bin"
 
 /**
+ * \brief Prefix of firmware file name. Should be checked to avoid downloading of FW to file system
+ */
+#define FW_FILE_NAME_PREFIX "app_"
+
+/**
+ * \brief Suffix of firmware file name. Should be checked to avoid downloading of FW to file system
+ */
+#define FW_FILE_NAME_SUFFIX ".bin"
+
+/**
  * \brief FoE service timeout
  */
 #define FILE_SERVICE_DELAY_TIMEOUT 500000000
@@ -60,6 +70,13 @@
  * \brief Delay for file service to not overload cpu
  */
 #define FILE_SERVICE_INITIAL_DELAY 100000
+
+
+/**
+ * \brief Status of accessing to torque array file
+ */
+#define FS_TORQUE_OK   1
+#define FS_TORQUE_ERR -1
 
 /**
  * \brief Structure for current opened file (name, size, current position in file, status opened/not opened, SPIFFS file descriptor)
@@ -90,15 +107,9 @@ interface FileServiceInterface
  * @param i_foe       FoE interface
  *
  */
-#ifdef COM_ETHERCAT
 void file_service(
         server FileServiceInterface i_file_service [2],
-        client SPIFFSInterface ?i_spiffs,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen,
-        client interface i_foe_communication ?i_foe);
-#else
-void file_service(
-        server FileServiceInterface i_file_service [2],
-        client SPIFFSInterface ?i_spiffs,
-        client interface i_co_communication i_canopen);
-#endif
+        client interface i_foe_communication ?i_foe,
+        client interface MotionControlInterface ?i_motion_control);

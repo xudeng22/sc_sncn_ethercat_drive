@@ -11,7 +11,6 @@
 
 #include <file_service.h>
 #include <xs1.h>
-#include <print.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -28,7 +27,7 @@ static unsigned int set_configuration_to_dictionary(
     unsigned int i;
 
     for (i = 0; i < Config->param_count; i++) {
-        i_canopen.od_set_object_value(Config->parameter[i][0].index, Config->parameter[i][0].subindex, Config->parameter[i][0].value);
+        i_canopen.od_set_object_value(Config->parameter[i].index, Config->parameter[i].subindex, Config->parameter[i].value);
     }
     return i;
 }
@@ -60,10 +59,6 @@ static unsigned get_configuration_from_dictionary(
     uint16_t list_lengths[5];
     i_canopen.od_get_all_list_length(list_lengths);
 
-    if (list_lengths[0] > MAX_CONFIG_SDO_ENTRIES) {
-        printstrln("Warning OD to large, only get what fits.");
-    }
-
     uint16_t all_od_objects[MAX_CONFIG_SDO_ENTRIES] = { 0 };
     i_canopen.od_get_list(all_od_objects, list_lengths[0], OD_LIST_ALL);
 
@@ -89,22 +84,21 @@ static unsigned get_configuration_from_dictionary(
         if (od_entry.objectCode != CANOD_TYPE_VAR && od_entry.value > 0) {
             for (unsigned k = 1; k <= od_entry.value; k++) {
                 {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], k);
-                Config->parameter[count][0].index    = all_od_objects[i];
-                Config->parameter[count][0].subindex = k;
-                Config->parameter[count][0].value    = value;
+                Config->parameter[count].index    = all_od_objects[i];
+                Config->parameter[count].subindex = k;
+                Config->parameter[count].value    = value;
                 count++;
             }
         } else { /* simple variable object */
             {value, void, error } = i_canopen.od_get_object_value(all_od_objects[i], 0);
-            Config->parameter[count][0].index    = od_entry.index;
-            Config->parameter[count][0].subindex = 0;
-            Config->parameter[count][0].value    = value;
+            Config->parameter[count].index    = od_entry.index;
+            Config->parameter[count].subindex = 0;
+            Config->parameter[count].value    = value;
             count++;
         }
     }
 
     Config->param_count = count;
-    Config->node_count = 1;
 
     return count;
 }
@@ -118,7 +112,7 @@ static int flash_write_od_config(
 
     get_configuration_from_dictionary(i_canopen, &Config);
 
-    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
+    if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -135,7 +129,7 @@ static int flash_read_od_config(
     int result = 0;
     ConfigParameter_t Config;
 
-    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs)) >= 0)
+    if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
     if (result == 0) {
         // put the flash configuration into the dictionary
@@ -171,8 +165,97 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
     if (file_list[file_item].obj_id == 0)
     {
         file_item = 0;
-        return -1;
+        stat = FOE_STAT_EOF;
+        return stat;
     }
+
+    stat = FOE_STAT_DATA;
+    return stat;
+}
+
+
+int process_fs_command(char cmd[], client interface i_foe_communication i_foe, client SPIFFSInterface i_spiffs)
+{
+    char msg_text[MAX_FOE_DATA];
+    char par1[16], par2[SPIFFS_MAX_FILENAME_SIZE];
+    char *eq_pos = null;
+    int par_num, res, fd;
+    size_t wsize = 0;
+    enum eFoeStat stat = FOE_STAT_DATA;
+
+    //space instead of "="
+    eq_pos = strchr(cmd, '=');
+    if (eq_pos) *eq_pos = ' ';
+
+    par_num = sscanf(cmd, "fs-%s %s", par1, par2);
+
+    if ((strcmp(par1, "getlist") == 0)||(file_item > 0))
+    {
+        stat = get_file_list(i_foe, i_spiffs);
+        return stat;
+    }
+    else
+    if (strcmp(par1, "remove") == 0)
+    {
+        if (par_num == 2)
+        {
+             fd =  i_spiffs.open_file(par2, strlen(par2), SPIFFS_RDWR);
+             if (fd < 0)
+                 strcpy(msg_text, "Error removing file\n");
+             else
+             {
+                 res = i_spiffs.remove_file(fd);
+                 if (res < 0)
+                     strcpy(msg_text, "Error removing file\n");
+                 else
+                     strcpy(msg_text, "File successfully removed\n");
+             }
+        }
+        else
+            strcpy(msg_text, "Error: argument missing\n");
+    }
+    else
+    if (strcmp(par1, "info") == 0)
+    {
+        unsigned int total, used;
+
+        i_spiffs.fs_info(total, used);
+        sprintf(msg_text, "Memory usage:\n Total: %u b\n Used:  %u b\n", total, used);
+    }
+    else
+    if (strcmp(par1, "help") == 0)
+    {
+        strcpy(msg_text, "Usage: ethercat foe_read fs-[command]=[argument]\nCommands:\n getlist - Print out all files in file system;\n info - Print out size of file system and used space;\n remove - remove file from file system (argument - file name).\n");
+    }
+    else
+        strcpy(msg_text, "Unknown FS command\n");
+
+    {wsize, stat} = i_foe.write_data((int8_t *)msg_text, strlen(msg_text), FOE_ERROR_NONE);
+    stat = FOE_STAT_EOF;
+    return stat;
+}
+
+
+static int check_fw_filename(char filename[], client SPIFFSInterface ?i_spiffs)
+{
+    char * prefix = null;
+    char * suffix = null;
+
+    int prefix_pos = 0;
+    int suffix_pos = 0;
+
+    //checking of firmware file name
+    prefix = strstr(filename, FW_FILE_NAME_PREFIX);
+    suffix = strstr(filename, FW_FILE_NAME_SUFFIX);
+
+    if ((!prefix)||(!suffix))
+        return 1;
+
+    prefix_pos = prefix - filename;
+    suffix_pos = suffix - filename;
+
+    if ((prefix_pos != 0)||((strlen(filename) - suffix_pos - strlen(FW_FILE_NAME_SUFFIX)) != 0))
+        return 1;
 
     return 0;
 }
@@ -191,11 +274,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     memset(foedata, '\0', MAX_FOE_DATA);
     {size, packetnumber, stat} = i_foe.read_data(foedata);
 
-    printstr("Received packet: "); printint(packetnumber);
-    printstr(" of size: "); printintln(size);
-
     if (stat == FOE_STAT_ERROR) {
-        printstrln("Error Transmission - Aborting!");
         if (file.opened)
         {
             file.opened = 0;
@@ -207,18 +286,23 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
-        if (file.cfd < 0)
+        if (check_fw_filename(file.filename, i_spiffs) == 0)
         {
-            printstrln("Error opening file");
-            foe_error = FOE_ERROR_PROGRAM_ERROR;
             stat = FOE_STAT_ERROR;
+            foe_error = FOE_ERROR_ACCESS_DENIED;
         }
         else
         {
-            printstr("File created: ");
-            printintln(file.cfd);
-            file.opened = 1;
+            file.cfd = i_spiffs.open_file(file.filename, strlen(file.filename), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+            if (file.cfd < 0)
+            {
+                foe_error = FOE_ERROR_PROGRAM_ERROR;
+                stat = FOE_STAT_ERROR;
+            }
+            else
+            {
+                file.opened = 1;
+            }
         }
     }
 
@@ -241,11 +325,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
         }
         else
         {
-            printstr("Writed: ");
-            printintln(write_result);
-
             if (stat == FOE_STAT_EOF) {
-                printstrln("Read Transmission finished!");
                 i_spiffs.close_file(file.cfd);
                 file.opened = 0;
                 file.current = 0;
@@ -278,10 +358,10 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        if ((strcmp(file.filename, "fs-getlist") == 0)||(file_item > 0))
+        // if "fs-" prefix on begin of string
+        if ((strstr(file.filename, "fs-") == file.filename))
         {
-            if (get_file_list(i_foe, i_spiffs) != 0)
-                stat = FOE_STAT_EOF;
+            stat = process_fs_command(file.filename, i_foe, i_spiffs);
         }
         else
         {
@@ -290,14 +370,11 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
             {
                 if (file.cfd == SPIFFS_ERR_NOT_FOUND)
                 {
-                    printstrln("Error opening file not found");
                     foe_error = FOE_ERROR_NOT_FOUND;
                     stat = FOE_STAT_ERROR;
                 }
                 else
                 {
-                    printstr("Error opening file: code ");
-                    printintln(file.cfd);
                     foe_error = FOE_ERROR_PROGRAM_ERROR;
                     stat = FOE_STAT_ERROR;
                 }
@@ -305,8 +382,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
             else
              {
                  file.opened = 1;
-                 printstr("File opened: ");
-                 printintln(file.cfd);
                  file.length = i_spiffs.get_file_size(file.cfd);
              }
         }
@@ -334,13 +409,9 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
             /* If writed data size less than readed (from file) data size , we are seeking back and trying to send lost data again */
             if (wsize < size) i_spiffs.seek(file.cfd, wsize , SPIFFS_SEEK_SET);
-
-            printstr("Send packet of size: ");
-            printintln(size);
         }
 
         if (stat == FOE_STAT_EOF) {
-            printstrln("Write Transmission finished!");
             i_spiffs.close_file(file.cfd);
             file.opened = 0;
             file.current = 0;
@@ -349,7 +420,6 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
         }
 
         if (stat == FOE_STAT_ERROR) {
-            printstrln("Error Write Transmission!");
             i_spiffs.close_file(file.cfd);
             file.opened = 0;
             file.current = 0;
@@ -370,12 +440,14 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
 void file_service(
         server interface FileServiceInterface i_file_service [2],
-        client SPIFFSInterface ?i_spiffs,
+        client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen,
-        client interface i_foe_communication ?i_foe)
+        client interface i_foe_communication ?i_foe,
+        client interface MotionControlInterface ?i_motion_control)
 {
     timer t;
     unsigned time = 0, time2 = 0;
+    LogStat logging_status = LOG_ERROR;
 
     file.length = 0;
     file.opened = 0;
@@ -397,23 +469,41 @@ void file_service(
         break;
     }
 
+    if (!isnull(i_motion_control)) {
+        logging_status = error_logging_init(i_spiffs);
+    }
+
     while (1) {
+
+        if (logging_status == LOG_OK)
+        {
+            select {
+                case !isnull(i_motion_control) => i_motion_control.new_error():
+                    ErrItem_t ErrItem;
+                    int status;
+                    status = i_motion_control.get_last_error(ErrItem);
+                    if (status == LOG_OK)
+                        logging_status = error_msg_save(i_spiffs, ErrItem);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+
         select
         {
             case i_file_service[int i].write_torque_array(int array_in[]) -> int status:
-
-                    printf("Name written\n");
                     int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
                     if (file_id < 0)
                     {
-                        printstrln("Error opening file");
-                        status = file_id;
+                        status = FS_TORQUE_ERR;
                         break;
                     }
                     else
                     {
-                        printstr("File created: ");
-                        printintln(file_id);
+                        status = FS_TORQUE_OK;
                     }
                     unsigned char data [2] ={0} ;
                     for (int i = 0; i < 1024; i++)
@@ -422,40 +512,37 @@ void file_service(
                         data [1] = array_in [i] & 0x00FF;
                         int err_write = i_spiffs.write(file_id, data, 2);
                         if (err_write < 0)
-                            printf("error : %d\n", err_write);
+                        {
+                            printf("error writing torque array: %d\n", err_write);
+                            status = FS_TORQUE_ERR;
+                        }
 
                     }
                     i_spiffs.close_file(file_id);
                     break;
 
             case i_file_service[int i].read_torque_array(int array_out[]) -> int status:
-
-                    printf("Name written\n");
                     int file_id = i_spiffs.open_file(TORQUE_OFFSET_FILE_NAME, strlen(TORQUE_OFFSET_FILE_NAME), (SPIFFS_RDONLY));
                     if (file_id < 0)
                     {
-                        printstrln("Error opening file");
-                        status = -1;
+                        if (file_id == SPIFFS_ERR_NOT_FOUND)
+                            status = SPIFFS_ERR_NOT_FOUND;
+                        else
+                            status = FS_TORQUE_ERR;
+                        break;
                     }
                     else
                     {
-                        printstr("File opened: ");
-                        printintln(file_id);
-                        status = 1;
+                        status = FS_TORQUE_OK;
                     }
-                    if (file_id == SPIFFS_ERR_NOT_FOUND)
-                    {
-                        status = SPIFFS_ERR_NOT_FOUND;
-                        break;
-                    }
+
                     char buffer [2];
                     for (int i = 0; i < 1024; i++)
                     {
                         int err_read = i_spiffs.read(file_id, buffer, 2);
                         if (err_read < 0)
                         {
-                            printf("error : %d\n", err_read);
-                            status = -1;
+                            status = FS_TORQUE_ERR;
                         }
 
                         array_out[i] = (buffer[0] << 8) + buffer[1];
@@ -517,7 +604,6 @@ void file_service(
 
            case t when timerafter(time + FILE_SERVICE_DELAY_TIMEOUT) :> void :
                 if (wait_for_reply) {
-                    printstrln("[foe_testing()] Timeout catched");
                     i_spiffs.close_file(file.cfd);
                     file.length = 0;
                     file.opened = 0;

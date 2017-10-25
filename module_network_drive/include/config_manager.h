@@ -47,32 +47,19 @@ int cm_sync_config_position_feedback(
         int &sensor_commutation, int &sensor_motion_control,
         int number_of_ports, int &port_index);
 
-int cm_sync_config_motor_control(
-        client interface i_co_communication i_co,
-        client interface TorqueControlInterface ?i_torque_control,
-        MotorcontrolConfig &commutation_params,
-        int sensor_commutation_type);
-
-void cm_sync_config_profiler(
-        client interface i_co_communication i_co,
-        ProfilerConfig &profiler,
-        enum eProfileType type);
-
-void cm_sync_config_pos_velocity_control(
+int cm_sync_config_torque_control(
         client interface i_co_communication i_co,
         client interface MotionControlInterface i_motion_control,
-        MotionControlConfig &position_config,
-        int sensor_resolution,
-        int max_torque);
+        MotorcontrolConfig &torque_control_config,
+        int sensor_commutation_type);
 
-/* This function is a workaround until the hall and motorconfig is reorganized. */
-void cm_sync_config_hall_states(
+void cm_sync_config_motion_control(
         client interface i_co_communication i_co,
-        client interface PositionFeedbackInterface i_pos_feedback,
-        client interface TorqueControlInterface ?i_torque_control,
-        PositionFeedbackConfig &feedback_config,
-        MotorcontrolConfig &motorcontrol_config,
-        int sensor_index);
+        client interface MotionControlInterface i_motion_control,
+        MotionControlConfig &motion_control_config,
+        int sensor_resolution,
+        int max_torque,
+        int opmode);
 
 /*
  * Set default configuration of the modules in the object dictionary. If nothing
@@ -85,15 +72,12 @@ void cm_default_config_position_feedback(
         PositionFeedbackConfig &config,
         int feedback_service_index);
 
-void cm_default_config_motor_control(
+void cm_default_config_torque_control(
         client interface i_co_communication i_co,
-        client interface TorqueControlInterface ?i_torque_control,
-        MotorcontrolConfig &commutation_params);
+        client interface MotionControlInterface i_motion_control,
+        MotorcontrolConfig &torque_control_config);
 
-void cm_default_config_profiler(
+void cm_default_config_motion_control(
         client interface i_co_communication i_co,
-        ProfilerConfig &profiler);
-
-void cm_default_config_pos_velocity_control(
-        client interface i_co_communication i_co,
-        client interface MotionControlInterface i_motion_control);
+        client interface MotionControlInterface i_motion_control,
+        MotionControlConfig &motion_control_config);

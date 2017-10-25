@@ -154,7 +154,7 @@ typedef struct {
  * @param user_miso to send multiple parameters and status to the master
  * @param tuning_status to send multiple parameters and status to the master
  * @param tuning_mode_state state of the motorcontrol in tuning mode
- * @param motorcontrol_config configuration structure of the motorcontrol service
+ * @param torque_control_config configuration structure of the torque control service
  * @param motion_ctrl_config configuration structure of the motion control service
  * @param pos_feedback_config_1 configuration structure of the position feedback number 1
  * @param pos_feedback_config_2 configuration structure of the position feedback number 2
@@ -169,7 +169,7 @@ int tuning_handler_ethercat(
         /* input */  uint32_t    tuning_command,
         /* output */ uint32_t    &user_miso, uint32_t &tuning_status,
         TuningModeState             &tuning_mode_state,
-        MotorcontrolConfig       &motorcontrol_config,
+        MotorcontrolConfig       &torque_control_config,
         MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
@@ -187,7 +187,7 @@ int tuning_handler_ethercat(
  * @brief Function to handle the tuning commands
  *
  * @param tuning_mode_state state of the motorcontrol in tuning mode, also contains the tuning command and value
- * @param motorcontrol_config configuration structure of the motorcontrol service
+ * @param torque_control_config configuration structure of the torque control service
  * @param motion_ctrl_config configuration structure of the motion control service
  * @param pos_feedback_config_1 configuration structure of the position feedback number 1
  * @param pos_feedback_config_2 configuration structure of the position feedback number 2
@@ -200,7 +200,7 @@ int tuning_handler_ethercat(
  */
 void tuning_command_handler(
         TuningModeState             &tuning_mode_state,
-        MotorcontrolConfig       &motorcontrol_config,
+        MotorcontrolConfig       &torque_control_config,
         MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
@@ -216,14 +216,14 @@ void tuning_command_handler(
 /**
  * @brief Function to parse different status flags to send to the master
  *
- * @param motorcontrol_config configuration structure of the motorcontrol service
+ * @param torque_control_config configuration structure of the torque control service
  * @param motion_ctrl_config configuration structure of the motion control service
  * @param pos_feedback_config_1 configuration structure of the position feedback number 1
  * @param pos_feedback_config_2 configuration structure of the position feedback number 2
  * @param sensor_commutation number of the commutation sensor
  */
 uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
-        MotorcontrolConfig       &motorcontrol_config,
+        MotorcontrolConfig       &torque_control_config,
         MotionControlConfig      &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,

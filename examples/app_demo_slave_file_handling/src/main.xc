@@ -1,6 +1,6 @@
 /* PLEASE REPLACE "CORE_BOARD_REQUIRED" AND "IMF_BOARD_REQUIRED" WIT A APPROPRIATE BOARD SUPPORT FILE FROM module_board-support */
-#include <COM_ECAT-rev-a.bsp>
-#include <CORE_C21-DX_G2.bsp>
+#include <CoreC2X.bsp>
+#include <ComEtherCAT-rev-a.bsp>
 
 /**
  * @file main.xc
@@ -50,7 +50,7 @@ int main(void)
     par
     {
         /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] :
+        on tile[IF1_TILE] :
         {
             par
             {
@@ -64,11 +64,11 @@ int main(void)
                 reboot_service_ethercat(i_ecat_reboot);
 
                 flash_service(p_qspi_flash, i_boot, i_data, 1);
-                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
+                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe, null);
             }
         }
 
-       on tile[IFM_TILE] :
+       on tile[IF2_TILE] :
        {
            spiffs_service(i_data[0], i_spiffs, 1);
        }

@@ -66,18 +66,18 @@ How to use CANopen Interface Service
         CANPorts can_ports = SOMANET_COM_CAN_PORTS;
         CANClock can_clock = SOMANET_COM_CAN_CLOCK;
         on tile[0]: port mode_select = SOMANET_COM_CAN_MODE_SELECT;
-        PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
-        WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
-        ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
-        FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
-        QEIHallPort qei_hall_port_1 = SOMANET_IFM_HALL_PORTS;
-        QEIHallPort qei_hall_port_2 = SOMANET_IFM_QEI_PORTS;
-        HallEncSelectPort hall_enc_select_port = SOMANET_IFM_QEI_PORT_INPUT_MODE_SELECTION;
-        SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
-        port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
-        port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
-        port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
-        port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
+        PwmPorts pwm_ports = SOMANET_DRIVE_PWM_PORTS;
+        WatchdogPorts wd_ports = SOMANET_DRIVE_WATCHDOG_PORTS;
+        ADCPorts adc_ports = SOMANET_DRIVE_ADC_PORTS;
+        FetDriverPorts fet_driver_ports = SOMANET_DRIVE_FET_DRIVER_PORTS;
+        QEIHallPort qei_hall_port_1 = SOMANET_DRIVE_HALL_PORTS;
+        QEIHallPort qei_hall_port_2 = SOMANET_DRIVE_QEI_PORTS;
+        HallEncSelectPort hall_enc_select_port = SOMANET_DRIVE_QEI_PORT_INPUT_MODE_SELECTION;
+        SPIPorts spi_ports = SOMANET_DRIVE_SPI_PORTS;
+        port ?gpio_port_0 = SOMANET_DRIVE_GPIO_D0;
+        port ?gpio_port_1 = SOMANET_DRIVE_GPIO_D1;
+        port ?gpio_port_2 = SOMANET_DRIVE_GPIO_D2;
+        port ?gpio_port_3 = SOMANET_DRIVE_GPIO_D3;
         
         
         int main(void)
@@ -87,7 +87,7 @@ How to use CANopen Interface Service
             interface update_pwm i_update_pwm;
             interface update_brake i_update_brake;
             interface ADCInterface i_adc[2];
-            interface MotorcontrolInterface i_motorcontrol[2];
+            interface MotorcontrolInterface i_torque_control[2];
             interface PositionVelocityCtrlInterface i_position_control[3];
             interface PositionFeedbackInterface i_position_feedback_1[3];
             interface PositionFeedbackInterface i_position_feedback_2[3];
@@ -152,12 +152,12 @@ How to use CANopen Interface Service
         
                             network_drive_service_debug( profiler_config,
                                                     i_co[1],
-                                                    i_motorcontrol[0],
+                                                    i_torque_control[0],
                                                     i_position_control[0], i_position_feedback_1[0]);
                 #else
                             network_drive_service( profiler_config,
                                                     i_co[1],
-                                                    i_motorcontrol[0],
+                                                    i_torque_control[0],
                                                     i_position_control[0], i_position_feedback_1[0], null);
                 #endif
                         }
@@ -211,16 +211,16 @@ How to use CANopen Interface Service
                             pos_velocity_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                             pos_velocity_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
         
-                             motion_control_service(APP_TILE_USEC, pos_velocity_ctrl_config, i_motorcontrol[1], 
+                             motion_control_service(APP_TILE_USEC, pos_velocity_ctrl_config, i_torque_control[1], 
                              i_position_control, i_update_brake);
                         }
                     }
                 }
         
                 /************************************************************
-                 *                          IFM_TILE
+                 *                          IF2_TILE
                  ************************************************************/
-                on tile[IFM_TILE]:
+                on tile[IF2_TILE]:
                 {
                     par
                     {
@@ -233,53 +233,53 @@ How to use CANopen Interface Service
         
                             //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
                             pwm_service_task(MOTOR_ID, pwm_ports, i_update_pwm,
-                                    i_update_brake, IFM_TILE_USEC);
+                                    i_update_brake, IF2_TILE_USEC);
         
                         }
         
                         /* ADC Service */
                         {
-                            adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IFM_TILE_USEC, SINGLE_ENDED);
+                            adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IF2_TILE_USEC, SINGLE_ENDED);
                         }
         
                         /* Watchdog Service */
                         {
-                            watchdog_service(wd_ports, i_watchdog, IFM_TILE_USEC);
+                            watchdog_service(wd_ports, i_watchdog, IF2_TILE_USEC);
                         }
         
                         /* Motor Control Service */
                         {
-                            MotorcontrolConfig motorcontrol_config;
+                            MotorcontrolConfig torque_control_config;
         
-                            motorcontrol_config.v_dc =  DC_BUS_VOLTAGE;
-                            motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
-                            motorcontrol_config.torque_P_gain =  TORQUE_P_VALUE;
-                            motorcontrol_config.torque_I_gain =  TORQUE_I_VALUE;
-                            motorcontrol_config.torque_D_gain =  TORQUE_D_VALUE;
-                            motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
-                            motorcontrol_config.commutation_sensor=SENSOR_1_TYPE;
-                            motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-                            motorcontrol_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
-                            motorcontrol_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
-                            motorcontrol_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
-                            motorcontrol_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
-                            motorcontrol_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
-                            motorcontrol_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
-                            motorcontrol_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
-                            motorcontrol_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
-                            motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
-                            motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
-                            motorcontrol_config.current_ratio =  CURRENT_RATIO;
-                            motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
-                            motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
-                            motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
-                            motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
-                            motorcontrol_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
-                            motorcontrol_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
-                            motorcontrol_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
+                            torque_control_config.v_dc =  DC_BUS_VOLTAGE;
+                            torque_control_config.phases_inverted = MOTOR_PHASES_NORMAL;
+                            torque_control_config.torque_P_gain =  TORQUE_P_VALUE;
+                            torque_control_config.torque_I_gain =  TORQUE_I_VALUE;
+                            torque_control_config.torque_D_gain =  TORQUE_D_VALUE;
+                            torque_control_config.pole_pairs =  MOTOR_POLE_PAIRS;
+                            torque_control_config.commutation_sensor=SENSOR_1_TYPE;
+                            torque_control_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
+                            torque_control_config.hall_state_angle[0]=HALL_STATE_1_ANGLE;
+                            torque_control_config.hall_state_angle[1]=HALL_STATE_2_ANGLE;
+                            torque_control_config.hall_state_angle[2]=HALL_STATE_3_ANGLE;
+                            torque_control_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
+                            torque_control_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
+                            torque_control_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
+                            torque_control_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
+                            torque_control_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
+                            torque_control_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
+                            torque_control_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
+                            torque_control_config.current_ratio =  CURRENT_RATIO;
+                            torque_control_config.voltage_ratio =  VOLTAGE_RATIO;
+                            torque_control_config.rated_current =  MOTOR_RATED_CURRENT;
+                            torque_control_config.rated_torque  =  MOTOR_RATED_TORQUE;
+                            torque_control_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
+                            torque_control_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
+                            torque_control_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
+                            torque_control_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
         
-                            motor_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
-                                    i_watchdog[0], i_motorcontrol, i_update_pwm, IFM_TILE_USEC);
+                            motor_control_service(torque_control_config, i_adc[0], i_shared_memory[2],
+                                    i_watchdog[0], i_torque_control, i_update_pwm, IF2_TILE_USEC);
                         }
         
                         /* Shared memory Service */
@@ -293,7 +293,7 @@ How to use CANopen Interface Service
                             position_feedback_config.polarity    = SENSOR_1_POLARITY;
                             position_feedback_config.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
                             position_feedback_config.pole_pairs  = MOTOR_POLE_PAIRS;
-                            position_feedback_config.ifm_usec    = IFM_TILE_USEC;
+                            position_feedback_config.ifm_usec    = IF2_TILE_USEC;
                             position_feedback_config.max_ticks   = SENSOR_MAX_TICKS;
                             position_feedback_config.offset      = 0;
                             position_feedback_config.sensor_function = SENSOR_1_FUNCTION;

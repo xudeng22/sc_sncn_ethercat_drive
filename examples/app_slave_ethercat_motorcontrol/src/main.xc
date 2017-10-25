@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
-#include <COM_ECAT-rev-a.bsp>
-#include <CORE_C21-DX_G2.bsp>
-#include <IFM_BOARD_REQUIRED>
+#include <ComEtherCAT-rev-a.bsp>
+#include <DRIVE_BOARD_REQUIRED>
+#include <CoreC2X.bsp>
 
 
 /**
@@ -10,7 +10,7 @@
  * @author Synapticon GmbH (www.synapticon.com)
  */
 
-// Please configure your slave's default motorcontrol parameters in config_motor_slave/user_config.h.
+// Please configure your slave's default parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
 #include <user_config.h>
 
@@ -29,32 +29,27 @@
 #include <watchdog_service.h>
 #include <motor_control_interfaces.h>
 #include <advanced_motor_control.h>
-
-//Position control + profile libs
 #include <motion_control_service.h>
-#include <profile_control.h>
 
 #include <flash_service.h>
 #include <spiffs_service.h>
 #include <file_service.h>
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;
-PwmPorts pwm_ports = SOMANET_IFM_PWM_PORTS;
-WatchdogPorts wd_ports = SOMANET_IFM_WATCHDOG_PORTS;
-ADCPorts adc_ports = SOMANET_IFM_ADC_PORTS;
-FetDriverPorts fet_driver_ports = SOMANET_IFM_FET_DRIVER_PORTS;
-SPIPorts spi_ports = SOMANET_IFM_SPI_PORTS;
-HallEncSelectPort hall_enc_select_port = SOMANET_IFM_ENCODER_PORTS_INPUT_MODE_SELECTION;
-port ? qei_hall_port_1 = SOMANET_IFM_ENCODER_1_PORT;
-port ? qei_hall_port_2 = SOMANET_IFM_ENCODER_2_PORT;
-port ?gpio_port_0 = SOMANET_IFM_GPIO_D0;
-port ?gpio_port_1 = SOMANET_IFM_GPIO_D1;
-port ?gpio_port_2 = SOMANET_IFM_GPIO_D2;
-port ?gpio_port_3 = SOMANET_IFM_GPIO_D3;
-#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
+PwmPortsGeneral pwm_ports = SOMANET_DRIVE_PWM_PORTS_GENERAL;
+WatchdogPorts wd_ports = SOMANET_DRIVE_WATCHDOG_PORTS;
+ADCPorts adc_ports = SOMANET_DRIVE_ADC_PORTS;
+FetDriverPorts fet_driver_ports = SOMANET_DRIVE_FET_DRIVER_PORTS;
+SPIPorts spi_ports = SOMANET_DRIVE_SPI_PORTS;
+HallEncSelectPort hall_enc_select_port = SOMANET_DRIVE_ENCODER_PORTS_INPUT_MODE_SELECTION;
+port ? qei_hall_port_1 = SOMANET_DRIVE_ENCODER_1_PORT;
+port ? qei_hall_port_2 = SOMANET_DRIVE_ENCODER_2_PORT;
+port ?gpio_port_0 = SOMANET_DRIVE_GPIO_D0;
+port ?gpio_port_1 = SOMANET_DRIVE_GPIO_D1;
+port ?gpio_port_2 = SOMANET_DRIVE_GPIO_D2;
+port ?gpio_port_3 = SOMANET_DRIVE_GPIO_D3;
 port c21watchdog = WD_PORT_TICK;
 port c21led = LED_PORT_4BIT_X_nG_nB_nR;
-#endif
 
 int main(void)
 {
@@ -62,7 +57,7 @@ int main(void)
     interface WatchdogInterface i_watchdog[2];
     interface ADCInterface i_adc[2];
     interface TorqueControlInterface i_torque_control[2];
-    interface UpdatePWM i_update_pwm;
+    interface UpdatePWMGeneral i_update_pwm;
     interface UpdateBrake i_update_brake;
     interface shared_memory_interface i_shared_memory[3];
     interface MotionControlInterface i_motion_control[3];
@@ -83,11 +78,11 @@ int main(void)
     par
     {
         /************************************************************
-         *                          COM_TILE
+         *                          IF1_TILE
          ************************************************************/
 
         /* EtherCAT Communication Handler Loop */
-        on tile[COM_TILE] :
+        on tile[IF1_TILE] :
         {
             par
             {
@@ -95,58 +90,34 @@ int main(void)
                                     i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
 
-#ifdef CORE_C21_DX_G2
                 flash_service(p_qspi_flash, i_boot, i_data, 1);
-#else
-                flash_service(p_spi_flash, i_boot, i_data, 1);
-#endif
 
 
                 {
-                    ProfilerConfig profiler_config;
-
-                    profiler_config.max_position = MAX_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-                    profiler_config.min_position = MIN_POSITION_RANGE_LIMIT;   /* Set by Object Dictionary value! */
-
-                    profiler_config.max_velocity = MOTOR_MAX_SPEED;
-                    profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
-                    profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
-
-#if 0
-                    network_drive_service_debug( profiler_config,
-                            i_pdo,
-                            i_co[1],
-                            i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0]);
-#else
-                    network_drive_service( profiler_config,
-                            i_pdo,
-                            i_co[1],
-                            i_torque_control[1],
-                            i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
-#endif
+                    network_drive_service(
+                            i_pdo, i_co[1], i_motion_control[0],
+                            i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
                 }
 
             }
         }
 
-        on tile[APP_TILE_1] :
+        on tile[IF1_TILE] :
         {
             par
             {
-                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe);
+                file_service(i_file_service, i_spiffs[0], i_co[3], i_foe, i_motion_control[1]);
                 spiffs_service(i_data[0], i_spiffs, 2);
             }
         }
 
 
-        on tile[APP_TILE_2]:
+        on tile[IF2_TILE]:
         {
             par
             {
                 /* Motion Control Loop */
                 {
-
                     MotionControlConfig motion_ctrl_config;
 
                     motion_ctrl_config.min_pos_range_limit =                  MIN_POSITION_RANGE_LIMIT;
@@ -175,7 +146,22 @@ int main(void)
                     motion_ctrl_config.velocity_integral_limit =              VELOCITY_INTEGRAL_LIMIT;
                     motion_ctrl_config.enable_velocity_auto_tuner =           ENABLE_VELOCITY_AUTO_TUNER;
                     motion_ctrl_config.enable_compensation_recording =        ENABLE_COMPENSATION_RECORDING;
+                    motion_ctrl_config.enable_open_phase_detection =          ENABLE_OPEN_PHASE_DETECTION;
 
+                    motion_ctrl_config.position_kp_l =                        GAIN_SCHEDULING_POSITION_Kp_0;
+                    motion_ctrl_config.position_ki_l =                        GAIN_SCHEDULING_POSITION_Ki_0;
+                    motion_ctrl_config.position_kd_l =                        GAIN_SCHEDULING_POSITION_Kd_0;
+                    motion_ctrl_config.position_kp_h =                        GAIN_SCHEDULING_POSITION_Kp_1;
+                    motion_ctrl_config.position_ki_h =                        GAIN_SCHEDULING_POSITION_Ki_1;
+                    motion_ctrl_config.position_kd_h =                        GAIN_SCHEDULING_POSITION_Kd_1;
+                    motion_ctrl_config.velocity_kp_l =                        GAIN_SCHEDULING_VELOCITY_Kp_0;
+                    motion_ctrl_config.velocity_ki_l =                        GAIN_SCHEDULING_VELOCITY_Ki_0;
+                    motion_ctrl_config.velocity_kd_l =                        GAIN_SCHEDULING_VELOCITY_Kd_0;
+                    motion_ctrl_config.velocity_kp_h =                        GAIN_SCHEDULING_VELOCITY_Kp_1;
+                    motion_ctrl_config.velocity_ki_h =                        GAIN_SCHEDULING_VELOCITY_Ki_1;
+                    motion_ctrl_config.velocity_kd_h =                        GAIN_SCHEDULING_VELOCITY_Kd_1;
+                    motion_ctrl_config.velocity_lo_l =                        GAIN_SCHEDULING_VELOCITY_THRESHOLD_0;
+                    motion_ctrl_config.velocity_hi_l =                        GAIN_SCHEDULING_VELOCITY_THRESHOLD_1;
 
                     motion_ctrl_config.brake_release_strategy =               BRAKE_RELEASE_STRATEGY;
                     motion_ctrl_config.brake_release_delay =                  BRAKE_RELEASE_DELAY;
@@ -198,68 +184,65 @@ int main(void)
         }
 
         /************************************************************
-         *                          IFM_TILE
+         *                          IF2_TILE
          ************************************************************/
-        on tile[IFM_TILE]:
+        on tile[IF2_TILE]:
         {
             par
             {
                 /* PWM Service */
                 {
-                    pwm_config(pwm_ports);
+                    pwm_config_general(pwm_ports);
 
                     if (!isnull(fet_driver_ports.p_esf_rst_pwml_pwmh) && !isnull(fet_driver_ports.p_coast))
                         predriver(fet_driver_ports);
 
-                    //pwm_check(pwm_ports);//checks if pulses can be generated on pwm ports or not
-                    pwm_service_task(MOTOR_ID, pwm_ports, i_update_pwm,
-                            i_update_brake, IFM_TILE_USEC);
-
+                    pwm_service_general(pwm_ports, i_update_pwm, GPWM_FRQ_15, DEADTIME_NS);
                 }
 
                 /* ADC Service */
                 {
-                    adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IFM_TILE_USEC, SINGLE_ENDED);
+                    adc_service(adc_ports, i_adc /*ADCInterface*/, i_watchdog[1], IF2_TILE_USEC, SINGLE_ENDED);
                 }
 
                 /* Watchdog Service */
                 {
-                    watchdog_service(wd_ports, i_watchdog, IFM_TILE_USEC);
+                    watchdog_service(wd_ports, i_watchdog, IF2_TILE_USEC);
                 }
 
-                /* Motor Control Service */
+                /* Torque Control Service */
                 {
-                    MotorcontrolConfig motorcontrol_config;
+                    MotorcontrolConfig torque_control_config;
 
-                    motorcontrol_config.dc_bus_voltage =  DC_BUS_VOLTAGE;
-                    motorcontrol_config.phases_inverted = MOTOR_PHASES_CONFIGURATION;
-                    motorcontrol_config.torque_P_gain =  TORQUE_Kp;
-                    motorcontrol_config.torque_I_gain =  TORQUE_Ki;
-                    motorcontrol_config.torque_D_gain =  TORQUE_Kd;
-                    motorcontrol_config.pole_pairs =  MOTOR_POLE_PAIRS;
-                    motorcontrol_config.commutation_sensor=SENSOR_1_TYPE;
-                    motorcontrol_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
-                    motorcontrol_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
-                    motorcontrol_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
-                    motorcontrol_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
-                    motorcontrol_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
-                    motorcontrol_config.current_ratio =  CURRENT_RATIO;
-                    motorcontrol_config.voltage_ratio =  VOLTAGE_RATIO;
-                    motorcontrol_config.temperature_ratio =  TEMPERATURE_RATIO;
-                    motorcontrol_config.rated_current =  MOTOR_RATED_CURRENT;
-                    motorcontrol_config.rated_torque  =  MOTOR_RATED_TORQUE;
-                    motorcontrol_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
-                    motorcontrol_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
-                    motorcontrol_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
-                    motorcontrol_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
-                    motorcontrol_config.protection_limit_over_temperature = TEMP_BOARD_MAX;
+                    torque_control_config.dc_bus_voltage =  DC_BUS_VOLTAGE;
+                    torque_control_config.phases_inverted = MOTOR_PHASES_CONFIGURATION;
+                    torque_control_config.torque_P_gain =  TORQUE_Kp;
+                    torque_control_config.torque_I_gain =  TORQUE_Ki;
+                    torque_control_config.torque_D_gain =  TORQUE_Kd;
+                    torque_control_config.pole_pairs =  MOTOR_POLE_PAIRS;
+                    torque_control_config.commutation_sensor=SENSOR_1_TYPE;
+                    torque_control_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
+                    torque_control_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
+                    torque_control_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
+                    torque_control_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;
+                    torque_control_config.torque_constant =  MOTOR_TORQUE_CONSTANT;
+                    torque_control_config.current_ratio =  CURRENT_RATIO;
+                    torque_control_config.voltage_ratio =  VOLTAGE_RATIO;
+                    torque_control_config.temperature_ratio =  TEMPERATURE_RATIO;
+                    torque_control_config.rated_current =  MOTOR_RATED_CURRENT;
+                    torque_control_config.rated_torque  =  MOTOR_RATED_TORQUE;
+                    torque_control_config.percent_offset_torque =  APPLIED_TUNING_TORQUE_PERCENT;
+                    torque_control_config.protection_limit_over_current =  PROTECTION_MAXIMUM_CURRENT;
+                    torque_control_config.protection_limit_over_voltage =  PROTECTION_MAXIMUM_VOLTAGE;
+                    torque_control_config.protection_limit_under_voltage = PROTECTION_MINIMUM_VOLTAGE;
+                    torque_control_config.protection_limit_over_temperature = TEMP_BOARD_MAX;
 
                     for (int i = 0; i < 1024; i++)
                     {
-                        motorcontrol_config.torque_offset[i] = 0;
+                        torque_control_config.torque_offset[i] = 0;
                     }
-                    torque_control_service(motorcontrol_config, i_adc[0], i_shared_memory[2],
-                            i_watchdog[0], i_torque_control, i_update_pwm, IFM_TILE_USEC);
+                    torque_control_service(torque_control_config, i_adc[0], i_shared_memory[2],
+                            i_watchdog[0], i_torque_control, i_update_pwm, IF2_TILE_USEC, /*gpio_port_0*/null);
                 }
 
                 /* Shared memory Service */
@@ -273,7 +256,7 @@ int main(void)
                     position_feedback_config_1.polarity    = SENSOR_1_POLARITY;
                     position_feedback_config_1.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
                     position_feedback_config_1.pole_pairs  = MOTOR_POLE_PAIRS;
-                    position_feedback_config_1.ifm_usec    = IFM_TILE_USEC;
+                    position_feedback_config_1.ifm_usec    = IF2_TILE_USEC;
                     position_feedback_config_1.max_ticks   = SENSOR_MAX_TICKS;
                     position_feedback_config_1.offset      = HOME_OFFSET;
                     position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;
@@ -305,6 +288,11 @@ int main(void)
                     position_feedback_config_1.hall_config.hall_state_angle[3]=HALL_STATE_4_ANGLE;
                     position_feedback_config_1.hall_config.hall_state_angle[4]=HALL_STATE_5_ANGLE;
                     position_feedback_config_1.hall_config.hall_state_angle[5]=HALL_STATE_6_ANGLE;
+
+                    position_feedback_config_1.gpio_config[0] = GPIO_CONFIG_1;
+                    position_feedback_config_1.gpio_config[1] = GPIO_CONFIG_2;
+                    position_feedback_config_1.gpio_config[2] = GPIO_CONFIG_3;
+                    position_feedback_config_1.gpio_config[3] = GPIO_CONFIG_4;
 
                     //setting second sensor
                     PositionFeedbackConfig position_feedback_config_2 = position_feedback_config_1;

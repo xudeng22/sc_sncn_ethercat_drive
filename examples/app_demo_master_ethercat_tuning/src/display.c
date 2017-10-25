@@ -117,7 +117,11 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Torque %6d/%5d mNm | analog input 1: %8d", (int16_t)pdo_input.torque_value, ((int16_t)pdo_input.torque_value*input.rated_torque)/1000, pdo_input.analog_input1);
     //row 3
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);
+    if (input.offset >= 0 && input.offset <= 4096) {
+        wprintw(wnd, "Offset             %4d | Pole pairs            %2d", input.offset, input.pole_pairs);
+    } else {
+        wprintw(wnd, "WRONG SENSOR POLARITY!  | Pole pairs            %2d", input.offset, input.pole_pairs);
+    }
     //row 4
     wmoveclr(wnd, &row);
     if (input.motion_polarity == 0)
@@ -161,16 +165,16 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wprintw(wnd, "Torque max %6d / %5d mNm", input.max_torque,  (input.max_torque*input.rated_torque)/1000);
     //row 9
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position P    %9d | ", input.P_pos);
-    wprintw(wnd, "Velocity P     %9d", input.P_velocity);
+    wprintw(wnd, "Position P   %10f | ", input.P_pos);
+    wprintw(wnd, "Velocity P    %10f", input.P_velocity);
     //row 10
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position I    %9d | ", input.I_pos);
-    wprintw(wnd, "Velocity I     %9d", input.I_velocity);
+    wprintw(wnd, "Position I   %10f | ", input.I_pos);
+    wprintw(wnd, "Velocity I    %10f", input.I_velocity);
     //row 11
     wmoveclr(wnd, &row);
-    wprintw(wnd, "Position D    %9d | ", input.D_pos);
-    wprintw(wnd, "Velocity D     %9d", input.D_velocity);
+    wprintw(wnd, "Position D   %10f | ", input.D_pos);
+    wprintw(wnd, "Velocity D    %10f", input.D_velocity);
     //row 12
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position I lim    %5d | ", input.integral_limit_pos);
@@ -181,6 +185,21 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     //row 14
     wmoveclr(wnd, &row);
     wprintw(wnd, "Filter         %8d", input.filter);
+    char gpio_input[5];
+    char gpio_output[5];
+    sprintf(gpio_input, "%c%c%c%c", '0'+pdo_input.digital_input4,  '0'+pdo_input.digital_input3, '0'+pdo_input.digital_input2, '0'+pdo_input.digital_input1);
+    sprintf(gpio_output, "%c%c%c%c", '0'+pdo_output.digital_output4, '0'+pdo_output.digital_output3, '0'+pdo_output.digital_output2, '0'+pdo_output.digital_output1);
+    for (int i=0; i<4; i++) {
+        if (input.gpio_config[i] == GPIO_OFF) {
+            gpio_input[3-i] = 'x';
+            gpio_output[3-i] = 'x';
+        } else if (input.gpio_config[i] == GPIO_OUTPUT) {
+            gpio_input[3-i] = 'x';
+        } else if (input.gpio_config[i] == GPIO_INPUT || input.gpio_config[i] == GPIO_INPUT_PULLDOWN) {
+            gpio_output[3-i] = 'x';
+        }
+    }
+    wprintw(wnd, " | GPIO input: %s / output: %s", gpio_input, gpio_output);
     //row 15
     wmoveclr(wnd, &row);
     if (input.cogging_torque_flag == 1) {
@@ -190,7 +209,7 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     }
     //row 16
     wmoveclr(wnd, &row);
-    //motorcontrol fault
+    //torque controller fault
     if (input.error_status != 0) {
         wprintw(wnd, "* Motor Fault ");
         print_motor_fault(wnd, input.error_status);
@@ -230,7 +249,7 @@ int display_tuning_help(WINDOW *wnd, int row)
     wmoveclr(wnd, &row);
     printw("P + number: Set pole pairs");
     wmoveclr(wnd, &row);
-    printw(".:          Start/stop recording");
+    printw(",:          Start/stop recording");
     wmoveclr(wnd, &row);
     printw("L s/t/p + number: set speed/torque/position limit");
     wmoveclr(wnd, &row);

@@ -69,16 +69,27 @@ The commands consist of 1,2 or 3 characters with an optional number. The command
 The following one character commands are executed directly without pressing enter after:
 
   - ``q``: stop the node and quit the app
-  - ``[enter]``: just pressing enter will disable the motorcontrol block the brake.
-  - ``0``: pressing 0 will switch to torque control mode with a 0 torque command. Which stops the motor slower than by disabling the motorcontrol with ``[enter]``. Be careful if the axis is loaded it could fall.
+  - ``[enter]``: just pressing enter will disable the torque controller block the brake.
+  - ``0``: pressing 0 will switch to torque control mode with a 0 torque command. Which stops the motor slower than by disabling the torque controller with ``[enter]``. Be careful if the axis is loaded it could fall.
   - ``r``: reverse the current torque/velocity command
-  - ``.``: start/stop record. this record the position/velocity/torque to a csv formated file.
+  - ``,``: start/stop record. this record the position/velocity/torque to a csv formated file.
   - ``[backspace]``: discard current command
 
 The rest of the commands can be up to 3 characters with an optional number. The command is then executed by pressing [enter].
-The number can be negative. Spaces are ignored. The default number value is 0.
+The number can be negative or decimal (for example ``1.2``). Spaces are ignored. The default number value is 0.
 
-  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails the offset will be -1. After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment. Otherwise the position and velocity controller will not work.
+  - ``a``: start the auto offset tuning. It automatically update the offset field display. If the offset detection fails it will print ``WRONG SENSOR POLARITY!``.
+
+   Some possible causes of failure of the offset detection are:
+     - The sensor polarity is wrong. This can be fixed by changing the sensor polarity with the ``s`` command.
+     - The torque applied during tuning is too low. This setting is set in the SDO config file. 20% should be enough for an open motor but a motor with gears or a load can need more.
+     - The motor is blocked. If the motor does not freely turn during the detection the offset will be wrong.
+     - The sensor is disconnected or not working properly. If the angle feedback is not working the offset will be wrong (but the motor will probably still turn during the tuning). Check the position feedback and the eventual sensor errors.
+     - The motor phases are not connected properly. This will maybe prevent the motor to turn correctly and give a wrong offset.
+     - The pole pairs setting is wrong. The motor will probably still turn during the tuning but the offset will be wrong.
+
+   After the offset is found you need to make sure that a positive torque command result in a positive velocity/position increment (by testing). Otherwise the position and velocity controller will not work. If this is not the case use the ``m`` command to change the phase inverted parameter.
+
   - ``ac``:  start the cogging torque detection. It automatically records the cogging torque present in the motor in one mechanical rotation. After the torque is recorded, press “ec1” to enable the compensation of the cogging torque
   - ``acs``:  save the cogging torque recorded in the flash memory in a binary file called 'cogging_torque.bin'
   - ``acl``:  load the cogging torque previously stored in the flash memory
@@ -96,7 +107,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``ev1``: enable velocity control.
   - ``et1``: enable torque control.
   - ``ec``: toggle cogging torque compensation.
-  - ``e``: and any command starting with e like ep, ev, et will disable the motorcontrol. It's the same as the command [enter].
+  - ``e``: and any command starting with e like ep, ev, et will disable the torque controller. It's the same as the command [enter].
   - ``z``: reset the multiturn position to 0 (the number of turn). This doesn't change the offset. This command only works with the REM 16MT position sensor.
   - ``zz``: reset the multiturn and singleturn position to 0. The offset need to be found again. This command only works with the REM 16MT position sensor.
   - ``o[number]``: set the commutation offset. The range is [0 - 4095].
@@ -104,7 +115,8 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``d``: toggle the motion polarity. It reverse the position/velocity/torque commands and feedback in the motion controller. Which will make you motor turn the other direction.
   - ``m``: toggle the phase inverted parameter. Use this if after finding the offset you have a positive torque resulting in a negative velocity.
   - ``P[number]``: set the pole pairs. If when using torque control and the motor moves a little bit then "hold" a position it can be because the pole pairs are incorrect. (it can also be caused by the position sensor).
-  - ``f``: reset the motorcontrol fault. If the motor stops because of over/under current. Try adjusting you power supply settings and maybe set a lower maximum torque.
+  - ``f``: reset the torque control fault. If the motor stops because of over/under current. Try adjusting you power supply settings and maybe set a lower maximum torque.
+  - ``g[number]``: set the GPIO output. The number to input must be four ``0`` or ``1``. GPIO port 1 is the rightmost bit.
   - ``tss``: set the torque safe mode. in this mode all the phases are disconnected and the motor is free to move. Use this if you want to manually move the axis.
   - ``kpp [number]``: set the P coefficient of the Position controller.
   - ``kpi [number]``: set the I coefficient of the Position controller.
@@ -118,10 +130,10 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``kpl [number]``: set the Integral part limit the Velocity controller.
   - ``ktr [number]``: set the rated torque.
   - ``kf [number]``: set the cut-off frequency of the filter in motion control service in Hz (0 to disable)
-  - ``Lp [number]``:  set both the maximum and minimum position limit to [number] and -[number]. The motorcontrol will be automatically disable when the position limit is reached. You can use this feature if your axis has a limited movement. If you are past the limits move the axis manually (use b and tss to unlock the motor) or restart position/velocity/torque controller in the right direction (the position limiter has a threshold to allow to restart if the motor is right after the limit).
+  - ``Lp [number]``:  set both the maximum and minimum position limit to [number] and -[number]. The torque controller will be automatically disable when the position limit is reached. You can use this feature if your axis has a limited movement. If you are past the limits move the axis manually (use b and tss to unlock the motor) or restart position/velocity/torque controller in the right direction (the position limiter has a threshold to allow to restart if the motor is right after the limit).
   - ``Lpu [number]``: set the maximum position limit.
   - ``Lpl [number]``: set the minimum position limit.
-  - ``Lt [number]``: set the torque limit. The unit in in 1/1000 of rated torque. This command stops the motorcontrol.
+  - ``Lt [number]``: set the torque limit. The unit in in 1/1000 of rated torque. This command stops the torque controller.
   - ``Lv [number]``: set the velocity limit. Used in velocity control and in cascaded and limited-torque position control modes.
   - ``[number]``: just entering a number will switch to torque control mode and set a target torque.
 
@@ -153,7 +165,7 @@ When the application has been compiled, the next step is to run it on the Linux 
 
        bin/app_demo_master_ethercat_tuning -o -n 0
 
-   #. The application will display the actual position, velocity and torque of the selected slave. It also displays some other parameters or status such as the commutation offset, the brake and motorcontrol status, the PID parameters, etc. If there is an error with the motorcontrol, motion control or position sensor it will be displayed on the last line::
+   #. The application will display the actual position, velocity and torque of the selected slave. It also displays some other parameters or status such as the commutation offset, the brake and motorcontrol status, the PID parameters, etc. If there is an error with the torque controller, motion control or position sensor it will be displayed on the last line::
 
         ** Operation mode: off **
         Position         122776 | Velocity               0
@@ -164,11 +176,15 @@ When the application has been compiled, the next step is to run it on the Linux 
         Brake blocking
         Speed  limit       5000 | Position min/max -2147483647 /  2147483647
         Torque rated    270 mNm | Torque max    100 /    27 mNm
-        Position P        16000 | Velocity P        700000
-        Position I          280 | Velocity I         20000
-        Position D        41000 | Velocity D             0
+        Position P     0.120000 | Velocity P      1.780000
+        Position I     0.340000 | Velocity I      9.120000
+        Position D     0.560000 | Velocity D      3.450000
         Position I lim     1000 | Velocity I lim       900
+        Autotune Period    2000 | Amplitude          20000
+        Filter                0 | GPIO input: xxxx / output: xxxx
+        Cogging torque compensation OFF
         * Motor Fault Under Voltage *
+
 
         Commands:
         b:          Release/Block Brake
@@ -182,7 +198,7 @@ When the application has been compiled, the next step is to run it on the Linux 
         L s/t/p + number: set speed/torque/position limit
         ** single press Enter for emergency stop **
 
-        > 
+        >
 
 
    #. Use the commands previously described to find the commutation offset then tune and test the position/velocity/torque controllers. After you found the optimal parameters please note them (don't quit the app!) and update your ``sdo_config.csv`` file. You can also test the CSP,CSV,CST CiA 402 operation modes with the ``app_master_cyclic``.

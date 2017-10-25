@@ -25,7 +25,6 @@
 #define ERROR_CODE_INCREMENTAL_SENSOR_1_FAULT       0x7305
 #define ERROR_CODE_SPEED                            0x7310
 #define ERROR_CODE_POSITION                         0x7320
-#define ERROR_CODE_MOTOR_COMMUTATION                0x7122
 
 #define ERROR_CODE_MOTOR_BLOCKED                    0x7121
 

@@ -59,7 +59,7 @@ int write_sdo_config(Ethercat_Master_t *master, int slave_number, SdoParam_t *co
     return ret;
 }
 
-int read_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex)
+int read_sdo_from_file(int slave_number, SdoParam_t **config, size_t max_objects, int index, int subindex)
 {
     for (int i=0 ; i<max_objects; i++) {
         if (config[slave_number][i].index == index && config[slave_number][i].subindex == subindex) {
@@ -67,4 +67,19 @@ int read_sdo(int slave_number, SdoParam_t **config, size_t max_objects, int inde
         }
     }
     return 0;
+}
+
+int read_sdo(Ethercat_Master_t *master, int slave_number, int index, int subindex) {
+    int sdo_value = 0;
+
+    int ret = ecw_slave_get_sdo_value(ecw_slave_get(master, slave_number), index, subindex, &sdo_value);
+
+    if (ret == 0) {
+        return sdo_value;
+    } else {
+        fprintf(stderr, "Error Slave %d, could not read sdo object 0x%04x:%d, error code %d\n",
+                slave_number, index, subindex, ret);
+    }
+
+    return -1;
 }

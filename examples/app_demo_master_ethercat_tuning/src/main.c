@@ -266,6 +266,16 @@ int main(int argc, char **argv)
 
     struct sigaction sa;
     struct itimerval tv;
+    PositionProfileConfig profile_config;
+
+    //init tuning structure
+    InputValues input = {0};
+    OutputValues output = {0};
+    output.app_mode = TUNING_MODE;
+    output.mode_1 = 1;
+    output.mode_2 = 1;
+    output.mode_3 = 1;
+    output.sign = 1;
 
     //read sdo parameters from file
     SdoConfigParameter_t sdo_config_parameter;
@@ -303,6 +313,32 @@ int main(int argc, char **argv)
         }
     }
 
+    //get GPIO SDO config
+    for (int i=1; i<=4; i++) {
+        input.gpio_config[i-1] = read_sdo(master, num_slaves-1, DICT_GPIO, i);
+    }
+
+    //init profiler
+    profile_config.max_acceleration = 1000;
+    profile_config.max_speed = 3000;
+    profile_config.profile_speed = profile_speed;
+    profile_config.profile_acceleration = 50;
+    profile_config.max_position = 0x7fffffff;
+    profile_config.min_position = -0x7fffffff;
+    profile_config.mode = POSITION_DIRECT;
+    profile_config.ticks_per_turn = 65536;
+    for (int sensor_port=1; sensor_port<=3; sensor_port++) {
+        int sensor_config = read_sdo(master, num_slaves-1, DICT_FEEDBACK_SENSOR_PORTS, sensor_port);
+        if (sensor_config != 0) {
+            int sensor_function = read_sdo(master, num_slaves-1, sensor_config, SUB_ENCODER_FUNCTION);
+            if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
+                profile_config.ticks_per_turn = read_sdo(master, num_slaves-1, sensor_config, SUB_ENCODER_RESOLUTION);
+                break;
+            }
+        }
+    }
+    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
+
     // Activate master and start operation
     if (ecw_master_start(master) != 0) {
         fprintf(stderr, "Error starting cyclic operation of master - giving up\n");
@@ -323,15 +359,6 @@ int main(int argc, char **argv)
     struct _pdo_cia402_input  *pdo_input  = malloc(num_slaves*sizeof(struct _pdo_cia402_input));
     struct _pdo_cia402_output *pdo_output = malloc(num_slaves*sizeof(struct _pdo_cia402_output));
 
-    //init tuning structure
-    InputValues input = {0};
-    OutputValues output = {0};
-    output.app_mode = TUNING_MODE;
-    output.mode_1 = 1;
-    output.mode_2 = 1;
-    output.mode_3 = 1;
-    output.sign = 1;
-
     /* Init pdos */
     pdo_output[num_slaves-1].controlword = 0;
     pdo_output[num_slaves-1].op_mode = 0;
@@ -339,28 +366,6 @@ int main(int argc, char **argv)
     pdo_output[num_slaves-1].target_torque = 0;
     pdo_output[num_slaves-1].target_velocity = 0;
     pdo_input[num_slaves-1].op_mode_display = 0;
-
-    //init profiler
-    PositionProfileConfig profile_config;
-    profile_config.max_acceleration = 1000;
-    profile_config.max_speed = 3000;
-    profile_config.profile_speed = profile_speed;
-    profile_config.profile_acceleration = 50;
-    profile_config.max_position = 0x7fffffff;
-    profile_config.min_position = -0x7fffffff;
-    profile_config.mode = POSITION_DIRECT;
-    profile_config.ticks_per_turn = 65536;
-    if (sdo_enable) {
-        for (int sensor_port=1; sensor_port<=3; sensor_port++) {
-            int sensor_config = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, 0x2100, sensor_port); //0x2100 is DICT_FEEDBACK_SENSOR_PORTS
-            int sensor_function = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 2);
-            if (sensor_function == 1 || sensor_function == 3) { //sensor functions 1 and 3 are motion control
-                profile_config.ticks_per_turn = read_sdo(num_slaves-1, slave_config, sdo_config_parameter.param_count, sensor_config, 3); //subindex 3 is resolution
-                break;
-            }
-        }
-    }
-    init_position_profile_limits(&(profile_config.motion_profile), profile_config.max_acceleration, profile_config.max_speed, profile_config.max_position, profile_config.min_position, profile_config.ticks_per_turn);
 
     //init recorder
     RecordConfig record_config = {0};

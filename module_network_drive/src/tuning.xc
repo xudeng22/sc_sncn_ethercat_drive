@@ -11,6 +11,7 @@
 #include <file_service.h>
 #include <string.h>
 #include <print.h>
+#include <config_manager.h>
 /*
  * Function to call while in tuning opmode
  *
@@ -24,7 +25,7 @@ int tuning_handler_ethercat(
         /* input */  uint32_t    tuning_command,
         /* output */ uint32_t    &user_miso, uint32_t &tuning_status,
         TuningModeState             &tuning_mode_state,
-        MotorcontrolConfig       &motorcontrol_config,
+        MotorcontrolConfig       &torque_control_config,
         MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
@@ -42,16 +43,17 @@ int tuning_handler_ethercat(
     motion_ctrl_config = i_motion_control.get_motion_control_config();
 
     //mux send offsets and other data in the tuning result pdo using the lower bits of statusword
+    union sdo_value value;
     status_mux++;
     if (status_mux > TUNING_STATUS_MUX_TUNE_PERIOD) {
         status_mux = 1;
     }
     switch(status_mux) {
     case TUNING_STATUS_MUX_OFFSET: //send offset
-        user_miso = motorcontrol_config.commutation_angle_offset;
+        user_miso = torque_control_config.commutation_angle_offset;
         break;
     case TUNING_STATUS_MUX_POLE_PAIRS: //pole pairs
-        user_miso = motorcontrol_config.pole_pairs;
+        user_miso = torque_control_config.pole_pairs;
         break;
     case TUNING_STATUS_MUX_MIN_POS: //position limit min
         user_miso = motion_ctrl_config.min_pos_range_limit;
@@ -63,28 +65,34 @@ int tuning_handler_ethercat(
         user_miso = motion_ctrl_config.max_motor_speed;
         break;
     case TUNING_STATUS_MUX_MAX_TORQUE: //max torque
-        user_miso = (motion_ctrl_config.max_torque*1000)/motorcontrol_config.rated_torque;
+        user_miso = (motion_ctrl_config.max_torque*1000)/torque_control_config.rated_torque;
         break;
     case TUNING_STATUS_MUX_POS_KP: //P_pos
-        user_miso = motion_ctrl_config.position_kp;
+        value.f = motion_ctrl_config.position_kp;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_POS_KI: //I_pos
-        user_miso = motion_ctrl_config.position_ki;
+        value.f = motion_ctrl_config.position_ki;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_POS_KD: //D_pos
-        user_miso = motion_ctrl_config.position_kd;
+        value.f = motion_ctrl_config.position_kd;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_POS_I_LIM: //integral_limit_pos
         user_miso = motion_ctrl_config.position_integral_limit;
         break;
     case TUNING_STATUS_MUX_VEL_KP: //P vel
-        user_miso = motion_ctrl_config.velocity_kp;
+        value.f = motion_ctrl_config.velocity_kp;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_VEL_KI: //I vel
-        user_miso = motion_ctrl_config.velocity_ki;
+        value.f = motion_ctrl_config.velocity_ki;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_VEL_KD: //D vel
-        user_miso = motion_ctrl_config.velocity_kd;
+        value.f = motion_ctrl_config.velocity_kd;
+        user_miso = value.i;
         break;
     case TUNING_STATUS_MUX_VEL_I_LIM: //integral_limit_vel
         user_miso = motion_ctrl_config.velocity_integral_limit;
@@ -102,7 +110,7 @@ int tuning_handler_ethercat(
         user_miso = upstream_control_data.motion_control_error;
         break;
     case TUNING_STATUS_MUX_RATED_TORQUE:// motion control error
-        user_miso = motorcontrol_config.rated_torque;
+        user_miso = torque_control_config.rated_torque;
         break;
     case TUNING_STATUS_MUX_FILTER:// filter
         user_miso = motion_ctrl_config.filter;
@@ -127,12 +135,12 @@ int tuning_handler_ethercat(
 
         //execute command
         tuning_command_handler(tuning_mode_state,
-                motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
+                torque_control_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
                 sensor_commutation, sensor_motion_control,
                 i_motion_control, i_position_feedback_1, i_position_feedback_2, i_file_service);
 
         //update flags
-        tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_ctrl_config,
+        tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, torque_control_config, motion_ctrl_config,
                 pos_feedback_config_1, pos_feedback_config_2, sensor_commutation);
     }
 
@@ -146,7 +154,7 @@ int tuning_handler_ethercat(
 
 void tuning_command_handler(
         TuningModeState             &tuning_mode_state,
-        MotorcontrolConfig       &motorcontrol_config,
+        MotorcontrolConfig       &torque_control_config,
         MotionControlConfig &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
@@ -161,15 +169,19 @@ void tuning_command_handler(
 
     /* execute command */
     if (tuning_mode_state.command & TUNING_CMD_SET_PARAM_MASK) { //set parameter commands
+        union sdo_value value;
         switch(tuning_mode_state.command) {
         case TUNING_CMD_POSITION_KP:
-            motion_ctrl_config.position_kp = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.position_kp = value.f;
             break;
         case TUNING_CMD_POSITION_KI:
-            motion_ctrl_config.position_ki = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.position_ki = value.f;
             break;
         case TUNING_CMD_POSITION_KD:
-            motion_ctrl_config.position_kd = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.position_kd = value.f;
             break;
         case TUNING_CMD_POSITION_I_LIM:
             motion_ctrl_config.position_integral_limit = tuning_mode_state.value;
@@ -181,20 +193,23 @@ void tuning_command_handler(
             motion_ctrl_config.enable_profiler = tuning_mode_state.value;
             break;
         case TUNING_CMD_VELOCITY_KP:
-            motion_ctrl_config.velocity_kp = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.velocity_kp = value.f;
             break;
         case TUNING_CMD_VELOCITY_KI:
-            motion_ctrl_config.velocity_ki = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.velocity_ki = value.f;
             break;
         case TUNING_CMD_VELOCITY_KD:
-            motion_ctrl_config.velocity_kd = tuning_mode_state.value;
+            value.i = tuning_mode_state.value;
+            motion_ctrl_config.velocity_kd = value.f;
             break;
         case TUNING_CMD_VELOCITY_I_LIM:
             motion_ctrl_config.velocity_integral_limit = tuning_mode_state.value;
             break;
         case TUNING_CMD_MAX_TORQUE:
-            motion_ctrl_config.max_torque = (tuning_mode_state.value*motorcontrol_config.rated_torque)/1000;
-            motorcontrol_config.max_torque = motion_ctrl_config.max_torque;
+            motion_ctrl_config.max_torque = (tuning_mode_state.value*torque_control_config.rated_torque)/1000;
+            torque_control_config.max_torque = motion_ctrl_config.max_torque;
             break;
         case TUNING_CMD_MAX_SPEED:
             motion_ctrl_config.max_motor_speed = tuning_mode_state.value;
@@ -246,21 +261,21 @@ void tuning_command_handler(
                         i_position_feedback_1.set_config(pos_feedback_config_1);
                     }
                 }
-                motorcontrol_config.pole_pairs = tuning_mode_state.value;
+                torque_control_config.pole_pairs = tuning_mode_state.value;
             }
             break;
         case TUNING_CMD_OFFSET:
-            motorcontrol_config.commutation_angle_offset = tuning_mode_state.value;
+            torque_control_config.commutation_angle_offset = tuning_mode_state.value;
             break;
         case TUNING_CMD_PHASES_INVERTED:
             if (tuning_mode_state.value) {
-                motorcontrol_config.phases_inverted = MOTOR_PHASES_INVERTED;
+                torque_control_config.phases_inverted = MOTOR_PHASES_INVERTED;
             } else {
-                motorcontrol_config.phases_inverted = MOTOR_PHASES_NORMAL;
+                torque_control_config.phases_inverted = MOTOR_PHASES_NORMAL;
             }
             break;
         case TUNING_CMD_RATED_TORQUE:
-            motorcontrol_config.rated_torque = tuning_mode_state.value;
+            torque_control_config.rated_torque = tuning_mode_state.value;
             break;
         }
 
@@ -271,7 +286,7 @@ void tuning_command_handler(
         if (tuning_mode_state.command & TUNING_CMD_SET_MOTOR_CONTROL_MASK) {
             tuning_mode_state.brake_flag = 0;
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
-            i_motion_control.set_motorcontrol_config(motorcontrol_config);
+            i_motion_control.set_motorcontrol_config(torque_control_config);
         }
 
     } else { //action command
@@ -334,7 +349,7 @@ void tuning_command_handler(
         case TUNING_CMD_AUTO_OFFSET:
             tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
             tuning_mode_state.brake_flag = 0;
-            motorcontrol_config = i_motion_control.set_offset_detection_enabled();
+            torque_control_config = i_motion_control.set_offset_detection_enabled();
             break;
 
         //start position control auto tuning
@@ -469,16 +484,16 @@ void tuning_command_handler(
 
         case TUNING_CMD_SAVE_RECORD_COGGING:
 
-            motorcontrol_config = i_motion_control.get_motorcontrol_config();
-            i_file_service.write_torque_array(motorcontrol_config.torque_offset);
+            torque_control_config = i_motion_control.get_motorcontrol_config();
+            i_file_service.write_torque_array(torque_control_config.torque_offset);
 
             break;
 
         case TUNING_CMD_LOAD_RECORD_COGGING:
 
-            motorcontrol_config = i_motion_control.get_motorcontrol_config();
-            i_file_service.read_torque_array(motorcontrol_config.torque_offset);
-            i_motion_control.set_motorcontrol_config(motorcontrol_config);
+            torque_control_config = i_motion_control.get_motorcontrol_config();
+            i_file_service.read_torque_array(torque_control_config.torque_offset);
+            i_motion_control.set_motorcontrol_config(torque_control_config);
 
             break;
 
@@ -487,7 +502,7 @@ void tuning_command_handler(
 }
 
 uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
-        MotorcontrolConfig       &motorcontrol_config,
+        MotorcontrolConfig       &torque_control_config,
         MotionControlConfig      &motion_ctrl_config,
         PositionFeedbackConfig   &pos_feedback_config_1,
         PositionFeedbackConfig   &pos_feedback_config_2,
@@ -507,7 +522,7 @@ uint8_t tuning_set_flags(TuningModeState &tuning_mode_state,
         sensor_polarity = 0;
     }
     int phases_inverted = 0;
-    if (motorcontrol_config.phases_inverted == MOTOR_PHASES_INVERTED) {
+    if (torque_control_config.phases_inverted == MOTOR_PHASES_INVERTED) {
         phases_inverted = 1;
     }
     int integrated_profiler = 0;

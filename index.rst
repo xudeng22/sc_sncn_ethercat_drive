@@ -75,7 +75,7 @@ Examples
 
 * **Slave examples (for SOMANET devices):**
 
-    * `Drive Slave Firmware <examples/app_demo_slave_ethercat_motorcontrol/doc/index.html>`_: EtherCAT Drive slave firmware for your SOMANET device.
+    * `Drive Slave Firmware <examples/app_slave_ethercat_motorcontrol/doc/index.html>`_: EtherCAT Drive slave firmware for your SOMANET device.
 
 
 * **Master examples (for Linux machines):**

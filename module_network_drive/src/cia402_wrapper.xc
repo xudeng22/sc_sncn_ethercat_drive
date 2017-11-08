@@ -12,32 +12,30 @@
 void print_object_dictionary(client interface i_co_communication i_co)
 {
     union sdo_value sdo_value;
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 3); // Number of pole pairs
-    printstr("Number of pole pairs: ");printintln(sdo_value.i);
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 1); // Nominal Current
-    printstr("Nominal Current: ");printintln(sdo_value.i);
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 6);  //motor torque constant
-    printstr("motor torque constant: ");printintln(sdo_value.i);
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_COMMUTATION_ANGLE_OFFSET, 0); //Commutation offset CLKWISE
-    printstr("Commutation offset CLKWISE: ");printintln(sdo_value.i);
+    printstr("Commutation offset: ");printintln(sdo_value.i);
+    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 1); // Number of pole pairs
+    printstr("Number of pole pairs: ");printintln(sdo_value.i);
+    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 2);  //motor torque constant
+    printstr("Motor torque constant: ");printintln(sdo_value.i);
+    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 3); // Phase Resistance
+    printstr("Phase Resistance: ");printintln(sdo_value.i);
+    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 4); // Phase Inductance
+    printstr("Phase Inductance: ");printintln(sdo_value.i);
+    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_POSITION_CONTROL_STRATEGY, 0);// Position control strategy
+    printstr("Position control strategy: ");printintln(sdo_value.i);
 
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MOTOR_SPECIFIC_SETTINGS, 4);//Max Speed
-    printstr("Max Speed: ");printintln(sdo_value.i);
-
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0);//MAX_TORQUE
+    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MAX_TORQUE, 0); // MAX_TORQUE
     printstr("MAX TORQUE: ");printintln(sdo_value.i);
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, 1);//negative positioning limit
     printstr("negative positioning limit: ");printintln(sdo_value.i);
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_POSITION_RANGE_LIMITS, 2);//positive positioning limit
     printstr("positive positioning limit: ");printintln(sdo_value.i);
+
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_POLARITY, 0);//motor driving polarity
     printstr("motor driving polarity: ");printintln(sdo_value.i);  // -1 in 2'complement 255
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);//MAX PROFILE VELOCITY
     printstr("MAX PROFILE VELOCITY: ");printintln(sdo_value.i);
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_MAX_PROFILE_VELOCITY, 0);//PROFILE VELOCITY
-    printstr("PROFILE VELOCITY: ");printintln(sdo_value.i);
-    {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_PROFILE_ACCELERATION, 0);//MAX ACCELERATION
-    printstr("MAX ACCELERATION: ");printintln(sdo_value.i);
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_PROFILE_ACCELERATION, 0);//PROFILE ACCELERATION
     printstr("PROFILE ACCELERATION: ");printintln(sdo_value.i);
     {sdo_value.i, void, void} = i_co.od_get_object_value(DICT_PROFILE_DECELERATION, 0);//PROFILE DECELERATION

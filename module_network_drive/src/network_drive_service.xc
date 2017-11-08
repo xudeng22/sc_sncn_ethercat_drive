@@ -21,7 +21,7 @@
 #include <xscope.h>
 #include <tuning.h>
 
-#define NETWORK_DRIVE_DEBUG_PRINT_STATE
+//#define NETWORK_DRIVE_DEBUG_PRINT_STATE
 
 #define MANUFACTURER_SOFTWARE_VERSION "3.2"
 
@@ -647,7 +647,7 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                     sensor_commutation, sensor_motion_control, sensor_resolution, polarity,
                     quick_stop_deceleration, position_range_limit_min, position_range_limit_max, opmode
                     );
-            print_object_dictionary(i_co);
+            //print_object_dictionary(i_co);
             //Load cogging torque data
             char filename [] = "cogging_torque.bin";
             if (!isnull(i_file_service)) {

@@ -1,6 +1,6 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <ComEtherCAT-rev-a.bsp>
-#include <DRIVE_BOARD_REQUIRED>
+#include <Drive1000-rev-c4.bsp>
 #include <CoreC2X.bsp>
 
 
@@ -12,6 +12,7 @@
 
 // Please configure your slave's default parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
+#include <i2c.h>
 #include <user_config.h>
 
 #include <network_drive_service.h>
@@ -50,6 +51,8 @@ port ?gpio_port_2 = SOMANET_DRIVE_GPIO_D2;
 port ?gpio_port_3 = SOMANET_DRIVE_GPIO_D3;
 port c21watchdog = WD_PORT_TICK;
 port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+port i2c_sda = RTC_PORT_I2C_SDA;
+port i2c_scl = RTC_PORT_I2C_SCL;
 
 int main(void)
 {
@@ -71,8 +74,9 @@ int main(void)
     interface EtherCATRebootInterface i_ecat_reboot;
     interface FileServiceInterface i_file_service[2];
     FlashDataInterface i_data[1];
-    SPIFFSInterface i_spiffs[2];
+    SPIFFSInterface i_spiffs[1];
     FlashBootInterface i_boot;
+    interface i2c_master_if i2c[1];
 
 
     par
@@ -86,6 +90,8 @@ int main(void)
         {
             par
             {
+                i2c_master(i2c, 1, i2c_scl, i2c_sda, 10);
+
                 ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
                                     i_foe, ethercat_ports);
                 reboot_service_ethercat(i_ecat_reboot);
@@ -107,7 +113,7 @@ int main(void)
             par
             {
                 file_service(i_file_service, i_spiffs[0], i_co[3], i_foe, i_motion_control[1]);
-                spiffs_service(i_data[0], i_spiffs, 2);
+                [[distribute]] spiffs_service(i_data[0], i_spiffs, 1);
             }
         }
 
@@ -178,7 +184,7 @@ int main(void)
                     motion_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                     motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
-                    motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake);
+                    motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake, i2c[0]);
                 }
             }
         }

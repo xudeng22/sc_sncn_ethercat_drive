@@ -47,9 +47,9 @@ struct _object_dictionary_request {
     uint8_t  subindex;
 };
 
-#ifdef CORE_C21_DX_G2 /* ports for the C21-DX-G2 */
-port c21watchdog = WD_PORT_TICK;
-port c21led = LED_PORT_4BIT_X_nG_nB_nR;
+#ifdef CORE_C2X /* ports for the C21-DX-G2 */
+port c2Xwatchdog = WD_PORT_TICK;
+port c2Xled = LED_PORT_4BIT_X_nG_nB_nR;
 #endif
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;

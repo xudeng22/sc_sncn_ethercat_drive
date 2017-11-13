@@ -1,6 +1,6 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <ComEtherCAT-rev-a.bsp>
-#include <Drive1000-rev-c4.bsp>
+#include <DRIVE_BOARD_REQUIRED>
 #include <CoreC2X.bsp>
 
 

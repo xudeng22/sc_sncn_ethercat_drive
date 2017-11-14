@@ -229,7 +229,7 @@ LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
 LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
 {
     int res;
-    char log_buf[64];
+    char log_buf[128];
 
     res = check_log_file_size(i_spiffs, 1);
     if (res != LOG_OK)
@@ -242,7 +242,7 @@ LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
     i_spiffs.write(file_descriptor, "\n", strlen("\n"));
     i_spiffs.flush(file_descriptor);
 
-    sprintf(log_buf, "%5d %9d %s 0x%x",ErrItem.index, ErrItem.timestamp, ErrTypeTitles[ErrItem.err_type - 1], ErrItem.err_code);
+    sprintf(log_buf, "%5d %d/%02d/%02d %02d:%02d:%02d.%03d  %s 0x%x",ErrItem.index, ErrItem.timestamp.year ,ErrItem.timestamp.month, ErrItem.timestamp.day, ErrItem.timestamp.hour, ErrItem.timestamp.min, ErrItem.timestamp.sec, ErrItem.timestamp.mSec, ErrTypeTitles[ErrItem.err_type - 1], ErrItem.err_code);
 
     res = i_spiffs.write(file_descriptor, log_buf, strlen(log_buf));
     if (res < 0)

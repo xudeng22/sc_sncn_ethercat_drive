@@ -1,6 +1,10 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
+3.2.1
+-----
+  * Fix bug when entering float numbers in app_demo_master_tuning
+
 3.2.0
 -----
 

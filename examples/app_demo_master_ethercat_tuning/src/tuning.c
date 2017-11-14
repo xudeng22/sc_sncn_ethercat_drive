@@ -131,7 +131,11 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
             pdo_output->target_torque = 0;
         } else { //normal 0
             (*cursor).col = draw(wnd, c, (*cursor).row, (*cursor).col); // draw the character
-            output->value *= 10;
+            if (output->float_count == 0) {
+                output->value *= 10;
+            } else {
+                output->float_count *= 10;
+            }
         }
         break;
 

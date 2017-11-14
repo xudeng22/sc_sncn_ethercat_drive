@@ -90,7 +90,7 @@ int main(void)
         {
             par
             {
-                i2c_master(i2c, 1, i2c_scl, i2c_sda, 10);
+                i2c_master(i2c, 1, i2c_scl, i2c_sda, 400);
 
                 ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
                                     i_foe, ethercat_ports);

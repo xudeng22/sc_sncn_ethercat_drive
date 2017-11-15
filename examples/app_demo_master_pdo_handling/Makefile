@@ -49,7 +49,7 @@ endif
 #
 
 TARGET = app_demo_master_pdo_handling
-OBJECTS = main.o
+OBJECTS = main.o filelog.o
 
 #
 # Implicit Target
@@ -64,7 +64,7 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIRS)/%.c
 
 all: prerequisite $(TARGET)
 
-$(TARGET): $(BUILD_DIR)/main.o
+$(TARGET): $(BUILD_DIR)/main.o $(BUILD_DIR)/filelog.o
 	$(LD) $(LDFLAGS) -o $(OUT_DIR)/$@ $^ $(LIB_DIRS) $(LIBS)
 	@echo "Build finished: $(OUTDIR)/$(TARGET)"
 

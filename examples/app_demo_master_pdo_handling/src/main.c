@@ -6,6 +6,8 @@
 
 #define _XOPEN_SOURCE
 
+#include "filelog.h"
+
 #include <ethercat_wrapper.h>
 #include <ethercat_wrapper_slave.h>
 #include <ecrt.h>
@@ -102,6 +104,8 @@ static int g_running = 1;
 static unsigned int sig_alarms  = 0;
 static unsigned int user_alarms = 0;
 static enum eOperationMode g_operation_mode = MODE_ECAT_TEST;
+static FILE *g_logfile = NULL;
+static int g_logging = 0;
 
 /* set eventually higher priority */
 
@@ -132,13 +136,17 @@ static void printhelp(const char *prog)
     printf("  -n slave       slave number, default to 0\n");
     printf("  -d             print domain registry before start\n");
     printf("  -w             enable graphical output (attention slow!\n");
+    printf("  -L <filename>  make logging of packets to file `filename`\n");
+    // Hidden options:
+    // -M  for monitoring mode. Nothing is sent, just print what is received
 }
 
 static void cmdline(int argc, char **argv, int *num_slaves, int *masterid, int *curses, int *debuginfo)
 {
     int  opt;
 
-    const char *options = "hn:m:wdM";
+    const char *options = "hn:m:wdML:";
+    char filename[256] = { 0 };
 
     while ((opt = getopt(argc, argv, options)) != -1) {
         switch (opt) {
@@ -161,6 +169,16 @@ static void cmdline(int argc, char **argv, int *num_slaves, int *masterid, int *
         case 'M':
             g_operation_mode = MODE_ECAT_MONITOR;
             *curses = 1;
+            break;
+
+        case 'L':
+            if (strlen(optarg) > 255) {
+                fprintf(stderr, "Error, logfile name too large\n");
+                exit(1);
+            }
+            strncpy(filename, optarg, strlen(optarg));
+            g_logfile = fopen(filename, "w");
+            g_logging = 1;
             break;
 
         case 'h':
@@ -420,7 +438,7 @@ static void display_printframe(WINDOW *wnd)
     wprintw(wnd, "analog_input4");
     row++;
     wmove(wnd, row++, title_column);
-    wprintw(wnd, "device timestamp");
+    wprintw(wnd, "device timestamp [us]");
     wmove(wnd, row+3, title_column);
     wprintw(wnd, "Press <Crtl>+C to abort");
 }
@@ -506,8 +524,8 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wprintw(wnd, "%5d", input->analog_input4);
 
     row++;
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5u", input->timestamp);
+    wmove(wnd, row++, input_column - 3);
+    wprintw(wnd, "%u", input->timestamp);
     wrefresh(wnd);
 }
 
@@ -590,6 +608,9 @@ int main(int argc, char *argv[])
             ecw_master_cyclic_function(master);
 
             data_update_pdos(slave, &input, &output);
+
+            if (g_logging)
+                filelogtimestamp(g_logfile, input.timestamp);
         }
 
         if (curses) {
@@ -603,6 +624,10 @@ int main(int argc, char *argv[])
 
     ecw_master_release(master);
     fclose(ecatlog);
+
+    if (g_logfile != NULL) {
+        fclose(g_logfile);
+    }
 
 	return 0;
 }

@@ -236,7 +236,7 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
 //        printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
 //        printstr(" = "); printintln(value);
         t :> time;
-        InOut.timestamp = time;
+        InOut.timestamp = time / 100; // timestamp in us.
 
         t when timerafter(time+delay) :> time;
     }

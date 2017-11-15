@@ -103,12 +103,6 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     pdo_values_t InOutOld = {0};
     t :> time;
 
-    initial_od_read(i_co);
-    printstrln("[DEBUG] update dictionary complete");
-
-    sdo_configuration(i_co);
-    device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
-
     printstrln("Starting PDO protocol");
     while(1)
     {

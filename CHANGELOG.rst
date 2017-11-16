@@ -4,6 +4,7 @@ sc_sncn_ethercat_drive Change Log
 3.2.1
 -----
   * Fix bug when entering float numbers in app_demo_master_tuning
+  * Update Torque controller PID values in sdo_config.csv
 
 3.2.0
 -----

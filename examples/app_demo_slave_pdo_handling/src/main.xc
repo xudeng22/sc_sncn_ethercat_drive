@@ -225,16 +225,11 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
         InOutOld.digital_output3 = InOut.digital_output3;
         InOutOld.digital_output4 = InOut.digital_output4;
 
-//    for (size_t i = 0; i < object_list_size; i+=2) {
-//        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
-//        printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
-//        printstr(" = "); printintln(value);
         t :> time;
         InOut.timestamp = time / 100; // timestamp in us.
 
         t when timerafter(time+delay) :> time;
     }
-
 }
 
 int main(void) {

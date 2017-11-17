@@ -8,7 +8,7 @@
 
 #include <flash_service.h>
 #include <motion_control_service.h>
-#include <ethercat_service.h>
+//#include <ethercat_service.h>
 #include <co_interface.h>
 #include <spiffs_service.h>
 #include <config_parser.h>
@@ -98,6 +98,45 @@ interface FileServiceInterface
     [[guarded]] int read_torque_array(int array_out[]);
 };
 
+
+#if 1
+/*
+* Each time @see data_ready() signal is raised the client needs to get the notification
+* type by @see get_notification_type().
+*/
+enum eFoeNotificationType {
+   FOE_NTYPE_UNDEF  = 0       ///< The notification could not be associated
+   ,FOE_NTYPE_BOOT            ///< The system should reboot
+   ,FOE_NTYPE_DATA            ///< Incomming data available @see read_data()
+   ,FOE_NTYPE_DATA_REQUEST    ///< Master requested data @see write_data()
+   ,FOE_NTYPE_RESTART         ///< Restart into application (only in bootloader)
+};
+
+/**
+ * @brief Error codes from application.
+ */
+enum eFoeError {
+    FOE_ERROR_NONE            = -1   ///< No error
+    ,FOE_ERROR_UNDEFINED      = 0    ///< Undefined error
+    ,FOE_ERROR_NOT_FOUND      = 1    ///< File was not found or is unavailable
+    ,FOE_ERROR_ACCESS_DENIED  = 2    ///< File exists but could not be accessed
+    ,FOE_ERROR_DISK_FULL      = 3    ///< Disk full, no space left on device
+    ,FOE_ERROR_ALREADY_EXISTS = 6    ///< File already exists
+    ,FOE_ERROR_BOOTSTRAP_ONLY = 8    ///< Transfer only allowed in BOOTSTRAP state
+    ,FOE_ERROR_NOT_BOOTSTRAP  = 9    ///< Transfer not allowed in BOOTSTRAP state
+    ,FOE_ERROR_NO_RIGHTS      = 10   ///< Insufficient rights to acccess file
+    ,FOE_ERROR_PROGRAM_ERROR  = 11   ///< Internal program error
+};
+
+/**
+ * @brief Status of FoE request command
+ */
+enum eFoeStat {
+    FOE_STAT_DATA   = 0    ///< expecting more data
+    ,FOE_STAT_ERROR = -1   ///< a error occured in FoE transfer
+    ,FOE_STAT_EOF   = 1    ///< end of file reached (no error)
+};
+
 interface i_foe_communication {
     /* handle FoE upload / write request */
     /**
@@ -155,6 +194,7 @@ interface i_foe_communication {
      */
     [[notification]] slave void data_ready(void);
 };
+#endif
 
 
 /**

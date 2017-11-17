@@ -30,7 +30,7 @@ endif
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to
 # xcc for the final link (mapping) stage.
 XCC_FLAGS_Debug = -g -O0 -DCOM_ETHERCAT $(ARCH_SPEC_FLAGS) -report
-XCC_FLAGS_Release = -g -O3 -DCOM_ETHERCAT $(ARCH_SPEC_FLAGS)
+XCC_FLAGS_Release = -O2 -DCOM_ETHERCAT $(ARCH_SPEC_FLAGS)
 
 # The VERBOSE variable, if set to 1, enables verbose output from the make system.
 VERBOSE = 1

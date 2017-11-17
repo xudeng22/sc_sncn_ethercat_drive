@@ -14,6 +14,18 @@
 #include <ethercat_service.h>
 #include <reboot.h>
 
+#define SSCTRLREG_SW_REF_CLK_DIVIDER    8
+
+#ifndef USEC_STD
+#define USEC_STD    100
+#endif
+
+#ifndef USEC_FAST
+#define USEC_FAST   250
+#endif
+
+#define CORE_FREQUENCY   USEC_FAST
+
 #define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
 
@@ -77,7 +89,7 @@ static void sdo_configuration(client interface i_co_communication i_co)
         i_co.configuration_done();
         sdo_configured = 1;
 
-        t when timerafter(time+delay) :> time;
+        t when timerafter(time+delay*CORE_FREQUENCY) :> time;
     }
 
     /* comment in the read_od_config() function to print the object values */
@@ -94,10 +106,15 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     timer t;
     unsigned char device_in_opstate = 0;
 
-    unsigned int delay = 100000;
+    unsigned int delay = 1000; /* [ms] */
     unsigned int time = 0;
     unsigned int analog_value = 0;
     unsigned int comm_status = 0;
+
+    /* switch to 250 MHz core frequency */
+    if (CORE_FREQUENCY == USEC_FAST) {
+        write_sswitch_reg(get_local_tile_id(), SSCTRLREG_SW_REF_CLK_DIVIDER, 1);
+    }
 
     pdo_values_t InOut = {0};
     pdo_values_t InOutOld = {0};
@@ -109,7 +126,7 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
         device_in_opstate = i_co.in_operational_state();
         if (!device_in_opstate) {
             t :> time;
-            t when timerafter(time+delay) :> time;
+            t when timerafter(time+delay*CORE_FREQUENCY) :> time;
 
             continue;
         }
@@ -226,9 +243,9 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
         InOutOld.digital_output4 = InOut.digital_output4;
 
         t :> time;
-        InOut.timestamp = time / 100; // timestamp in us.
+        InOut.timestamp = time / CORE_FREQUENCY; // timestamp in us.
 
-        t when timerafter(time+delay) :> time;
+        t when timerafter(time+delay*CORE_FREQUENCY) :> time;
     }
 }
 

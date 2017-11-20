@@ -76,7 +76,7 @@ LogStat get_config_string(char title[], char end_marker[], char buffer[], char o
 
 
 
-LogStat read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
+LogStat read_log_config(client SPIFFSInterface i_spiffs, ErrLoggingConfig * config)
 {
     char config_buffer[SPIFFS_MAX_DATA_BUFFER_SIZE];
     int file_size;
@@ -127,7 +127,7 @@ LogStat read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * con
 }
 
 
-LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
+LogStat open_log_file(client SPIFFSInterface i_spiffs, char reset_existing_file)
 {
     unsigned short flags = 0;
 
@@ -169,7 +169,7 @@ LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file
 
 
 
-LogStat check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
+LogStat check_log_file_size(client SPIFFSInterface i_spiffs, char reset_existing_file)
 {
     int res;
 
@@ -202,7 +202,7 @@ LogStat check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existin
     return LOG_OK;
 }
 
-LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
+LogStat error_logging_init(client SPIFFSInterface i_spiffs)
 {
 
     //Here should be checking of log_config file but it was temporary removed to redice memory usage
@@ -225,7 +225,7 @@ LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
     return LOG_OK;
 }
 
-LogStat error_logging_close(client SPIFFSInterface ?i_spiffs)
+LogStat error_logging_close(client SPIFFSInterface i_spiffs)
 {
     int res;
 
@@ -245,7 +245,7 @@ LogStat error_logging_close(client SPIFFSInterface ?i_spiffs)
 }
 
 
-LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
+LogStat error_msg_save(client SPIFFSInterface i_spiffs, ErrItem_t ErrItem)
 {
     int res;
     char log_buf[128];

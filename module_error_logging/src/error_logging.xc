@@ -227,8 +227,20 @@ LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
 
 LogStat error_logging_close(client SPIFFSInterface ?i_spiffs)
 {
-    i_spiffs.close_file(file_descriptor);
-    i_spiffs.check();
+    int res;
+
+    res = i_spiffs.close_file(file_descriptor);
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
+
+    res = i_spiffs.check();
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
+
     return LOG_OK;
 }
 

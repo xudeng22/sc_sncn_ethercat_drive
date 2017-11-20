@@ -468,6 +468,7 @@ void file_service(
         break;
     }
 
+    //Checking file system for incorrect data and cleaning
     i_spiffs.check();
 
     while (1) {
@@ -479,16 +480,19 @@ void file_service(
                  if (last_error_status == LOG_OK)
                  {
                      if (logging_status != LOG_OK) {
+                         //Without this delay, logging saves incorrect data in case of losing the voltage
                          delay_milliseconds(50);
+                         //Open logging file if we have new error messages in the buffer
                          logging_status = error_logging_init(i_spiffs);
                      }
-                     printf("%d\n", logging_status);
+
                      if (logging_status == LOG_OK) {
                          error_msg_save(i_spiffs, ErrItem);
                      }
                  }
                  else
                  {
+                     //Close logging file if we don't have error messages in the buffer
                      error_logging_close(i_spiffs);
                      logging_status = LOG_ERROR;
                  }

@@ -48,4 +48,6 @@ LogStat error_logging_init(client SPIFFSInterface ?i_spiffs);
  */
 LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem);
 
+LogStat error_logging_close(client SPIFFSInterface ?i_spiffs);
+
 #endif

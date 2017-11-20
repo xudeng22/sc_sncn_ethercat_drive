@@ -468,28 +468,35 @@ void file_service(
         break;
     }
 
-    if (!isnull(i_motion_control)) {
-        logging_status = error_logging_init(i_spiffs);
-    }
+    i_spiffs.check();
 
     while (1) {
 
-        if (logging_status == LOG_OK)
-        {
-            select {
-                case !isnull(i_motion_control) => i_motion_control.new_error():
-                    ErrItem_t ErrItem;
-                    int status;
-                    status = i_motion_control.get_last_error(ErrItem);
-                    if (status == LOG_OK)
-                        logging_status = error_msg_save(i_spiffs, ErrItem);
-                    break;
+        select {
+             case !isnull(i_motion_control) => i_motion_control.new_error():
+                 ErrItem_t ErrItem;
+                 int last_error_status = i_motion_control.get_last_error(ErrItem);
+                 if (last_error_status == LOG_OK)
+                 {
+                     if (logging_status != LOG_OK) {
+                         delay_milliseconds(50);
+                         logging_status = error_logging_init(i_spiffs);
+                     }
+                     printf("%d\n", logging_status);
+                     if (logging_status == LOG_OK) {
+                         error_msg_save(i_spiffs, ErrItem);
+                     }
+                 }
+                 else
+                 {
+                     error_logging_close(i_spiffs);
+                     logging_status = LOG_ERROR;
+                 }
+                 break;
 
-                default:
+                 default:
                     break;
-            }
         }
-
 
         select
         {

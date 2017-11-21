@@ -26,10 +26,7 @@
 #include <watchdog_service.h>
 #include <motor_control_interfaces.h>
 #include <advanced_motor_control.h>
-
-//Position control + profile libs
 #include <motion_control_service.h>
-#include <profile_control.h>
 
 
 EthercatPorts ethercat_ports = SOMANET_COM_ETHERCAT_PORTS;

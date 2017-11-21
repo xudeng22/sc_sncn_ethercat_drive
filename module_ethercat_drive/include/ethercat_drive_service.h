@@ -64,7 +64,6 @@ interface SDO_Config {
 /**
  * @brief This Service enables motor drive functions via EtherCAT.
  *
- * @param profiler_config Configuration for profile mode control.
  * @param i_pdo Channel to send and receive information to EtherCAT Service.
  * @param i_coe Channel to receive motor configuration information from EtherCAT Service.
  * @param i_torque_control Interface to Motor Control Service

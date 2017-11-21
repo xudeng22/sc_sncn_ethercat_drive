@@ -13,15 +13,6 @@
 #include <motion_control_service.h>
 #include <profile_control.h>
 
-/* Define which type a given profiler configuration is
- * FIXME could be added into ProfilerConfig!
- */
-enum eProfileType {
-    PROFILE_TYPE_UNKNOWN = 0
-    ,PROFILE_TYPE_POSITION
-    ,PROFILE_TYPE_VELOCITY
-};
-
 /*
  * General, syncronize configuration with the object dictionary values provided
  * by the EtherCAT master.
@@ -40,12 +31,6 @@ int cm_sync_config_motor_control(
         MotorcontrolConfig &commutation_params,
         int sensor_commutation,
         int sensor_commutation_type);
-
-
-void cm_sync_config_profiler(
-        client interface i_coe_communication i_coe,
-        ProfilerConfig &profiler,
-        enum eProfileType type);
 
 void cm_sync_config_pos_velocity_control(
         client interface i_coe_communication i_coe,
@@ -69,10 +54,6 @@ void cm_default_config_motor_control(
         client interface i_coe_communication i_coe,
         client interface TorqueControlInterface ?i_torque_control,
         MotorcontrolConfig &commutation_params);
-
-void cm_default_config_profiler(
-        client interface i_coe_communication i_coe,
-        ProfilerConfig &profiler);
 
 void cm_default_config_pos_velocity_control(
         client interface i_coe_communication i_coe,

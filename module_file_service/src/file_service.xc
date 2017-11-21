@@ -468,28 +468,39 @@ void file_service(
         break;
     }
 
-    if (!isnull(i_motion_control)) {
-        logging_status = error_logging_init(i_spiffs);
-    }
+    //Checking file system for incorrect data and cleaning
+    i_spiffs.check();
 
     while (1) {
 
-        if (logging_status == LOG_OK)
-        {
-            select {
-                case !isnull(i_motion_control) => i_motion_control.new_error():
-                    ErrItem_t ErrItem;
-                    int status;
-                    status = i_motion_control.get_last_error(ErrItem);
-                    if (status == LOG_OK)
-                        logging_status = error_msg_save(i_spiffs, ErrItem);
-                    break;
+        select {
+             case !isnull(i_motion_control) => i_motion_control.new_error():
+                 ErrItem_t ErrItem;
+                 int last_error_status = i_motion_control.get_last_error(ErrItem);
+                 if (last_error_status == LOG_OK)
+                 {
+                     if (logging_status != LOG_OK) {
+                         //Without this delay, logging saves incorrect data in case of losing the voltage
+                         delay_milliseconds(50);
+                         //Open logging file if we have new error messages in the buffer
+                         logging_status = error_logging_init(i_spiffs);
+                     }
 
-                default:
+                     if (logging_status == LOG_OK) {
+                         error_msg_save(i_spiffs, ErrItem);
+                     }
+                 }
+                 else
+                 {
+                     //Close logging file if we don't have error messages in the buffer
+                     error_logging_close(i_spiffs);
+                     logging_status = LOG_ERROR;
+                 }
+                 break;
+
+                 default:
                     break;
-            }
         }
-
 
         select
         {

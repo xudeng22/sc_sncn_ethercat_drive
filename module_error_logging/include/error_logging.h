@@ -36,7 +36,7 @@ typedef enum {
  *
  * @return LOG_OK - success, LOG_ERROR - error
  */
-LogStat error_logging_init(client SPIFFSInterface ?i_spiffs);
+LogStat error_logging_init(client SPIFFSInterface i_spiffs);
 
 /**
  * @brief Add new record to error log file
@@ -46,6 +46,15 @@ LogStat error_logging_init(client SPIFFSInterface ?i_spiffs);
  *
  * @return LOG_OK - success, LOG_ERROR - error
  */
-LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem);
+LogStat error_msg_save(client SPIFFSInterface i_spiffs, ErrItem_t ErrItem);
+
+/**
+ * @brief Close log file and check FS for incorrect data
+ *
+ * @param i_spiffs    SPIFFS interface
+ *
+ * @return LOG_OK - success, LOG_ERROR - error
+ */
+LogStat error_logging_close(client SPIFFSInterface i_spiffs);
 
 #endif

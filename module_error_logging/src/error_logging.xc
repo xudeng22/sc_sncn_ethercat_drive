@@ -76,7 +76,7 @@ LogStat get_config_string(char title[], char end_marker[], char buffer[], char o
 
 
 
-LogStat read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * config)
+LogStat read_log_config(client SPIFFSInterface i_spiffs, ErrLoggingConfig * config)
 {
     char config_buffer[SPIFFS_MAX_DATA_BUFFER_SIZE];
     int file_size;
@@ -127,7 +127,7 @@ LogStat read_log_config(client SPIFFSInterface ?i_spiffs, ErrLoggingConfig * con
 }
 
 
-LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
+LogStat open_log_file(client SPIFFSInterface i_spiffs, char reset_existing_file)
 {
     unsigned short flags = 0;
 
@@ -169,7 +169,7 @@ LogStat open_log_file(client SPIFFSInterface ?i_spiffs, char reset_existing_file
 
 
 
-LogStat check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existing_file)
+LogStat check_log_file_size(client SPIFFSInterface i_spiffs, char reset_existing_file)
 {
     int res;
 
@@ -202,7 +202,7 @@ LogStat check_log_file_size(client SPIFFSInterface ?i_spiffs, char reset_existin
     return LOG_OK;
 }
 
-LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
+LogStat error_logging_init(client SPIFFSInterface i_spiffs)
 {
 
     //Here should be checking of log_config file but it was temporary removed to redice memory usage
@@ -225,8 +225,27 @@ LogStat error_logging_init(client SPIFFSInterface ?i_spiffs)
     return LOG_OK;
 }
 
+LogStat error_logging_close(client SPIFFSInterface i_spiffs)
+{
+    int res;
 
-LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
+    res = i_spiffs.close_file(file_descriptor);
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
+
+    res = i_spiffs.check();
+    if (res != LOG_OK)
+    {
+        return LOG_ERROR;
+    }
+
+    return LOG_OK;
+}
+
+
+LogStat error_msg_save(client SPIFFSInterface i_spiffs, ErrItem_t ErrItem)
 {
     int res;
     char log_buf[128];
@@ -239,10 +258,7 @@ LogStat error_msg_save(client SPIFFSInterface ?i_spiffs, ErrItem_t ErrItem)
 
     memset(log_buf, 0, sizeof(log_buf));
 
-    i_spiffs.write(file_descriptor, "\n", strlen("\n"));
-    i_spiffs.flush(file_descriptor);
-
-    sprintf(log_buf, "%5d %d/%02d/%02d %02d:%02d:%02d.%03d  %s 0x%x",ErrItem.index, ErrItem.timestamp.year ,ErrItem.timestamp.month, ErrItem.timestamp.day, ErrItem.timestamp.hour, ErrItem.timestamp.min, ErrItem.timestamp.sec, ErrItem.timestamp.mSec, ErrTypeTitles[ErrItem.err_type - 1], ErrItem.err_code);
+    sprintf(log_buf, "%5d %d/%02d/%02d %02d:%02d:%02d.%03d  %s 0x%x\n",ErrItem.index, ErrItem.timestamp.year ,ErrItem.timestamp.month, ErrItem.timestamp.day, ErrItem.timestamp.hour, ErrItem.timestamp.min, ErrItem.timestamp.sec, ErrItem.timestamp.mSec, ErrTypeTitles[ErrItem.err_type - 1], ErrItem.err_code);
 
     res = i_spiffs.write(file_descriptor, log_buf, strlen(log_buf));
     if (res < 0)

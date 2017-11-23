@@ -28,7 +28,7 @@ int cm_sync_config_position_feedback(
 
     //go through all ports until we found one in use
     for (int i=port_index; i<=number_of_ports; i++) {
-        {feedback_sensor_object, void, void} = i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_PORTS, i);
+        {feedback_sensor_object, void, void} = i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_CONFIGURATION, i);
         if (feedback_sensor_object != 0) {
             {sensor_function, void, void} = i_co.od_get_object_value(feedback_sensor_object, 2);
             if (sensor_function != SENSOR_FUNCTION_DISABLED) {
@@ -354,7 +354,7 @@ void cm_default_config_position_feedback(
     }
 
     if (feedback_sensor_object != 0) {
-        i_co.od_set_object_value(DICT_FEEDBACK_SENSOR_PORTS, port_index, feedback_sensor_object);
+        i_co.od_set_object_value(DICT_FEEDBACK_SENSOR_CONFIGURATION, port_index, feedback_sensor_object);
 
 
         // generic sensor parameters

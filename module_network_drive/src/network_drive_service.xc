@@ -405,7 +405,7 @@ static void inline update_configuration(
     // set position feedback services parameters
     int restart = 0; //we need to restart position feedback service(s) when sensor type is changed
     int number_of_feedbacks_ports;
-    {number_of_feedbacks_ports, void, void}= i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_PORTS, 0);
+    {number_of_feedbacks_ports, void, void}= i_co.od_get_object_value(DICT_FEEDBACK_SENSOR_CONFIGURATION, 0);
     int feedback_port_index = 1;
     restart += cm_sync_config_position_feedback(i_co, i_pos_feedback_1, position_feedback_config_1, 1,
             sensor_commutation, sensor_motion_control,

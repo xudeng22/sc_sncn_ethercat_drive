@@ -102,10 +102,10 @@
 #define SUB_BRAKE_RELEASE_BRAKE_RELEASE_DELAY                                        5
 #define SUB_BRAKE_RELEASE_DC_BUS_VOLTAGE                                             6
 #define DICT_OFFSET_TORQUE                                                           0x2300
-#define DICT_FEEDBACK_SENSOR_PORTS                                                   0x2100
-#define SUB_FEEDBACK_SENSOR_PORTS_SENSOR_PORT_1                                      1
-#define SUB_FEEDBACK_SENSOR_PORTS_SENSOR_PORT_2                                      2
-#define SUB_FEEDBACK_SENSOR_PORTS_SENSOR_PORT_3                                      3
+#define DICT_FEEDBACK_SENSOR_CONFIGURATION                                           0x2100
+#define SUB_FEEDBACK_SENSOR_CONFIGURATION_SENSOR_CONFIGURATION_PORT_1                1
+#define SUB_FEEDBACK_SENSOR_CONFIGURATION_SENSOR_CONFIGURATION_PORT_2                2
+#define SUB_FEEDBACK_SENSOR_CONFIGURATION_SENSOR_CONFIGURATION_PORT_3                3
 #define DICT_RECUPERATION                                                            0x2005
 #define SUB_RECUPERATION_RECUPERATION_ENABLED                                        1
 #define SUB_RECUPERATION_MIN_BATTERY_ENERGY                                          2
@@ -277,6 +277,39 @@
 #define SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KI_1                   16
 #define SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1                   17
 #define SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_INTEGRAL_LIMIT_1       18
+#define DICT_SUPPORTED_SENSORS_PORT_1                                                0x2101
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_1                                   1
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_2                                   2
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_3                                   3
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_4                                   4
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_5                                   5
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_6                                   6
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_7                                   7
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_8                                   8
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_9                                   9
+#define SUB_SUPPORTED_SENSORS_PORT_1_SENSOR_TYPE_10                                  10
+#define DICT_SUPPORTED_SENSORS_PORT_2                                                0x2102
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_1                                   1
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_2                                   2
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_3                                   3
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_4                                   4
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_5                                   5
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_6                                   6
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_7                                   7
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_8                                   8
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_9                                   9
+#define SUB_SUPPORTED_SENSORS_PORT_2_SENSOR_TYPE_10                                  10
+#define DICT_SUPPORTED_SENSORS_PORT_3                                                0x2103
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_1                                   1
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_2                                   2
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_3                                   3
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_4                                   4
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_5                                   5
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_6                                   6
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_7                                   7
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_8                                   8
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_9                                   9
+#define SUB_SUPPORTED_SENSORS_PORT_3_SENSOR_TYPE_10                                  10
 
 #define RPDO_MAPPING_PARAMETER       0x1600 /**<CANOpen mapping parameter index of receive PDO 0 */
 #define TPDO_MAPPING_PARAMETER       0x1A00 /**<CANOpen mapping parameter index of transmit PDO 0 */

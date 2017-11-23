@@ -13,13 +13,13 @@
 /*
  * Sizes of exported arrays
  */
-const size_t entry_values_length = 720;
-const size_t entry_default_values_length = 720;
+const size_t entry_values_length = 753;
+const size_t entry_default_values_length = 753;
 const size_t entry_min_values_length = 53;
 const size_t entry_max_values_length = 19;
-const size_t string_length = 172;
-const size_t object_entries_length = 276;
-const size_t object_dictionary_length = 84;
+const size_t string_length = 182;
+const size_t object_entries_length = 309;
+const size_t object_dictionary_length = 87;
 const size_t bookmark_length = 3;
 
 /*
@@ -28,7 +28,7 @@ const size_t bookmark_length = 3;
 struct _bookmarks bookmark[bookmark_length] = {
     { 0x1000, 0 },
     { 0x2000, 59 },
-    { 0x603F, 243 }
+    { 0x603F, 276 }
 };
 
 /*
@@ -167,153 +167,186 @@ uint8_t entry_values[entry_values_length] = {
     0x0, 0x0, 0x0, 0x0,                        /* 0x2013:17 Velocity Loop Kd_1 - START: 402 */
     0x0, 0x0, 0x0, 0x0,                        /* 0x2013:18 Velocity Loop integral limit 1 - START: 406 */
     0x3,                                       /* 0x2100:0 Number of entries - START: 410 */
-    0x0, 0x0,                                  /* 0x2100:1 Sensor port 1 - START: 411 */
-    0x0, 0x0,                                  /* 0x2100:2 Sensor port 2 - START: 413 */
-    0x0, 0x0,                                  /* 0x2100:3 Sensor port 3 - START: 415 */
-    0xD,                                       /* 0x2201:0 BISS Encoder 1 - START: 417 */
-    0x4,                                       /* 0x2201:1 Type - START: 418 */
-    0x0,                                       /* 0x2201:2 Function - START: 419 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:3 Resolution - START: 420 */
-    0xE8, 0x3,                                 /* 0x2201:4 Velocity calculation period - START: 424 */
-    0x0,                                       /* 0x2201:5 Polarity - START: 426 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:6 Multiturn resolution - START: 427 */
-    0xE8, 0x3, 0x0, 0x0,                       /* 0x2201:7 Clock frequency - START: 431 */
-    0x24, 0x0, 0x0, 0x0,                       /* 0x2201:8 Timeout - START: 435 */
-    0x30,                                      /* 0x2201:9 CRC polynom - START: 439 */
-    0x0,                                       /* 0x2201:10 Clock port config - START: 440 */
-    0x0,                                       /* 0x2201:11 Data port config - START: 441 */
-    0x0,                                       /* 0x2201:12 Number of filling bits - START: 442 */
-    0x4,                                       /* 0x2201:13 Number of bits to read while busy - START: 443 */
-    0xD,                                       /* 0x2202:0 BISS Encoder 2 - START: 444 */
-    0x4,                                       /* 0x2202:1 Type - START: 445 */
-    0x0,                                       /* 0x2202:2 Function - START: 446 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:3 Resolution - START: 447 */
-    0xE8, 0x3,                                 /* 0x2202:4 Velocity calculation period - START: 451 */
-    0x0,                                       /* 0x2202:5 Polarity - START: 453 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:6 Multiturn resolution - START: 454 */
-    0xE8, 0x3, 0x0, 0x0,                       /* 0x2202:7 Clock frequency - START: 458 */
-    0x24, 0x0, 0x0, 0x0,                       /* 0x2202:8 Timeout - START: 462 */
-    0x30,                                      /* 0x2202:9 CRC polynom - START: 466 */
-    0x0,                                       /* 0x2202:10 Clock port config - START: 467 */
-    0x0,                                       /* 0x2202:11 Data port config - START: 468 */
-    0x0,                                       /* 0x2202:12 Number of filling bits - START: 469 */
-    0x4,                                       /* 0x2202:13 Number of bits to read while busy - START: 470 */
-    0x6,                                       /* 0x2203:0 REM 16MT Encoder - START: 471 */
-    0x6,                                       /* 0x2203:1 Type - START: 472 */
-    0x0,                                       /* 0x2203:2 Function - START: 473 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2203:3 Resolution - START: 474 */
-    0xE8, 0x3,                                 /* 0x2203:4 Velocity calculation period - START: 478 */
-    0x0,                                       /* 0x2203:5 Polarity - START: 480 */
-    0x2,                                       /* 0x2203:6 Filter - START: 481 */
-    0x9,                                       /* 0x2204:0 REM 14 Encoder - START: 482 */
-    0x5,                                       /* 0x2204:1 Type - START: 483 */
-    0x0,                                       /* 0x2204:2 Function - START: 484 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2204:3 Resolution - START: 485 */
-    0xE8, 0x3,                                 /* 0x2204:4 Velocity calculation period - START: 489 */
-    0x0,                                       /* 0x2204:5 Polarity - START: 491 */
-    0x1,                                       /* 0x2204:6 Hysteresis - START: 492 */
-    0x0,                                       /* 0x2204:7 Noise settings - START: 493 */
-    0x0,                                       /* 0x2204:8 Dynamic angle error compensation - START: 494 */
-    0x0,                                       /* 0x2204:9 Resolution settings - START: 495 */
-    0x7,                                       /* 0x2205:0 Incremental Encoder 1 - START: 496 */
-    0x2,                                       /* 0x2205:1 Type - START: 497 */
-    0x0,                                       /* 0x2205:2 Function - START: 498 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2205:3 Resolution - START: 499 */
-    0xE8, 0x3,                                 /* 0x2205:4 Velocity calculation period - START: 503 */
-    0x0,                                       /* 0x2205:5 Polarity - START: 505 */
-    0x2,                                       /* 0x2205:6 Number of channels - START: 506 */
-    0x0,                                       /* 0x2205:7 Access signal type - START: 507 */
-    0x7,                                       /* 0x2206:0 Incremental Encoder 2 - START: 508 */
-    0x2,                                       /* 0x2206:1 Type - START: 509 */
-    0x0,                                       /* 0x2206:2 Function - START: 510 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2206:3 Resolution - START: 511 */
-    0xE8, 0x3,                                 /* 0x2206:4 Velocity calculation period - START: 515 */
-    0x0,                                       /* 0x2206:5 Polarity - START: 517 */
-    0x2,                                       /* 0x2206:6 Number of channels - START: 518 */
-    0x0,                                       /* 0x2206:7 Access signal type - START: 519 */
-    0xB,                                       /* 0x2207:0 HALL Sensor 1 - START: 520 */
-    0x1,                                       /* 0x2207:1 Type - START: 521 */
-    0x0,                                       /* 0x2207:2 Function - START: 522 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2207:3 Resolution - START: 523 */
-    0xE8, 0x3,                                 /* 0x2207:4 Velocity calculation period - START: 527 */
-    0x0,                                       /* 0x2207:5 Polarity - START: 529 */
-    0x0, 0x0,                                  /* 0x2207:6 State angle 0 - START: 530 */
-    0x0, 0x0,                                  /* 0x2207:7 State angle 1 - START: 532 */
-    0x0, 0x0,                                  /* 0x2207:8 State angle 2 - START: 534 */
-    0x0, 0x0,                                  /* 0x2207:9 State angle 3 - START: 536 */
-    0x0, 0x0,                                  /* 0x2207:10 State angle 4 - START: 538 */
-    0x0, 0x0,                                  /* 0x2207:11 State angle 5 - START: 540 */
-    0xB,                                       /* 0x2208:0 HALL Sensor 2 - START: 542 */
-    0x1,                                       /* 0x2208:1 Type - START: 543 */
-    0x0,                                       /* 0x2208:2 Function - START: 544 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2208:3 Resolution - START: 545 */
-    0xE8, 0x3,                                 /* 0x2208:4 Velocity calculation period - START: 549 */
-    0x0,                                       /* 0x2208:5 Polarity - START: 551 */
-    0x0, 0x0,                                  /* 0x2208:6 State angle 0 - START: 552 */
-    0x0, 0x0,                                  /* 0x2208:7 State angle 1 - START: 554 */
-    0x0, 0x0,                                  /* 0x2208:8 State angle 2 - START: 556 */
-    0x0, 0x0,                                  /* 0x2208:9 State angle 3 - START: 558 */
-    0x0, 0x0,                                  /* 0x2208:10 State angle 4 - START: 560 */
-    0x0, 0x0,                                  /* 0x2208:11 State angle 5 - START: 562 */
-    0x4,                                       /* 0x2210:0 GPIO - START: 564 */
-    0x0,                                       /* 0x2210:1 Pin 1 - START: 565 */
-    0x0,                                       /* 0x2210:2 Pin 2 - START: 566 */
-    0x0,                                       /* 0x2210:3 Pin 3 - START: 567 */
-    0x0,                                       /* 0x2210:4 Pin 4 - START: 568 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2300:0 Offset Torque - START: 569 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x230A:0 Secondary position value - START: 573 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x230B:0 Secondary velocity value - START: 577 */
-    0x0, 0x0,                                  /* 0x2401:0 Analog input 1 - START: 581 */
-    0x0, 0x0,                                  /* 0x2402:0 Analog input 2 - START: 583 */
-    0x0, 0x0,                                  /* 0x2403:0 Analog input 3 - START: 585 */
-    0x0, 0x0,                                  /* 0x2404:0 Analog input 4 - START: 587 */
-    0x0,                                       /* 0x2501:0 Digital Input 1 - START: 589 */
-    0x0,                                       /* 0x2502:0 Digital Input 2 - START: 590 */
-    0x0,                                       /* 0x2503:0 Digital Input 3 - START: 591 */
-    0x0,                                       /* 0x2504:0 Digital Input 4 - START: 592 */
-    0x0,                                       /* 0x2601:0 Digital Output 1 - START: 593 */
-    0x0,                                       /* 0x2602:0 Digital Output 2 - START: 594 */
-    0x0,                                       /* 0x2603:0 Digital Output 3 - START: 595 */
-    0x0,                                       /* 0x2604:0 Digital Output 4 - START: 596 */
-    0x3C, 0x0,                                 /* 0x2A00:0 Applied tuning torque percent - START: 597 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2A01:0 Tuning command - START: 599 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2A03:0 Tuning status - START: 603 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFD:0 Timestamp - START: 607 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFE:0 User MOSI - START: 611 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFF:0 User MISO - START: 615 */
-    0x0, 0x0,                                  /* 0x603F:0 Error code - START: 619 */
-    0x0, 0x0,                                  /* 0x6040:0 Controlword - START: 621 */
-    0x0, 0x0,                                  /* 0x6041:0 Statusword - START: 623 */
-    0x0,                                       /* 0x6060:0 Op Mode - START: 625 */
-    0x0,                                       /* 0x6061:0 Op Mode Display - START: 626 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6064:0 Position Value - START: 627 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x606C:0 Velocity Value - START: 631 */
-    0x0, 0x0,                                  /* 0x6071:0 Target Torque - START: 635 */
-    0x0, 0x0,                                  /* 0x6072:0 Max torque - START: 637 */
-    0x0, 0x0,                                  /* 0x6073:0 Max current - START: 639 */
-    0x1, 0x0, 0x0, 0x0,                        /* 0x6075:0 Motor Rated Current - START: 641 */
-    0x1, 0x0, 0x0, 0x0,                        /* 0x6076:0 Motor Rated Torque - START: 645 */
-    0x0, 0x0,                                  /* 0x6077:0 Torque Value - START: 649 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6079:0 DC link circuit voltage - START: 651 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x607A:0 Target Position - START: 655 */
-    0x2,                                       /* 0x607B:0 SubIndex 000 - START: 659 */
-    0x0, 0x0, 0x0, 0x80,                       /* 0x607B:1 Min position range limit - START: 660 */
-    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607B:2 Max position range limit - START: 664 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x607C:0 Home offset - START: 668 */
-    0x2,                                       /* 0x607D:0 SubIndex 000 - START: 672 */
-    0x0, 0x0, 0x0, 0x80,                       /* 0x607D:1 Min position limit - START: 673 */
-    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607D:2 Max position limit - START: 677 */
-    0x0,                                       /* 0x607E:0 Polarity - START: 681 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x607F:0 Max profile velocity - START: 682 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6080:0 Max motor speed - START: 686 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6081:0 Profile velocity - START: 690 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6083:0 Profile acceleration - START: 694 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6084:0 Profile deceleration - START: 698 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6085:0 Quick stop deceleration - START: 702 */
-    0x80, 0x0,                                 /* 0x6086:0 Motion profile type - START: 706 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x60C5:0 Max acceleration - START: 708 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x60FF:0 Target Velocity - START: 712 */
-    0x80, 0x3, 0x0, 0x0                        /* 0x6502:0 Supported Drive Modes - START: 716 */
+    0x0, 0x0,                                  /* 0x2100:1 Sensor Configuration Port 1 - START: 411 */
+    0x0, 0x0,                                  /* 0x2100:2 Sensor Configuration Port 2 - START: 413 */
+    0x0, 0x0,                                  /* 0x2100:3 Sensor Configuration Port 3 - START: 415 */
+    0xA,                                       /* 0x2101:0 Number of entries - START: 417 */
+    0x0,                                       /* 0x2101:1 Sensor Type 1 - START: 418 */
+    0x0,                                       /* 0x2101:2 Sensor Type 2 - START: 419 */
+    0x0,                                       /* 0x2101:3 Sensor Type 3 - START: 420 */
+    0x0,                                       /* 0x2101:4 Sensor Type 4 - START: 421 */
+    0x0,                                       /* 0x2101:5 Sensor Type 5 - START: 422 */
+    0x0,                                       /* 0x2101:6 Sensor Type 6 - START: 423 */
+    0x0,                                       /* 0x2101:7 Sensor Type 7 - START: 424 */
+    0x0,                                       /* 0x2101:8 Sensor Type 8 - START: 425 */
+    0x0,                                       /* 0x2101:9 Sensor Type 9 - START: 426 */
+    0x0,                                       /* 0x2101:10 Sensor Type 10 - START: 427 */
+    0xA,                                       /* 0x2102:0 Number of entries - START: 428 */
+    0x0,                                       /* 0x2102:1 Sensor Type 1 - START: 429 */
+    0x0,                                       /* 0x2102:2 Sensor Type 2 - START: 430 */
+    0x0,                                       /* 0x2102:3 Sensor Type 3 - START: 431 */
+    0x0,                                       /* 0x2102:4 Sensor Type 4 - START: 432 */
+    0x0,                                       /* 0x2102:5 Sensor Type 5 - START: 433 */
+    0x0,                                       /* 0x2102:6 Sensor Type 6 - START: 434 */
+    0x0,                                       /* 0x2102:7 Sensor Type 7 - START: 435 */
+    0x0,                                       /* 0x2102:8 Sensor Type 8 - START: 436 */
+    0x0,                                       /* 0x2102:9 Sensor Type 9 - START: 437 */
+    0x0,                                       /* 0x2102:10 Sensor Type 10 - START: 438 */
+    0xA,                                       /* 0x2103:0 Number of entries - START: 439 */
+    0x0,                                       /* 0x2103:1 Sensor Type 1 - START: 440 */
+    0x0,                                       /* 0x2103:2 Sensor Type 2 - START: 441 */
+    0x0,                                       /* 0x2103:3 Sensor Type 3 - START: 442 */
+    0x0,                                       /* 0x2103:4 Sensor Type 4 - START: 443 */
+    0x0,                                       /* 0x2103:5 Sensor Type 5 - START: 444 */
+    0x0,                                       /* 0x2103:6 Sensor Type 6 - START: 445 */
+    0x0,                                       /* 0x2103:7 Sensor Type 7 - START: 446 */
+    0x0,                                       /* 0x2103:8 Sensor Type 8 - START: 447 */
+    0x0,                                       /* 0x2103:9 Sensor Type 9 - START: 448 */
+    0x0,                                       /* 0x2103:10 Sensor Type 10 - START: 449 */
+    0xD,                                       /* 0x2201:0 BISS Encoder 1 - START: 450 */
+    0x4,                                       /* 0x2201:1 Type - START: 451 */
+    0x0,                                       /* 0x2201:2 Function - START: 452 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:3 Resolution - START: 453 */
+    0xE8, 0x3,                                 /* 0x2201:4 Velocity calculation period - START: 457 */
+    0x0,                                       /* 0x2201:5 Polarity - START: 459 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:6 Multiturn resolution - START: 460 */
+    0xE8, 0x3, 0x0, 0x0,                       /* 0x2201:7 Clock frequency - START: 464 */
+    0x24, 0x0, 0x0, 0x0,                       /* 0x2201:8 Timeout - START: 468 */
+    0x30,                                      /* 0x2201:9 CRC polynom - START: 472 */
+    0x0,                                       /* 0x2201:10 Clock port config - START: 473 */
+    0x0,                                       /* 0x2201:11 Data port config - START: 474 */
+    0x0,                                       /* 0x2201:12 Number of filling bits - START: 475 */
+    0x4,                                       /* 0x2201:13 Number of bits to read while busy - START: 476 */
+    0xD,                                       /* 0x2202:0 BISS Encoder 2 - START: 477 */
+    0x4,                                       /* 0x2202:1 Type - START: 478 */
+    0x0,                                       /* 0x2202:2 Function - START: 479 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:3 Resolution - START: 480 */
+    0xE8, 0x3,                                 /* 0x2202:4 Velocity calculation period - START: 484 */
+    0x0,                                       /* 0x2202:5 Polarity - START: 486 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:6 Multiturn resolution - START: 487 */
+    0xE8, 0x3, 0x0, 0x0,                       /* 0x2202:7 Clock frequency - START: 491 */
+    0x24, 0x0, 0x0, 0x0,                       /* 0x2202:8 Timeout - START: 495 */
+    0x30,                                      /* 0x2202:9 CRC polynom - START: 499 */
+    0x0,                                       /* 0x2202:10 Clock port config - START: 500 */
+    0x0,                                       /* 0x2202:11 Data port config - START: 501 */
+    0x0,                                       /* 0x2202:12 Number of filling bits - START: 502 */
+    0x4,                                       /* 0x2202:13 Number of bits to read while busy - START: 503 */
+    0x6,                                       /* 0x2203:0 REM 16MT Encoder - START: 504 */
+    0x6,                                       /* 0x2203:1 Type - START: 505 */
+    0x0,                                       /* 0x2203:2 Function - START: 506 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2203:3 Resolution - START: 507 */
+    0xE8, 0x3,                                 /* 0x2203:4 Velocity calculation period - START: 511 */
+    0x0,                                       /* 0x2203:5 Polarity - START: 513 */
+    0x2,                                       /* 0x2203:6 Filter - START: 514 */
+    0x9,                                       /* 0x2204:0 REM 14 Encoder - START: 515 */
+    0x5,                                       /* 0x2204:1 Type - START: 516 */
+    0x0,                                       /* 0x2204:2 Function - START: 517 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2204:3 Resolution - START: 518 */
+    0xE8, 0x3,                                 /* 0x2204:4 Velocity calculation period - START: 522 */
+    0x0,                                       /* 0x2204:5 Polarity - START: 524 */
+    0x1,                                       /* 0x2204:6 Hysteresis - START: 525 */
+    0x0,                                       /* 0x2204:7 Noise settings - START: 526 */
+    0x0,                                       /* 0x2204:8 Dynamic angle error compensation - START: 527 */
+    0x0,                                       /* 0x2204:9 Resolution settings - START: 528 */
+    0x7,                                       /* 0x2205:0 Incremental Encoder 1 - START: 529 */
+    0x2,                                       /* 0x2205:1 Type - START: 530 */
+    0x0,                                       /* 0x2205:2 Function - START: 531 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2205:3 Resolution - START: 532 */
+    0xE8, 0x3,                                 /* 0x2205:4 Velocity calculation period - START: 536 */
+    0x0,                                       /* 0x2205:5 Polarity - START: 538 */
+    0x2,                                       /* 0x2205:6 Number of channels - START: 539 */
+    0x0,                                       /* 0x2205:7 Access signal type - START: 540 */
+    0x7,                                       /* 0x2206:0 Incremental Encoder 2 - START: 541 */
+    0x2,                                       /* 0x2206:1 Type - START: 542 */
+    0x0,                                       /* 0x2206:2 Function - START: 543 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2206:3 Resolution - START: 544 */
+    0xE8, 0x3,                                 /* 0x2206:4 Velocity calculation period - START: 548 */
+    0x0,                                       /* 0x2206:5 Polarity - START: 550 */
+    0x2,                                       /* 0x2206:6 Number of channels - START: 551 */
+    0x0,                                       /* 0x2206:7 Access signal type - START: 552 */
+    0xB,                                       /* 0x2207:0 HALL Sensor 1 - START: 553 */
+    0x1,                                       /* 0x2207:1 Type - START: 554 */
+    0x0,                                       /* 0x2207:2 Function - START: 555 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2207:3 Resolution - START: 556 */
+    0xE8, 0x3,                                 /* 0x2207:4 Velocity calculation period - START: 560 */
+    0x0,                                       /* 0x2207:5 Polarity - START: 562 */
+    0x0, 0x0,                                  /* 0x2207:6 State angle 0 - START: 563 */
+    0x0, 0x0,                                  /* 0x2207:7 State angle 1 - START: 565 */
+    0x0, 0x0,                                  /* 0x2207:8 State angle 2 - START: 567 */
+    0x0, 0x0,                                  /* 0x2207:9 State angle 3 - START: 569 */
+    0x0, 0x0,                                  /* 0x2207:10 State angle 4 - START: 571 */
+    0x0, 0x0,                                  /* 0x2207:11 State angle 5 - START: 573 */
+    0xB,                                       /* 0x2208:0 HALL Sensor 2 - START: 575 */
+    0x1,                                       /* 0x2208:1 Type - START: 576 */
+    0x0,                                       /* 0x2208:2 Function - START: 577 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2208:3 Resolution - START: 578 */
+    0xE8, 0x3,                                 /* 0x2208:4 Velocity calculation period - START: 582 */
+    0x0,                                       /* 0x2208:5 Polarity - START: 584 */
+    0x0, 0x0,                                  /* 0x2208:6 State angle 0 - START: 585 */
+    0x0, 0x0,                                  /* 0x2208:7 State angle 1 - START: 587 */
+    0x0, 0x0,                                  /* 0x2208:8 State angle 2 - START: 589 */
+    0x0, 0x0,                                  /* 0x2208:9 State angle 3 - START: 591 */
+    0x0, 0x0,                                  /* 0x2208:10 State angle 4 - START: 593 */
+    0x0, 0x0,                                  /* 0x2208:11 State angle 5 - START: 595 */
+    0x4,                                       /* 0x2210:0 GPIO - START: 597 */
+    0x0,                                       /* 0x2210:1 Pin 1 - START: 598 */
+    0x0,                                       /* 0x2210:2 Pin 2 - START: 599 */
+    0x0,                                       /* 0x2210:3 Pin 3 - START: 600 */
+    0x0,                                       /* 0x2210:4 Pin 4 - START: 601 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2300:0 Offset Torque - START: 602 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x230A:0 Secondary position value - START: 606 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x230B:0 Secondary velocity value - START: 610 */
+    0x0, 0x0,                                  /* 0x2401:0 Analog input 1 - START: 614 */
+    0x0, 0x0,                                  /* 0x2402:0 Analog input 2 - START: 616 */
+    0x0, 0x0,                                  /* 0x2403:0 Analog input 3 - START: 618 */
+    0x0, 0x0,                                  /* 0x2404:0 Analog input 4 - START: 620 */
+    0x0,                                       /* 0x2501:0 Digital Input 1 - START: 622 */
+    0x0,                                       /* 0x2502:0 Digital Input 2 - START: 623 */
+    0x0,                                       /* 0x2503:0 Digital Input 3 - START: 624 */
+    0x0,                                       /* 0x2504:0 Digital Input 4 - START: 625 */
+    0x0,                                       /* 0x2601:0 Digital Output 1 - START: 626 */
+    0x0,                                       /* 0x2602:0 Digital Output 2 - START: 627 */
+    0x0,                                       /* 0x2603:0 Digital Output 3 - START: 628 */
+    0x0,                                       /* 0x2604:0 Digital Output 4 - START: 629 */
+    0x3C, 0x0,                                 /* 0x2A00:0 Applied tuning torque percent - START: 630 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2A01:0 Tuning command - START: 632 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2A03:0 Tuning status - START: 636 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFD:0 Timestamp - START: 640 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFE:0 User MOSI - START: 644 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFF:0 User MISO - START: 648 */
+    0x0, 0x0,                                  /* 0x603F:0 Error code - START: 652 */
+    0x0, 0x0,                                  /* 0x6040:0 Controlword - START: 654 */
+    0x0, 0x0,                                  /* 0x6041:0 Statusword - START: 656 */
+    0x0,                                       /* 0x6060:0 Op Mode - START: 658 */
+    0x0,                                       /* 0x6061:0 Op Mode Display - START: 659 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6064:0 Position Value - START: 660 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x606C:0 Velocity Value - START: 664 */
+    0x0, 0x0,                                  /* 0x6071:0 Target Torque - START: 668 */
+    0x0, 0x0,                                  /* 0x6072:0 Max torque - START: 670 */
+    0x0, 0x0,                                  /* 0x6073:0 Max current - START: 672 */
+    0x1, 0x0, 0x0, 0x0,                        /* 0x6075:0 Motor Rated Current - START: 674 */
+    0x1, 0x0, 0x0, 0x0,                        /* 0x6076:0 Motor Rated Torque - START: 678 */
+    0x0, 0x0,                                  /* 0x6077:0 Torque Value - START: 682 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6079:0 DC link circuit voltage - START: 684 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x607A:0 Target Position - START: 688 */
+    0x2,                                       /* 0x607B:0 SubIndex 000 - START: 692 */
+    0x0, 0x0, 0x0, 0x80,                       /* 0x607B:1 Min position range limit - START: 693 */
+    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607B:2 Max position range limit - START: 697 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x607C:0 Home offset - START: 701 */
+    0x2,                                       /* 0x607D:0 SubIndex 000 - START: 705 */
+    0x0, 0x0, 0x0, 0x80,                       /* 0x607D:1 Min position limit - START: 706 */
+    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607D:2 Max position limit - START: 710 */
+    0x0,                                       /* 0x607E:0 Polarity - START: 714 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x607F:0 Max profile velocity - START: 715 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6080:0 Max motor speed - START: 719 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6081:0 Profile velocity - START: 723 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6083:0 Profile acceleration - START: 727 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6084:0 Profile deceleration - START: 731 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6085:0 Quick stop deceleration - START: 735 */
+    0x80, 0x0,                                 /* 0x6086:0 Motion profile type - START: 739 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x60C5:0 Max acceleration - START: 741 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x60FF:0 Target Velocity - START: 745 */
+    0x80, 0x3, 0x0, 0x0                        /* 0x6502:0 Supported Drive Modes - START: 749 */
 };
 
 /*
@@ -449,153 +482,186 @@ const uint8_t entry_default_values[entry_default_values_length] = {
     0x0, 0x0, 0x0, 0x0,                        /* 0x2013:17 Velocity Loop Kd_1 - START: 402 */
     0x0, 0x0, 0x0, 0x0,                        /* 0x2013:18 Velocity Loop integral limit 1 - START: 406 */
     0x3,                                       /* 0x2100:0 Number of entries - START: 410 */
-    0x0, 0x0,                                  /* 0x2100:1 Sensor port 1 - START: 411 */
-    0x0, 0x0,                                  /* 0x2100:2 Sensor port 2 - START: 413 */
-    0x0, 0x0,                                  /* 0x2100:3 Sensor port 3 - START: 415 */
-    0xD,                                       /* 0x2201:0 BISS Encoder 1 - START: 417 */
-    0x4,                                       /* 0x2201:1 Type - START: 418 */
-    0x0,                                       /* 0x2201:2 Function - START: 419 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:3 Resolution - START: 420 */
-    0xE8, 0x3,                                 /* 0x2201:4 Velocity calculation period - START: 424 */
-    0x0,                                       /* 0x2201:5 Polarity - START: 426 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:6 Multiturn resolution - START: 427 */
-    0xE8, 0x3, 0x0, 0x0,                       /* 0x2201:7 Clock frequency - START: 431 */
-    0x24, 0x0, 0x0, 0x0,                       /* 0x2201:8 Timeout - START: 435 */
-    0x30,                                      /* 0x2201:9 CRC polynom - START: 439 */
-    0x0,                                       /* 0x2201:10 Clock port config - START: 440 */
-    0x0,                                       /* 0x2201:11 Data port config - START: 441 */
-    0x0,                                       /* 0x2201:12 Number of filling bits - START: 442 */
-    0x4,                                       /* 0x2201:13 Number of bits to read while busy - START: 443 */
-    0xD,                                       /* 0x2202:0 BISS Encoder 2 - START: 444 */
-    0x4,                                       /* 0x2202:1 Type - START: 445 */
-    0x0,                                       /* 0x2202:2 Function - START: 446 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:3 Resolution - START: 447 */
-    0xE8, 0x3,                                 /* 0x2202:4 Velocity calculation period - START: 451 */
-    0x0,                                       /* 0x2202:5 Polarity - START: 453 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:6 Multiturn resolution - START: 454 */
-    0xE8, 0x3, 0x0, 0x0,                       /* 0x2202:7 Clock frequency - START: 458 */
-    0x24, 0x0, 0x0, 0x0,                       /* 0x2202:8 Timeout - START: 462 */
-    0x30,                                      /* 0x2202:9 CRC polynom - START: 466 */
-    0x0,                                       /* 0x2202:10 Clock port config - START: 467 */
-    0x0,                                       /* 0x2202:11 Data port config - START: 468 */
-    0x0,                                       /* 0x2202:12 Number of filling bits - START: 469 */
-    0x4,                                       /* 0x2202:13 Number of bits to read while busy - START: 470 */
-    0x6,                                       /* 0x2203:0 REM 16MT Encoder - START: 471 */
-    0x6,                                       /* 0x2203:1 Type - START: 472 */
-    0x0,                                       /* 0x2203:2 Function - START: 473 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2203:3 Resolution - START: 474 */
-    0xE8, 0x3,                                 /* 0x2203:4 Velocity calculation period - START: 478 */
-    0x0,                                       /* 0x2203:5 Polarity - START: 480 */
-    0x2,                                       /* 0x2203:6 Filter - START: 481 */
-    0x9,                                       /* 0x2204:0 REM 14 Encoder - START: 482 */
-    0x5,                                       /* 0x2204:1 Type - START: 483 */
-    0x0,                                       /* 0x2204:2 Function - START: 484 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2204:3 Resolution - START: 485 */
-    0xE8, 0x3,                                 /* 0x2204:4 Velocity calculation period - START: 489 */
-    0x0,                                       /* 0x2204:5 Polarity - START: 491 */
-    0x1,                                       /* 0x2204:6 Hysteresis - START: 492 */
-    0x0,                                       /* 0x2204:7 Noise settings - START: 493 */
-    0x0,                                       /* 0x2204:8 Dynamic angle error compensation - START: 494 */
-    0x0,                                       /* 0x2204:9 Resolution settings - START: 495 */
-    0x7,                                       /* 0x2205:0 Incremental Encoder 1 - START: 496 */
-    0x2,                                       /* 0x2205:1 Type - START: 497 */
-    0x0,                                       /* 0x2205:2 Function - START: 498 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2205:3 Resolution - START: 499 */
-    0xE8, 0x3,                                 /* 0x2205:4 Velocity calculation period - START: 503 */
-    0x0,                                       /* 0x2205:5 Polarity - START: 505 */
-    0x2,                                       /* 0x2205:6 Number of channels - START: 506 */
-    0x0,                                       /* 0x2205:7 Access signal type - START: 507 */
-    0x7,                                       /* 0x2206:0 Incremental Encoder 2 - START: 508 */
-    0x2,                                       /* 0x2206:1 Type - START: 509 */
-    0x0,                                       /* 0x2206:2 Function - START: 510 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2206:3 Resolution - START: 511 */
-    0xE8, 0x3,                                 /* 0x2206:4 Velocity calculation period - START: 515 */
-    0x0,                                       /* 0x2206:5 Polarity - START: 517 */
-    0x2,                                       /* 0x2206:6 Number of channels - START: 518 */
-    0x0,                                       /* 0x2206:7 Access signal type - START: 519 */
-    0xB,                                       /* 0x2207:0 HALL Sensor 1 - START: 520 */
-    0x1,                                       /* 0x2207:1 Type - START: 521 */
-    0x0,                                       /* 0x2207:2 Function - START: 522 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2207:3 Resolution - START: 523 */
-    0xE8, 0x3,                                 /* 0x2207:4 Velocity calculation period - START: 527 */
-    0x0,                                       /* 0x2207:5 Polarity - START: 529 */
-    0x0, 0x0,                                  /* 0x2207:6 State angle 0 - START: 530 */
-    0x0, 0x0,                                  /* 0x2207:7 State angle 1 - START: 532 */
-    0x0, 0x0,                                  /* 0x2207:8 State angle 2 - START: 534 */
-    0x0, 0x0,                                  /* 0x2207:9 State angle 3 - START: 536 */
-    0x0, 0x0,                                  /* 0x2207:10 State angle 4 - START: 538 */
-    0x0, 0x0,                                  /* 0x2207:11 State angle 5 - START: 540 */
-    0xB,                                       /* 0x2208:0 HALL Sensor 2 - START: 542 */
-    0x1,                                       /* 0x2208:1 Type - START: 543 */
-    0x0,                                       /* 0x2208:2 Function - START: 544 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2208:3 Resolution - START: 545 */
-    0xE8, 0x3,                                 /* 0x2208:4 Velocity calculation period - START: 549 */
-    0x0,                                       /* 0x2208:5 Polarity - START: 551 */
-    0x0, 0x0,                                  /* 0x2208:6 State angle 0 - START: 552 */
-    0x0, 0x0,                                  /* 0x2208:7 State angle 1 - START: 554 */
-    0x0, 0x0,                                  /* 0x2208:8 State angle 2 - START: 556 */
-    0x0, 0x0,                                  /* 0x2208:9 State angle 3 - START: 558 */
-    0x0, 0x0,                                  /* 0x2208:10 State angle 4 - START: 560 */
-    0x0, 0x0,                                  /* 0x2208:11 State angle 5 - START: 562 */
-    0x4,                                       /* 0x2210:0 GPIO - START: 564 */
-    0x0,                                       /* 0x2210:1 Pin 1 - START: 565 */
-    0x0,                                       /* 0x2210:2 Pin 2 - START: 566 */
-    0x0,                                       /* 0x2210:3 Pin 3 - START: 567 */
-    0x0,                                       /* 0x2210:4 Pin 4 - START: 568 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2300:0 Offset Torque - START: 569 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x230A:0 Secondary position value - START: 573 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x230B:0 Secondary velocity value - START: 577 */
-    0x0, 0x0,                                  /* 0x2401:0 Analog input 1 - START: 581 */
-    0x0, 0x0,                                  /* 0x2402:0 Analog input 2 - START: 583 */
-    0x0, 0x0,                                  /* 0x2403:0 Analog input 3 - START: 585 */
-    0x0, 0x0,                                  /* 0x2404:0 Analog input 4 - START: 587 */
-    0x0,                                       /* 0x2501:0 Digital Input 1 - START: 589 */
-    0x0,                                       /* 0x2502:0 Digital Input 2 - START: 590 */
-    0x0,                                       /* 0x2503:0 Digital Input 3 - START: 591 */
-    0x0,                                       /* 0x2504:0 Digital Input 4 - START: 592 */
-    0x0,                                       /* 0x2601:0 Digital Output 1 - START: 593 */
-    0x0,                                       /* 0x2602:0 Digital Output 2 - START: 594 */
-    0x0,                                       /* 0x2603:0 Digital Output 3 - START: 595 */
-    0x0,                                       /* 0x2604:0 Digital Output 4 - START: 596 */
-    0x3C, 0x0,                                 /* 0x2A00:0 Applied tuning torque percent - START: 597 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2A01:0 Tuning command - START: 599 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2A03:0 Tuning status - START: 603 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFD:0 Timestamp - START: 607 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFE:0 User MOSI - START: 611 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFF:0 User MISO - START: 615 */
-    0x0, 0x0,                                  /* 0x603F:0 Error code - START: 619 */
-    0x0, 0x0,                                  /* 0x6040:0 Controlword - START: 621 */
-    0x0, 0x0,                                  /* 0x6041:0 Statusword - START: 623 */
-    0x0,                                       /* 0x6060:0 Op Mode - START: 625 */
-    0x0,                                       /* 0x6061:0 Op Mode Display - START: 626 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6064:0 Position Value - START: 627 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x606C:0 Velocity Value - START: 631 */
-    0x0, 0x0,                                  /* 0x6071:0 Target Torque - START: 635 */
-    0x0, 0x0,                                  /* 0x6072:0 Max torque - START: 637 */
-    0x0, 0x0,                                  /* 0x6073:0 Max current - START: 639 */
-    0x1, 0x0, 0x0, 0x0,                        /* 0x6075:0 Motor Rated Current - START: 641 */
-    0x1, 0x0, 0x0, 0x0,                        /* 0x6076:0 Motor Rated Torque - START: 645 */
-    0x0, 0x0,                                  /* 0x6077:0 Torque Value - START: 649 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6079:0 DC link circuit voltage - START: 651 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x607A:0 Target Position - START: 655 */
-    0x2,                                       /* 0x607B:0 SubIndex 000 - START: 659 */
-    0x0, 0x0, 0x0, 0x80,                       /* 0x607B:1 Min position range limit - START: 660 */
-    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607B:2 Max position range limit - START: 664 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x607C:0 Home offset - START: 668 */
-    0x2,                                       /* 0x607D:0 SubIndex 000 - START: 672 */
-    0x0, 0x0, 0x0, 0x80,                       /* 0x607D:1 Min position limit - START: 673 */
-    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607D:2 Max position limit - START: 677 */
-    0x0,                                       /* 0x607E:0 Polarity - START: 681 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x607F:0 Max profile velocity - START: 682 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6080:0 Max motor speed - START: 686 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6081:0 Profile velocity - START: 690 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6083:0 Profile acceleration - START: 694 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6084:0 Profile deceleration - START: 698 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x6085:0 Quick stop deceleration - START: 702 */
-    0x80, 0x0,                                 /* 0x6086:0 Motion profile type - START: 706 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x60C5:0 Max acceleration - START: 708 */
-    0x0, 0x0, 0x0, 0x0,                        /* 0x60FF:0 Target Velocity - START: 712 */
-    0x80, 0x3, 0x0, 0x0                        /* 0x6502:0 Supported Drive Modes - START: 716 */
+    0x0, 0x0,                                  /* 0x2100:1 Sensor Configuration Port 1 - START: 411 */
+    0x0, 0x0,                                  /* 0x2100:2 Sensor Configuration Port 2 - START: 413 */
+    0x0, 0x0,                                  /* 0x2100:3 Sensor Configuration Port 3 - START: 415 */
+    0xA,                                       /* 0x2101:0 Number of entries - START: 417 */
+    0x0,                                       /* 0x2101:1 Sensor Type 1 - START: 418 */
+    0x0,                                       /* 0x2101:2 Sensor Type 2 - START: 419 */
+    0x0,                                       /* 0x2101:3 Sensor Type 3 - START: 420 */
+    0x0,                                       /* 0x2101:4 Sensor Type 4 - START: 421 */
+    0x0,                                       /* 0x2101:5 Sensor Type 5 - START: 422 */
+    0x0,                                       /* 0x2101:6 Sensor Type 6 - START: 423 */
+    0x0,                                       /* 0x2101:7 Sensor Type 7 - START: 424 */
+    0x0,                                       /* 0x2101:8 Sensor Type 8 - START: 425 */
+    0x0,                                       /* 0x2101:9 Sensor Type 9 - START: 426 */
+    0x0,                                       /* 0x2101:10 Sensor Type 10 - START: 427 */
+    0xA,                                       /* 0x2102:0 Number of entries - START: 428 */
+    0x0,                                       /* 0x2102:1 Sensor Type 1 - START: 429 */
+    0x0,                                       /* 0x2102:2 Sensor Type 2 - START: 430 */
+    0x0,                                       /* 0x2102:3 Sensor Type 3 - START: 431 */
+    0x0,                                       /* 0x2102:4 Sensor Type 4 - START: 432 */
+    0x0,                                       /* 0x2102:5 Sensor Type 5 - START: 433 */
+    0x0,                                       /* 0x2102:6 Sensor Type 6 - START: 434 */
+    0x0,                                       /* 0x2102:7 Sensor Type 7 - START: 435 */
+    0x0,                                       /* 0x2102:8 Sensor Type 8 - START: 436 */
+    0x0,                                       /* 0x2102:9 Sensor Type 9 - START: 437 */
+    0x0,                                       /* 0x2102:10 Sensor Type 10 - START: 438 */
+    0xA,                                       /* 0x2103:0 Number of entries - START: 439 */
+    0x0,                                       /* 0x2103:1 Sensor Type 1 - START: 440 */
+    0x0,                                       /* 0x2103:2 Sensor Type 2 - START: 441 */
+    0x0,                                       /* 0x2103:3 Sensor Type 3 - START: 442 */
+    0x0,                                       /* 0x2103:4 Sensor Type 4 - START: 443 */
+    0x0,                                       /* 0x2103:5 Sensor Type 5 - START: 444 */
+    0x0,                                       /* 0x2103:6 Sensor Type 6 - START: 445 */
+    0x0,                                       /* 0x2103:7 Sensor Type 7 - START: 446 */
+    0x0,                                       /* 0x2103:8 Sensor Type 8 - START: 447 */
+    0x0,                                       /* 0x2103:9 Sensor Type 9 - START: 448 */
+    0x0,                                       /* 0x2103:10 Sensor Type 10 - START: 449 */
+    0xD,                                       /* 0x2201:0 BISS Encoder 1 - START: 450 */
+    0x4,                                       /* 0x2201:1 Type - START: 451 */
+    0x0,                                       /* 0x2201:2 Function - START: 452 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:3 Resolution - START: 453 */
+    0xE8, 0x3,                                 /* 0x2201:4 Velocity calculation period - START: 457 */
+    0x0,                                       /* 0x2201:5 Polarity - START: 459 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2201:6 Multiturn resolution - START: 460 */
+    0xE8, 0x3, 0x0, 0x0,                       /* 0x2201:7 Clock frequency - START: 464 */
+    0x24, 0x0, 0x0, 0x0,                       /* 0x2201:8 Timeout - START: 468 */
+    0x30,                                      /* 0x2201:9 CRC polynom - START: 472 */
+    0x0,                                       /* 0x2201:10 Clock port config - START: 473 */
+    0x0,                                       /* 0x2201:11 Data port config - START: 474 */
+    0x0,                                       /* 0x2201:12 Number of filling bits - START: 475 */
+    0x4,                                       /* 0x2201:13 Number of bits to read while busy - START: 476 */
+    0xD,                                       /* 0x2202:0 BISS Encoder 2 - START: 477 */
+    0x4,                                       /* 0x2202:1 Type - START: 478 */
+    0x0,                                       /* 0x2202:2 Function - START: 479 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:3 Resolution - START: 480 */
+    0xE8, 0x3,                                 /* 0x2202:4 Velocity calculation period - START: 484 */
+    0x0,                                       /* 0x2202:5 Polarity - START: 486 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2202:6 Multiturn resolution - START: 487 */
+    0xE8, 0x3, 0x0, 0x0,                       /* 0x2202:7 Clock frequency - START: 491 */
+    0x24, 0x0, 0x0, 0x0,                       /* 0x2202:8 Timeout - START: 495 */
+    0x30,                                      /* 0x2202:9 CRC polynom - START: 499 */
+    0x0,                                       /* 0x2202:10 Clock port config - START: 500 */
+    0x0,                                       /* 0x2202:11 Data port config - START: 501 */
+    0x0,                                       /* 0x2202:12 Number of filling bits - START: 502 */
+    0x4,                                       /* 0x2202:13 Number of bits to read while busy - START: 503 */
+    0x6,                                       /* 0x2203:0 REM 16MT Encoder - START: 504 */
+    0x6,                                       /* 0x2203:1 Type - START: 505 */
+    0x0,                                       /* 0x2203:2 Function - START: 506 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2203:3 Resolution - START: 507 */
+    0xE8, 0x3,                                 /* 0x2203:4 Velocity calculation period - START: 511 */
+    0x0,                                       /* 0x2203:5 Polarity - START: 513 */
+    0x2,                                       /* 0x2203:6 Filter - START: 514 */
+    0x9,                                       /* 0x2204:0 REM 14 Encoder - START: 515 */
+    0x5,                                       /* 0x2204:1 Type - START: 516 */
+    0x0,                                       /* 0x2204:2 Function - START: 517 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2204:3 Resolution - START: 518 */
+    0xE8, 0x3,                                 /* 0x2204:4 Velocity calculation period - START: 522 */
+    0x0,                                       /* 0x2204:5 Polarity - START: 524 */
+    0x1,                                       /* 0x2204:6 Hysteresis - START: 525 */
+    0x0,                                       /* 0x2204:7 Noise settings - START: 526 */
+    0x0,                                       /* 0x2204:8 Dynamic angle error compensation - START: 527 */
+    0x0,                                       /* 0x2204:9 Resolution settings - START: 528 */
+    0x7,                                       /* 0x2205:0 Incremental Encoder 1 - START: 529 */
+    0x2,                                       /* 0x2205:1 Type - START: 530 */
+    0x0,                                       /* 0x2205:2 Function - START: 531 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2205:3 Resolution - START: 532 */
+    0xE8, 0x3,                                 /* 0x2205:4 Velocity calculation period - START: 536 */
+    0x0,                                       /* 0x2205:5 Polarity - START: 538 */
+    0x2,                                       /* 0x2205:6 Number of channels - START: 539 */
+    0x0,                                       /* 0x2205:7 Access signal type - START: 540 */
+    0x7,                                       /* 0x2206:0 Incremental Encoder 2 - START: 541 */
+    0x2,                                       /* 0x2206:1 Type - START: 542 */
+    0x0,                                       /* 0x2206:2 Function - START: 543 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2206:3 Resolution - START: 544 */
+    0xE8, 0x3,                                 /* 0x2206:4 Velocity calculation period - START: 548 */
+    0x0,                                       /* 0x2206:5 Polarity - START: 550 */
+    0x2,                                       /* 0x2206:6 Number of channels - START: 551 */
+    0x0,                                       /* 0x2206:7 Access signal type - START: 552 */
+    0xB,                                       /* 0x2207:0 HALL Sensor 1 - START: 553 */
+    0x1,                                       /* 0x2207:1 Type - START: 554 */
+    0x0,                                       /* 0x2207:2 Function - START: 555 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2207:3 Resolution - START: 556 */
+    0xE8, 0x3,                                 /* 0x2207:4 Velocity calculation period - START: 560 */
+    0x0,                                       /* 0x2207:5 Polarity - START: 562 */
+    0x0, 0x0,                                  /* 0x2207:6 State angle 0 - START: 563 */
+    0x0, 0x0,                                  /* 0x2207:7 State angle 1 - START: 565 */
+    0x0, 0x0,                                  /* 0x2207:8 State angle 2 - START: 567 */
+    0x0, 0x0,                                  /* 0x2207:9 State angle 3 - START: 569 */
+    0x0, 0x0,                                  /* 0x2207:10 State angle 4 - START: 571 */
+    0x0, 0x0,                                  /* 0x2207:11 State angle 5 - START: 573 */
+    0xB,                                       /* 0x2208:0 HALL Sensor 2 - START: 575 */
+    0x1,                                       /* 0x2208:1 Type - START: 576 */
+    0x0,                                       /* 0x2208:2 Function - START: 577 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2208:3 Resolution - START: 578 */
+    0xE8, 0x3,                                 /* 0x2208:4 Velocity calculation period - START: 582 */
+    0x0,                                       /* 0x2208:5 Polarity - START: 584 */
+    0x0, 0x0,                                  /* 0x2208:6 State angle 0 - START: 585 */
+    0x0, 0x0,                                  /* 0x2208:7 State angle 1 - START: 587 */
+    0x0, 0x0,                                  /* 0x2208:8 State angle 2 - START: 589 */
+    0x0, 0x0,                                  /* 0x2208:9 State angle 3 - START: 591 */
+    0x0, 0x0,                                  /* 0x2208:10 State angle 4 - START: 593 */
+    0x0, 0x0,                                  /* 0x2208:11 State angle 5 - START: 595 */
+    0x4,                                       /* 0x2210:0 GPIO - START: 597 */
+    0x0,                                       /* 0x2210:1 Pin 1 - START: 598 */
+    0x0,                                       /* 0x2210:2 Pin 2 - START: 599 */
+    0x0,                                       /* 0x2210:3 Pin 3 - START: 600 */
+    0x0,                                       /* 0x2210:4 Pin 4 - START: 601 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2300:0 Offset Torque - START: 602 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x230A:0 Secondary position value - START: 606 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x230B:0 Secondary velocity value - START: 610 */
+    0x0, 0x0,                                  /* 0x2401:0 Analog input 1 - START: 614 */
+    0x0, 0x0,                                  /* 0x2402:0 Analog input 2 - START: 616 */
+    0x0, 0x0,                                  /* 0x2403:0 Analog input 3 - START: 618 */
+    0x0, 0x0,                                  /* 0x2404:0 Analog input 4 - START: 620 */
+    0x0,                                       /* 0x2501:0 Digital Input 1 - START: 622 */
+    0x0,                                       /* 0x2502:0 Digital Input 2 - START: 623 */
+    0x0,                                       /* 0x2503:0 Digital Input 3 - START: 624 */
+    0x0,                                       /* 0x2504:0 Digital Input 4 - START: 625 */
+    0x0,                                       /* 0x2601:0 Digital Output 1 - START: 626 */
+    0x0,                                       /* 0x2602:0 Digital Output 2 - START: 627 */
+    0x0,                                       /* 0x2603:0 Digital Output 3 - START: 628 */
+    0x0,                                       /* 0x2604:0 Digital Output 4 - START: 629 */
+    0x3C, 0x0,                                 /* 0x2A00:0 Applied tuning torque percent - START: 630 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2A01:0 Tuning command - START: 632 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2A03:0 Tuning status - START: 636 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFD:0 Timestamp - START: 640 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFE:0 User MOSI - START: 644 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x2FFF:0 User MISO - START: 648 */
+    0x0, 0x0,                                  /* 0x603F:0 Error code - START: 652 */
+    0x0, 0x0,                                  /* 0x6040:0 Controlword - START: 654 */
+    0x0, 0x0,                                  /* 0x6041:0 Statusword - START: 656 */
+    0x0,                                       /* 0x6060:0 Op Mode - START: 658 */
+    0x0,                                       /* 0x6061:0 Op Mode Display - START: 659 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6064:0 Position Value - START: 660 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x606C:0 Velocity Value - START: 664 */
+    0x0, 0x0,                                  /* 0x6071:0 Target Torque - START: 668 */
+    0x0, 0x0,                                  /* 0x6072:0 Max torque - START: 670 */
+    0x0, 0x0,                                  /* 0x6073:0 Max current - START: 672 */
+    0x1, 0x0, 0x0, 0x0,                        /* 0x6075:0 Motor Rated Current - START: 674 */
+    0x1, 0x0, 0x0, 0x0,                        /* 0x6076:0 Motor Rated Torque - START: 678 */
+    0x0, 0x0,                                  /* 0x6077:0 Torque Value - START: 682 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6079:0 DC link circuit voltage - START: 684 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x607A:0 Target Position - START: 688 */
+    0x2,                                       /* 0x607B:0 SubIndex 000 - START: 692 */
+    0x0, 0x0, 0x0, 0x80,                       /* 0x607B:1 Min position range limit - START: 693 */
+    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607B:2 Max position range limit - START: 697 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x607C:0 Home offset - START: 701 */
+    0x2,                                       /* 0x607D:0 SubIndex 000 - START: 705 */
+    0x0, 0x0, 0x0, 0x80,                       /* 0x607D:1 Min position limit - START: 706 */
+    0xFF, 0xFF, 0xFF, 0x7F,                    /* 0x607D:2 Max position limit - START: 710 */
+    0x0,                                       /* 0x607E:0 Polarity - START: 714 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x607F:0 Max profile velocity - START: 715 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6080:0 Max motor speed - START: 719 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6081:0 Profile velocity - START: 723 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6083:0 Profile acceleration - START: 727 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6084:0 Profile deceleration - START: 731 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x6085:0 Quick stop deceleration - START: 735 */
+    0x80, 0x0,                                 /* 0x6086:0 Motion profile type - START: 739 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x60C5:0 Max acceleration - START: 741 */
+    0x0, 0x0, 0x0, 0x0,                        /* 0x60FF:0 Target Velocity - START: 745 */
+    0x80, 0x3, 0x0, 0x0                        /* 0x6502:0 Supported Drive Modes - START: 749 */
 };
 
 /*
@@ -755,9 +821,19 @@ const char *string[] = {
     "Velocity Loop Ki_1",
     "Velocity Loop Kd_1",
     "Velocity Loop integral limit 1",
-    "Sensor port 1",
-    "Sensor port 2",
-    "Sensor port 3",
+    "Sensor Configuration Port 1",
+    "Sensor Configuration Port 2",
+    "Sensor Configuration Port 3",
+    "Sensor Type 1",
+    "Sensor Type 2",
+    "Sensor Type 3",
+    "Sensor Type 4",
+    "Sensor Type 5",
+    "Sensor Type 6",
+    "Sensor Type 7",
+    "Sensor Type 8",
+    "Sensor Type 9",
+    "Sensor Type 10",
     "BISS Encoder 1",
     "Type",
     "Function",
@@ -2241,7 +2317,7 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x2100, 1, 0), /* Sensor port 1 */
+        CODE_SET_ENTRY_INDEX(0x2100, 1, 0), /* Sensor Configuration Port 1 */
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
@@ -2252,7 +2328,7 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x2100, 2, 0), /* Sensor port 2 */
+        CODE_SET_ENTRY_INDEX(0x2100, 2, 0), /* Sensor Configuration Port 2 */
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
@@ -2263,7 +2339,7 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x2100, 3, 0), /* Sensor port 3 */
+        CODE_SET_ENTRY_INDEX(0x2100, 3, 0), /* Sensor Configuration Port 3 */
         DEFTYPE_UNSIGNED16,
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
@@ -2274,14 +2350,377 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
-        CODE_SET_ENTRY_INDEX(0x2201, 0, 0), /* BISS Encoder 1 */
+        CODE_SET_ENTRY_INDEX(0x2101, 0, 0), /* Number of entries */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[51]),
+        &(entry_values[417]),
+        &(entry_default_values[417]), /* 0x0A */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 1, 0), /* Sensor Type 1 */
         DEFTYPE_UNSIGNED8,
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[112]),
-        &(entry_values[417]),
-        &(entry_default_values[417]), /* 0x0D */
+        &(entry_values[418]),
+        &(entry_default_values[418]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 2, 0), /* Sensor Type 2 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[113]),
+        &(entry_values[419]),
+        &(entry_default_values[419]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 3, 0), /* Sensor Type 3 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[114]),
+        &(entry_values[420]),
+        &(entry_default_values[420]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 4, 0), /* Sensor Type 4 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[115]),
+        &(entry_values[421]),
+        &(entry_default_values[421]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 5, 0), /* Sensor Type 5 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[116]),
+        &(entry_values[422]),
+        &(entry_default_values[422]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 6, 0), /* Sensor Type 6 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[117]),
+        &(entry_values[423]),
+        &(entry_default_values[423]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 7, 0), /* Sensor Type 7 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[118]),
+        &(entry_values[424]),
+        &(entry_default_values[424]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 8, 0), /* Sensor Type 8 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[119]),
+        &(entry_values[425]),
+        &(entry_default_values[425]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 9, 0), /* Sensor Type 9 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[120]),
+        &(entry_values[426]),
+        &(entry_default_values[426]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2101, 10, 0), /* Sensor Type 10 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[121]),
+        &(entry_values[427]),
+        &(entry_default_values[427]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 0, 0), /* Number of entries */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[51]),
+        &(entry_values[428]),
+        &(entry_default_values[428]), /* 0x0A */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 1, 0), /* Sensor Type 1 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[112]),
+        &(entry_values[429]),
+        &(entry_default_values[429]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 2, 0), /* Sensor Type 2 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[113]),
+        &(entry_values[430]),
+        &(entry_default_values[430]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 3, 0), /* Sensor Type 3 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[114]),
+        &(entry_values[431]),
+        &(entry_default_values[431]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 4, 0), /* Sensor Type 4 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[115]),
+        &(entry_values[432]),
+        &(entry_default_values[432]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 5, 0), /* Sensor Type 5 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[116]),
+        &(entry_values[433]),
+        &(entry_default_values[433]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 6, 0), /* Sensor Type 6 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[117]),
+        &(entry_values[434]),
+        &(entry_default_values[434]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 7, 0), /* Sensor Type 7 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[118]),
+        &(entry_values[435]),
+        &(entry_default_values[435]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 8, 0), /* Sensor Type 8 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[119]),
+        &(entry_values[436]),
+        &(entry_default_values[436]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 9, 0), /* Sensor Type 9 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[120]),
+        &(entry_values[437]),
+        &(entry_default_values[437]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2102, 10, 0), /* Sensor Type 10 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[121]),
+        &(entry_values[438]),
+        &(entry_default_values[438]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 0, 0), /* Number of entries */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[51]),
+        &(entry_values[439]),
+        &(entry_default_values[439]), /* 0x0A */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 1, 0), /* Sensor Type 1 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[112]),
+        &(entry_values[440]),
+        &(entry_default_values[440]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 2, 0), /* Sensor Type 2 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[113]),
+        &(entry_values[441]),
+        &(entry_default_values[441]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 3, 0), /* Sensor Type 3 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[114]),
+        &(entry_values[442]),
+        &(entry_default_values[442]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 4, 0), /* Sensor Type 4 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[115]),
+        &(entry_values[443]),
+        &(entry_default_values[443]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 5, 0), /* Sensor Type 5 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[116]),
+        &(entry_values[444]),
+        &(entry_default_values[444]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 6, 0), /* Sensor Type 6 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[117]),
+        &(entry_values[445]),
+        &(entry_default_values[445]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 7, 0), /* Sensor Type 7 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[118]),
+        &(entry_values[446]),
+        &(entry_default_values[446]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 8, 0), /* Sensor Type 8 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[119]),
+        &(entry_values[447]),
+        &(entry_default_values[447]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 9, 0), /* Sensor Type 9 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[120]),
+        &(entry_values[448]),
+        &(entry_default_values[448]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2103, 10, 0), /* Sensor Type 10 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[121]),
+        &(entry_values[449]),
+        &(entry_default_values[449]), /* 0x00 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2201, 0, 0), /* BISS Encoder 1 */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        0x0,
+        &(string[122]),
+        &(entry_values[450]),
+        &(entry_default_values[450]), /* 0x0D */
         NULL,
         NULL
     }, {
@@ -2290,9 +2729,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[418]),
-        &(entry_default_values[418]), /* 0x04 */
+        &(string[123]),
+        &(entry_values[451]),
+        &(entry_default_values[451]), /* 0x04 */
         NULL,
         NULL
     }, {
@@ -2301,9 +2740,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[419]),
-        &(entry_default_values[419]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[452]),
+        &(entry_default_values[452]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2312,9 +2751,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[420]),
-        &(entry_default_values[420]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[453]),
+        &(entry_default_values[453]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2323,9 +2762,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[424]),
-        &(entry_default_values[424]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[457]),
+        &(entry_default_values[457]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -2334,9 +2773,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[426]),
-        &(entry_default_values[426]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[459]),
+        &(entry_default_values[459]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2345,9 +2784,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[118]),
-        &(entry_values[427]),
-        &(entry_default_values[427]), /* 0x00000000 */
+        &(string[128]),
+        &(entry_values[460]),
+        &(entry_default_values[460]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2356,9 +2795,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x3200000,
-        &(string[119]),
-        &(entry_values[431]),
-        &(entry_default_values[431]), /* 0x000003E8 */
+        &(string[129]),
+        &(entry_values[464]),
+        &(entry_default_values[464]), /* 0x000003E8 */
         NULL,
         NULL
     }, {
@@ -2367,9 +2806,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[120]),
-        &(entry_values[435]),
-        &(entry_default_values[435]), /* 0x00000024 */
+        &(string[130]),
+        &(entry_values[468]),
+        &(entry_default_values[468]), /* 0x00000024 */
         NULL,
         NULL
     }, {
@@ -2378,9 +2817,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[121]),
-        &(entry_values[439]),
-        &(entry_default_values[439]), /* 0x30 */
+        &(string[131]),
+        &(entry_values[472]),
+        &(entry_default_values[472]), /* 0x30 */
         NULL,
         NULL
     }, {
@@ -2389,9 +2828,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[122]),
-        &(entry_values[440]),
-        &(entry_default_values[440]), /* 0x00 */
+        &(string[132]),
+        &(entry_values[473]),
+        &(entry_default_values[473]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2400,9 +2839,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[123]),
-        &(entry_values[441]),
-        &(entry_default_values[441]), /* 0x00 */
+        &(string[133]),
+        &(entry_values[474]),
+        &(entry_default_values[474]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2411,9 +2850,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[124]),
-        &(entry_values[442]),
-        &(entry_default_values[442]), /* 0x00 */
+        &(string[134]),
+        &(entry_values[475]),
+        &(entry_default_values[475]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2422,9 +2861,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[125]),
-        &(entry_values[443]),
-        &(entry_default_values[443]), /* 0x04 */
+        &(string[135]),
+        &(entry_values[476]),
+        &(entry_default_values[476]), /* 0x04 */
         NULL,
         NULL
     }, {
@@ -2433,9 +2872,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[126]),
-        &(entry_values[444]),
-        &(entry_default_values[444]), /* 0x0D */
+        &(string[136]),
+        &(entry_values[477]),
+        &(entry_default_values[477]), /* 0x0D */
         NULL,
         NULL
     }, {
@@ -2444,9 +2883,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[445]),
-        &(entry_default_values[445]), /* 0x04 */
+        &(string[123]),
+        &(entry_values[478]),
+        &(entry_default_values[478]), /* 0x04 */
         NULL,
         NULL
     }, {
@@ -2455,9 +2894,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[446]),
-        &(entry_default_values[446]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[479]),
+        &(entry_default_values[479]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2466,9 +2905,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[447]),
-        &(entry_default_values[447]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[480]),
+        &(entry_default_values[480]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2477,9 +2916,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[451]),
-        &(entry_default_values[451]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[484]),
+        &(entry_default_values[484]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -2488,9 +2927,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[453]),
-        &(entry_default_values[453]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[486]),
+        &(entry_default_values[486]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2499,9 +2938,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[118]),
-        &(entry_values[454]),
-        &(entry_default_values[454]), /* 0x00000000 */
+        &(string[128]),
+        &(entry_values[487]),
+        &(entry_default_values[487]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2510,9 +2949,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x3200000,
-        &(string[119]),
-        &(entry_values[458]),
-        &(entry_default_values[458]), /* 0x000003E8 */
+        &(string[129]),
+        &(entry_values[491]),
+        &(entry_default_values[491]), /* 0x000003E8 */
         NULL,
         NULL
     }, {
@@ -2521,9 +2960,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[120]),
-        &(entry_values[462]),
-        &(entry_default_values[462]), /* 0x00000024 */
+        &(string[130]),
+        &(entry_values[495]),
+        &(entry_default_values[495]), /* 0x00000024 */
         NULL,
         NULL
     }, {
@@ -2532,9 +2971,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[121]),
-        &(entry_values[466]),
-        &(entry_default_values[466]), /* 0x30 */
+        &(string[131]),
+        &(entry_values[499]),
+        &(entry_default_values[499]), /* 0x30 */
         NULL,
         NULL
     }, {
@@ -2543,9 +2982,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[122]),
-        &(entry_values[467]),
-        &(entry_default_values[467]), /* 0x00 */
+        &(string[132]),
+        &(entry_values[500]),
+        &(entry_default_values[500]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2554,9 +2993,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[123]),
-        &(entry_values[468]),
-        &(entry_default_values[468]), /* 0x00 */
+        &(string[133]),
+        &(entry_values[501]),
+        &(entry_default_values[501]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2565,9 +3004,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[124]),
-        &(entry_values[469]),
-        &(entry_default_values[469]), /* 0x00 */
+        &(string[134]),
+        &(entry_values[502]),
+        &(entry_default_values[502]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2576,9 +3015,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[125]),
-        &(entry_values[470]),
-        &(entry_default_values[470]), /* 0x04 */
+        &(string[135]),
+        &(entry_values[503]),
+        &(entry_default_values[503]), /* 0x04 */
         NULL,
         NULL
     }, {
@@ -2587,9 +3026,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[127]),
-        &(entry_values[471]),
-        &(entry_default_values[471]), /* 0x06 */
+        &(string[137]),
+        &(entry_values[504]),
+        &(entry_default_values[504]), /* 0x06 */
         NULL,
         NULL
     }, {
@@ -2598,9 +3037,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[472]),
-        &(entry_default_values[472]), /* 0x06 */
+        &(string[123]),
+        &(entry_values[505]),
+        &(entry_default_values[505]), /* 0x06 */
         NULL,
         NULL
     }, {
@@ -2609,9 +3048,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[473]),
-        &(entry_default_values[473]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[506]),
+        &(entry_default_values[506]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2620,9 +3059,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[474]),
-        &(entry_default_values[474]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[507]),
+        &(entry_default_values[507]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2631,9 +3070,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[478]),
-        &(entry_default_values[478]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[511]),
+        &(entry_default_values[511]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -2642,9 +3081,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[480]),
-        &(entry_default_values[480]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[513]),
+        &(entry_default_values[513]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2653,9 +3092,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[128]),
-        &(entry_values[481]),
-        &(entry_default_values[481]), /* 0x02 */
+        &(string[138]),
+        &(entry_values[514]),
+        &(entry_default_values[514]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -2664,9 +3103,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[129]),
-        &(entry_values[482]),
-        &(entry_default_values[482]), /* 0x09 */
+        &(string[139]),
+        &(entry_values[515]),
+        &(entry_default_values[515]), /* 0x09 */
         NULL,
         NULL
     }, {
@@ -2675,9 +3114,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[483]),
-        &(entry_default_values[483]), /* 0x05 */
+        &(string[123]),
+        &(entry_values[516]),
+        &(entry_default_values[516]), /* 0x05 */
         NULL,
         NULL
     }, {
@@ -2686,9 +3125,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[484]),
-        &(entry_default_values[484]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[517]),
+        &(entry_default_values[517]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2697,9 +3136,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[485]),
-        &(entry_default_values[485]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[518]),
+        &(entry_default_values[518]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2708,9 +3147,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[489]),
-        &(entry_default_values[489]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[522]),
+        &(entry_default_values[522]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -2719,9 +3158,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[491]),
-        &(entry_default_values[491]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[524]),
+        &(entry_default_values[524]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2730,9 +3169,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[130]),
-        &(entry_values[492]),
-        &(entry_default_values[492]), /* 0x01 */
+        &(string[140]),
+        &(entry_values[525]),
+        &(entry_default_values[525]), /* 0x01 */
         NULL,
         NULL
     }, {
@@ -2741,9 +3180,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[131]),
-        &(entry_values[493]),
-        &(entry_default_values[493]), /* 0x00 */
+        &(string[141]),
+        &(entry_values[526]),
+        &(entry_default_values[526]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2752,9 +3191,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[132]),
-        &(entry_values[494]),
-        &(entry_default_values[494]), /* 0x00 */
+        &(string[142]),
+        &(entry_values[527]),
+        &(entry_default_values[527]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2763,9 +3202,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[133]),
-        &(entry_values[495]),
-        &(entry_default_values[495]), /* 0x00 */
+        &(string[143]),
+        &(entry_values[528]),
+        &(entry_default_values[528]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2774,9 +3213,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[134]),
-        &(entry_values[496]),
-        &(entry_default_values[496]), /* 0x07 */
+        &(string[144]),
+        &(entry_values[529]),
+        &(entry_default_values[529]), /* 0x07 */
         NULL,
         NULL
     }, {
@@ -2785,9 +3224,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[497]),
-        &(entry_default_values[497]), /* 0x02 */
+        &(string[123]),
+        &(entry_values[530]),
+        &(entry_default_values[530]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -2796,9 +3235,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[498]),
-        &(entry_default_values[498]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[531]),
+        &(entry_default_values[531]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2807,9 +3246,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[499]),
-        &(entry_default_values[499]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[532]),
+        &(entry_default_values[532]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2818,9 +3257,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[503]),
-        &(entry_default_values[503]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[536]),
+        &(entry_default_values[536]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -2829,9 +3268,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[505]),
-        &(entry_default_values[505]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[538]),
+        &(entry_default_values[538]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2840,9 +3279,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[135]),
-        &(entry_values[506]),
-        &(entry_default_values[506]), /* 0x02 */
+        &(string[145]),
+        &(entry_values[539]),
+        &(entry_default_values[539]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -2851,9 +3290,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[136]),
-        &(entry_values[507]),
-        &(entry_default_values[507]), /* 0x00 */
+        &(string[146]),
+        &(entry_values[540]),
+        &(entry_default_values[540]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2862,9 +3301,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[137]),
-        &(entry_values[508]),
-        &(entry_default_values[508]), /* 0x07 */
+        &(string[147]),
+        &(entry_values[541]),
+        &(entry_default_values[541]), /* 0x07 */
         NULL,
         NULL
     }, {
@@ -2873,9 +3312,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[509]),
-        &(entry_default_values[509]), /* 0x02 */
+        &(string[123]),
+        &(entry_values[542]),
+        &(entry_default_values[542]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -2884,9 +3323,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[510]),
-        &(entry_default_values[510]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[543]),
+        &(entry_default_values[543]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2895,9 +3334,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[511]),
-        &(entry_default_values[511]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[544]),
+        &(entry_default_values[544]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2906,9 +3345,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[515]),
-        &(entry_default_values[515]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[548]),
+        &(entry_default_values[548]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -2917,9 +3356,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[517]),
-        &(entry_default_values[517]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[550]),
+        &(entry_default_values[550]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2928,9 +3367,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[135]),
-        &(entry_values[518]),
-        &(entry_default_values[518]), /* 0x02 */
+        &(string[145]),
+        &(entry_values[551]),
+        &(entry_default_values[551]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -2939,9 +3378,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[136]),
-        &(entry_values[519]),
-        &(entry_default_values[519]), /* 0x00 */
+        &(string[146]),
+        &(entry_values[552]),
+        &(entry_default_values[552]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2950,9 +3389,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[138]),
-        &(entry_values[520]),
-        &(entry_default_values[520]), /* 0x0B */
+        &(string[148]),
+        &(entry_values[553]),
+        &(entry_default_values[553]), /* 0x0B */
         NULL,
         NULL
     }, {
@@ -2961,9 +3400,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[521]),
-        &(entry_default_values[521]), /* 0x01 */
+        &(string[123]),
+        &(entry_values[554]),
+        &(entry_default_values[554]), /* 0x01 */
         NULL,
         NULL
     }, {
@@ -2972,9 +3411,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[522]),
-        &(entry_default_values[522]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[555]),
+        &(entry_default_values[555]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -2983,9 +3422,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[523]),
-        &(entry_default_values[523]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[556]),
+        &(entry_default_values[556]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -2994,9 +3433,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[527]),
-        &(entry_default_values[527]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[560]),
+        &(entry_default_values[560]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -3005,9 +3444,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[529]),
-        &(entry_default_values[529]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[562]),
+        &(entry_default_values[562]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3016,9 +3455,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[139]),
-        &(entry_values[530]),
-        &(entry_default_values[530]), /* 0x0000 */
+        &(string[149]),
+        &(entry_values[563]),
+        &(entry_default_values[563]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3027,9 +3466,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[140]),
-        &(entry_values[532]),
-        &(entry_default_values[532]), /* 0x0000 */
+        &(string[150]),
+        &(entry_values[565]),
+        &(entry_default_values[565]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3038,9 +3477,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[141]),
-        &(entry_values[534]),
-        &(entry_default_values[534]), /* 0x0000 */
+        &(string[151]),
+        &(entry_values[567]),
+        &(entry_default_values[567]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3049,9 +3488,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[142]),
-        &(entry_values[536]),
-        &(entry_default_values[536]), /* 0x0000 */
+        &(string[152]),
+        &(entry_values[569]),
+        &(entry_default_values[569]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3060,9 +3499,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[143]),
-        &(entry_values[538]),
-        &(entry_default_values[538]), /* 0x0000 */
+        &(string[153]),
+        &(entry_values[571]),
+        &(entry_default_values[571]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3071,9 +3510,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[144]),
-        &(entry_values[540]),
-        &(entry_default_values[540]), /* 0x0000 */
+        &(string[154]),
+        &(entry_values[573]),
+        &(entry_default_values[573]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3082,9 +3521,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[145]),
-        &(entry_values[542]),
-        &(entry_default_values[542]), /* 0x0B */
+        &(string[155]),
+        &(entry_values[575]),
+        &(entry_default_values[575]), /* 0x0B */
         NULL,
         NULL
     }, {
@@ -3093,9 +3532,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[113]),
-        &(entry_values[543]),
-        &(entry_default_values[543]), /* 0x01 */
+        &(string[123]),
+        &(entry_values[576]),
+        &(entry_default_values[576]), /* 0x01 */
         NULL,
         NULL
     }, {
@@ -3104,9 +3543,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[114]),
-        &(entry_values[544]),
-        &(entry_default_values[544]), /* 0x00 */
+        &(string[124]),
+        &(entry_values[577]),
+        &(entry_default_values[577]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3115,9 +3554,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[115]),
-        &(entry_values[545]),
-        &(entry_default_values[545]), /* 0x00000000 */
+        &(string[125]),
+        &(entry_values[578]),
+        &(entry_default_values[578]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3126,9 +3565,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFA030000,
-        &(string[116]),
-        &(entry_values[549]),
-        &(entry_default_values[549]), /* 0x03E8 */
+        &(string[126]),
+        &(entry_values[582]),
+        &(entry_default_values[582]), /* 0x03E8 */
         NULL,
         NULL
     }, {
@@ -3137,9 +3576,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[551]),
-        &(entry_default_values[551]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[584]),
+        &(entry_default_values[584]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3148,9 +3587,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[139]),
-        &(entry_values[552]),
-        &(entry_default_values[552]), /* 0x0000 */
+        &(string[149]),
+        &(entry_values[585]),
+        &(entry_default_values[585]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3159,9 +3598,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[140]),
-        &(entry_values[554]),
-        &(entry_default_values[554]), /* 0x0000 */
+        &(string[150]),
+        &(entry_values[587]),
+        &(entry_default_values[587]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3170,9 +3609,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[141]),
-        &(entry_values[556]),
-        &(entry_default_values[556]), /* 0x0000 */
+        &(string[151]),
+        &(entry_values[589]),
+        &(entry_default_values[589]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3181,9 +3620,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[142]),
-        &(entry_values[558]),
-        &(entry_default_values[558]), /* 0x0000 */
+        &(string[152]),
+        &(entry_values[591]),
+        &(entry_default_values[591]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3192,9 +3631,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[143]),
-        &(entry_values[560]),
-        &(entry_default_values[560]), /* 0x0000 */
+        &(string[153]),
+        &(entry_values[593]),
+        &(entry_default_values[593]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3203,9 +3642,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[144]),
-        &(entry_values[562]),
-        &(entry_default_values[562]), /* 0x0000 */
+        &(string[154]),
+        &(entry_values[595]),
+        &(entry_default_values[595]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3214,9 +3653,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[146]),
-        &(entry_values[564]),
-        &(entry_default_values[564]), /* 0x04 */
+        &(string[156]),
+        &(entry_values[597]),
+        &(entry_default_values[597]), /* 0x04 */
         NULL,
         NULL
     }, {
@@ -3225,9 +3664,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[147]),
-        &(entry_values[565]),
-        &(entry_default_values[565]), /* 0x00 */
+        &(string[157]),
+        &(entry_values[598]),
+        &(entry_default_values[598]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3236,9 +3675,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[148]),
-        &(entry_values[566]),
-        &(entry_default_values[566]), /* 0x00 */
+        &(string[158]),
+        &(entry_values[599]),
+        &(entry_default_values[599]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3247,9 +3686,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[149]),
-        &(entry_values[567]),
-        &(entry_default_values[567]), /* 0x00 */
+        &(string[159]),
+        &(entry_values[600]),
+        &(entry_default_values[600]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3258,9 +3697,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[150]),
-        &(entry_values[568]),
-        &(entry_default_values[568]), /* 0x00 */
+        &(string[160]),
+        &(entry_values[601]),
+        &(entry_default_values[601]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3270,8 +3709,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[14]),
-        &(entry_values[569]),
-        &(entry_default_values[569]), /* 0x00000000 */
+        &(entry_values[602]),
+        &(entry_default_values[602]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3281,8 +3720,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[30]),
-        &(entry_values[573]),
-        &(entry_default_values[573]), /* 0x00000000 */
+        &(entry_values[606]),
+        &(entry_default_values[606]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3292,8 +3731,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB44700,
         &(string[31]),
-        &(entry_values[577]),
-        &(entry_default_values[577]), /* 0x00000000 */
+        &(entry_values[610]),
+        &(entry_default_values[610]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3303,8 +3742,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[32]),
-        &(entry_values[581]),
-        &(entry_default_values[581]), /* 0x0000 */
+        &(entry_values[614]),
+        &(entry_default_values[614]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3314,8 +3753,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[33]),
-        &(entry_values[583]),
-        &(entry_default_values[583]), /* 0x0000 */
+        &(entry_values[616]),
+        &(entry_default_values[616]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3325,8 +3764,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[34]),
-        &(entry_values[585]),
-        &(entry_default_values[585]), /* 0x0000 */
+        &(entry_values[618]),
+        &(entry_default_values[618]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3336,8 +3775,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[35]),
-        &(entry_values[587]),
-        &(entry_default_values[587]), /* 0x0000 */
+        &(entry_values[620]),
+        &(entry_default_values[620]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3347,8 +3786,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[37]),
-        &(entry_values[589]),
-        &(entry_default_values[589]), /* 0x00 */
+        &(entry_values[622]),
+        &(entry_default_values[622]), /* 0x00 */
         &(entry_min_values[8]),
         &(entry_max_values[4])
     }, {
@@ -3358,8 +3797,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[38]),
-        &(entry_values[590]),
-        &(entry_default_values[590]), /* 0x00 */
+        &(entry_values[623]),
+        &(entry_default_values[623]), /* 0x00 */
         &(entry_min_values[9]),
         &(entry_max_values[5])
     }, {
@@ -3369,8 +3808,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[39]),
-        &(entry_values[591]),
-        &(entry_default_values[591]), /* 0x00 */
+        &(entry_values[624]),
+        &(entry_default_values[624]), /* 0x00 */
         &(entry_min_values[10]),
         &(entry_max_values[6])
     }, {
@@ -3380,8 +3819,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[40]),
-        &(entry_values[592]),
-        &(entry_default_values[592]), /* 0x00 */
+        &(entry_values[625]),
+        &(entry_default_values[625]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3391,8 +3830,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[16]),
-        &(entry_values[593]),
-        &(entry_default_values[593]), /* 0x00 */
+        &(entry_values[626]),
+        &(entry_default_values[626]), /* 0x00 */
         &(entry_min_values[11]),
         &(entry_max_values[7])
     }, {
@@ -3402,8 +3841,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[18]),
-        &(entry_values[594]),
-        &(entry_default_values[594]), /* 0x00 */
+        &(entry_values[627]),
+        &(entry_default_values[627]), /* 0x00 */
         &(entry_min_values[12]),
         &(entry_max_values[8])
     }, {
@@ -3413,8 +3852,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[20]),
-        &(entry_values[595]),
-        &(entry_default_values[595]), /* 0x00 */
+        &(entry_values[628]),
+        &(entry_default_values[628]), /* 0x00 */
         &(entry_min_values[13]),
         &(entry_max_values[9])
     }, {
@@ -3424,8 +3863,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[22]),
-        &(entry_values[596]),
-        &(entry_default_values[596]), /* 0x00 */
+        &(entry_values[629]),
+        &(entry_default_values[629]), /* 0x00 */
         &(entry_min_values[14]),
         &(entry_max_values[10])
     }, {
@@ -3434,9 +3873,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[151]),
-        &(entry_values[597]),
-        &(entry_default_values[597]), /* 0x003C */
+        &(string[161]),
+        &(entry_values[630]),
+        &(entry_default_values[630]), /* 0x003C */
         &(entry_min_values[15]),
         &(entry_max_values[11])
     }, {
@@ -3446,8 +3885,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[15]),
-        &(entry_values[599]),
-        &(entry_default_values[599]), /* 0x00000000 */
+        &(entry_values[632]),
+        &(entry_default_values[632]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3457,8 +3896,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[36]),
-        &(entry_values[603]),
-        &(entry_default_values[603]), /* 0x00000000 */
+        &(entry_values[636]),
+        &(entry_default_values[636]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3468,8 +3907,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xFA030000,
         &(string[42]),
-        &(entry_values[607]),
-        &(entry_default_values[607]), /* 0x00000000 */
+        &(entry_values[640]),
+        &(entry_default_values[640]), /* 0x00000000 */
         &(entry_min_values[17]),
         &(entry_max_values[13])
     }, {
@@ -3479,8 +3918,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[24]),
-        &(entry_values[611]),
-        &(entry_default_values[611]), /* 0x00000000 */
+        &(entry_values[644]),
+        &(entry_default_values[644]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3490,8 +3929,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[41]),
-        &(entry_values[615]),
-        &(entry_default_values[615]), /* 0x00000000 */
+        &(entry_values[648]),
+        &(entry_default_values[648]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3500,9 +3939,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[152]),
-        &(entry_values[619]),
-        &(entry_default_values[619]), /* 0x0000 */
+        &(string[162]),
+        &(entry_values[652]),
+        &(entry_default_values[652]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3512,8 +3951,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[9]),
-        &(entry_values[621]),
-        &(entry_default_values[621]), /* 0x0000 */
+        &(entry_values[654]),
+        &(entry_default_values[654]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3523,8 +3962,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[25]),
-        &(entry_values[623]),
-        &(entry_default_values[623]), /* 0x0000 */
+        &(entry_values[656]),
+        &(entry_default_values[656]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3534,8 +3973,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[10]),
-        &(entry_values[625]),
-        &(entry_default_values[625]), /* 0x00 */
+        &(entry_values[658]),
+        &(entry_default_values[658]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3545,8 +3984,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[26]),
-        &(entry_values[626]),
-        &(entry_default_values[626]), /* 0x00 */
+        &(entry_values[659]),
+        &(entry_default_values[659]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3556,8 +3995,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB50000,
         &(string[27]),
-        &(entry_values[627]),
-        &(entry_default_values[627]), /* 0x00000000 */
+        &(entry_values[660]),
+        &(entry_default_values[660]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3567,8 +4006,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB44700,
         &(string[28]),
-        &(entry_values[631]),
-        &(entry_default_values[631]), /* 0x00000000 */
+        &(entry_values[664]),
+        &(entry_default_values[664]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3578,8 +4017,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[11]),
-        &(entry_values[635]),
-        &(entry_default_values[635]), /* 0x0000 */
+        &(entry_values[668]),
+        &(entry_default_values[668]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3588,9 +4027,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[153]),
-        &(entry_values[637]),
-        &(entry_default_values[637]), /* 0x0000 */
+        &(string[163]),
+        &(entry_values[670]),
+        &(entry_default_values[670]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3599,9 +4038,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[154]),
-        &(entry_values[639]),
-        &(entry_default_values[639]), /* 0x0000 */
+        &(string[164]),
+        &(entry_values[672]),
+        &(entry_default_values[672]), /* 0x0000 */
         &(entry_min_values[21]),
         NULL
     }, {
@@ -3610,9 +4049,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD040000,
-        &(string[155]),
-        &(entry_values[641]),
-        &(entry_default_values[641]), /* 0x00000001 */
+        &(string[165]),
+        &(entry_values[674]),
+        &(entry_default_values[674]), /* 0x00000001 */
         &(entry_min_values[23]),
         NULL
     }, {
@@ -3621,9 +4060,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD560000,
-        &(string[156]),
-        &(entry_values[645]),
-        &(entry_default_values[645]), /* 0x00000001 */
+        &(string[166]),
+        &(entry_values[678]),
+        &(entry_default_values[678]), /* 0x00000001 */
         &(entry_min_values[27]),
         NULL
     }, {
@@ -3633,8 +4072,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[29]),
-        &(entry_values[649]),
-        &(entry_default_values[649]), /* 0x0000 */
+        &(entry_values[682]),
+        &(entry_default_values[682]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3643,9 +4082,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0xFD260000,
-        &(string[157]),
-        &(entry_values[651]),
-        &(entry_default_values[651]), /* 0x00000000 */
+        &(string[167]),
+        &(entry_values[684]),
+        &(entry_default_values[684]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3655,8 +4094,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0xB50000,
         &(string[12]),
-        &(entry_values[655]),
-        &(entry_default_values[655]), /* 0x00000000 */
+        &(entry_values[688]),
+        &(entry_default_values[688]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3666,8 +4105,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[8]),
-        &(entry_values[659]),
-        &(entry_default_values[659]), /* 0x02 */
+        &(entry_values[692]),
+        &(entry_default_values[692]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -3676,9 +4115,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[158]),
-        &(entry_values[660]),
-        &(entry_default_values[660]), /* 0x80000000 */
+        &(string[168]),
+        &(entry_values[693]),
+        &(entry_default_values[693]), /* 0x80000000 */
         NULL,
         NULL
     }, {
@@ -3687,9 +4126,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[159]),
-        &(entry_values[664]),
-        &(entry_default_values[664]), /* 0x7FFFFFFF */
+        &(string[169]),
+        &(entry_values[697]),
+        &(entry_default_values[697]), /* 0x7FFFFFFF */
         NULL,
         NULL
     }, {
@@ -3698,9 +4137,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[160]),
-        &(entry_values[668]),
-        &(entry_default_values[668]), /* 0x00000000 */
+        &(string[170]),
+        &(entry_values[701]),
+        &(entry_default_values[701]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3710,8 +4149,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[8]),
-        &(entry_values[672]),
-        &(entry_default_values[672]), /* 0x02 */
+        &(entry_values[705]),
+        &(entry_default_values[705]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -3720,9 +4159,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[161]),
-        &(entry_values[673]),
-        &(entry_default_values[673]), /* 0x80000000 */
+        &(string[171]),
+        &(entry_values[706]),
+        &(entry_default_values[706]), /* 0x80000000 */
         NULL,
         NULL
     }, {
@@ -3731,9 +4170,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[162]),
-        &(entry_values[677]),
-        &(entry_default_values[677]), /* 0x7FFFFFFF */
+        &(string[172]),
+        &(entry_values[710]),
+        &(entry_default_values[710]), /* 0x7FFFFFFF */
         NULL,
         NULL
     }, {
@@ -3742,9 +4181,9 @@ COD_Entry object_entries[] = {
         8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
-        &(string[117]),
-        &(entry_values[681]),
-        &(entry_default_values[681]), /* 0x00 */
+        &(string[127]),
+        &(entry_values[714]),
+        &(entry_default_values[714]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3753,9 +4192,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[163]),
-        &(entry_values[682]),
-        &(entry_default_values[682]), /* 0x00000000 */
+        &(string[173]),
+        &(entry_values[715]),
+        &(entry_default_values[715]), /* 0x00000000 */
         &(entry_min_values[31]),
         NULL
     }, {
@@ -3764,9 +4203,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[164]),
-        &(entry_values[686]),
-        &(entry_default_values[686]), /* 0x00000000 */
+        &(string[174]),
+        &(entry_values[719]),
+        &(entry_default_values[719]), /* 0x00000000 */
         &(entry_min_values[35]),
         NULL
     }, {
@@ -3775,9 +4214,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[165]),
-        &(entry_values[690]),
-        &(entry_default_values[690]), /* 0x00000000 */
+        &(string[175]),
+        &(entry_values[723]),
+        &(entry_default_values[723]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3786,9 +4225,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[166]),
-        &(entry_values[694]),
-        &(entry_default_values[694]), /* 0x00000000 */
+        &(string[176]),
+        &(entry_values[727]),
+        &(entry_default_values[727]), /* 0x00000000 */
         &(entry_min_values[39]),
         NULL
     }, {
@@ -3797,9 +4236,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[167]),
-        &(entry_values[698]),
-        &(entry_default_values[698]), /* 0x00000000 */
+        &(string[177]),
+        &(entry_values[731]),
+        &(entry_default_values[731]), /* 0x00000000 */
         &(entry_min_values[43]),
         NULL
     }, {
@@ -3808,9 +4247,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[168]),
-        &(entry_values[702]),
-        &(entry_default_values[702]), /* 0x00000000 */
+        &(string[178]),
+        &(entry_values[735]),
+        &(entry_default_values[735]), /* 0x00000000 */
         &(entry_min_values[47]),
         NULL
     }, {
@@ -3819,9 +4258,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[169]),
-        &(entry_values[706]),
-        &(entry_default_values[706]), /* 0x0080 */
+        &(string[179]),
+        &(entry_values[739]),
+        &(entry_default_values[739]), /* 0x0080 */
         &(entry_min_values[51]),
         &(entry_max_values[17])
     }, {
@@ -3830,9 +4269,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[170]),
-        &(entry_values[708]),
-        &(entry_default_values[708]), /* 0x00000000 */
+        &(string[180]),
+        &(entry_values[741]),
+        &(entry_default_values[741]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3842,8 +4281,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
         &(string[13]),
-        &(entry_values[712]),
-        &(entry_default_values[712]), /* 0x00000000 */
+        &(entry_values[745]),
+        &(entry_default_values[745]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3852,9 +4291,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[171]),
-        &(entry_values[716]),
-        &(entry_default_values[716]), /* 0x00000380 */
+        &(string[181]),
+        &(entry_values[749]),
+        &(entry_default_values[749]), /* 0x00000380 */
         NULL,
         NULL
     }
@@ -4062,77 +4501,101 @@ COD_Object object_dictionary[] = {
         &(string[51]),
         &(object_entries[128])
     }, {
+        0x2101, /* Number of entries */
+        OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        10,
+        &(string[51]),
+        &(object_entries[132])
+    }, {
+        0x2102, /* Number of entries */
+        OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        10,
+        &(string[51]),
+        &(object_entries[143])
+    }, {
+        0x2103, /* Number of entries */
+        OBJECT_TYPE_ARRAY,
+        DEFTYPE_UNSIGNED8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
+        10,
+        &(string[51]),
+        &(object_entries[154])
+    }, {
         0x2201, /* BISS Encoder 1 */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         13,
-        &(string[112]),
-        &(object_entries[132])
+        &(string[122]),
+        &(object_entries[165])
     }, {
         0x2202, /* BISS Encoder 2 */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         13,
-        &(string[126]),
-        &(object_entries[146])
+        &(string[136]),
+        &(object_entries[179])
     }, {
         0x2203, /* REM 16MT Encoder */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         6,
-        &(string[127]),
-        &(object_entries[160])
+        &(string[137]),
+        &(object_entries[193])
     }, {
         0x2204, /* REM 14 Encoder */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         9,
-        &(string[129]),
-        &(object_entries[167])
+        &(string[139]),
+        &(object_entries[200])
     }, {
         0x2205, /* Incremental Encoder 1 */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         7,
-        &(string[134]),
-        &(object_entries[177])
+        &(string[144]),
+        &(object_entries[210])
     }, {
         0x2206, /* Incremental Encoder 2 */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         7,
-        &(string[137]),
-        &(object_entries[185])
+        &(string[147]),
+        &(object_entries[218])
     }, {
         0x2207, /* HALL Sensor 1 */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         11,
-        &(string[138]),
-        &(object_entries[193])
+        &(string[148]),
+        &(object_entries[226])
     }, {
         0x2208, /* HALL Sensor 2 */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         11,
-        &(string[145]),
-        &(object_entries[205])
+        &(string[155]),
+        &(object_entries[238])
     }, {
         0x2210, /* GPIO */
         OBJECT_TYPE_RECORD,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         4,
-        &(string[146]),
-        &(object_entries[217])
+        &(string[156]),
+        &(object_entries[250])
     }, {
         0x2300, /* Offset Torque */
         OBJECT_TYPE_VAR,
@@ -4140,7 +4603,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[14]),
-        &(object_entries[222])
+        &(object_entries[255])
     }, {
         0x230A, /* Secondary position value */
         OBJECT_TYPE_VAR,
@@ -4148,7 +4611,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[30]),
-        &(object_entries[223])
+        &(object_entries[256])
     }, {
         0x230B, /* Secondary velocity value */
         OBJECT_TYPE_VAR,
@@ -4156,7 +4619,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[31]),
-        &(object_entries[224])
+        &(object_entries[257])
     }, {
         0x2401, /* Analog input 1 */
         OBJECT_TYPE_VAR,
@@ -4164,7 +4627,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[32]),
-        &(object_entries[225])
+        &(object_entries[258])
     }, {
         0x2402, /* Analog input 2 */
         OBJECT_TYPE_VAR,
@@ -4172,7 +4635,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[33]),
-        &(object_entries[226])
+        &(object_entries[259])
     }, {
         0x2403, /* Analog input 3 */
         OBJECT_TYPE_VAR,
@@ -4180,7 +4643,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[34]),
-        &(object_entries[227])
+        &(object_entries[260])
     }, {
         0x2404, /* Analog input 4 */
         OBJECT_TYPE_VAR,
@@ -4188,7 +4651,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[35]),
-        &(object_entries[228])
+        &(object_entries[261])
     }, {
         0x2501, /* Digital Input 1 */
         OBJECT_TYPE_VAR,
@@ -4196,7 +4659,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[37]),
-        &(object_entries[229])
+        &(object_entries[262])
     }, {
         0x2502, /* Digital Input 2 */
         OBJECT_TYPE_VAR,
@@ -4204,7 +4667,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[38]),
-        &(object_entries[230])
+        &(object_entries[263])
     }, {
         0x2503, /* Digital Input 3 */
         OBJECT_TYPE_VAR,
@@ -4212,7 +4675,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[39]),
-        &(object_entries[231])
+        &(object_entries[264])
     }, {
         0x2504, /* Digital Input 4 */
         OBJECT_TYPE_VAR,
@@ -4220,7 +4683,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[40]),
-        &(object_entries[232])
+        &(object_entries[265])
     }, {
         0x2601, /* Digital Output 1 */
         OBJECT_TYPE_VAR,
@@ -4228,7 +4691,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[16]),
-        &(object_entries[233])
+        &(object_entries[266])
     }, {
         0x2602, /* Digital Output 2 */
         OBJECT_TYPE_VAR,
@@ -4236,7 +4699,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[18]),
-        &(object_entries[234])
+        &(object_entries[267])
     }, {
         0x2603, /* Digital Output 3 */
         OBJECT_TYPE_VAR,
@@ -4244,7 +4707,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[20]),
-        &(object_entries[235])
+        &(object_entries[268])
     }, {
         0x2604, /* Digital Output 4 */
         OBJECT_TYPE_VAR,
@@ -4252,15 +4715,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[22]),
-        &(object_entries[236])
+        &(object_entries[269])
     }, {
         0x2A00, /* Applied tuning torque percent */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER16,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[151]),
-        &(object_entries[237])
+        &(string[161]),
+        &(object_entries[270])
     }, {
         0x2A01, /* Tuning command */
         OBJECT_TYPE_VAR,
@@ -4268,7 +4731,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[15]),
-        &(object_entries[238])
+        &(object_entries[271])
     }, {
         0x2A03, /* Tuning status */
         OBJECT_TYPE_VAR,
@@ -4276,7 +4739,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[36]),
-        &(object_entries[239])
+        &(object_entries[272])
     }, {
         0x2FFD, /* Timestamp */
         OBJECT_TYPE_VAR,
@@ -4284,7 +4747,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[42]),
-        &(object_entries[240])
+        &(object_entries[273])
     }, {
         0x2FFE, /* User MOSI */
         OBJECT_TYPE_VAR,
@@ -4292,7 +4755,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[24]),
-        &(object_entries[241])
+        &(object_entries[274])
     }, {
         0x2FFF, /* User MISO */
         OBJECT_TYPE_VAR,
@@ -4300,15 +4763,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[41]),
-        &(object_entries[242])
+        &(object_entries[275])
     }, {
         0x603F, /* Error code */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[152]),
-        &(object_entries[243])
+        &(string[162]),
+        &(object_entries[276])
     }, {
         0x6040, /* Controlword */
         OBJECT_TYPE_VAR,
@@ -4316,7 +4779,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[9]),
-        &(object_entries[244])
+        &(object_entries[277])
     }, {
         0x6041, /* Statusword */
         OBJECT_TYPE_VAR,
@@ -4324,7 +4787,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[25]),
-        &(object_entries[245])
+        &(object_entries[278])
     }, {
         0x6060, /* Op Mode */
         OBJECT_TYPE_VAR,
@@ -4332,7 +4795,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[10]),
-        &(object_entries[246])
+        &(object_entries[279])
     }, {
         0x6061, /* Op Mode Display */
         OBJECT_TYPE_VAR,
@@ -4340,7 +4803,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[26]),
-        &(object_entries[247])
+        &(object_entries[280])
     }, {
         0x6064, /* Position Value */
         OBJECT_TYPE_VAR,
@@ -4348,7 +4811,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[27]),
-        &(object_entries[248])
+        &(object_entries[281])
     }, {
         0x606C, /* Velocity Value */
         OBJECT_TYPE_VAR,
@@ -4356,7 +4819,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[28]),
-        &(object_entries[249])
+        &(object_entries[282])
     }, {
         0x6071, /* Target Torque */
         OBJECT_TYPE_VAR,
@@ -4364,39 +4827,39 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[11]),
-        &(object_entries[250])
+        &(object_entries[283])
     }, {
         0x6072, /* Max torque */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[153]),
-        &(object_entries[251])
+        &(string[163]),
+        &(object_entries[284])
     }, {
         0x6073, /* Max current */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[154]),
-        &(object_entries[252])
+        &(string[164]),
+        &(object_entries[285])
     }, {
         0x6075, /* Motor Rated Current */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[155]),
-        &(object_entries[253])
+        &(string[165]),
+        &(object_entries[286])
     }, {
         0x6076, /* Motor Rated Torque */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[156]),
-        &(object_entries[254])
+        &(string[166]),
+        &(object_entries[287])
     }, {
         0x6077, /* Torque Value */
         OBJECT_TYPE_VAR,
@@ -4404,15 +4867,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[29]),
-        &(object_entries[255])
+        &(object_entries[288])
     }, {
         0x6079, /* DC link circuit voltage */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[157]),
-        &(object_entries[256])
+        &(string[167]),
+        &(object_entries[289])
     }, {
         0x607A, /* Target Position */
         OBJECT_TYPE_VAR,
@@ -4420,7 +4883,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[12]),
-        &(object_entries[257])
+        &(object_entries[290])
     }, {
         0x607B, /* SubIndex 000 */
         OBJECT_TYPE_ARRAY,
@@ -4428,15 +4891,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         2,
         &(string[8]),
-        &(object_entries[258])
+        &(object_entries[291])
     }, {
         0x607C, /* Home offset */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[160]),
-        &(object_entries[261])
+        &(string[170]),
+        &(object_entries[294])
     }, {
         0x607D, /* SubIndex 000 */
         OBJECT_TYPE_ARRAY,
@@ -4444,79 +4907,79 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         2,
         &(string[8]),
-        &(object_entries[262])
+        &(object_entries[295])
     }, {
         0x607E, /* Polarity */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED8,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[117]),
-        &(object_entries[265])
+        &(string[127]),
+        &(object_entries[298])
     }, {
         0x607F, /* Max profile velocity */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[163]),
-        &(object_entries[266])
+        &(string[173]),
+        &(object_entries[299])
     }, {
         0x6080, /* Max motor speed */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[164]),
-        &(object_entries[267])
+        &(string[174]),
+        &(object_entries[300])
     }, {
         0x6081, /* Profile velocity */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[165]),
-        &(object_entries[268])
+        &(string[175]),
+        &(object_entries[301])
     }, {
         0x6083, /* Profile acceleration */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[166]),
-        &(object_entries[269])
+        &(string[176]),
+        &(object_entries[302])
     }, {
         0x6084, /* Profile deceleration */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[167]),
-        &(object_entries[270])
+        &(string[177]),
+        &(object_entries[303])
     }, {
         0x6085, /* Quick stop deceleration */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[168]),
-        &(object_entries[271])
+        &(string[178]),
+        &(object_entries[304])
     }, {
         0x6086, /* Motion profile type */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[169]),
-        &(object_entries[272])
+        &(string[179]),
+        &(object_entries[305])
     }, {
         0x60C5, /* Max acceleration */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[170]),
-        &(object_entries[273])
+        &(string[180]),
+        &(object_entries[306])
     }, {
         0x60FF, /* Target Velocity */
         OBJECT_TYPE_VAR,
@@ -4524,14 +4987,14 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[13]),
-        &(object_entries[274])
+        &(object_entries[307])
     }, {
         0x6502, /* Supported Drive Modes */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
-        &(string[171]),
-        &(object_entries[275])
+        &(string[181]),
+        &(object_entries[308])
     }
 };

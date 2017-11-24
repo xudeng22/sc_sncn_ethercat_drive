@@ -18,7 +18,7 @@ The application is given the functionnality to compensate :ref:`the cogging torq
 Hardware setup
 ++++++++++++++
 
-A minimal requirement for this application to run is having the complete *SOMANET* stack assembled consisting of a *SOMANET Core-C22*, *SOMANET COM-EtherCAT*, and a *SOMANET IFM-Drive* modules. The stack should be powered via the *SOMANET IFM* board. An example of a stack consisting of the *SOMANET* COM-EtherCAT, Core, and IFM-Drive-DC100 boards is shown below. In this case the *IFM-DC100* board can be supplied with 12 - 24 V DC power source. Please refer to the corresponding to your IFM board hardware documentation and also motor specifications to select the proper supply voltage. For the best experience please make sure that your stabilized DC power supply is capable of delivering more that 2 Amperes of power for low power motors (up to 100W) and more than 10A for high power motors (up to 1kW). Please mind that at high motor accelerations starting current may be as high as 10 times the nominal.     
+A minimal requirement for this application to run is having the complete *SOMANET* stack assembled consisting of a *SOMANET Core-C2X*, *SOMANET COM-EtherCAT*, and a *SOMANET Drive* modules. The stack should be powered via the *SOMANET Drive* board. An example of a stack consisting of the *SOMANET* COM-EtherCAT, Core, and Drive 100 boards is shown below. In this case the *Drive 100* board can be supplied with 12 - 24 V DC power source. Please refer to the corresponding to your Drive board hardware documentation and also motor specifications to select the proper supply voltage. For the best experience please make sure that your stabilized DC power supply is capable of delivering more that 2 Amperes of power for low power motors (up to 100W) and more than 10A for high power motors (up to 1kW). Please mind that at high motor accelerations starting current may be as high as 10 times the nominal.     
 
 .. figure:: images/ethercat_stack.jpg
    :align: center
@@ -27,11 +27,11 @@ A minimal requirement for this application to run is having the complete *SOMANE
 
 To setup the system:
 
-   #. If you don't have the stack assembled, assemble it as shown in the image above. Make sure to connect the IFM side of the *SOMANET Core* module to the IFM-DC100 board and COM side to the Core Debug Adapter (see markings on the Core module)
+   #. If you don't have the stack assembled, assemble it as shown in the image above. Make sure to connect the IF2 side of the *SOMANET Core* module to the Drive 100 board and COM side to the Core Debug Adapter (see markings on the Core module)
    #. Connect the xTAG Adapter to the Core Debug Adapter.
    #. Connect the xTAG to host PC. 
    #. Connect the motor supplied with the kit as shown in the image bellow.
-   #. Connect the *IFM* board to a 24 V DC power supply
+   #. Connect the *Drive* board to a 24 V DC power supply
    #. Connect one side of the Ethernet cable to the node and plug the RS-45 connector to your PC.
    #. Switch on the power supply. If everything is connected properly, drained current should not exceed 150mA. 
 

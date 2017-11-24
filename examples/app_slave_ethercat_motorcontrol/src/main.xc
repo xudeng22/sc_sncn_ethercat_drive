@@ -220,6 +220,11 @@ int main(void)
                 {
                     MotorcontrolConfig torque_control_config;
 
+                    torque_control_config.motor_type =  BLDC_MOTOR;
+                    torque_control_config.field_weakening_status= FIELD_WEAKENING_STATUS;
+                    torque_control_config.field_weakening_percentage = FIELD_WEAKENING_PERCENTAGE;
+                    torque_control_config.field_weakening_starting_range=FIELD_WEAKENING_STARTING_RANGE;
+                    torque_control_config.field_weakening_ending_range  =FIELD_WEAKENING_ENDING_RANGE;
                     torque_control_config.dc_bus_voltage =  DC_BUS_VOLTAGE;
                     torque_control_config.phases_inverted = MOTOR_PHASES_CONFIGURATION;
                     torque_control_config.torque_P_gain =  TORQUE_Kp;

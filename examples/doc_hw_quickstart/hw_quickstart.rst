@@ -5,8 +5,8 @@ Getting Started with your XMOS Motor & Motion Control Kit
 
 The XMOS Motor & Motion Control Kit contains a combination of hardware and software modules developed by Synapticon using *SOMANET* technology and XMOS multi-core micro-controllers, with a sample BLDC motor. The kit can be assembled in different configurations depending on the type of motor and communications interface you require. Currently there are two hardware configurations:
 
-   * *SOMANET IFM-Drive-DC100* with EtherCAT comms and BLDC motor with Hall sensor encoding
-   * *SOMANET IFM-Drive-DC100* with EtherCAT comms and BLDC motor with Quadrature encoder and Hall sensor encoding
+   * *SOMANET Drive 100* with EtherCAT comms and BLDC motor with Hall sensor encoding
+   * *SOMANET Drive 100* with EtherCAT comms and BLDC motor with Quadrature encoder and Hall sensor encoding
 
 For information on assembling the *SOMANET* hardware modules, see the Hardware Quick Start Guide.
 
@@ -30,9 +30,9 @@ Hardware Quick Start Guide
 
 This guide shows how to assemble the Motor & Motion Control Kit modules in the following configurations:
 
-   * *SOMANET IFM-Drive-DC100* with *SOMANET COM-EtherCAT* module and xTAG debug adapter
-   * *SOMANET IFM-Drive-DC100* with *SOMANET COM-EtherCAT* module and no debug adapter
-   * *SOMANET IFM-Drive-DC100* without *SOMANET COM-EtherCAT* module
+   * *SOMANET Drive 100* with *SOMANET COM-EtherCAT* module and xTAG debug adapter
+   * *SOMANET Drive 100* with *SOMANET COM-EtherCAT* module and no debug adapter
+   * *SOMANET Drive 100* without *SOMANET COM-EtherCAT* module
 
 .. _XMOS_Motor_Motion_Control_Kit_User_Guide_Hardware_EtherCAT:
 
@@ -41,8 +41,8 @@ Setting up with COM-EtherCAT module
 
 This setup is required if you want to develop an EtherCAT based slave application for *SOMANET* devices. Before you start, make sure that you have all hardware components and assembly parts at hand. You will require the following items:
 
-   #. 1 x *SOMANET IFM-Drive-DC100* board.
-   #. 1 x *SOMANET Core-C22* module.
+   #. 1 x *SOMANET Drive 100* board.
+   #. 1 x *SOMANET Core C2X* module.
    #. 1 x *SOMANET COM-EtherCAT*
    #. 1 x Core to xTAG-2 Debug Adapter.
    #. 1 x XMOS xTAG-2 Adapter
@@ -59,7 +59,7 @@ The image below illustrates the required set for this hardware setup.
 
    Required components and assembly parts
 
-It is recommended to start assembly from the *SOMANET IFM-Drive-DC100* board. Place the long metal screws in two holes as shown in image below. Use 4 mm metal spaces between the IFM and the Core modules.
+It is recommended to start assembly from the *SOMANET Drive 100* board. Place the long metal screws in two holes as shown in image below. Use 4 mm metal spaces between the Drive and the Core modules.
 
 .. figure:: images/assembly_p1.jpg
    :width: 300px
@@ -67,7 +67,7 @@ It is recommended to start assembly from the *SOMANET IFM-Drive-DC100* board. Pl
 
    Step 1
 
-Then proceed with the *SOMANET Core-C22* module. Hold the screws with your fingers to prevent them from falling out during the assembly procedure. Make sure that you connect the IFM side connector of the Core module to the *SOMANET IFM-Drive-DC100* board. The IFM connector of the Core module has ``IF`` marking next to it. As a result you should see the ``COM`` connector being on top. For mounting the Core to xTAG-2 Adapter in the next step please use the white plastic 3.5 mm spacers. 
+Then proceed with the *SOMANET Core C2X* module. Hold the screws with your fingers to prevent them from falling out during the assembly procedure. Make sure that you connect the IF2 side connector of the Core module to the *SOMANET Drive 100* board. The IF2 connector of the Core module has ``IF`` marking next to it. As a result you should see the ``COM`` connector being on top. For mounting the Core to xTAG-2 Adapter in the next step please use the white plastic 3.5 mm spacers. 
 
 .. figure:: images/assembly_p2.jpg
    :width: 300px
@@ -75,7 +75,7 @@ Then proceed with the *SOMANET Core-C22* module. Hold the screws with your finge
 
    Step 2
 
-When mounting the Core to xTAG-2 Adapter, hold the IFM connector side with your thumb to prevent from unplugging. Also be careful with the golden pins of the Core to xTAG-2 Adapter not to bend them or to break. The golden pins should have a reliable contact at the end with the corresponding pads of the *SOMANET Core-C22* module.
+When mounting the Core to xTAG-2 Adapter, hold the IF2 connector side with your thumb to prevent from unplugging. Also be careful with the golden pins of the Core to xTAG-2 Adapter not to bend them or to break. The golden pins should have a reliable contact at the end with the corresponding pads of the *SOMANET Core C2X* module.
 
 .. figure:: images/assembly_p3.jpg
    :width: 300px
@@ -91,7 +91,7 @@ Use two metal 4 mm spacers for mounting the COM-EtherCAT board on top of the Cor
 
    Step 4
 
-When mounting the COM-EtherCAT board, press the IFM connector side of the Core module with your thumb to prevent from unplugging. Press together the modules on the COM connector side and make sure that the all modules are properly plugged. Then fix the screws with the nuts.
+When mounting the COM-EtherCAT board, press the IF2 connector side of the Core module with your thumb to prevent from unplugging. Press together the modules on the COM connector side and make sure that the all modules are properly plugged. Then fix the screws with the nuts.
 
 .. figure:: images/assembly_p4.jpg
    :width: 300px
@@ -117,8 +117,8 @@ This setup is useful if software debugging or xSCOPE functionality is not requir
 
 You will require the following items:
 
-   #. 1 x *SOMANET IFM-Drive-DC100* board.
-   #. 1 x *SOMANET Core C22* module.
+   #. 1 x *SOMANET Drive 100* board.
+   #. 1 x *SOMANET Core C2X* module.
    #. 1 x *SOMANET COM-EtherCAT*
    #. 2 x 25mm M2 screws
    #. 4 x 4mm metal spacers
@@ -132,7 +132,7 @@ The image below illustrates the required set for this hardware setup.
 
    Required components and assembly parts
 
-To assemble the stack for using with *SOMANET COM-EtherCAT* without the Core to XTAG2 Adapter please perform step 1 as described in **Setting up with COM-EtherCAT module** section. Then proceed with the *SOMANET Core-C22* module. Please hold the screws with your fingers to prevent them from falling out during the assembly procedure. Make sure that you connected the IFM side connector of the "Core-C22" module to the *SOMANET IFM-Drive-DC100* board. The IFM connector of the core module has ``IF`` marking next to it. As a result you should see the connector marked as``COM`` being on top. For mounting the COM-EtherCAT module in the next step please use the metal 4 mm spacers. 
+To assemble the stack for using with *SOMANET COM-EtherCAT* without the Core to XTAG2 Adapter please perform step 1 as described in **Setting up with COM-EtherCAT module** section. Then proceed with the *SOMANET Core C2X* module. Please hold the screws with your fingers to prevent them from falling out during the assembly procedure. Make sure that you connected the IF2 side connector of the "Core C2X" module to the *SOMANET Drive 100* board. The IF2 connector of the core module has ``IF`` marking next to it. As a result you should see the connector marked as``COM`` being on top. For mounting the COM-EtherCAT module in the next step please use the metal 4 mm spacers. 
 
 .. figure:: images/assembly_p5.jpg
    :width: 300px
@@ -140,7 +140,7 @@ To assemble the stack for using with *SOMANET COM-EtherCAT* without the Core to 
 
    Step 2
 
-When mounting the COM-EtherCAT board, hold the IFM connector side of the Core module with your thumb to prevent from unplugging. Press together the modules on the COM connector side and make sure that the all modules are properly plugged. Then fix the screws with the nuts.
+When mounting the COM-EtherCAT board, hold the IF2 connector side of the Core module with your thumb to prevent from unplugging. Press together the modules on the COM connector side and make sure that the all modules are properly plugged. Then fix the screws with the nuts.
 
 .. figure:: images/assembly_p6.jpg
    :width: 300px
@@ -158,8 +158,8 @@ Setting up without COM-EtherCAT module
 
 This is a minimal hardware setup to start working with the motor control software. Before you start, make sure that you have all hardware components and assembly parts at hand. You will require the following items:
 
-   #. 1 x *SOMANET IFM-Drive-DC100* board.
-   #. 1 x *SOMANET Core-C22* module.
+   #. 1 x *SOMANET Drive 100* board.
+   #. 1 x *SOMANET Core C2X* module.
    #. 1 x Core to xTAG-2 Debug Adapter.
    #. 1 x XMOS xTAG-2 Adapter
    #. 2 x 25mm M2 screws
@@ -175,7 +175,7 @@ The image below illustrates the required set for this hardware setup.
 
    Required components and assembly parts
 
-It is recommended to start assembly from the *SOMANET IFM-Drive-DC100* board. Please place the long metal screws in two holes as shown in image below. Use 4 mm metal spaces between the IFM and the Core modules.
+It is recommended to start assembly from the *SOMANET Drive 100* board. Please place the long metal screws in two holes as shown in image below. Use 4 mm metal spaces between the Drive and the Core modules.
 
 .. figure:: images/assembly_p1.jpg
    :width: 300px
@@ -183,7 +183,7 @@ It is recommended to start assembly from the *SOMANET IFM-Drive-DC100* board. Pl
 
    Step 1
 
-Then proceed with the *SOMANET Core-C22* module. Please hold the screws with your fingers to prevent them from falling out during the assembly procedure. Make sure that you connected the IFM side connector of the Core module to the IFM-Drive-DC100 board. The IFM connector of the Core module has ``IF`` marking next to it. As a result you should see the ``COM`` connector being on top. For mounting the Core to xTAG-2 Adapter in the next step please use the white plastic 3.5 mm spacers. 
+Then proceed with the *SOMANET Core C2X* module. Please hold the screws with your fingers to prevent them from falling out during the assembly procedure. Make sure that you connected the IF2 side connector of the Core module to the Drive 100 board. The IF2 connector of the Core module has ``IF`` marking next to it. As a result you should see the ``COM`` connector being on top. For mounting the Core to xTAG-2 Adapter in the next step please use the white plastic 3.5 mm spacers. 
 
 .. figure:: images/assembly_p2.jpg
    :width: 300px
@@ -191,7 +191,7 @@ Then proceed with the *SOMANET Core-C22* module. Please hold the screws with you
 
    Step 2
 
-When mounting the Core to xTAG-2 Adapter please fixate the IFM connector side with your thumb to prevent from unplugging. Also be careful with the golden pins of the Core to xTAG-2 Adapter not to bend them or to break. The golden pins should have a reliable contact at the end with the corresponding pads of the *SOMANET Core-C22* module. When successfully mounted, please fixate the stack with the metal nuts. The stack is ready to use.
+When mounting the Core to xTAG-2 Adapter please fixate the IF2 connector side with your thumb to prevent from unplugging. Also be careful with the golden pins of the Core to xTAG-2 Adapter not to bend them or to break. The golden pins should have a reliable contact at the end with the corresponding pads of the *SOMANET Core C2X* module. When successfully mounted, please fixate the stack with the metal nuts. The stack is ready to use.
 
 .. figure:: images/assembly_p3.jpg
    :width: 300px
@@ -215,20 +215,20 @@ Connecting the Motor Guide
 
 The kit includes a sample motor that you can use the software modules to run. The motor is available with Hall Sensor only option, or Quadrature Encoding and Hall sensors.
 
-Power is supplied to all the boards in the kit by an 8-24V DC power supply, connected to the power connection on the IFM DC100 board. 
+Power is supplied to all the boards in the kit by an 8-24V DC power supply, connected to the power connection on the Drive 100 board. 
 
 Connect the motor
 +++++++++++++++++++++
 
-   #. Plug the power connector from the motor into the white Motor and Hall Sensor 8-pin SPOX connector on the IFM DC100 board.
+   #. Plug the power connector from the motor into the white Motor and Hall Sensor 8-pin SPOX connector on the Drive 100 board.
 
-   #. **QEI motors only**: Plug the Quadrature Encoding connector to the red 10-pin Encoder connector on the IFM DC100 board.
+   #. **QEI motors only**: Plug the Quadrature Encoding connector to the red 10-pin Encoder connector on the Drive 100 board.
 
    #. Connect the xTAG-2 debug adapter to the xSYS connector on the xTAG Adapter. Connect the xTAG-2 to your development system.
 
    #. Slide the switch on the xTAG Adapter away from the xTAG-2. An LED lights up to indicate that the JTAG connection is active.
 
-   #. Plug the power cable from a standalone power supply into the power connector on the IFM CD100 board.
+   #. Plug the power cable from a standalone power supply into the power connector on the Drive 100 board.
 
 Your motor is now ready for testing.
 
@@ -282,7 +282,7 @@ The *SOMANET* software is delivered as *xSOFTip* components in *xTIMEcomposer* S
 
    #. On Project, click on Browse and select ``app_demo_bldc_position``. 
 
-   #. Click on Refresh on Debug Adapter. "XMOS xTAG 2 connected to L1[0..3] should appear" indicating that there is communication between the JTAG adapter and the C22 module. If JTAG is not recognized by *xTIMEcomposer* Studio, check if the JTAG drivers of the JTAG. Download the driver from here. If JTAG is recognized but "L1[0..3]" does not appear, check the connections and see if the Motor & Motion Control Kit is powered up.
+   #. Click on Refresh on Debug Adapter. "XMOS xTAG 2 connected to L1[0..1] should appear" indicating that there is communication between the JTAG adapter and the C2X module. If JTAG is not recognized by *xTIMEcomposer* Studio, check if the JTAG drivers of the JTAG. Download the driver from here. If JTAG is recognized but "L1[0..3]" does not appear, check the connections and see if the Motor & Motion Control Kit is powered up.
 
    #. Click Run. 
 

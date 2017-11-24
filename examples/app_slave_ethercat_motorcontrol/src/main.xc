@@ -262,7 +262,7 @@ int main(void)
                     position_feedback_config_1.polarity    = SENSOR_1_POLARITY;
                     position_feedback_config_1.velocity_compute_period = SENSOR_1_VELOCITY_COMPUTE_PERIOD;
                     position_feedback_config_1.pole_pairs  = MOTOR_POLE_PAIRS;
-                    position_feedback_config_1.ifm_usec    = IF2_TILE_USEC;
+                    position_feedback_config_1.tile_usec   = IF2_TILE_USEC;
                     position_feedback_config_1.max_ticks   = SENSOR_MAX_TICKS;
                     position_feedback_config_1.offset      = HOME_OFFSET;
                     position_feedback_config_1.sensor_function = SENSOR_1_FUNCTION;

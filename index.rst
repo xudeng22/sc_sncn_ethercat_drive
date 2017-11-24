@@ -1,7 +1,7 @@
 SOMANET EtherCAT Drive Application
 ==================================
 
-The **SOMANET EtherCAT Drive Component** is an application-specific component that contains services and utilities required to perform a BLDC Motor Motion Control over EtherCAT using SOMANET IFM DC-Drive and COM-EtherCAT devices.
+The **SOMANET EtherCAT Drive Component** is an application-specific component that contains services and utilities required to perform a BLDC Motor Motion Control over EtherCAT using SOMANET Drive and COM-EtherCAT devices.
 It implements a CiA 402-compliant Motion Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motion Control Component <somanet_motor_control>` and gives flexibility for application-specific requirements.
 
 .. cssclass:: downloadable-button 
@@ -26,7 +26,7 @@ Hardware Compatibility
 +---------------------------+
 | 1x SOMANET **COM**        |
 +---------------------------+
-| 1x SOMANET **IFM**        |
+| 1x SOMANET **Drive**      |
 +---------------------------+
 
 .. class:: float-left 
@@ -38,7 +38,7 @@ Hardware Compatibility
 +-----------------------------------------------------------------------------------------------+
 | SOMANET Core: :ref:`C22 <core_c22>`                                                           |
 +-----------------------------------------------------------------------------------------------+
-| SOMANET IFM: :ref:`DC 100 <ifm_dc100>`,  :ref:`DC 1000 <ifm_dc1000_b2>`                       |
+| SOMANET Drive: :ref:`Drive 100 <ifm_dc100>`,  :ref:`Drive 1000 <ifm_dc1000_b2>`               |
 +-----------------------------------------------------------------------------------------------+
 
 Modules

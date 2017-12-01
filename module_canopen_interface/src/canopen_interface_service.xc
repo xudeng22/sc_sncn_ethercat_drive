@@ -20,7 +20,7 @@
  * This is necessary because with interface methods the "variable length array" gimmick of XC
  * (see https://www.xmos.com/published/xmos-programming-guide?version=B&page=25)
  * does not work and leads to an internal error of xcc.  */
-#define MAX_VALUE_BUFFER    10
+#define MAX_VALUE_BUFFER    100
 
 /* there are 5 list lengths for all, rx-, tx-mappable, startup, and backup objects */
 #define ALL_LIST_LENGTH_SIZE    5
@@ -188,6 +188,22 @@ void canopen_interface_service(
                             memcpy(&tmpvalue, value, capacity);
                             error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
                         }
+                    }
+
+                    error_out = error;
+                    break;
+
+            case i_co[int j].od_slave_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity) -> { uint8_t error_out }:
+                    int request_from  = REQUEST_FROM_APP;
+                    int error = 0;
+
+                    size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
+                    if (bytecount < capacity) {
+                        error = sdo_error;
+                    } else {
+                        uint8_t tmpvalue[MAX_VALUE_BUFFER];
+                        memcpy(&tmpvalue, value, capacity);
+                        error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
                     }
 
                     error_out = error;

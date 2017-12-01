@@ -55,3 +55,5 @@ examples/libreadsdoconfig/testreadconfig
 *.csv
 config_motor
 
+# ignore auto generated files
+version.h

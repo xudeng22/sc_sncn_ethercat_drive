@@ -214,7 +214,7 @@ int sdo_entry_set_value(uint16_t index, uint8_t subindex, uint8_t *value, size_t
     }
 
     size_t bytes = BYTES_FROM_BITS(entry->bitsize);
-    if (bytes != bytesize) {
+    if (bytes < bytesize) {
         sdo_error = SDO_ERROR_WRONG_TYPE;
         return (int)sdo_error;
     }

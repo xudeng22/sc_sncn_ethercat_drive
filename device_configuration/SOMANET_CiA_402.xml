@@ -67,6 +67,10 @@
                 <BitSize>64</BitSize>
               </DataType>
               <DataType>
+                <Name>STRING(50)</Name>
+                <BitSize>400</BitSize>
+              </DataType>
+              <DataType>
                 <Name>DT1018</Name>
                 <BitSize>144</BitSize>
                 <SubItem>
@@ -2607,10 +2611,23 @@
                 </Flags>
               </Object>
               <Object>
+                <Index>#x1008</Index>
+                <Name>Manufacturer Device Name</Name>
+                <Type>STRING(50)</Type>
+                <BitSize>400</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>ro</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
                 <Index>#x100A</Index>
                 <Name>Manufacturer Software Version</Name>
-                <Type>STRING(8)</Type>
-                <BitSize>64</BitSize>
+                <Type>STRING(50)</Type>
+                <BitSize>400</BitSize>
                 <Info>
                   <DefaultData>332E32</DefaultData>
                 </Info>

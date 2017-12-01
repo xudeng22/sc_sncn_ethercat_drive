@@ -12,6 +12,9 @@
 
 // Please configure your slave's default parameters in config_motor_slave/user_config.h.
 // These parameter will be eventually overwritten by the app running on the EtherCAT master
+#include "version.h"
+
+#include <string.h>
 #include <i2c.h>
 #include <user_config.h>
 
@@ -100,6 +103,16 @@ int main(void)
 
 
                 {
+                    uint8_t verserr = i_co[1].od_slave_set_object_value(0x100A, 0, (uint8_t *)APP_VERSION, strlen(APP_VERSION));
+                    if (verserr != 0) {
+                        printstr("ERROR setting version object"); printintln(verserr);
+                    } /* FIXME don't continue as if nothing happend! */
+
+                    verserr = i_co[1].od_slave_set_object_value(0x1008, 0, (uint8_t *)APP_DEVICENAME, strlen(APP_DEVICENAME));
+                    if (verserr != 0) {
+                        printstr("ERROR setting device name - "); printintln(verserr);
+                    } /* FIXME don't continue as if nothing happend! */
+
                     network_drive_service(
                             i_pdo, i_co[1], i_motion_control[0],
                             i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);

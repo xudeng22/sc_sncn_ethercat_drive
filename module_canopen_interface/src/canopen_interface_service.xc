@@ -181,8 +181,8 @@ void canopen_interface_service(
                         error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
                     } else {
                         size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                        if (capacity < bytecount) {
-                            error = sdo_error;
+                        if (capacity > bytecount) {
+                            error = -1;
                         } else {
                             uint8_t tmpvalue[MAX_VALUE_BUFFER];
                             memcpy(&tmpvalue, value, capacity);
@@ -198,8 +198,8 @@ void canopen_interface_service(
                     int error = 0;
 
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                    if (bytecount < capacity) {
-                        error = sdo_error;
+                    if (capacity > bytecount) {
+                        error = -1;
                     } else {
                         uint8_t tmpvalue[MAX_VALUE_BUFFER];
                         memcpy(&tmpvalue, value, capacity);

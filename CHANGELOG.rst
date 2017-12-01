@@ -1,11 +1,6 @@
 sc_sncn_ethercat_drive Change Log
 ==================================
 
-3.2.1
------
-  * Fix bug when entering float numbers in app_demo_master_tuning
-  * Update Torque controller PID values in sdo_config.csv
-
 3.2.0
 -----
 
@@ -17,6 +12,9 @@ sc_sncn_ethercat_drive Change Log
   * Rename motorcontrol_config to torque_control_config
   * Add SDO objects for Gain scheduling and separate Position gains from the Velocity controller
   * Add support for float PID parameters in tuning app.
+  * Fix bug when entering float numbers in app_demo_master_tuning
+  * Update Torque controller PID values in sdo_config.csv
+  * Add manufacturer device name and manufacturer version objects to object dictionary
 
 3.1.2
 -----

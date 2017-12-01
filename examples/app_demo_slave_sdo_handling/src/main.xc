@@ -8,12 +8,15 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include "version.h"
 #include <canopen_interface_service.h>
 #include <ethercat_service.h>
 #include <reboot.h>
 #include <pdo_handler.h>
 #include <stdint.h>
 #include <dictionary_symbols.h>
+
+#include <string.h>
 
 /*
  * Select SDO service to run
@@ -499,6 +502,12 @@ static void sdo_service(client interface i_co_communication i_co, server interfa
     initial_od_read(i_co);
 
     printstrln("Start SDO service");
+
+    /* Set application versino to object 0x100A:0 */
+    uint8_t verserr = i_co.od_master_set_object_value(0x100A, 0, (uint8_t *)APP_VERSION, strlen(APP_VERSION));
+    if (verserr != 0) {
+        printstrln("ERROR setting version object");
+    } /* FIXME don't continue as if nothing happend! */
 
     /*
      *  Wait for initial configuration.

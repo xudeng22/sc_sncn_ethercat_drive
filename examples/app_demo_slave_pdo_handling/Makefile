@@ -1,6 +1,12 @@
 # The TARGET variable determines what target system the application is
 # compiled for. It either refers to an XN file in the source directories
 # or a valid argument for the --target option when compiling
+
+# Possible SOMANET targets:
+# SOMANET-CoreC22
+# SOMANET-CoreC21
+# SOMANET-CoreC21-rev-b
+# SOMANET-CoreC2X
 TARGET = SOMANET-CoreC2X
 
 # The APP_NAME variable determines the name of the final .xe file. It should
@@ -18,7 +24,7 @@ MODULE_LIBRARIES = ethercat_service
 endif
 
 # Architecture specific flags, e.g. XCORE200 has quadflash
-ifeq ($(TARGET),SOMANET-C22)
+ifeq ($(TARGET),SOMANET-CoreC22)
 ARCH_SPEC_FLAGS = -lflash
 else
 ARCH_SPEC_FLAGS = -DXCORE200 -lquadflash

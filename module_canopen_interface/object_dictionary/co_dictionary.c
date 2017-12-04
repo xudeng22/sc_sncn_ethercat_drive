@@ -13,13 +13,13 @@
 /*
  * Sizes of exported arrays
  */
-const size_t entry_values_length = 812;
-const size_t entry_default_values_length = 812;
-const size_t entry_min_values_length = 53;
-const size_t entry_max_values_length = 19;
-const size_t string_length = 173;
-const size_t object_entries_length = 277;
-const size_t object_dictionary_length = 85;
+const size_t entry_values_length = 869;
+const size_t entry_default_values_length = 869;
+const size_t entry_min_values_length = 54;
+const size_t entry_max_values_length = 20;
+const size_t string_length = 176;
+const size_t object_entries_length = 280;
+const size_t object_dictionary_length = 88;
 const size_t bookmark_length = 3;
 
 /*
@@ -28,7 +28,7 @@ const size_t bookmark_length = 3;
 struct _bookmarks bookmark[bookmark_length] = {
     { 0x1000, 0 },
     { 0x2000, 60 },
-    { 0x603F, 244 }
+    { 0x603F, 247 }
 };
 
 /*
@@ -38,566 +38,572 @@ struct _bookmarks bookmark[bookmark_length] = {
  * in c COD_Entry points to the LSB of the value within this memory area.
  */
 uint8_t entry_values[entry_values_length] = {
-    0x92, 0x1, 0x2, 0x0,                                                                                                                                                                                                                                         /* 0x1000:0 Device Type - START: 0 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x1001:0 Error Register - START: 4 */
-    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,    /* 0x1008:0 Manufacturer Device Name - START: 5 */
-    0x33, 0x2E, 0x32, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 55 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x1018:0 Identity - START: 105 */
-    0xD2, 0x22, 0x0, 0x0,                                                                                                                                                                                                                                        /* 0x1018:1 Vendor ID - START: 106 */
-    0x1, 0x2, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1018:2 Product Code - START: 110 */
-    0x2, 0x0, 0x0, 0xA,                                                                                                                                                                                                                                          /* 0x1018:3 Revision - START: 114 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1018:4 Serialnumber - START: 118 */
-    0x10,                                                                                                                                                                                                                                                        /* 0x1600:0 SubIndex 000 - START: 122 */
-    0x10, 0x0, 0x40, 0x60,                                                                                                                                                                                                                                       /* 0x1600:1 Controlword - START: 123 */
-    0x8, 0x0, 0x60, 0x60,                                                                                                                                                                                                                                        /* 0x1600:2 Op Mode - START: 127 */
-    0x10, 0x0, 0x71, 0x60,                                                                                                                                                                                                                                       /* 0x1600:3 Target Torque - START: 131 */
-    0x20, 0x0, 0x7A, 0x60,                                                                                                                                                                                                                                       /* 0x1600:4 Target Position - START: 135 */
-    0x20, 0x0, 0xFF, 0x60,                                                                                                                                                                                                                                       /* 0x1600:5 Target Velocity - START: 139 */
-    0x20, 0x0, 0x0, 0x23,                                                                                                                                                                                                                                        /* 0x1600:6 Offset Torque - START: 143 */
-    0x20, 0x0, 0x1, 0x2A,                                                                                                                                                                                                                                        /* 0x1600:7 Tuning command - START: 147 */
-    0x1, 0x0, 0x1, 0x26,                                                                                                                                                                                                                                         /* 0x1600:8 Digital Output 1 - START: 151 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:9 padding entry (automatically added) 0 - START: 155 */
-    0x1, 0x0, 0x2, 0x26,                                                                                                                                                                                                                                         /* 0x1600:10 Digital Output 2 - START: 159 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:11 padding entry (automatically added) 1 - START: 163 */
-    0x1, 0x0, 0x3, 0x26,                                                                                                                                                                                                                                         /* 0x1600:12 Digital Output 3 - START: 167 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:13 padding entry (automatically added) 2 - START: 171 */
-    0x1, 0x0, 0x4, 0x26,                                                                                                                                                                                                                                         /* 0x1600:14 Digital Output 4 - START: 175 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:15 padding entry (automatically added) 3 - START: 179 */
-    0x20, 0x0, 0xFE, 0x2F,                                                                                                                                                                                                                                       /* 0x1600:16 User MOSI - START: 183 */
-    0x16,                                                                                                                                                                                                                                                        /* 0x1A00:0 SubIndex 000 - START: 187 */
-    0x10, 0x0, 0x41, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:1 Statusword - START: 188 */
-    0x8, 0x0, 0x61, 0x60,                                                                                                                                                                                                                                        /* 0x1A00:2 Op Mode Display - START: 192 */
-    0x20, 0x0, 0x64, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:3 Position Value - START: 196 */
-    0x20, 0x0, 0x6C, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:4 Velocity Value - START: 200 */
-    0x10, 0x0, 0x77, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:5 Torque Value - START: 204 */
-    0x20, 0x0, 0xA, 0x23,                                                                                                                                                                                                                                        /* 0x1A00:6 Secondary position value - START: 208 */
-    0x20, 0x0, 0xB, 0x23,                                                                                                                                                                                                                                        /* 0x1A00:7 Secondary velocity value - START: 212 */
-    0x10, 0x0, 0x1, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:8 Analog input 1 - START: 216 */
-    0x10, 0x0, 0x2, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:9 Analog input 2 - START: 220 */
-    0x10, 0x0, 0x3, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:10 Analog input 3 - START: 224 */
-    0x10, 0x0, 0x4, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:11 Analog input 4 - START: 228 */
-    0x20, 0x0, 0x3, 0x2A,                                                                                                                                                                                                                                        /* 0x1A00:12 Tuning status - START: 232 */
-    0x1, 0x0, 0x1, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:13 Digital Input 1 - START: 236 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:14 padding entry (automatically added) 0 - START: 240 */
-    0x1, 0x0, 0x2, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:15 Digital Input 2 - START: 244 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:16 padding entry (automatically added) 1 - START: 248 */
-    0x1, 0x0, 0x3, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:17 Digital Input 3 - START: 252 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:18 padding entry (automatically added) 2 - START: 256 */
-    0x1, 0x0, 0x4, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:19 Digital Input 4 - START: 260 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:20 padding entry (automatically added) 3 - START: 264 */
-    0x20, 0x0, 0xFF, 0x2F,                                                                                                                                                                                                                                       /* 0x1A00:21 User MISO - START: 268 */
-    0x20, 0x0, 0xFD, 0x2F,                                                                                                                                                                                                                                       /* 0x1A00:22 Timestamp - START: 272 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x1C00:0 SubIndex 000 - START: 276 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x1C00:1 SyncMan 0 - START: 277 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x1C00:2 SyncMan 1 - START: 278 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x1C00:3 SyncMan 2 - START: 279 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x1C00:4 SyncMan 3 - START: 280 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x1C10:0 SubIndex 000 - START: 281 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x1C11:0 SubIndex 000 - START: 282 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x1C12:0 SubIndex 000 - START: 283 */
-    0x0, 0x16,                                                                                                                                                                                                                                                   /* 0x1C12:1 SubIndex 001 - START: 284 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x1C13:0 SubIndex 000 - START: 286 */
-    0x0, 0x1A,                                                                                                                                                                                                                                                   /* 0x1C13:1 SubIndex 001 - START: 287 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2000:0 Command Object - START: 289 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2001:0 Commutation angle offset - START: 291 */
-    0x1, 0x0,                                                                                                                                                                                                                                                    /* 0x2002:0 Position control strategy - START: 293 */
-    0x5,                                                                                                                                                                                                                                                         /* 0x2003:0 Number of entries - START: 295 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2003:1 Pole Pairs - START: 296 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2003:2 Torque Constant - START: 297 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2003:3 Phase Resistance - START: 301 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2003:4 Phase Inductance - START: 305 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2003:5 Motor phases inverted - START: 309 */
-    0x6,                                                                                                                                                                                                                                                         /* 0x2004:0 Number of entries - START: 310 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2004:1 Pull brake voltage - START: 311 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2004:2 Hold brake voltage - START: 315 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2004:3 Pull brake time - START: 319 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2004:4 Brake release strategy - START: 321 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2004:5 Brake release delay - START: 322 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2004:6 DC bus voltage - START: 324 */
-    0x7,                                                                                                                                                                                                                                                         /* 0x2005:0 Number of entries - START: 326 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2005:1 Recuperation enabled - START: 327 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:2 Min battery energy - START: 328 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:3 Max battery energy - START: 330 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:4 Min recuperation power - START: 332 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:5 Max recuperation power - START: 334 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:6 Minimum recuperation speed - START: 336 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:7 Maximum recuperation speed - START: 338 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x2006:0 Number of entries - START: 340 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2006:1 Min DC Voltage - START: 341 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2006:2 Max DC Voltage - START: 345 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2006:3 Max Current - START: 349 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2007:0 Number of entries - START: 353 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2007:1 Position filter coefficient - START: 354 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2007:2 Velocity filter coefficient - START: 358 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x200A:0 Moment of inertia - START: 362 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x2010:0 Number of entries - START: 366 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2010:1 Controller Kp - START: 367 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2010:2 Controller Ki - START: 371 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2010:3 Controller Kd - START: 375 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2011:0 Velocity Controller - START: 379 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:1 Controller Kp - START: 380 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:2 Controller Ki - START: 384 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:3 Controller Kd - START: 388 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:4 Controller integral limit - START: 392 */
-    0x8,                                                                                                                                                                                                                                                         /* 0x2012:0 Position Controller - START: 396 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:1 Position Loop Kp - START: 397 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:2 Position Loop Ki - START: 401 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:3 Position Loop Kd - START: 405 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:4 Position Loop integral limit - START: 409 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:5 Velocity Loop Kp - START: 413 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:6 Velocity Loop Ki - START: 417 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:7 Velocity Loop Kd - START: 421 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:8 Velocity Loop integral limit - START: 425 */
-    0x12,                                                                                                                                                                                                                                                        /* 0x2013:0 Position Controller Gain Scheduling - START: 429 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:1 Gain Scheduling threshold Velocity 0 - START: 430 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:2 Position Loop Kp_0 - START: 434 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:3 Position Loop Ki_0 - START: 438 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:4 Position Loop Kd_0 - START: 442 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:5 Position Loop integral limit 0 - START: 446 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:6 Velocity Loop Kp_0 - START: 450 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:7 Velocity Loop Ki_0 - START: 454 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:8 Velocity Loop Kd_0 - START: 458 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:9 Velocity Loop integral limit 0 - START: 462 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:10 Gain Scheduling threshold Velocity 1 - START: 466 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:11 Position Loop Kp_1 - START: 470 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:12 Position Loop Ki_1 - START: 474 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:13 Position Loop Kd_1 - START: 478 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:14 Position Loop integral limit 1 - START: 482 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:15 Velocity Loop Kp_1 - START: 486 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:16 Velocity Loop Ki_1 - START: 490 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:17 Velocity Loop Kd_1 - START: 494 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:18 Velocity Loop integral limit 1 - START: 498 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x2100:0 Number of entries - START: 502 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2100:1 Sensor port 1 - START: 503 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2100:2 Sensor port 2 - START: 505 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2100:3 Sensor port 3 - START: 507 */
-    0xD,                                                                                                                                                                                                                                                         /* 0x2201:0 BISS Encoder 1 - START: 509 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2201:1 Type - START: 510 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:2 Function - START: 511 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2201:3 Resolution - START: 512 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2201:4 Velocity calculation period - START: 516 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:5 Polarity - START: 518 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2201:6 Multiturn resolution - START: 519 */
-    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2201:7 Clock frequency - START: 523 */
-    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2201:8 Timeout - START: 527 */
-    0x30,                                                                                                                                                                                                                                                        /* 0x2201:9 CRC polynom - START: 531 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:10 Clock port config - START: 532 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:11 Data port config - START: 533 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:12 Number of filling bits - START: 534 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2201:13 Number of bits to read while busy - START: 535 */
-    0xD,                                                                                                                                                                                                                                                         /* 0x2202:0 BISS Encoder 2 - START: 536 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2202:1 Type - START: 537 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:2 Function - START: 538 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2202:3 Resolution - START: 539 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2202:4 Velocity calculation period - START: 543 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:5 Polarity - START: 545 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2202:6 Multiturn resolution - START: 546 */
-    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2202:7 Clock frequency - START: 550 */
-    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2202:8 Timeout - START: 554 */
-    0x30,                                                                                                                                                                                                                                                        /* 0x2202:9 CRC polynom - START: 558 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:10 Clock port config - START: 559 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:11 Data port config - START: 560 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:12 Number of filling bits - START: 561 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2202:13 Number of bits to read while busy - START: 562 */
-    0x6,                                                                                                                                                                                                                                                         /* 0x2203:0 REM 16MT Encoder - START: 563 */
-    0x6,                                                                                                                                                                                                                                                         /* 0x2203:1 Type - START: 564 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2203:2 Function - START: 565 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2203:3 Resolution - START: 566 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2203:4 Velocity calculation period - START: 570 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2203:5 Polarity - START: 572 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2203:6 Filter - START: 573 */
-    0x9,                                                                                                                                                                                                                                                         /* 0x2204:0 REM 14 Encoder - START: 574 */
-    0x5,                                                                                                                                                                                                                                                         /* 0x2204:1 Type - START: 575 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:2 Function - START: 576 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2204:3 Resolution - START: 577 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2204:4 Velocity calculation period - START: 581 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:5 Polarity - START: 583 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2204:6 Hysteresis - START: 584 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:7 Noise settings - START: 585 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:8 Dynamic angle error compensation - START: 586 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:9 Resolution settings - START: 587 */
-    0x7,                                                                                                                                                                                                                                                         /* 0x2205:0 Incremental Encoder 1 - START: 588 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2205:1 Type - START: 589 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2205:2 Function - START: 590 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2205:3 Resolution - START: 591 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2205:4 Velocity calculation period - START: 595 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2205:5 Polarity - START: 597 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2205:6 Number of channels - START: 598 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2205:7 Access signal type - START: 599 */
-    0x7,                                                                                                                                                                                                                                                         /* 0x2206:0 Incremental Encoder 2 - START: 600 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2206:1 Type - START: 601 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2206:2 Function - START: 602 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2206:3 Resolution - START: 603 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2206:4 Velocity calculation period - START: 607 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2206:5 Polarity - START: 609 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2206:6 Number of channels - START: 610 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2206:7 Access signal type - START: 611 */
-    0xB,                                                                                                                                                                                                                                                         /* 0x2207:0 HALL Sensor 1 - START: 612 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2207:1 Type - START: 613 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2207:2 Function - START: 614 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2207:3 Resolution - START: 615 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2207:4 Velocity calculation period - START: 619 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2207:5 Polarity - START: 621 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:6 State angle 0 - START: 622 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:7 State angle 1 - START: 624 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:8 State angle 2 - START: 626 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:9 State angle 3 - START: 628 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:10 State angle 4 - START: 630 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:11 State angle 5 - START: 632 */
-    0xB,                                                                                                                                                                                                                                                         /* 0x2208:0 HALL Sensor 2 - START: 634 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2208:1 Type - START: 635 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2208:2 Function - START: 636 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2208:3 Resolution - START: 637 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2208:4 Velocity calculation period - START: 641 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2208:5 Polarity - START: 643 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:6 State angle 0 - START: 644 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:7 State angle 1 - START: 646 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:8 State angle 2 - START: 648 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:9 State angle 3 - START: 650 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:10 State angle 4 - START: 652 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:11 State angle 5 - START: 654 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2210:0 GPIO - START: 656 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:1 Pin 1 - START: 657 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:2 Pin 2 - START: 658 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:3 Pin 3 - START: 659 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:4 Pin 4 - START: 660 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2300:0 Offset Torque - START: 661 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x230A:0 Secondary position value - START: 665 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x230B:0 Secondary velocity value - START: 669 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2401:0 Analog input 1 - START: 673 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2402:0 Analog input 2 - START: 675 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2403:0 Analog input 3 - START: 677 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2404:0 Analog input 4 - START: 679 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2501:0 Digital Input 1 - START: 681 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2502:0 Digital Input 2 - START: 682 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2503:0 Digital Input 3 - START: 683 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2504:0 Digital Input 4 - START: 684 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2601:0 Digital Output 1 - START: 685 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2602:0 Digital Output 2 - START: 686 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2603:0 Digital Output 3 - START: 687 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2604:0 Digital Output 4 - START: 688 */
-    0x3C, 0x0,                                                                                                                                                                                                                                                   /* 0x2A00:0 Applied tuning torque percent - START: 689 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2A01:0 Tuning command - START: 691 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2A03:0 Tuning status - START: 695 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2FFD:0 Timestamp - START: 699 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2FFE:0 User MOSI - START: 703 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2FFF:0 User MISO - START: 707 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x603F:0 Error code - START: 711 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6040:0 Controlword - START: 713 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6041:0 Statusword - START: 715 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x6060:0 Op Mode - START: 717 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x6061:0 Op Mode Display - START: 718 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6064:0 Position Value - START: 719 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x606C:0 Velocity Value - START: 723 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6071:0 Target Torque - START: 727 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6072:0 Max torque - START: 729 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6073:0 Max current - START: 731 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6075:0 Motor Rated Current - START: 733 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6076:0 Motor Rated Torque - START: 737 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6077:0 Torque Value - START: 741 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6079:0 DC link circuit voltage - START: 743 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x607A:0 Target Position - START: 747 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x607B:0 SubIndex 000 - START: 751 */
-    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                         /* 0x607B:1 Min position range limit - START: 752 */
-    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                      /* 0x607B:2 Max position range limit - START: 756 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x607C:0 Home offset - START: 760 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x607D:0 SubIndex 000 - START: 764 */
-    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                         /* 0x607D:1 Min position limit - START: 765 */
-    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                      /* 0x607D:2 Max position limit - START: 769 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x607E:0 Polarity - START: 773 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x607F:0 Max profile velocity - START: 774 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6080:0 Max motor speed - START: 778 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6081:0 Profile velocity - START: 782 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6083:0 Profile acceleration - START: 786 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6084:0 Profile deceleration - START: 790 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6085:0 Quick stop deceleration - START: 794 */
-    0x80, 0x0,                                                                                                                                                                                                                                                   /* 0x6086:0 Motion profile type - START: 798 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x60C5:0 Max acceleration - START: 800 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x60FF:0 Target Velocity - START: 804 */
-    0x80, 0x3, 0x0, 0x0                                                                                                                                                                                                                                          /* 0x6502:0 Supported Drive Modes - START: 808 */
+    0x92, 0x1, 0x2, 0x0,                                                                                                                                                                                                                                      /* 0x1000:0 Device Type - START: 0 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x1001:0 Error Register - START: 4 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x1008:0 Manufacturer Device Name - START: 5 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 55 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x1018:0 Identity - START: 105 */
+    0xD2, 0x22, 0x0, 0x0,                                                                                                                                                                                                                                     /* 0x1018:1 Vendor ID - START: 106 */
+    0x1, 0x2, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1018:2 Product Code - START: 110 */
+    0x2, 0x0, 0x0, 0xA,                                                                                                                                                                                                                                       /* 0x1018:3 Revision - START: 114 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1018:4 Serialnumber - START: 118 */
+    0x10,                                                                                                                                                                                                                                                     /* 0x1600:0 SubIndex 000 - START: 122 */
+    0x10, 0x0, 0x40, 0x60,                                                                                                                                                                                                                                    /* 0x1600:1 Controlword - START: 123 */
+    0x8, 0x0, 0x60, 0x60,                                                                                                                                                                                                                                     /* 0x1600:2 Op Mode - START: 127 */
+    0x10, 0x0, 0x71, 0x60,                                                                                                                                                                                                                                    /* 0x1600:3 Target Torque - START: 131 */
+    0x20, 0x0, 0x7A, 0x60,                                                                                                                                                                                                                                    /* 0x1600:4 Target Position - START: 135 */
+    0x20, 0x0, 0xFF, 0x60,                                                                                                                                                                                                                                    /* 0x1600:5 Target Velocity - START: 139 */
+    0x20, 0x0, 0x0, 0x23,                                                                                                                                                                                                                                     /* 0x1600:6 Offset Torque - START: 143 */
+    0x20, 0x0, 0x1, 0x2A,                                                                                                                                                                                                                                     /* 0x1600:7 Tuning command - START: 147 */
+    0x1, 0x0, 0x1, 0x26,                                                                                                                                                                                                                                      /* 0x1600:8 Digital Output 1 - START: 151 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:9 padding entry (automatically added) 0 - START: 155 */
+    0x1, 0x0, 0x2, 0x26,                                                                                                                                                                                                                                      /* 0x1600:10 Digital Output 2 - START: 159 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:11 padding entry (automatically added) 1 - START: 163 */
+    0x1, 0x0, 0x3, 0x26,                                                                                                                                                                                                                                      /* 0x1600:12 Digital Output 3 - START: 167 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:13 padding entry (automatically added) 2 - START: 171 */
+    0x1, 0x0, 0x4, 0x26,                                                                                                                                                                                                                                      /* 0x1600:14 Digital Output 4 - START: 175 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:15 padding entry (automatically added) 3 - START: 179 */
+    0x20, 0x0, 0xFE, 0x2F,                                                                                                                                                                                                                                    /* 0x1600:16 User MOSI - START: 183 */
+    0x16,                                                                                                                                                                                                                                                     /* 0x1A00:0 SubIndex 000 - START: 187 */
+    0x10, 0x0, 0x41, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:1 Statusword - START: 188 */
+    0x8, 0x0, 0x61, 0x60,                                                                                                                                                                                                                                     /* 0x1A00:2 Op Mode Display - START: 192 */
+    0x20, 0x0, 0x64, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:3 Position Value - START: 196 */
+    0x20, 0x0, 0x6C, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:4 Velocity Value - START: 200 */
+    0x10, 0x0, 0x77, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:5 Torque Value - START: 204 */
+    0x20, 0x0, 0xA, 0x23,                                                                                                                                                                                                                                     /* 0x1A00:6 Secondary position value - START: 208 */
+    0x20, 0x0, 0xB, 0x23,                                                                                                                                                                                                                                     /* 0x1A00:7 Secondary velocity value - START: 212 */
+    0x10, 0x0, 0x1, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:8 Analog input 1 - START: 216 */
+    0x10, 0x0, 0x2, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:9 Analog input 2 - START: 220 */
+    0x10, 0x0, 0x3, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:10 Analog input 3 - START: 224 */
+    0x10, 0x0, 0x4, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:11 Analog input 4 - START: 228 */
+    0x20, 0x0, 0x3, 0x2A,                                                                                                                                                                                                                                     /* 0x1A00:12 Tuning status - START: 232 */
+    0x1, 0x0, 0x1, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:13 Digital Input 1 - START: 236 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:14 padding entry (automatically added) 0 - START: 240 */
+    0x1, 0x0, 0x2, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:15 Digital Input 2 - START: 244 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:16 padding entry (automatically added) 1 - START: 248 */
+    0x1, 0x0, 0x3, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:17 Digital Input 3 - START: 252 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:18 padding entry (automatically added) 2 - START: 256 */
+    0x1, 0x0, 0x4, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:19 Digital Input 4 - START: 260 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:20 padding entry (automatically added) 3 - START: 264 */
+    0x20, 0x0, 0xFF, 0x2F,                                                                                                                                                                                                                                    /* 0x1A00:21 User MISO - START: 268 */
+    0x20, 0x0, 0xFD, 0x2F,                                                                                                                                                                                                                                    /* 0x1A00:22 Timestamp - START: 272 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x1C00:0 SubIndex 000 - START: 276 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x1C00:1 SyncMan 0 - START: 277 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x1C00:2 SyncMan 1 - START: 278 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x1C00:3 SyncMan 2 - START: 279 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x1C00:4 SyncMan 3 - START: 280 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x1C10:0 SubIndex 000 - START: 281 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x1C11:0 SubIndex 000 - START: 282 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x1C12:0 SubIndex 000 - START: 283 */
+    0x0, 0x16,                                                                                                                                                                                                                                                /* 0x1C12:1 SubIndex 001 - START: 284 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x1C13:0 SubIndex 000 - START: 286 */
+    0x0, 0x1A,                                                                                                                                                                                                                                                /* 0x1C13:1 SubIndex 001 - START: 287 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2000:0 Command Object - START: 289 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2001:0 Commutation angle offset - START: 291 */
+    0x1, 0x0,                                                                                                                                                                                                                                                 /* 0x2002:0 Position control strategy - START: 293 */
+    0x5,                                                                                                                                                                                                                                                      /* 0x2003:0 Number of entries - START: 295 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2003:1 Pole Pairs - START: 296 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2003:2 Torque Constant - START: 297 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2003:3 Phase Resistance - START: 301 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2003:4 Phase Inductance - START: 305 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2003:5 Motor phases inverted - START: 309 */
+    0x6,                                                                                                                                                                                                                                                      /* 0x2004:0 Number of entries - START: 310 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2004:1 Pull brake voltage - START: 311 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2004:2 Hold brake voltage - START: 315 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2004:3 Pull brake time - START: 319 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2004:4 Brake release strategy - START: 321 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2004:5 Brake release delay - START: 322 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2004:6 DC bus voltage - START: 324 */
+    0x7,                                                                                                                                                                                                                                                      /* 0x2005:0 Number of entries - START: 326 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2005:1 Recuperation enabled - START: 327 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:2 Min battery energy - START: 328 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:3 Max battery energy - START: 330 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:4 Min recuperation power - START: 332 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:5 Max recuperation power - START: 334 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:6 Minimum recuperation speed - START: 336 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:7 Maximum recuperation speed - START: 338 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x2006:0 Number of entries - START: 340 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2006:1 Min DC Voltage - START: 341 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2006:2 Max DC Voltage - START: 345 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2006:3 Max Current - START: 349 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2007:0 Number of entries - START: 353 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2007:1 Position filter coefficient - START: 354 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2007:2 Velocity filter coefficient - START: 358 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x200A:0 Moment of inertia - START: 362 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x2010:0 Number of entries - START: 366 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2010:1 Controller Kp - START: 367 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2010:2 Controller Ki - START: 371 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2010:3 Controller Kd - START: 375 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2011:0 Velocity Controller - START: 379 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:1 Controller Kp - START: 380 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:2 Controller Ki - START: 384 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:3 Controller Kd - START: 388 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:4 Controller integral limit - START: 392 */
+    0x8,                                                                                                                                                                                                                                                      /* 0x2012:0 Position Controller - START: 396 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:1 Position Loop Kp - START: 397 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:2 Position Loop Ki - START: 401 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:3 Position Loop Kd - START: 405 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:4 Position Loop integral limit - START: 409 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:5 Velocity Loop Kp - START: 413 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:6 Velocity Loop Ki - START: 417 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:7 Velocity Loop Kd - START: 421 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:8 Velocity Loop integral limit - START: 425 */
+    0x12,                                                                                                                                                                                                                                                     /* 0x2013:0 Position Controller Gain Scheduling - START: 429 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:1 Gain Scheduling threshold Velocity 0 - START: 430 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:2 Position Loop Kp_0 - START: 434 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:3 Position Loop Ki_0 - START: 438 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:4 Position Loop Kd_0 - START: 442 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:5 Position Loop integral limit 0 - START: 446 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:6 Velocity Loop Kp_0 - START: 450 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:7 Velocity Loop Ki_0 - START: 454 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:8 Velocity Loop Kd_0 - START: 458 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:9 Velocity Loop integral limit 0 - START: 462 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:10 Gain Scheduling threshold Velocity 1 - START: 466 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:11 Position Loop Kp_1 - START: 470 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:12 Position Loop Ki_1 - START: 474 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:13 Position Loop Kd_1 - START: 478 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:14 Position Loop integral limit 1 - START: 482 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:15 Velocity Loop Kp_1 - START: 486 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:16 Velocity Loop Ki_1 - START: 490 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:17 Velocity Loop Kd_1 - START: 494 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:18 Velocity Loop integral limit 1 - START: 498 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x2100:0 Number of entries - START: 502 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2100:1 Sensor port 1 - START: 503 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2100:2 Sensor port 2 - START: 505 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2100:3 Sensor port 3 - START: 507 */
+    0xD,                                                                                                                                                                                                                                                      /* 0x2201:0 BISS Encoder 1 - START: 509 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2201:1 Type - START: 510 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:2 Function - START: 511 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2201:3 Resolution - START: 512 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2201:4 Velocity calculation period - START: 516 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:5 Polarity - START: 518 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2201:6 Multiturn resolution - START: 519 */
+    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2201:7 Clock frequency - START: 523 */
+    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2201:8 Timeout - START: 527 */
+    0x30,                                                                                                                                                                                                                                                     /* 0x2201:9 CRC polynom - START: 531 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:10 Clock port config - START: 532 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:11 Data port config - START: 533 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:12 Number of filling bits - START: 534 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2201:13 Number of bits to read while busy - START: 535 */
+    0xD,                                                                                                                                                                                                                                                      /* 0x2202:0 BISS Encoder 2 - START: 536 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2202:1 Type - START: 537 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:2 Function - START: 538 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2202:3 Resolution - START: 539 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2202:4 Velocity calculation period - START: 543 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:5 Polarity - START: 545 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2202:6 Multiturn resolution - START: 546 */
+    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2202:7 Clock frequency - START: 550 */
+    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2202:8 Timeout - START: 554 */
+    0x30,                                                                                                                                                                                                                                                     /* 0x2202:9 CRC polynom - START: 558 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:10 Clock port config - START: 559 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:11 Data port config - START: 560 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:12 Number of filling bits - START: 561 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2202:13 Number of bits to read while busy - START: 562 */
+    0x6,                                                                                                                                                                                                                                                      /* 0x2203:0 REM 16MT Encoder - START: 563 */
+    0x6,                                                                                                                                                                                                                                                      /* 0x2203:1 Type - START: 564 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2203:2 Function - START: 565 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2203:3 Resolution - START: 566 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2203:4 Velocity calculation period - START: 570 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2203:5 Polarity - START: 572 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2203:6 Filter - START: 573 */
+    0x9,                                                                                                                                                                                                                                                      /* 0x2204:0 REM 14 Encoder - START: 574 */
+    0x5,                                                                                                                                                                                                                                                      /* 0x2204:1 Type - START: 575 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:2 Function - START: 576 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2204:3 Resolution - START: 577 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2204:4 Velocity calculation period - START: 581 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:5 Polarity - START: 583 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2204:6 Hysteresis - START: 584 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:7 Noise settings - START: 585 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:8 Dynamic angle error compensation - START: 586 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:9 Resolution settings - START: 587 */
+    0x7,                                                                                                                                                                                                                                                      /* 0x2205:0 Incremental Encoder 1 - START: 588 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2205:1 Type - START: 589 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2205:2 Function - START: 590 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2205:3 Resolution - START: 591 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2205:4 Velocity calculation period - START: 595 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2205:5 Polarity - START: 597 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2205:6 Number of channels - START: 598 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2205:7 Access signal type - START: 599 */
+    0x7,                                                                                                                                                                                                                                                      /* 0x2206:0 Incremental Encoder 2 - START: 600 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2206:1 Type - START: 601 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2206:2 Function - START: 602 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2206:3 Resolution - START: 603 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2206:4 Velocity calculation period - START: 607 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2206:5 Polarity - START: 609 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2206:6 Number of channels - START: 610 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2206:7 Access signal type - START: 611 */
+    0xB,                                                                                                                                                                                                                                                      /* 0x2207:0 HALL Sensor 1 - START: 612 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2207:1 Type - START: 613 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2207:2 Function - START: 614 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2207:3 Resolution - START: 615 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2207:4 Velocity calculation period - START: 619 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2207:5 Polarity - START: 621 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:6 State angle 0 - START: 622 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:7 State angle 1 - START: 624 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:8 State angle 2 - START: 626 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:9 State angle 3 - START: 628 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:10 State angle 4 - START: 630 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:11 State angle 5 - START: 632 */
+    0xB,                                                                                                                                                                                                                                                      /* 0x2208:0 HALL Sensor 2 - START: 634 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2208:1 Type - START: 635 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2208:2 Function - START: 636 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2208:3 Resolution - START: 637 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2208:4 Velocity calculation period - START: 641 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2208:5 Polarity - START: 643 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:6 State angle 0 - START: 644 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:7 State angle 1 - START: 646 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:8 State angle 2 - START: 648 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:9 State angle 3 - START: 650 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:10 State angle 4 - START: 652 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:11 State angle 5 - START: 654 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2210:0 GPIO - START: 656 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:1 Pin 1 - START: 657 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:2 Pin 2 - START: 658 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:3 Pin 3 - START: 659 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:4 Pin 4 - START: 660 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2300:0 Offset Torque - START: 661 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x230A:0 Secondary position value - START: 665 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x230B:0 Secondary velocity value - START: 669 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2401:0 Analog input 1 - START: 673 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2402:0 Analog input 2 - START: 675 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2403:0 Analog input 3 - START: 677 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2404:0 Analog input 4 - START: 679 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2501:0 Digital Input 1 - START: 681 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2502:0 Digital Input 2 - START: 682 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2503:0 Digital Input 3 - START: 683 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2504:0 Digital Input 4 - START: 684 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2601:0 Digital Output 1 - START: 685 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2602:0 Digital Output 2 - START: 686 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2603:0 Digital Output 3 - START: 687 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2604:0 Digital Output 4 - START: 688 */
+    0x3C, 0x0,                                                                                                                                                                                                                                                /* 0x2A00:0 Applied tuning torque percent - START: 689 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2A01:0 Tuning command - START: 691 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2A03:0 Tuning status - START: 695 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x2D00:0 Assigned Name - START: 699 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2D01:0 Setup Wizard Completed - START: 749 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                             /* 0x2D02:0 Real Time Clock - START: 750 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2FFD:0 Timestamp - START: 756 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2FFE:0 User MOSI - START: 760 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2FFF:0 User MISO - START: 764 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x603F:0 Error code - START: 768 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6040:0 Controlword - START: 770 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6041:0 Statusword - START: 772 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x6060:0 Op Mode - START: 774 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x6061:0 Op Mode Display - START: 775 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6064:0 Position Value - START: 776 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x606C:0 Velocity Value - START: 780 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6071:0 Target Torque - START: 784 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6072:0 Max torque - START: 786 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6073:0 Max current - START: 788 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6075:0 Motor Rated Current - START: 790 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6076:0 Motor Rated Torque - START: 794 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6077:0 Torque Value - START: 798 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6079:0 DC link circuit voltage - START: 800 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x607A:0 Target Position - START: 804 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x607B:0 SubIndex 000 - START: 808 */
+    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                      /* 0x607B:1 Min position range limit - START: 809 */
+    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                   /* 0x607B:2 Max position range limit - START: 813 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x607C:0 Home offset - START: 817 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x607D:0 SubIndex 000 - START: 821 */
+    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                      /* 0x607D:1 Min position limit - START: 822 */
+    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                   /* 0x607D:2 Max position limit - START: 826 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x607E:0 Polarity - START: 830 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x607F:0 Max profile velocity - START: 831 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6080:0 Max motor speed - START: 835 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6081:0 Profile velocity - START: 839 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6083:0 Profile acceleration - START: 843 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6084:0 Profile deceleration - START: 847 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6085:0 Quick stop deceleration - START: 851 */
+    0x80, 0x0,                                                                                                                                                                                                                                                /* 0x6086:0 Motion profile type - START: 855 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x60C5:0 Max acceleration - START: 857 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x60FF:0 Target Velocity - START: 861 */
+    0x80, 0x3, 0x0, 0x0                                                                                                                                                                                                                                       /* 0x6502:0 Supported Drive Modes - START: 865 */
 };
 
 /*
  * Local storage of default values see OD_Entry
  */
 const uint8_t entry_default_values[entry_default_values_length] = {
-    0x92, 0x1, 0x2, 0x0,                                                                                                                                                                                                                                         /* 0x1000:0 Device Type - START: 0 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x1001:0 Error Register - START: 4 */
-    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,    /* 0x1008:0 Manufacturer Device Name - START: 5 */
-    0x33, 0x2E, 0x32, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 55 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x1018:0 Identity - START: 105 */
-    0xD2, 0x22, 0x0, 0x0,                                                                                                                                                                                                                                        /* 0x1018:1 Vendor ID - START: 106 */
-    0x1, 0x2, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1018:2 Product Code - START: 110 */
-    0x2, 0x0, 0x0, 0xA,                                                                                                                                                                                                                                          /* 0x1018:3 Revision - START: 114 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1018:4 Serialnumber - START: 118 */
-    0x10,                                                                                                                                                                                                                                                        /* 0x1600:0 SubIndex 000 - START: 122 */
-    0x10, 0x0, 0x40, 0x60,                                                                                                                                                                                                                                       /* 0x1600:1 Controlword - START: 123 */
-    0x8, 0x0, 0x60, 0x60,                                                                                                                                                                                                                                        /* 0x1600:2 Op Mode - START: 127 */
-    0x10, 0x0, 0x71, 0x60,                                                                                                                                                                                                                                       /* 0x1600:3 Target Torque - START: 131 */
-    0x20, 0x0, 0x7A, 0x60,                                                                                                                                                                                                                                       /* 0x1600:4 Target Position - START: 135 */
-    0x20, 0x0, 0xFF, 0x60,                                                                                                                                                                                                                                       /* 0x1600:5 Target Velocity - START: 139 */
-    0x20, 0x0, 0x0, 0x23,                                                                                                                                                                                                                                        /* 0x1600:6 Offset Torque - START: 143 */
-    0x20, 0x0, 0x1, 0x2A,                                                                                                                                                                                                                                        /* 0x1600:7 Tuning command - START: 147 */
-    0x1, 0x0, 0x1, 0x26,                                                                                                                                                                                                                                         /* 0x1600:8 Digital Output 1 - START: 151 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:9 padding entry (automatically added) 0 - START: 155 */
-    0x1, 0x0, 0x2, 0x26,                                                                                                                                                                                                                                         /* 0x1600:10 Digital Output 2 - START: 159 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:11 padding entry (automatically added) 1 - START: 163 */
-    0x1, 0x0, 0x3, 0x26,                                                                                                                                                                                                                                         /* 0x1600:12 Digital Output 3 - START: 167 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:13 padding entry (automatically added) 2 - START: 171 */
-    0x1, 0x0, 0x4, 0x26,                                                                                                                                                                                                                                         /* 0x1600:14 Digital Output 4 - START: 175 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1600:15 padding entry (automatically added) 3 - START: 179 */
-    0x20, 0x0, 0xFE, 0x2F,                                                                                                                                                                                                                                       /* 0x1600:16 User MOSI - START: 183 */
-    0x16,                                                                                                                                                                                                                                                        /* 0x1A00:0 SubIndex 000 - START: 187 */
-    0x10, 0x0, 0x41, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:1 Statusword - START: 188 */
-    0x8, 0x0, 0x61, 0x60,                                                                                                                                                                                                                                        /* 0x1A00:2 Op Mode Display - START: 192 */
-    0x20, 0x0, 0x64, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:3 Position Value - START: 196 */
-    0x20, 0x0, 0x6C, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:4 Velocity Value - START: 200 */
-    0x10, 0x0, 0x77, 0x60,                                                                                                                                                                                                                                       /* 0x1A00:5 Torque Value - START: 204 */
-    0x20, 0x0, 0xA, 0x23,                                                                                                                                                                                                                                        /* 0x1A00:6 Secondary position value - START: 208 */
-    0x20, 0x0, 0xB, 0x23,                                                                                                                                                                                                                                        /* 0x1A00:7 Secondary velocity value - START: 212 */
-    0x10, 0x0, 0x1, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:8 Analog input 1 - START: 216 */
-    0x10, 0x0, 0x2, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:9 Analog input 2 - START: 220 */
-    0x10, 0x0, 0x3, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:10 Analog input 3 - START: 224 */
-    0x10, 0x0, 0x4, 0x24,                                                                                                                                                                                                                                        /* 0x1A00:11 Analog input 4 - START: 228 */
-    0x20, 0x0, 0x3, 0x2A,                                                                                                                                                                                                                                        /* 0x1A00:12 Tuning status - START: 232 */
-    0x1, 0x0, 0x1, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:13 Digital Input 1 - START: 236 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:14 padding entry (automatically added) 0 - START: 240 */
-    0x1, 0x0, 0x2, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:15 Digital Input 2 - START: 244 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:16 padding entry (automatically added) 1 - START: 248 */
-    0x1, 0x0, 0x3, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:17 Digital Input 3 - START: 252 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:18 padding entry (automatically added) 2 - START: 256 */
-    0x1, 0x0, 0x4, 0x25,                                                                                                                                                                                                                                         /* 0x1A00:19 Digital Input 4 - START: 260 */
-    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x1A00:20 padding entry (automatically added) 3 - START: 264 */
-    0x20, 0x0, 0xFF, 0x2F,                                                                                                                                                                                                                                       /* 0x1A00:21 User MISO - START: 268 */
-    0x20, 0x0, 0xFD, 0x2F,                                                                                                                                                                                                                                       /* 0x1A00:22 Timestamp - START: 272 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x1C00:0 SubIndex 000 - START: 276 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x1C00:1 SyncMan 0 - START: 277 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x1C00:2 SyncMan 1 - START: 278 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x1C00:3 SyncMan 2 - START: 279 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x1C00:4 SyncMan 3 - START: 280 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x1C10:0 SubIndex 000 - START: 281 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x1C11:0 SubIndex 000 - START: 282 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x1C12:0 SubIndex 000 - START: 283 */
-    0x0, 0x16,                                                                                                                                                                                                                                                   /* 0x1C12:1 SubIndex 001 - START: 284 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x1C13:0 SubIndex 000 - START: 286 */
-    0x0, 0x1A,                                                                                                                                                                                                                                                   /* 0x1C13:1 SubIndex 001 - START: 287 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2000:0 Command Object - START: 289 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2001:0 Commutation angle offset - START: 291 */
-    0x1, 0x0,                                                                                                                                                                                                                                                    /* 0x2002:0 Position control strategy - START: 293 */
-    0x5,                                                                                                                                                                                                                                                         /* 0x2003:0 Number of entries - START: 295 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2003:1 Pole Pairs - START: 296 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2003:2 Torque Constant - START: 297 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2003:3 Phase Resistance - START: 301 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2003:4 Phase Inductance - START: 305 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2003:5 Motor phases inverted - START: 309 */
-    0x6,                                                                                                                                                                                                                                                         /* 0x2004:0 Number of entries - START: 310 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2004:1 Pull brake voltage - START: 311 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2004:2 Hold brake voltage - START: 315 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2004:3 Pull brake time - START: 319 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2004:4 Brake release strategy - START: 321 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2004:5 Brake release delay - START: 322 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2004:6 DC bus voltage - START: 324 */
-    0x7,                                                                                                                                                                                                                                                         /* 0x2005:0 Number of entries - START: 326 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2005:1 Recuperation enabled - START: 327 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:2 Min battery energy - START: 328 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:3 Max battery energy - START: 330 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:4 Min recuperation power - START: 332 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:5 Max recuperation power - START: 334 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:6 Minimum recuperation speed - START: 336 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2005:7 Maximum recuperation speed - START: 338 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x2006:0 Number of entries - START: 340 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2006:1 Min DC Voltage - START: 341 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2006:2 Max DC Voltage - START: 345 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2006:3 Max Current - START: 349 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2007:0 Number of entries - START: 353 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2007:1 Position filter coefficient - START: 354 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2007:2 Velocity filter coefficient - START: 358 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x200A:0 Moment of inertia - START: 362 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x2010:0 Number of entries - START: 366 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2010:1 Controller Kp - START: 367 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2010:2 Controller Ki - START: 371 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2010:3 Controller Kd - START: 375 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2011:0 Velocity Controller - START: 379 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:1 Controller Kp - START: 380 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:2 Controller Ki - START: 384 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:3 Controller Kd - START: 388 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2011:4 Controller integral limit - START: 392 */
-    0x8,                                                                                                                                                                                                                                                         /* 0x2012:0 Position Controller - START: 396 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:1 Position Loop Kp - START: 397 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:2 Position Loop Ki - START: 401 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:3 Position Loop Kd - START: 405 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:4 Position Loop integral limit - START: 409 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:5 Velocity Loop Kp - START: 413 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:6 Velocity Loop Ki - START: 417 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:7 Velocity Loop Kd - START: 421 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2012:8 Velocity Loop integral limit - START: 425 */
-    0x12,                                                                                                                                                                                                                                                        /* 0x2013:0 Position Controller Gain Scheduling - START: 429 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:1 Gain Scheduling threshold Velocity 0 - START: 430 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:2 Position Loop Kp_0 - START: 434 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:3 Position Loop Ki_0 - START: 438 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:4 Position Loop Kd_0 - START: 442 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:5 Position Loop integral limit 0 - START: 446 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:6 Velocity Loop Kp_0 - START: 450 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:7 Velocity Loop Ki_0 - START: 454 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:8 Velocity Loop Kd_0 - START: 458 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:9 Velocity Loop integral limit 0 - START: 462 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:10 Gain Scheduling threshold Velocity 1 - START: 466 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:11 Position Loop Kp_1 - START: 470 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:12 Position Loop Ki_1 - START: 474 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:13 Position Loop Kd_1 - START: 478 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:14 Position Loop integral limit 1 - START: 482 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:15 Velocity Loop Kp_1 - START: 486 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:16 Velocity Loop Ki_1 - START: 490 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:17 Velocity Loop Kd_1 - START: 494 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2013:18 Velocity Loop integral limit 1 - START: 498 */
-    0x3,                                                                                                                                                                                                                                                         /* 0x2100:0 Number of entries - START: 502 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2100:1 Sensor port 1 - START: 503 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2100:2 Sensor port 2 - START: 505 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2100:3 Sensor port 3 - START: 507 */
-    0xD,                                                                                                                                                                                                                                                         /* 0x2201:0 BISS Encoder 1 - START: 509 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2201:1 Type - START: 510 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:2 Function - START: 511 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2201:3 Resolution - START: 512 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2201:4 Velocity calculation period - START: 516 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:5 Polarity - START: 518 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2201:6 Multiturn resolution - START: 519 */
-    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2201:7 Clock frequency - START: 523 */
-    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2201:8 Timeout - START: 527 */
-    0x30,                                                                                                                                                                                                                                                        /* 0x2201:9 CRC polynom - START: 531 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:10 Clock port config - START: 532 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:11 Data port config - START: 533 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2201:12 Number of filling bits - START: 534 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2201:13 Number of bits to read while busy - START: 535 */
-    0xD,                                                                                                                                                                                                                                                         /* 0x2202:0 BISS Encoder 2 - START: 536 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2202:1 Type - START: 537 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:2 Function - START: 538 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2202:3 Resolution - START: 539 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2202:4 Velocity calculation period - START: 543 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:5 Polarity - START: 545 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2202:6 Multiturn resolution - START: 546 */
-    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2202:7 Clock frequency - START: 550 */
-    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                         /* 0x2202:8 Timeout - START: 554 */
-    0x30,                                                                                                                                                                                                                                                        /* 0x2202:9 CRC polynom - START: 558 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:10 Clock port config - START: 559 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:11 Data port config - START: 560 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2202:12 Number of filling bits - START: 561 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2202:13 Number of bits to read while busy - START: 562 */
-    0x6,                                                                                                                                                                                                                                                         /* 0x2203:0 REM 16MT Encoder - START: 563 */
-    0x6,                                                                                                                                                                                                                                                         /* 0x2203:1 Type - START: 564 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2203:2 Function - START: 565 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2203:3 Resolution - START: 566 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2203:4 Velocity calculation period - START: 570 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2203:5 Polarity - START: 572 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2203:6 Filter - START: 573 */
-    0x9,                                                                                                                                                                                                                                                         /* 0x2204:0 REM 14 Encoder - START: 574 */
-    0x5,                                                                                                                                                                                                                                                         /* 0x2204:1 Type - START: 575 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:2 Function - START: 576 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2204:3 Resolution - START: 577 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2204:4 Velocity calculation period - START: 581 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:5 Polarity - START: 583 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2204:6 Hysteresis - START: 584 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:7 Noise settings - START: 585 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:8 Dynamic angle error compensation - START: 586 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2204:9 Resolution settings - START: 587 */
-    0x7,                                                                                                                                                                                                                                                         /* 0x2205:0 Incremental Encoder 1 - START: 588 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2205:1 Type - START: 589 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2205:2 Function - START: 590 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2205:3 Resolution - START: 591 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2205:4 Velocity calculation period - START: 595 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2205:5 Polarity - START: 597 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2205:6 Number of channels - START: 598 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2205:7 Access signal type - START: 599 */
-    0x7,                                                                                                                                                                                                                                                         /* 0x2206:0 Incremental Encoder 2 - START: 600 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2206:1 Type - START: 601 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2206:2 Function - START: 602 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2206:3 Resolution - START: 603 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2206:4 Velocity calculation period - START: 607 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2206:5 Polarity - START: 609 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x2206:6 Number of channels - START: 610 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2206:7 Access signal type - START: 611 */
-    0xB,                                                                                                                                                                                                                                                         /* 0x2207:0 HALL Sensor 1 - START: 612 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2207:1 Type - START: 613 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2207:2 Function - START: 614 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2207:3 Resolution - START: 615 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2207:4 Velocity calculation period - START: 619 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2207:5 Polarity - START: 621 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:6 State angle 0 - START: 622 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:7 State angle 1 - START: 624 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:8 State angle 2 - START: 626 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:9 State angle 3 - START: 628 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:10 State angle 4 - START: 630 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2207:11 State angle 5 - START: 632 */
-    0xB,                                                                                                                                                                                                                                                         /* 0x2208:0 HALL Sensor 2 - START: 634 */
-    0x1,                                                                                                                                                                                                                                                         /* 0x2208:1 Type - START: 635 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2208:2 Function - START: 636 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2208:3 Resolution - START: 637 */
-    0xE8, 0x3,                                                                                                                                                                                                                                                   /* 0x2208:4 Velocity calculation period - START: 641 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2208:5 Polarity - START: 643 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:6 State angle 0 - START: 644 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:7 State angle 1 - START: 646 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:8 State angle 2 - START: 648 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:9 State angle 3 - START: 650 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:10 State angle 4 - START: 652 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2208:11 State angle 5 - START: 654 */
-    0x4,                                                                                                                                                                                                                                                         /* 0x2210:0 GPIO - START: 656 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:1 Pin 1 - START: 657 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:2 Pin 2 - START: 658 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:3 Pin 3 - START: 659 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2210:4 Pin 4 - START: 660 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2300:0 Offset Torque - START: 661 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x230A:0 Secondary position value - START: 665 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x230B:0 Secondary velocity value - START: 669 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2401:0 Analog input 1 - START: 673 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2402:0 Analog input 2 - START: 675 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2403:0 Analog input 3 - START: 677 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x2404:0 Analog input 4 - START: 679 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2501:0 Digital Input 1 - START: 681 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2502:0 Digital Input 2 - START: 682 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2503:0 Digital Input 3 - START: 683 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2504:0 Digital Input 4 - START: 684 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2601:0 Digital Output 1 - START: 685 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2602:0 Digital Output 2 - START: 686 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2603:0 Digital Output 3 - START: 687 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x2604:0 Digital Output 4 - START: 688 */
-    0x3C, 0x0,                                                                                                                                                                                                                                                   /* 0x2A00:0 Applied tuning torque percent - START: 689 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2A01:0 Tuning command - START: 691 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2A03:0 Tuning status - START: 695 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2FFD:0 Timestamp - START: 699 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2FFE:0 User MOSI - START: 703 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x2FFF:0 User MISO - START: 707 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x603F:0 Error code - START: 711 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6040:0 Controlword - START: 713 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6041:0 Statusword - START: 715 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x6060:0 Op Mode - START: 717 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x6061:0 Op Mode Display - START: 718 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6064:0 Position Value - START: 719 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x606C:0 Velocity Value - START: 723 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6071:0 Target Torque - START: 727 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6072:0 Max torque - START: 729 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6073:0 Max current - START: 731 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6075:0 Motor Rated Current - START: 733 */
-    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6076:0 Motor Rated Torque - START: 737 */
-    0x0, 0x0,                                                                                                                                                                                                                                                    /* 0x6077:0 Torque Value - START: 741 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6079:0 DC link circuit voltage - START: 743 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x607A:0 Target Position - START: 747 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x607B:0 SubIndex 000 - START: 751 */
-    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                         /* 0x607B:1 Min position range limit - START: 752 */
-    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                      /* 0x607B:2 Max position range limit - START: 756 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x607C:0 Home offset - START: 760 */
-    0x2,                                                                                                                                                                                                                                                         /* 0x607D:0 SubIndex 000 - START: 764 */
-    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                         /* 0x607D:1 Min position limit - START: 765 */
-    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                      /* 0x607D:2 Max position limit - START: 769 */
-    0x0,                                                                                                                                                                                                                                                         /* 0x607E:0 Polarity - START: 773 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x607F:0 Max profile velocity - START: 774 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6080:0 Max motor speed - START: 778 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6081:0 Profile velocity - START: 782 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6083:0 Profile acceleration - START: 786 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6084:0 Profile deceleration - START: 790 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x6085:0 Quick stop deceleration - START: 794 */
-    0x80, 0x0,                                                                                                                                                                                                                                                   /* 0x6086:0 Motion profile type - START: 798 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x60C5:0 Max acceleration - START: 800 */
-    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                          /* 0x60FF:0 Target Velocity - START: 804 */
-    0x80, 0x3, 0x0, 0x0                                                                                                                                                                                                                                          /* 0x6502:0 Supported Drive Modes - START: 808 */
+    0x92, 0x1, 0x2, 0x0,                                                                                                                                                                                                                                      /* 0x1000:0 Device Type - START: 0 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x1001:0 Error Register - START: 4 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x1008:0 Manufacturer Device Name - START: 5 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x100A:0 Manufacturer Software Version - START: 55 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x1018:0 Identity - START: 105 */
+    0xD2, 0x22, 0x0, 0x0,                                                                                                                                                                                                                                     /* 0x1018:1 Vendor ID - START: 106 */
+    0x1, 0x2, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1018:2 Product Code - START: 110 */
+    0x2, 0x0, 0x0, 0xA,                                                                                                                                                                                                                                       /* 0x1018:3 Revision - START: 114 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1018:4 Serialnumber - START: 118 */
+    0x10,                                                                                                                                                                                                                                                     /* 0x1600:0 SubIndex 000 - START: 122 */
+    0x10, 0x0, 0x40, 0x60,                                                                                                                                                                                                                                    /* 0x1600:1 Controlword - START: 123 */
+    0x8, 0x0, 0x60, 0x60,                                                                                                                                                                                                                                     /* 0x1600:2 Op Mode - START: 127 */
+    0x10, 0x0, 0x71, 0x60,                                                                                                                                                                                                                                    /* 0x1600:3 Target Torque - START: 131 */
+    0x20, 0x0, 0x7A, 0x60,                                                                                                                                                                                                                                    /* 0x1600:4 Target Position - START: 135 */
+    0x20, 0x0, 0xFF, 0x60,                                                                                                                                                                                                                                    /* 0x1600:5 Target Velocity - START: 139 */
+    0x20, 0x0, 0x0, 0x23,                                                                                                                                                                                                                                     /* 0x1600:6 Offset Torque - START: 143 */
+    0x20, 0x0, 0x1, 0x2A,                                                                                                                                                                                                                                     /* 0x1600:7 Tuning command - START: 147 */
+    0x1, 0x0, 0x1, 0x26,                                                                                                                                                                                                                                      /* 0x1600:8 Digital Output 1 - START: 151 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:9 padding entry (automatically added) 0 - START: 155 */
+    0x1, 0x0, 0x2, 0x26,                                                                                                                                                                                                                                      /* 0x1600:10 Digital Output 2 - START: 159 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:11 padding entry (automatically added) 1 - START: 163 */
+    0x1, 0x0, 0x3, 0x26,                                                                                                                                                                                                                                      /* 0x1600:12 Digital Output 3 - START: 167 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:13 padding entry (automatically added) 2 - START: 171 */
+    0x1, 0x0, 0x4, 0x26,                                                                                                                                                                                                                                      /* 0x1600:14 Digital Output 4 - START: 175 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1600:15 padding entry (automatically added) 3 - START: 179 */
+    0x20, 0x0, 0xFE, 0x2F,                                                                                                                                                                                                                                    /* 0x1600:16 User MOSI - START: 183 */
+    0x16,                                                                                                                                                                                                                                                     /* 0x1A00:0 SubIndex 000 - START: 187 */
+    0x10, 0x0, 0x41, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:1 Statusword - START: 188 */
+    0x8, 0x0, 0x61, 0x60,                                                                                                                                                                                                                                     /* 0x1A00:2 Op Mode Display - START: 192 */
+    0x20, 0x0, 0x64, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:3 Position Value - START: 196 */
+    0x20, 0x0, 0x6C, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:4 Velocity Value - START: 200 */
+    0x10, 0x0, 0x77, 0x60,                                                                                                                                                                                                                                    /* 0x1A00:5 Torque Value - START: 204 */
+    0x20, 0x0, 0xA, 0x23,                                                                                                                                                                                                                                     /* 0x1A00:6 Secondary position value - START: 208 */
+    0x20, 0x0, 0xB, 0x23,                                                                                                                                                                                                                                     /* 0x1A00:7 Secondary velocity value - START: 212 */
+    0x10, 0x0, 0x1, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:8 Analog input 1 - START: 216 */
+    0x10, 0x0, 0x2, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:9 Analog input 2 - START: 220 */
+    0x10, 0x0, 0x3, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:10 Analog input 3 - START: 224 */
+    0x10, 0x0, 0x4, 0x24,                                                                                                                                                                                                                                     /* 0x1A00:11 Analog input 4 - START: 228 */
+    0x20, 0x0, 0x3, 0x2A,                                                                                                                                                                                                                                     /* 0x1A00:12 Tuning status - START: 232 */
+    0x1, 0x0, 0x1, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:13 Digital Input 1 - START: 236 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:14 padding entry (automatically added) 0 - START: 240 */
+    0x1, 0x0, 0x2, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:15 Digital Input 2 - START: 244 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:16 padding entry (automatically added) 1 - START: 248 */
+    0x1, 0x0, 0x3, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:17 Digital Input 3 - START: 252 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:18 padding entry (automatically added) 2 - START: 256 */
+    0x1, 0x0, 0x4, 0x25,                                                                                                                                                                                                                                      /* 0x1A00:19 Digital Input 4 - START: 260 */
+    0x7, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x1A00:20 padding entry (automatically added) 3 - START: 264 */
+    0x20, 0x0, 0xFF, 0x2F,                                                                                                                                                                                                                                    /* 0x1A00:21 User MISO - START: 268 */
+    0x20, 0x0, 0xFD, 0x2F,                                                                                                                                                                                                                                    /* 0x1A00:22 Timestamp - START: 272 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x1C00:0 SubIndex 000 - START: 276 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x1C00:1 SyncMan 0 - START: 277 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x1C00:2 SyncMan 1 - START: 278 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x1C00:3 SyncMan 2 - START: 279 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x1C00:4 SyncMan 3 - START: 280 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x1C10:0 SubIndex 000 - START: 281 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x1C11:0 SubIndex 000 - START: 282 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x1C12:0 SubIndex 000 - START: 283 */
+    0x0, 0x16,                                                                                                                                                                                                                                                /* 0x1C12:1 SubIndex 001 - START: 284 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x1C13:0 SubIndex 000 - START: 286 */
+    0x0, 0x1A,                                                                                                                                                                                                                                                /* 0x1C13:1 SubIndex 001 - START: 287 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2000:0 Command Object - START: 289 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2001:0 Commutation angle offset - START: 291 */
+    0x1, 0x0,                                                                                                                                                                                                                                                 /* 0x2002:0 Position control strategy - START: 293 */
+    0x5,                                                                                                                                                                                                                                                      /* 0x2003:0 Number of entries - START: 295 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2003:1 Pole Pairs - START: 296 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2003:2 Torque Constant - START: 297 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2003:3 Phase Resistance - START: 301 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2003:4 Phase Inductance - START: 305 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2003:5 Motor phases inverted - START: 309 */
+    0x6,                                                                                                                                                                                                                                                      /* 0x2004:0 Number of entries - START: 310 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2004:1 Pull brake voltage - START: 311 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2004:2 Hold brake voltage - START: 315 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2004:3 Pull brake time - START: 319 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2004:4 Brake release strategy - START: 321 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2004:5 Brake release delay - START: 322 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2004:6 DC bus voltage - START: 324 */
+    0x7,                                                                                                                                                                                                                                                      /* 0x2005:0 Number of entries - START: 326 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2005:1 Recuperation enabled - START: 327 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:2 Min battery energy - START: 328 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:3 Max battery energy - START: 330 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:4 Min recuperation power - START: 332 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:5 Max recuperation power - START: 334 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:6 Minimum recuperation speed - START: 336 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2005:7 Maximum recuperation speed - START: 338 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x2006:0 Number of entries - START: 340 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2006:1 Min DC Voltage - START: 341 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2006:2 Max DC Voltage - START: 345 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2006:3 Max Current - START: 349 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2007:0 Number of entries - START: 353 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2007:1 Position filter coefficient - START: 354 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2007:2 Velocity filter coefficient - START: 358 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x200A:0 Moment of inertia - START: 362 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x2010:0 Number of entries - START: 366 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2010:1 Controller Kp - START: 367 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2010:2 Controller Ki - START: 371 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2010:3 Controller Kd - START: 375 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2011:0 Velocity Controller - START: 379 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:1 Controller Kp - START: 380 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:2 Controller Ki - START: 384 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:3 Controller Kd - START: 388 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2011:4 Controller integral limit - START: 392 */
+    0x8,                                                                                                                                                                                                                                                      /* 0x2012:0 Position Controller - START: 396 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:1 Position Loop Kp - START: 397 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:2 Position Loop Ki - START: 401 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:3 Position Loop Kd - START: 405 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:4 Position Loop integral limit - START: 409 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:5 Velocity Loop Kp - START: 413 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:6 Velocity Loop Ki - START: 417 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:7 Velocity Loop Kd - START: 421 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2012:8 Velocity Loop integral limit - START: 425 */
+    0x12,                                                                                                                                                                                                                                                     /* 0x2013:0 Position Controller Gain Scheduling - START: 429 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:1 Gain Scheduling threshold Velocity 0 - START: 430 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:2 Position Loop Kp_0 - START: 434 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:3 Position Loop Ki_0 - START: 438 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:4 Position Loop Kd_0 - START: 442 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:5 Position Loop integral limit 0 - START: 446 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:6 Velocity Loop Kp_0 - START: 450 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:7 Velocity Loop Ki_0 - START: 454 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:8 Velocity Loop Kd_0 - START: 458 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:9 Velocity Loop integral limit 0 - START: 462 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:10 Gain Scheduling threshold Velocity 1 - START: 466 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:11 Position Loop Kp_1 - START: 470 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:12 Position Loop Ki_1 - START: 474 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:13 Position Loop Kd_1 - START: 478 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:14 Position Loop integral limit 1 - START: 482 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:15 Velocity Loop Kp_1 - START: 486 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:16 Velocity Loop Ki_1 - START: 490 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:17 Velocity Loop Kd_1 - START: 494 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2013:18 Velocity Loop integral limit 1 - START: 498 */
+    0x3,                                                                                                                                                                                                                                                      /* 0x2100:0 Number of entries - START: 502 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2100:1 Sensor port 1 - START: 503 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2100:2 Sensor port 2 - START: 505 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2100:3 Sensor port 3 - START: 507 */
+    0xD,                                                                                                                                                                                                                                                      /* 0x2201:0 BISS Encoder 1 - START: 509 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2201:1 Type - START: 510 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:2 Function - START: 511 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2201:3 Resolution - START: 512 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2201:4 Velocity calculation period - START: 516 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:5 Polarity - START: 518 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2201:6 Multiturn resolution - START: 519 */
+    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2201:7 Clock frequency - START: 523 */
+    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2201:8 Timeout - START: 527 */
+    0x30,                                                                                                                                                                                                                                                     /* 0x2201:9 CRC polynom - START: 531 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:10 Clock port config - START: 532 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:11 Data port config - START: 533 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2201:12 Number of filling bits - START: 534 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2201:13 Number of bits to read while busy - START: 535 */
+    0xD,                                                                                                                                                                                                                                                      /* 0x2202:0 BISS Encoder 2 - START: 536 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2202:1 Type - START: 537 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:2 Function - START: 538 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2202:3 Resolution - START: 539 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2202:4 Velocity calculation period - START: 543 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:5 Polarity - START: 545 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2202:6 Multiturn resolution - START: 546 */
+    0xE8, 0x3, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2202:7 Clock frequency - START: 550 */
+    0x24, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                      /* 0x2202:8 Timeout - START: 554 */
+    0x30,                                                                                                                                                                                                                                                     /* 0x2202:9 CRC polynom - START: 558 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:10 Clock port config - START: 559 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:11 Data port config - START: 560 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2202:12 Number of filling bits - START: 561 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2202:13 Number of bits to read while busy - START: 562 */
+    0x6,                                                                                                                                                                                                                                                      /* 0x2203:0 REM 16MT Encoder - START: 563 */
+    0x6,                                                                                                                                                                                                                                                      /* 0x2203:1 Type - START: 564 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2203:2 Function - START: 565 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2203:3 Resolution - START: 566 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2203:4 Velocity calculation period - START: 570 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2203:5 Polarity - START: 572 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2203:6 Filter - START: 573 */
+    0x9,                                                                                                                                                                                                                                                      /* 0x2204:0 REM 14 Encoder - START: 574 */
+    0x5,                                                                                                                                                                                                                                                      /* 0x2204:1 Type - START: 575 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:2 Function - START: 576 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2204:3 Resolution - START: 577 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2204:4 Velocity calculation period - START: 581 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:5 Polarity - START: 583 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2204:6 Hysteresis - START: 584 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:7 Noise settings - START: 585 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:8 Dynamic angle error compensation - START: 586 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2204:9 Resolution settings - START: 587 */
+    0x7,                                                                                                                                                                                                                                                      /* 0x2205:0 Incremental Encoder 1 - START: 588 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2205:1 Type - START: 589 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2205:2 Function - START: 590 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2205:3 Resolution - START: 591 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2205:4 Velocity calculation period - START: 595 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2205:5 Polarity - START: 597 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2205:6 Number of channels - START: 598 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2205:7 Access signal type - START: 599 */
+    0x7,                                                                                                                                                                                                                                                      /* 0x2206:0 Incremental Encoder 2 - START: 600 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2206:1 Type - START: 601 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2206:2 Function - START: 602 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2206:3 Resolution - START: 603 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2206:4 Velocity calculation period - START: 607 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2206:5 Polarity - START: 609 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x2206:6 Number of channels - START: 610 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2206:7 Access signal type - START: 611 */
+    0xB,                                                                                                                                                                                                                                                      /* 0x2207:0 HALL Sensor 1 - START: 612 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2207:1 Type - START: 613 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2207:2 Function - START: 614 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2207:3 Resolution - START: 615 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2207:4 Velocity calculation period - START: 619 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2207:5 Polarity - START: 621 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:6 State angle 0 - START: 622 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:7 State angle 1 - START: 624 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:8 State angle 2 - START: 626 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:9 State angle 3 - START: 628 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:10 State angle 4 - START: 630 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2207:11 State angle 5 - START: 632 */
+    0xB,                                                                                                                                                                                                                                                      /* 0x2208:0 HALL Sensor 2 - START: 634 */
+    0x1,                                                                                                                                                                                                                                                      /* 0x2208:1 Type - START: 635 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2208:2 Function - START: 636 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2208:3 Resolution - START: 637 */
+    0xE8, 0x3,                                                                                                                                                                                                                                                /* 0x2208:4 Velocity calculation period - START: 641 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2208:5 Polarity - START: 643 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:6 State angle 0 - START: 644 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:7 State angle 1 - START: 646 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:8 State angle 2 - START: 648 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:9 State angle 3 - START: 650 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:10 State angle 4 - START: 652 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2208:11 State angle 5 - START: 654 */
+    0x4,                                                                                                                                                                                                                                                      /* 0x2210:0 GPIO - START: 656 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:1 Pin 1 - START: 657 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:2 Pin 2 - START: 658 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:3 Pin 3 - START: 659 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2210:4 Pin 4 - START: 660 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2300:0 Offset Torque - START: 661 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x230A:0 Secondary position value - START: 665 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x230B:0 Secondary velocity value - START: 669 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2401:0 Analog input 1 - START: 673 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2402:0 Analog input 2 - START: 675 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2403:0 Analog input 3 - START: 677 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x2404:0 Analog input 4 - START: 679 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2501:0 Digital Input 1 - START: 681 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2502:0 Digital Input 2 - START: 682 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2503:0 Digital Input 3 - START: 683 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2504:0 Digital Input 4 - START: 684 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2601:0 Digital Output 1 - START: 685 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2602:0 Digital Output 2 - START: 686 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2603:0 Digital Output 3 - START: 687 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2604:0 Digital Output 4 - START: 688 */
+    0x3C, 0x0,                                                                                                                                                                                                                                                /* 0x2A00:0 Applied tuning torque percent - START: 689 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2A01:0 Tuning command - START: 691 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2A03:0 Tuning status - START: 695 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, /* 0x2D00:0 Assigned Name - START: 699 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x2D01:0 Setup Wizard Completed - START: 749 */
+    0x0, 0x0, 0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                             /* 0x2D02:0 Real Time Clock - START: 750 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2FFD:0 Timestamp - START: 756 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2FFE:0 User MOSI - START: 760 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x2FFF:0 User MISO - START: 764 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x603F:0 Error code - START: 768 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6040:0 Controlword - START: 770 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6041:0 Statusword - START: 772 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x6060:0 Op Mode - START: 774 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x6061:0 Op Mode Display - START: 775 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6064:0 Position Value - START: 776 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x606C:0 Velocity Value - START: 780 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6071:0 Target Torque - START: 784 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6072:0 Max torque - START: 786 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6073:0 Max current - START: 788 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6075:0 Motor Rated Current - START: 790 */
+    0x1, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6076:0 Motor Rated Torque - START: 794 */
+    0x0, 0x0,                                                                                                                                                                                                                                                 /* 0x6077:0 Torque Value - START: 798 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6079:0 DC link circuit voltage - START: 800 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x607A:0 Target Position - START: 804 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x607B:0 SubIndex 000 - START: 808 */
+    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                      /* 0x607B:1 Min position range limit - START: 809 */
+    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                   /* 0x607B:2 Max position range limit - START: 813 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x607C:0 Home offset - START: 817 */
+    0x2,                                                                                                                                                                                                                                                      /* 0x607D:0 SubIndex 000 - START: 821 */
+    0x0, 0x0, 0x0, 0x80,                                                                                                                                                                                                                                      /* 0x607D:1 Min position limit - START: 822 */
+    0xFF, 0xFF, 0xFF, 0x7F,                                                                                                                                                                                                                                   /* 0x607D:2 Max position limit - START: 826 */
+    0x0,                                                                                                                                                                                                                                                      /* 0x607E:0 Polarity - START: 830 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x607F:0 Max profile velocity - START: 831 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6080:0 Max motor speed - START: 835 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6081:0 Profile velocity - START: 839 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6083:0 Profile acceleration - START: 843 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6084:0 Profile deceleration - START: 847 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x6085:0 Quick stop deceleration - START: 851 */
+    0x80, 0x0,                                                                                                                                                                                                                                                /* 0x6086:0 Motion profile type - START: 855 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x60C5:0 Max acceleration - START: 857 */
+    0x0, 0x0, 0x0, 0x0,                                                                                                                                                                                                                                       /* 0x60FF:0 Target Velocity - START: 861 */
+    0x80, 0x3, 0x0, 0x0                                                                                                                                                                                                                                       /* 0x6502:0 Supported Drive Modes - START: 865 */
 };
 
 /*
@@ -616,6 +622,7 @@ const uint8_t entry_min_values[entry_min_values_length] = {
     0x0,
     0x0,
     0x0, 0x0,
+    0x0,
     0x0, 0x0, 0x0, 0x0,
     0x0, 0x0,
     0x1, 0x0, 0x0, 0x0,
@@ -639,6 +646,7 @@ const uint8_t entry_max_values[entry_max_values_length] = {
     0x1,
     0x1,
     0x64, 0x0,
+    0x3,
     0xFF, 0xFF, 0xFF, 0xFF,
     0x0, 0x0
 };
@@ -801,6 +809,9 @@ const char *string[] = {
     "Pin 3",
     "Pin 4",
     "Applied tuning torque percent",
+    "Assigned Name",
+    "Setup Wizard Completed",
+    "Real Time Clock",
     "Error code",
     "Max torque",
     "Max current",
@@ -865,7 +876,7 @@ COD_Entry object_entries[] = {
         0x0,
         &(string[3]),
         &(entry_values[55]),
-        &(entry_default_values[55]), /* 0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000322E33 */
+        &(entry_default_values[55]), /* 0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
         NULL,
         NULL
     }, {
@@ -3476,16 +3487,49 @@ COD_Entry object_entries[] = {
         NULL,
         NULL
     }, {
+        CODE_SET_ENTRY_INDEX(0x2D00, 0, 0), /* Assigned Name */
+        DEFTYPE_VISIBLE_STRING,
+        400,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
+        0x0,
+        &(string[153]),
+        &(entry_values[699]),
+        &(entry_default_values[699]), /* 0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
+        NULL,
+        NULL
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2D01, 0, 0), /* Setup Wizard Completed */
+        DEFTYPE_UNSIGNED8,
+        8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
+        0x0,
+        &(string[154]),
+        &(entry_values[749]),
+        &(entry_default_values[749]), /* 0x00 */
+        &(entry_min_values[17]),
+        &(entry_max_values[13])
+    }, {
+        CODE_SET_ENTRY_INDEX(0x2D02, 0, 0), /* Real Time Clock */
+        DEFTYPE_TIME_OF_DAY,
+        48,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_WR),
+        0x0,
+        &(string[155]),
+        &(entry_values[750]),
+        &(entry_default_values[750]), /* 0x000000000000 */
+        NULL,
+        NULL
+    }, {
         CODE_SET_ENTRY_INDEX(0x2FFD, 0, 0), /* Timestamp */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xFA030000,
         &(string[43]),
-        &(entry_values[699]),
-        &(entry_default_values[699]), /* 0x00000000 */
-        &(entry_min_values[17]),
-        &(entry_max_values[13])
+        &(entry_values[756]),
+        &(entry_default_values[756]), /* 0x00000000 */
+        &(entry_min_values[18]),
+        &(entry_max_values[14])
     }, {
         CODE_SET_ENTRY_INDEX(0x2FFE, 0, 0), /* User MOSI */
         DEFTYPE_UNSIGNED32,
@@ -3493,8 +3537,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[25]),
-        &(entry_values[703]),
-        &(entry_default_values[703]), /* 0x00000000 */
+        &(entry_values[760]),
+        &(entry_default_values[760]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3504,8 +3548,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[42]),
-        &(entry_values[707]),
-        &(entry_default_values[707]), /* 0x00000000 */
+        &(entry_values[764]),
+        &(entry_default_values[764]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3514,9 +3558,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0x0,
-        &(string[153]),
-        &(entry_values[711]),
-        &(entry_default_values[711]), /* 0x0000 */
+        &(string[156]),
+        &(entry_values[768]),
+        &(entry_default_values[768]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3526,8 +3570,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[10]),
-        &(entry_values[713]),
-        &(entry_default_values[713]), /* 0x0000 */
+        &(entry_values[770]),
+        &(entry_default_values[770]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3537,8 +3581,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[26]),
-        &(entry_values[715]),
-        &(entry_default_values[715]), /* 0x0000 */
+        &(entry_values[772]),
+        &(entry_default_values[772]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3548,8 +3592,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[11]),
-        &(entry_values[717]),
-        &(entry_default_values[717]), /* 0x00 */
+        &(entry_values[774]),
+        &(entry_default_values[774]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3559,8 +3603,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[27]),
-        &(entry_values[718]),
-        &(entry_default_values[718]), /* 0x00 */
+        &(entry_values[775]),
+        &(entry_default_values[775]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3570,8 +3614,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB50000,
         &(string[28]),
-        &(entry_values[719]),
-        &(entry_default_values[719]), /* 0x00000000 */
+        &(entry_values[776]),
+        &(entry_default_values[776]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3581,8 +3625,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0xB44700,
         &(string[29]),
-        &(entry_values[723]),
-        &(entry_default_values[723]), /* 0x00000000 */
+        &(entry_values[780]),
+        &(entry_default_values[780]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3592,8 +3636,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
         &(string[12]),
-        &(entry_values[727]),
-        &(entry_default_values[727]), /* 0x0000 */
+        &(entry_values[784]),
+        &(entry_default_values[784]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3602,9 +3646,9 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[154]),
-        &(entry_values[729]),
-        &(entry_default_values[729]), /* 0x0000 */
+        &(string[157]),
+        &(entry_values[786]),
+        &(entry_default_values[786]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3613,10 +3657,10 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[155]),
-        &(entry_values[731]),
-        &(entry_default_values[731]), /* 0x0000 */
-        &(entry_min_values[21]),
+        &(string[158]),
+        &(entry_values[788]),
+        &(entry_default_values[788]), /* 0x0000 */
+        &(entry_min_values[22]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6075, 0, 0), /* Motor Rated Current */
@@ -3624,10 +3668,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD040000,
-        &(string[156]),
-        &(entry_values[733]),
-        &(entry_default_values[733]), /* 0x00000001 */
-        &(entry_min_values[23]),
+        &(string[159]),
+        &(entry_values[790]),
+        &(entry_default_values[790]), /* 0x00000001 */
+        &(entry_min_values[24]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6076, 0, 0), /* Motor Rated Torque */
@@ -3635,10 +3679,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xFD560000,
-        &(string[157]),
-        &(entry_values[737]),
-        &(entry_default_values[737]), /* 0x00000001 */
-        &(entry_min_values[27]),
+        &(string[160]),
+        &(entry_values[794]),
+        &(entry_default_values[794]), /* 0x00000001 */
+        &(entry_min_values[28]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6077, 0, 0), /* Torque Value */
@@ -3647,8 +3691,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0x0,
         &(string[30]),
-        &(entry_values[741]),
-        &(entry_default_values[741]), /* 0x0000 */
+        &(entry_values[798]),
+        &(entry_default_values[798]), /* 0x0000 */
         NULL,
         NULL
     }, {
@@ -3657,9 +3701,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0xFD260000,
-        &(string[158]),
-        &(entry_values[743]),
-        &(entry_default_values[743]), /* 0x00000000 */
+        &(string[161]),
+        &(entry_values[800]),
+        &(entry_default_values[800]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3669,8 +3713,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0xB50000,
         &(string[13]),
-        &(entry_values[747]),
-        &(entry_default_values[747]), /* 0x00000000 */
+        &(entry_values[804]),
+        &(entry_default_values[804]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3680,8 +3724,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[9]),
-        &(entry_values[751]),
-        &(entry_default_values[751]), /* 0x02 */
+        &(entry_values[808]),
+        &(entry_default_values[808]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -3690,9 +3734,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[159]),
-        &(entry_values[752]),
-        &(entry_default_values[752]), /* 0x80000000 */
+        &(string[162]),
+        &(entry_values[809]),
+        &(entry_default_values[809]), /* 0x80000000 */
         NULL,
         NULL
     }, {
@@ -3701,9 +3745,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[160]),
-        &(entry_values[756]),
-        &(entry_default_values[756]), /* 0x7FFFFFFF */
+        &(string[163]),
+        &(entry_values[813]),
+        &(entry_default_values[813]), /* 0x7FFFFFFF */
         NULL,
         NULL
     }, {
@@ -3712,9 +3756,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[161]),
-        &(entry_values[760]),
-        &(entry_default_values[760]), /* 0x00000000 */
+        &(string[164]),
+        &(entry_values[817]),
+        &(entry_default_values[817]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3724,8 +3768,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
         &(string[9]),
-        &(entry_values[764]),
-        &(entry_default_values[764]), /* 0x02 */
+        &(entry_values[821]),
+        &(entry_default_values[821]), /* 0x02 */
         NULL,
         NULL
     }, {
@@ -3734,9 +3778,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[162]),
-        &(entry_values[765]),
-        &(entry_default_values[765]), /* 0x80000000 */
+        &(string[165]),
+        &(entry_values[822]),
+        &(entry_default_values[822]), /* 0x80000000 */
         NULL,
         NULL
     }, {
@@ -3745,9 +3789,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0xB50000,
-        &(string[163]),
-        &(entry_values[769]),
-        &(entry_default_values[769]), /* 0x7FFFFFFF */
+        &(string[166]),
+        &(entry_values[826]),
+        &(entry_default_values[826]), /* 0x7FFFFFFF */
         NULL,
         NULL
     }, {
@@ -3757,8 +3801,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0x0,
         &(string[118]),
-        &(entry_values[773]),
-        &(entry_default_values[773]), /* 0x00 */
+        &(entry_values[830]),
+        &(entry_default_values[830]), /* 0x00 */
         NULL,
         NULL
     }, {
@@ -3767,10 +3811,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[164]),
-        &(entry_values[774]),
-        &(entry_default_values[774]), /* 0x00000000 */
-        &(entry_min_values[31]),
+        &(string[167]),
+        &(entry_values[831]),
+        &(entry_default_values[831]), /* 0x00000000 */
+        &(entry_min_values[32]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6080, 0, 0), /* Max motor speed */
@@ -3778,10 +3822,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[165]),
-        &(entry_values[778]),
-        &(entry_default_values[778]), /* 0x00000000 */
-        &(entry_min_values[35]),
+        &(string[168]),
+        &(entry_values[835]),
+        &(entry_default_values[835]), /* 0x00000000 */
+        &(entry_min_values[36]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6081, 0, 0), /* Profile velocity */
@@ -3789,9 +3833,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
-        &(string[166]),
-        &(entry_values[782]),
-        &(entry_default_values[782]), /* 0x00000000 */
+        &(string[169]),
+        &(entry_values[839]),
+        &(entry_default_values[839]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3800,10 +3844,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[167]),
-        &(entry_values[786]),
-        &(entry_default_values[786]), /* 0x00000000 */
-        &(entry_min_values[39]),
+        &(string[170]),
+        &(entry_values[843]),
+        &(entry_default_values[843]), /* 0x00000000 */
+        &(entry_min_values[40]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6084, 0, 0), /* Profile deceleration */
@@ -3811,10 +3855,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[168]),
-        &(entry_values[790]),
-        &(entry_default_values[790]), /* 0x00000000 */
-        &(entry_min_values[43]),
+        &(string[171]),
+        &(entry_values[847]),
+        &(entry_default_values[847]), /* 0x00000000 */
+        &(entry_min_values[44]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6085, 0, 0), /* Quick stop deceleration */
@@ -3822,10 +3866,10 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[169]),
-        &(entry_values[794]),
-        &(entry_default_values[794]), /* 0x00000000 */
-        &(entry_min_values[47]),
+        &(string[172]),
+        &(entry_values[851]),
+        &(entry_default_values[851]), /* 0x00000000 */
+        &(entry_min_values[48]),
         NULL
     }, {
         CODE_SET_ENTRY_INDEX(0x6086, 0, 0), /* Motion profile type */
@@ -3833,20 +3877,20 @@ COD_Entry object_entries[] = {
         16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x0,
-        &(string[170]),
-        &(entry_values[798]),
-        &(entry_default_values[798]), /* 0x0080 */
-        &(entry_min_values[51]),
-        &(entry_max_values[17])
+        &(string[173]),
+        &(entry_values[855]),
+        &(entry_default_values[855]), /* 0x0080 */
+        &(entry_min_values[52]),
+        &(entry_max_values[18])
     }, {
         CODE_SET_ENTRY_INDEX(0x60C5, 0, 0), /* Max acceleration */
         DEFTYPE_UNSIGNED32,
         32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0x5700,
-        &(string[171]),
-        &(entry_values[800]),
-        &(entry_default_values[800]), /* 0x00000000 */
+        &(string[174]),
+        &(entry_values[857]),
+        &(entry_default_values[857]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3856,8 +3900,8 @@ COD_Entry object_entries[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0xB44700,
         &(string[14]),
-        &(entry_values[804]),
-        &(entry_default_values[804]), /* 0x00000000 */
+        &(entry_values[861]),
+        &(entry_default_values[861]), /* 0x00000000 */
         NULL,
         NULL
     }, {
@@ -3866,9 +3910,9 @@ COD_Entry object_entries[] = {
         32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0x0,
-        &(string[172]),
-        &(entry_values[808]),
-        &(entry_default_values[808]), /* 0x00000380 */
+        &(string[175]),
+        &(entry_values[865]),
+        &(entry_default_values[865]), /* 0x00000380 */
         NULL,
         NULL
     }
@@ -4300,13 +4344,37 @@ COD_Object object_dictionary[] = {
         &(string[37]),
         &(object_entries[240])
     }, {
+        0x2D00, /* Assigned Name */
+        OBJECT_TYPE_VAR,
+        DEFTYPE_VISIBLE_STRING,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
+        0,
+        &(string[153]),
+        &(object_entries[241])
+    }, {
+        0x2D01, /* Setup Wizard Completed */
+        OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED8,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
+        0,
+        &(string[154]),
+        &(object_entries[242])
+    }, {
+        0x2D02, /* Real Time Clock */
+        OBJECT_TYPE_VAR,
+        DEFTYPE_TIME_OF_DAY,
+        ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_WR),
+        0,
+        &(string[155]),
+        &(object_entries[243])
+    }, {
         0x2FFD, /* Timestamp */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[43]),
-        &(object_entries[241])
+        &(object_entries[244])
     }, {
         0x2FFE, /* User MOSI */
         OBJECT_TYPE_VAR,
@@ -4314,7 +4382,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[25]),
-        &(object_entries[242])
+        &(object_entries[245])
     }, {
         0x2FFF, /* User MISO */
         OBJECT_TYPE_VAR,
@@ -4322,15 +4390,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[42]),
-        &(object_entries[243])
+        &(object_entries[246])
     }, {
         0x603F, /* Error code */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[153]),
-        &(object_entries[244])
+        &(string[156]),
+        &(object_entries[247])
     }, {
         0x6040, /* Controlword */
         OBJECT_TYPE_VAR,
@@ -4338,7 +4406,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[10]),
-        &(object_entries[245])
+        &(object_entries[248])
     }, {
         0x6041, /* Statusword */
         OBJECT_TYPE_VAR,
@@ -4346,7 +4414,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[26]),
-        &(object_entries[246])
+        &(object_entries[249])
     }, {
         0x6060, /* Op Mode */
         OBJECT_TYPE_VAR,
@@ -4354,7 +4422,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[11]),
-        &(object_entries[247])
+        &(object_entries[250])
     }, {
         0x6061, /* Op Mode Display */
         OBJECT_TYPE_VAR,
@@ -4362,7 +4430,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[27]),
-        &(object_entries[248])
+        &(object_entries[251])
     }, {
         0x6064, /* Position Value */
         OBJECT_TYPE_VAR,
@@ -4370,7 +4438,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[28]),
-        &(object_entries[249])
+        &(object_entries[252])
     }, {
         0x606C, /* Velocity Value */
         OBJECT_TYPE_VAR,
@@ -4378,7 +4446,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[29]),
-        &(object_entries[250])
+        &(object_entries[253])
     }, {
         0x6071, /* Target Torque */
         OBJECT_TYPE_VAR,
@@ -4386,39 +4454,39 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[12]),
-        &(object_entries[251])
+        &(object_entries[254])
     }, {
         0x6072, /* Max torque */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[154]),
-        &(object_entries[252])
+        &(string[157]),
+        &(object_entries[255])
     }, {
         0x6073, /* Max current */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED16,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[155]),
-        &(object_entries[253])
+        &(string[158]),
+        &(object_entries[256])
     }, {
         0x6075, /* Motor Rated Current */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[156]),
-        &(object_entries[254])
+        &(string[159]),
+        &(object_entries[257])
     }, {
         0x6076, /* Motor Rated Torque */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
-        &(string[157]),
-        &(object_entries[255])
+        &(string[160]),
+        &(object_entries[258])
     }, {
         0x6077, /* Torque Value */
         OBJECT_TYPE_VAR,
@@ -4426,15 +4494,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXPDO_MAP, ACCESS_ALL_RD),
         0,
         &(string[30]),
-        &(object_entries[256])
+        &(object_entries[259])
     }, {
         0x6079, /* DC link circuit voltage */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RD),
         0,
-        &(string[158]),
-        &(object_entries[257])
+        &(string[161]),
+        &(object_entries[260])
     }, {
         0x607A, /* Target Position */
         OBJECT_TYPE_VAR,
@@ -4442,7 +4510,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[13]),
-        &(object_entries[258])
+        &(object_entries[261])
     }, {
         0x607B, /* SubIndex 000 */
         OBJECT_TYPE_ARRAY,
@@ -4450,15 +4518,15 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         2,
         &(string[9]),
-        &(object_entries[259])
+        &(object_entries[262])
     }, {
         0x607C, /* Home offset */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
-        &(string[161]),
-        &(object_entries[262])
+        &(string[164]),
+        &(object_entries[265])
     }, {
         0x607D, /* SubIndex 000 */
         OBJECT_TYPE_ARRAY,
@@ -4466,7 +4534,7 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         2,
         &(string[9]),
-        &(object_entries[263])
+        &(object_entries[266])
     }, {
         0x607E, /* Polarity */
         OBJECT_TYPE_VAR,
@@ -4474,33 +4542,9 @@ COD_Object object_dictionary[] = {
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RDWR),
         0,
         &(string[118]),
-        &(object_entries[266])
-    }, {
-        0x607F, /* Max profile velocity */
-        OBJECT_TYPE_VAR,
-        DEFTYPE_UNSIGNED32,
-        ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
-        0,
-        &(string[164]),
-        &(object_entries[267])
-    }, {
-        0x6080, /* Max motor speed */
-        OBJECT_TYPE_VAR,
-        DEFTYPE_UNSIGNED32,
-        ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
-        0,
-        &(string[165]),
-        &(object_entries[268])
-    }, {
-        0x6081, /* Profile velocity */
-        OBJECT_TYPE_VAR,
-        DEFTYPE_UNSIGNED32,
-        ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
-        0,
-        &(string[166]),
         &(object_entries[269])
     }, {
-        0x6083, /* Profile acceleration */
+        0x607F, /* Max profile velocity */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
@@ -4508,7 +4552,7 @@ COD_Object object_dictionary[] = {
         &(string[167]),
         &(object_entries[270])
     }, {
-        0x6084, /* Profile deceleration */
+        0x6080, /* Max motor speed */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
@@ -4516,7 +4560,7 @@ COD_Object object_dictionary[] = {
         &(string[168]),
         &(object_entries[271])
     }, {
-        0x6085, /* Quick stop deceleration */
+        0x6081, /* Profile velocity */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
@@ -4524,15 +4568,15 @@ COD_Object object_dictionary[] = {
         &(string[169]),
         &(object_entries[272])
     }, {
-        0x6086, /* Motion profile type */
+        0x6083, /* Profile acceleration */
         OBJECT_TYPE_VAR,
-        DEFTYPE_INTEGER16,
+        DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[170]),
         &(object_entries[273])
     }, {
-        0x60C5, /* Max acceleration */
+        0x6084, /* Profile deceleration */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
@@ -4540,21 +4584,45 @@ COD_Object object_dictionary[] = {
         &(string[171]),
         &(object_entries[274])
     }, {
+        0x6085, /* Quick stop deceleration */
+        OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED32,
+        ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
+        0,
+        &(string[172]),
+        &(object_entries[275])
+    }, {
+        0x6086, /* Motion profile type */
+        OBJECT_TYPE_VAR,
+        DEFTYPE_INTEGER16,
+        ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
+        0,
+        &(string[173]),
+        &(object_entries[276])
+    }, {
+        0x60C5, /* Max acceleration */
+        OBJECT_TYPE_VAR,
+        DEFTYPE_UNSIGNED32,
+        ACCESS_SET_FLAGS(0, 0, ACCESS_RXTXPDO_MAP, ACCESS_ALL_RDWR),
+        0,
+        &(string[174]),
+        &(object_entries[277])
+    }, {
         0x60FF, /* Target Velocity */
         OBJECT_TYPE_VAR,
         DEFTYPE_INTEGER32,
         ACCESS_SET_FLAGS(0, 0, ACCESS_TXPDO_MAP, ACCESS_ALL_RDWR),
         0,
         &(string[14]),
-        &(object_entries[275])
+        &(object_entries[278])
     }, {
         0x6502, /* Supported Drive Modes */
         OBJECT_TYPE_VAR,
         DEFTYPE_UNSIGNED32,
         ACCESS_SET_FLAGS(0, 0, 0, ACCESS_ALL_RD),
         0,
-        &(string[172]),
-        &(object_entries[276])
+        &(string[175]),
+        &(object_entries[279])
     }
 };
 

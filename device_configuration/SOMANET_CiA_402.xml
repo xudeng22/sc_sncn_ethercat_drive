@@ -59,6 +59,10 @@
                 <BitSize>8</BitSize>
               </DataType>
               <DataType>
+                <Name>TIME_OF_DAY</Name>
+                <BitSize>48</BitSize>
+              </DataType>
+              <DataType>
                 <Name>STRING(2)</Name>
                 <BitSize>16</BitSize>
               </DataType>
@@ -2629,7 +2633,7 @@
                 <Type>STRING(50)</Type>
                 <BitSize>400</BitSize>
                 <Info>
-                  <DefaultData>332E32</DefaultData>
+                  <DefaultData>00</DefaultData>
                 </Info>
                 <Flags>
                   <Access>ro</Access>
@@ -5175,6 +5179,50 @@
                   </SubItem>
                 </Info>
                 <Flags>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x2D00</Index>
+                <Name>Assigned Name</Name>
+                <Comment></Comment>
+                <Type>STRING(50)</Type>
+                <BitSize>400</BitSize>
+                <Info>
+                  <DefaultString></DefaultString>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x2D01</Index>
+                <Name>Setup Wizard Completed</Name>
+                <Comment></Comment>
+                <Type>USINT</Type>
+                <BitSize>8</BitSize>
+                <Info>
+                  <MinData>00</MinData>
+                  <MaxData>03</MaxData>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>rw</Access>
+                  <Category>o</Category>
+                </Flags>
+              </Object>
+              <Object>
+                <Index>#x2D02</Index>
+                <Name>Real Time Clock</Name>
+                <Comment></Comment>
+                <Type>TIME_OF_DAY</Type>
+                <BitSize>48</BitSize>
+                <Info>
+                  <DefaultData>00</DefaultData>
+                </Info>
+                <Flags>
+                  <Access>wo</Access>
                   <Category>o</Category>
                 </Flags>
               </Object>

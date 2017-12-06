@@ -139,15 +139,12 @@ void canopen_interface_service(
                     int request_from = REQUEST_FROM_MASTER;
                     uint8_t tmp[MAX_VALUE_BUFFER];
 
-                    if (capacity > MAX_VALUE_BUFFER) {
-                        error_out = SDO_ERROR_INSUFFICIENT_BUFFER;
-                        bitlength_out = 0;
-                        break;
-                    }
-
-                    int err = sdo_entry_get_value(index_, subindex, capacity, request_from, (uint8_t*)&tmp, &bitsize);
+                    int err = sdo_entry_get_value(index_, subindex, MAX_VALUE_BUFFER, request_from, (uint8_t*)&tmp, &bitsize);
                     if (err != 0) {
                         error_out = sdo_error;
+                        bitlength_out = 0;
+                    } else if (BYTES_FROM_BITS(bitsize) > capacity) {
+                        error_out = SDO_ERROR_INSUFFICIENT_BUFFER;
                         bitlength_out = 0;
                     } else {
                         error_out = 0;
@@ -181,8 +178,8 @@ void canopen_interface_service(
                         error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
                     } else {
                         size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                        if (capacity > bytecount) {
-                            error = -1;
+                        if (capacity < bytecount) {
+                            error = SDO_ERROR_INSUFFICIENT_BUFFER;
                         } else {
                             uint8_t tmpvalue[MAX_VALUE_BUFFER];
                             memcpy(&tmpvalue, value, capacity);
@@ -198,8 +195,8 @@ void canopen_interface_service(
                     int error = 0;
 
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                    if (capacity > bytecount) {
-                        error = -1;
+                    if (capacity < bytecount) {
+                        error = SDO_ERROR_INSUFFICIENT_BUFFER;
                     } else {
                         uint8_t tmpvalue[MAX_VALUE_BUFFER];
                         memcpy(&tmpvalue, value, capacity);

@@ -246,6 +246,7 @@ int main(void)
                     torque_control_config.pole_pairs =  MOTOR_POLE_PAIRS;
                     torque_control_config.commutation_sensor=SENSOR_1_TYPE;
                     torque_control_config.commutation_angle_offset=COMMUTATION_ANGLE_OFFSET;
+                    torque_control_config.offset_compensation_constant=OFFSET_COMPENSATION_CONSTANT;
                     torque_control_config.max_torque =  MOTOR_MAXIMUM_TORQUE;
                     torque_control_config.phase_resistance =  MOTOR_PHASE_RESISTANCE;
                     torque_control_config.phase_inductance =  MOTOR_PHASE_INDUCTANCE;

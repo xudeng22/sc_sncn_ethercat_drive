@@ -17,6 +17,7 @@
 #include <ethercat_service.h>
 #include <pdo_handler.h>
 #include <position_feedback_service.h>
+#include <spiffs_service.h>
 #include <stdint.h>
 
 #include <xscope.h>
@@ -47,6 +48,7 @@ typedef enum {
     TUNING_CMD_CONTROL_TORQUE             = 0x0A,
     TUNING_CMD_AUTO_POS_CTRL_TUNE         = 0x0B,
     TUNING_CMD_AUTO_VEL_CTRL_TUNE         = 0x0C,
+    TUNING_CMD_SAVE_CONFIG                = 0x0D,
     TUNING_CMD_POSITION_KP                = 0xC0,
     TUNING_CMD_POSITION_KI                = 0xC1,
     TUNING_CMD_POSITION_KD                = 0xC2,
@@ -159,6 +161,8 @@ typedef struct {
  * @param i_motion_control client interface to the motion control service
  * @param i_position_feedback_1 client interface to the position feedback number 1
  * @param i_position_feedback_2 client interface to the position feedback number 2
+ * @param i_coe client interface to read the object dictionary before writing it to flash
+ * @param i_spiffs client interface to write the object dictionary to flash
  */
 int tuning_handler_ethercat(
         /* input */  uint32_t    tuning_command,
@@ -173,7 +177,9 @@ int tuning_handler_ethercat(
         UpstreamControlData      &upstream_control_data,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface i_coe_communication i_coe,
+        client SPIFFSInterface i_spiffs
     );
 
 
@@ -191,6 +197,8 @@ int tuning_handler_ethercat(
  * @param i_motion_control client interface to the motion control service
  * @param i_position_feedback_1 client interface to the position feedback number 1
  * @param i_position_feedback_2 client interface to the position feedback number 2
+ * @param i_coe client interface to read the object dictionary before writing it to flash
+ * @param i_spiffs client interface to write the object dictionary to flash
  */
 void tuning_command_handler(
         TuningModeState             &tuning_mode_state,
@@ -202,7 +210,9 @@ void tuning_command_handler(
         int sensor_motion_control,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface i_coe_communication i_coe,
+        client SPIFFSInterface i_spiffs
     );
 
 

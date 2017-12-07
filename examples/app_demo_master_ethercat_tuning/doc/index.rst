@@ -107,6 +107,7 @@ The number can be negative. Spaces are ignored. The default number value is 0.
   - ``zz``: reset the multiturn and singleturn position to 0. The offset need to be found again. This command only works with the REM 16MT position sensor.
   - ``o[number]``: set the commutation offset. The range is [0 - 4095].
   - ``s``: toggle the sensor polarity. It will make the sensor to return the position in reverse. You can try this if the offset detection keep failing.
+  - ``S``: Save the config from object dictionary to the flash memory. Note: the value displayed in the app may not be the value in the object dictonary. To set the values in the object dictonary use the ``sdo_config.csv`` file
   - ``d``: toggle the motion polarity. It reverse the position/velocity/torque commands and feedback in the motion controller. Which will make you motor turn the other direction.
   - ``m``: toggle the phase inverted parameter. Use this if after finding the offset you have a positive torque resulting in a negative velocity.
   - ``P[number]``: set the pole pairs. If when using torque control and the motor moves a little bit then "hold" a position it can be because the pole pairs are incorrect. (it can also be caused by the position sensor).

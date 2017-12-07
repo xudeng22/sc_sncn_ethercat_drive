@@ -1,7 +1,7 @@
 /* INCLUDE BOARD SUPPORT FILES FROM module_board-support */
 #include <COM_ECAT-rev-a.bsp>
 #include <CORE_C22-rev-a.bsp>
-#include <IFM_DC1K-rev-c3.bsp>
+#include <IFM_BOARD_REQUIRED>
 
 /**
  * @file test_ethercat-mode.xc
@@ -66,8 +66,6 @@ int main(void)
     interface i_pdo_communication i_pdo;
     interface EtherCATRebootInterface i_ecat_reboot;
 
-    interface SDO_Config sdo_config;
-
     FlashDataInterface i_data[1];
     SPIFFSInterface i_spiffs[1];
     FlashBootInterface i_boot;
@@ -107,8 +105,7 @@ int main(void)
                     profiler_config.max_acceleration = MAX_ACCELERATION_PROFILER;
                     profiler_config.max_deceleration = MAX_DECELERATION_PROFILER;
 
-                     ethercat_drive_service( sdo_config,
-                                             profiler_config,
+                     ethercat_drive_service( profiler_config,
                                              i_pdo, i_coe,
                                              i_torque_control[1],
                                              i_motion_control[0], i_position_feedback_1[0], i_position_feedback_2[0], i_spiffs[0]);

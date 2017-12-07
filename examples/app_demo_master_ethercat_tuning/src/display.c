@@ -244,6 +244,8 @@ int display_tuning_help(WINDOW *wnd, int row)
     wmoveclr(wnd, &row);
     printw(".:          Start/stop recording");
     wmoveclr(wnd, &row);
+    printw("S: save the config from object dictionary to the flash memory");
+    wmoveclr(wnd, &row);
     printw("L s/t/p + number: set speed/torque/position limit");
     wmoveclr(wnd, &row);
     printw("** single press Enter for emergency stop **");

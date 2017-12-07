@@ -323,6 +323,11 @@ void tuning_command(WINDOW *wnd, struct _pdo_cia402_output *pdo_output, struct _
                 }
                 break;
 
+            //save config to flash
+            case 'S':
+                pdo_output->tuning_command = TUNING_CMD_SAVE_CONFIG;
+                break;
+
            //motion polarity
             case 'd':
                 pdo_output->tuning_command = TUNING_CMD_POLARITY_MOTION;

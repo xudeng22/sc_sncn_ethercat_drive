@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <state_modes.h>
+#include <ethercat_drive_service.h>
 
 /*
  * Function to call while in tuning opmode
@@ -31,7 +32,9 @@ int tuning_handler_ethercat(
         UpstreamControlData      &upstream_control_data,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface i_coe_communication i_coe,
+        client SPIFFSInterface i_spiffs
     )
 {
     uint8_t status_mux     = (tuning_status >> 16) & 0xff;
@@ -126,7 +129,8 @@ int tuning_handler_ethercat(
         tuning_command_handler(tuning_mode_state,
                 motorcontrol_config, motion_ctrl_config, pos_feedback_config_1, pos_feedback_config_2,
                 sensor_commutation, sensor_motion_control,
-                i_motion_control, i_position_feedback_1, i_position_feedback_2);
+                i_motion_control, i_position_feedback_1, i_position_feedback_2,
+                i_coe, i_spiffs);
 
         //update flags
         tuning_mode_state.flags = tuning_set_flags(tuning_mode_state, motorcontrol_config, motion_ctrl_config,
@@ -151,7 +155,9 @@ void tuning_command_handler(
         int sensor_motion_control,
         client interface MotionControlInterface i_motion_control,
         client interface PositionFeedbackInterface ?i_position_feedback_1,
-        client interface PositionFeedbackInterface ?i_position_feedback_2
+        client interface PositionFeedbackInterface ?i_position_feedback_2,
+        client interface i_coe_communication i_coe,
+        client SPIFFSInterface i_spiffs
 )
 {
 
@@ -442,6 +448,16 @@ void tuning_command_handler(
                     i_position_feedback_1.send_command(REM_16MT_CTRL_SAVE, 0, 0);
                     i_position_feedback_1.send_command(REM_16MT_CTRL_RESET, 0, 0);
                 }
+            }
+            break;
+
+        //save config to flash
+        case TUNING_CMD_SAVE_CONFIG:
+            int res = flash_write_od_config(i_spiffs, i_coe);
+            if (res != 0) {
+                printstrln("Warning: Could not write object dictionary to file system.");
+            } else {
+                printstrln("Write object dictionary to file system success!");
             }
             break;
 

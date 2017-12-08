@@ -111,7 +111,7 @@ interface i_co_communication
      * @param[in] subindex  Object dictionary subindex
      * @param[in] value     Value array, which will set in OD
      * @param[in] capacity  Size of the value field
-     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found, 255 -> wrong capacity for entry
+     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found, 7 -> insufficient memory, 255 -> wrong capacity for entry
      */
     uint8_t od_master_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity);
 
@@ -121,7 +121,7 @@ interface i_co_communication
      * @param[in] subindex  Object dictionary subindex
      * @param[in] value     Value array, which will set in OD
      * @param[in] capacity  Size of the value field
-     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found, 255 -> wrong capacity for entry
+     * @return Error: 0 -> No error, 1 -> RO, 2 -> Index not found, 3 -> Subindex not found, 7 -> insufficient memory, 255 -> wrong capacity for entry
      */
     uint8_t od_slave_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity);
 

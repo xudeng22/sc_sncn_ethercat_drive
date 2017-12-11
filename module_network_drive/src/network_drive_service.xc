@@ -128,20 +128,6 @@ static int get_cia402_error_code(FaultCode torque_control_fault, WatchdogError w
     return error_code;
 }
 
-static void sdo_wait_first_config(client interface i_co_communication i_co)
-{
-    while (!i_co.configuration_get());
-    //printstrln("Master requests OP mode - cyclic operation is about to start.");
-
-    /* comment in the read_od_config() function to print the object values */
-    //read_od_config(i_co);
-    printstrln("start cyclic operation");
-
-    //print_object_dictionary(i_co);
-    /* clear the notification before proceeding the operation */
-    i_co.configuration_done();
-}
-
 static int initial_object_dictionary_read(client interface i_co_communication i_co)
 {
     timer t;
@@ -677,13 +663,6 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
         printstrln("Warning: Could not read object dictionary from file system.");
     }
 #endif /* STARTUP_READ_FLASH_OBJECTS */
-
-    /* check if the slave enters the operation mode. If this happens we assume the configuration values are
-     * written into the object dictionary. So we read the object dictionary values and continue operation.
-     *
-     * This should be done before we configure anything.
-     */
-    sdo_wait_first_config(i_co);
 
     /* start the RTC */
     i2c_regop_res_t i2cresult;

@@ -178,13 +178,9 @@ void canopen_interface_service(
                         error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, sizeof(uint16_t), REQUEST_FROM_APP);
                     } else {
                         size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                        if (capacity < bytecount) {
-                            error = SDO_ERROR_INSUFFICIENT_BUFFER;
-                        } else {
-                            uint8_t tmpvalue[MAX_VALUE_BUFFER];
-                            memcpy(&tmpvalue, value, capacity);
-                            error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
-                        }
+                        uint8_t tmpvalue[MAX_VALUE_BUFFER];
+                        memcpy(&tmpvalue, value, capacity);
+                        error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
                     }
 
                     error_out = error;
@@ -195,7 +191,7 @@ void canopen_interface_service(
                     int error = 0;
 
                     size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
-                    if (capacity < bytecount) {
+                    if (capacity > bytecount) {
                         error = SDO_ERROR_INSUFFICIENT_BUFFER;
                     } else {
                         uint8_t tmpvalue[MAX_VALUE_BUFFER];

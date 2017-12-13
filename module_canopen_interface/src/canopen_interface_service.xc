@@ -179,7 +179,7 @@ void canopen_interface_service(
                     } else {
                         size_t bytecount = sdo_entry_get_bytecount(index_, subindex);
                         uint8_t tmpvalue[MAX_VALUE_BUFFER];
-                        memcpy(&tmpvalue, value, bytecount);
+                        memcpy(&tmpvalue, value, capacity);
                         error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
                     }
 

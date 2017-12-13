@@ -24,70 +24,6 @@ port c2Xwatchdog = WD_PORT_TICK;
 port c2Xled = LED_PORT_4BIT_X_nG_nB_nR;
 #endif
 
-/* function declaration of later used functions */
-static void read_od_config(client interface i_co_communication i_co);
-
-/* Read most recent values for object dictionary values from flash (if existing) */
-static int initial_od_read(client interface i_co_communication i_co)
-{
-    timer t;
-    unsigned time;
-
-    /* give the other services some time to start */
-    t :> time;
-    t when timerafter(time+100000000) :> void;
-
-    printstrln("[DEBUG] start initial update dictionary");
-    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
-    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
-
-    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
-        t :> time;
-        t when timerafter(time+100000) :> void;
-
-        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
-        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
-         * dictionary should not be overwritten.
-         *
-         * FIXME: What happens if nothing is stored in flash?
-         */
-    }
-
-    printstrln("[DEBUG] update dictionary complete");
-
-    return 0;
-}
-
-/* Wait until the EtherCAT enters operation mode. At this point the master
- * should have finished all client configuration. */
-static void sdo_configuration(client interface i_co_communication i_co)
-{
-    timer t;
-    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
-    unsigned int time;
-
-    int sdo_configured = 0;
-
-    while (sdo_configured == 0) {
-        if (i_co.configuration_get()) {
-            printstrln("Master requests OP mode - cyclic operation is about to start.");
-            sdo_configured = 1;
-        }
-
-        i_co.configuration_done();
-        sdo_configured = 1;
-
-        t when timerafter(time+delay) :> time;
-    }
-
-    /* comment in the read_od_config() function to print the object values */
-//    read_od_config(i_coe);
-    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
-
-    /* clear the notification before proceeding the operation */
-    i_co.configuration_done();
-}
-
 /* Test application handling pdos from EtherCat */
 static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co)
 {
@@ -102,12 +38,6 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     pdo_values_t InOut = {0};
     pdo_values_t InOutOld = {0};
     t :> time;
-
-    initial_od_read(i_co);
-    printstrln("[DEBUG] update dictionary complete");
-
-    sdo_configuration(i_co);
-    device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
 
     printstrln("Starting PDO protocol");
     while(1)

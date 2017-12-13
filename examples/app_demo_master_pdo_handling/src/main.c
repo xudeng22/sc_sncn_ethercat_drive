@@ -361,6 +361,8 @@ static void data_update_monitor_pdos(Ethercat_Slave_t *slave,
     input->analog_input2 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT2);
     input->analog_input3 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT3);
     input->analog_input4 = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_ANALOG_INPUT4);
+
+    input->timestamp = (unsigned int)ecw_slave_get_in_value(slave, PDO_INDEX_TIMESTAMP);
 }
 
 static void data_update_pdos(Ethercat_Slave_t *slave,

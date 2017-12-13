@@ -24,13 +24,41 @@ port c2Xwatchdog = WD_PORT_TICK;
 port c2Xled = LED_PORT_4BIT_X_nG_nB_nR;
 #endif
 
+#ifndef USEC_STD
+#define USEC_STD    100
+#endif
+
+#ifndef USEC_FAST
+#define USEC_FAST   250
+#endif
+
+static unsigned int g_app_tile_freq = USEC_STD;
+
+/*
+ * Read tile frequency
+ * This should be called before any I/O operation to the ESC is done.
+ */
+static inline void read_tile_frequency(void)
+{
+    /* read tile frequency
+     * this needs to be after the first call to i_torque_control
+     * so when we read it the frequency has already been changed by the torque controller
+     */
+    g_app_tile_freq = USEC_STD;
+    unsigned ctrlReadData;
+    read_sswitch_reg(get_local_tile_id(), 8, ctrlReadData);
+    if(ctrlReadData == 1) {
+        g_app_tile_freq = USEC_FAST;
+    }
+}
+
 /* Test application handling pdos from EtherCat */
 static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client interface i_co_communication i_co)
 {
     timer t;
     unsigned char device_in_opstate = 0;
 
-    unsigned int delay = 100000;
+    unsigned int delay = 1000; /* 1 ms update rate */
     unsigned int time = 0;
     unsigned int analog_value = 0;
     unsigned int comm_status = 0;
@@ -42,11 +70,11 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     printstrln("Starting PDO protocol");
     while(1)
     {
+        t :> time;
+
         device_in_opstate = i_co.in_operational_state();
         if (!device_in_opstate) {
-            t :> time;
-            t when timerafter(time+delay) :> time;
-
+            t when timerafter(time + (delay * g_app_tile_freq)) :> time;
             continue;
         }
 
@@ -165,10 +193,9 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
 //        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
 //        printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
 //        printstr(" = "); printintln(value);
-        t :> time;
-        InOut.timestamp = time;
+        InOut.timestamp = (time / g_app_tile_freq);
 
-        t when timerafter(time+delay) :> time;
+        t when timerafter(time + (delay * g_app_tile_freq)) :> time;
     }
 
 }
@@ -196,6 +223,7 @@ int main(void) {
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
+            read_tile_frequency();
             pdo_service(i_pdo, i_co[1]);
         }
 

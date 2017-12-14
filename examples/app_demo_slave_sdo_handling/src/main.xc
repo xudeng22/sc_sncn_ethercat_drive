@@ -586,8 +586,24 @@ int main(void)
         {
             par
             {
-                /* Start trivial PDO exchange service */
-                pdo_service(i_pdo, i_co[1], i_cmd);
+                {
+                    uint8_t verserr = i_co[1].od_slave_set_object_value(0x100A, 0, (uint8_t *)APP_VERSION, strlen(APP_VERSION));
+                    printstrln(APP_VERSION);
+                    if (verserr != 0) {
+                        printstr("ERROR setting version object"); printintln(verserr);
+                    } /* FIXME don't continue as if nothing happend! */
+
+                    verserr = i_co[1].od_slave_set_object_value(0x1008, 0, (uint8_t *)APP_DEVICENAME, strlen(APP_DEVICENAME));
+                    printstr("|");
+                    printstr(APP_DEVICENAME);
+                    printstrln("|");
+                    if (verserr != 0) {
+                        printstr("ERROR setting device name - "); printintln(verserr);
+                    } /* FIXME don't continue as if nothing happend! */
+
+                    /* Start trivial PDO exchange service */
+                    pdo_service(i_pdo, i_co[1], i_cmd);
+                }
 
                 /* Start the SDO / Object Dictionary test service */
 #if SDO_SERVICE == SDO_SERVICE_DEFAULT

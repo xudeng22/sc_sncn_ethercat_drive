@@ -8,11 +8,13 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include "version.h"
 #include <co_interface.h>
 #include <canopen_interface_service.h>
 #include <pdo_handler.h>
 #include <ethercat_service.h>
 #include <reboot.h>
+#include <string.h>
 
 #define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
@@ -65,6 +67,18 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
 
     pdo_values_t InOut = {0};
     pdo_values_t InOutOld = {0};
+
+    /* update version and application name objects */
+    uint8_t verserr = i_co.od_slave_set_object_value(0x100A, 0, (uint8_t *)APP_VERSION, strlen(APP_VERSION));
+    if (verserr != 0) {
+        printstr("ERROR setting version object"); printintln(verserr);
+    } /* FIXME don't continue as if nothing happend! */
+
+    verserr = i_co.od_slave_set_object_value(0x1008, 0, (uint8_t *)APP_DEVICENAME, strlen(APP_DEVICENAME));
+    if (verserr != 0) {
+        printstr("ERROR setting device name - "); printintln(verserr);
+    } /* FIXME don't continue as if nothing happend! */
+
     t :> time;
 
     printstrln("Starting PDO protocol");

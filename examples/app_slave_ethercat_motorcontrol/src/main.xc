@@ -79,7 +79,7 @@ int main(void)
     FlashDataInterface i_data[1];
     SPIFFSInterface i_spiffs[1];
     FlashBootInterface i_boot;
-    interface i2c_master_if i2c[1];
+    interface i2c_master_if i_i2c[2];
 
 
     par
@@ -93,7 +93,7 @@ int main(void)
         {
             par
             {
-                i2c_master(i2c, 1, i2c_scl, i2c_sda, 400);
+                i2c_master(i_i2c, 2, i2c_scl, i2c_sda, 400);
 
                 ethercat_service(i_ecat_reboot, i_pdo, i_co, null,
                                     i_foe, ethercat_ports);
@@ -115,7 +115,8 @@ int main(void)
 
                     network_drive_service(
                             i_pdo, i_co[1], i_motion_control[0],
-                            i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1]);
+                            i_position_feedback_1[0], i_position_feedback_2[0], i_file_service[1],
+                            i_i2c[1]);
                 }
 
             }
@@ -197,7 +198,7 @@ int main(void)
                     motion_ctrl_config.pull_brake_time =                      PULL_BRAKE_TIME;
                     motion_ctrl_config.hold_brake_voltage =                   HOLD_BRAKE_VOLTAGE;
 
-                    motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake, i2c[0]);
+                    motion_control_service(motion_ctrl_config, i_torque_control[0], i_motion_control, i_update_brake, i_i2c[0]);
                 }
             }
         }

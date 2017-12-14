@@ -6,6 +6,8 @@
 
 #include <cia402_error_codes.h>
 #include <network_drive_service.h>
+#include <cia_time.h>
+#include <rtc.h>
 
 #include <refclk.h>
 #include <cia402_wrapper.h>
@@ -124,20 +126,6 @@ static int get_cia402_error_code(FaultCode torque_control_fault, WatchdogError w
     } //end switch watchdog error
 
     return error_code;
-}
-
-static void sdo_wait_first_config(client interface i_co_communication i_co)
-{
-    while (!i_co.configuration_get());
-    //printstrln("Master requests OP mode - cyclic operation is about to start.");
-
-    /* comment in the read_od_config() function to print the object values */
-    //read_od_config(i_co);
-    printstrln("start cyclic operation");
-
-    //print_object_dictionary(i_co);
-    /* clear the notification before proceeding the operation */
-    i_co.configuration_done();
 }
 
 static int initial_object_dictionary_read(client interface i_co_communication i_co)
@@ -307,6 +295,57 @@ static int check_for_pid_update(
     i_motion_control.set_motion_control_config(motion_control_config);
 
     return changed;
+}
+
+/* This function is supposed to run in PREOP mode (at least not in op mode).
+ * Currently only the RTC object is checked if it changed. If the RTC object
+ * changed the value is read and the Real Time Clock is set to the correct date.
+ */
+static int check_for_object_updates_preop(client interface i_co_communication i_co,
+        client interface i2c_master_if i_i2c)
+{
+    uint16_t changed_index = 0;
+    uint8_t  changed_subindex = 0;
+
+    {changed_index, changed_subindex} = i_co.od_get_next_changed_element();
+    if (changed_index == 0) {
+        return 0;
+    }
+
+    uint8_t od_err = 0;
+    size_t bitlength = 0;
+
+    struct _ciatm time_map;
+
+    if (changed_index == DICT_REAL_TIME_CLOCK && changed_subindex == 0) {
+        uint64_t value = 0;
+        uint8_t valtmp[8];
+
+        { bitlength, od_err } = i_co.od_get_object_value_buffer(changed_index, changed_subindex, (value, char[]));
+        if (od_err != 0) {
+            return -1;
+        }
+
+        struct _cia_time_of_day cia_tod;
+        cia_tod.msec = value & 0xfffffff;
+        cia_tod.days = (value >> 32) & 0xffff;
+
+        ciatime_t seconds_since_epoche = cia_tod.days * SECONDS_PER_DAY;
+        seconds_since_epoche = seconds_since_epoche + cia_tod.msec / 1000;
+
+        ciatime_split_seconds(seconds_since_epoche, time_map);
+
+        /* SetTime(broken_time, milliseconds) */
+        rtc_set_Seconds(i_i2c, time_map.ct_sec);
+        rtc_set_Minutes(i_i2c, time_map.ct_min);
+        rtc_set_Hours(i_i2c, time_map.ct_hour);
+        rtc_set_Date(i_i2c, time_map.ct_mday + 1);
+        rtc_set_Month(time_map.ct_mon + 1); /* WARNING RTC API automagically sets the month along with the year, so no separate intercae parameter necessary for month. */
+        rtc_set_Century(i_i2c, time_map.ct_year / 100);
+        rtc_set_Year(i_i2c, time_map.ct_year - 2000); /* last two digits of year */
+    }
+
+    return 0;
 }
 
 static int quick_stop_perform(int opmode, int &step)
@@ -535,7 +574,8 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
-                                    client interface FileServiceInterface i_file_service)
+                            client interface FileServiceInterface i_file_service,
+                            client interface i2c_master_if i_i2c)
 {
     int target_position = 0;
     int target_velocity = 0;
@@ -624,12 +664,10 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
     }
 #endif /* STARTUP_READ_FLASH_OBJECTS */
 
-    /* check if the slave enters the operation mode. If this happens we assume the configuration values are
-     * written into the object dictionary. So we read the object dictionary values and continue operation.
-     *
-     * This should be done before we configure anything.
-     */
-    sdo_wait_first_config(i_co);
+    /* start the RTC */
+    i2c_regop_res_t i2cresult;
+    rtc_init(i_i2c, i2cresult);
+
 
     /* start operation */
     t :> time;
@@ -668,6 +706,10 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
             /* if there is no "read the whole configuration", just check if single values changed.
              * More precisely, the PID configuration values, one at time. */
             check_for_pid_update(i_co, i_motion_control, motion_control_config, opmode);
+        }
+
+        if (!i_co.in_operational_state()) {
+            check_for_object_updates_preop(i_co, i_i2c);
         }
 
         /*

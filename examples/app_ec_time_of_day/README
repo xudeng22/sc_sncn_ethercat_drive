@@ -1,0 +1,7 @@
+Little helper tool to calculate the TIME_OF_DAY format as it is defined in
+CANopen 301.
+
+This tool can be used to get the localtime in the correct TIME_OF_DAY format.
+
+
+Copyright 2017, Synapticon GmbH

@@ -15,6 +15,7 @@
 
 #include <profile_control.h>
 #include <file_service.h>
+#include <i2c.h>
 
 /* Set with `-DSTARTUP_READ_FLASH_OBJECTS=1` either in the makefile or at the command line
  * to activate initial read of object dictionary from flash at startup */
@@ -36,4 +37,5 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
                             client interface MotionControlInterface i_motion_control,
                             client interface PositionFeedbackInterface i_position_feedback_1,
                             client interface PositionFeedbackInterface ?i_position_feedback_2,
-                            client interface FileServiceInterface i_file_service);
+                            client interface FileServiceInterface i_file_service,
+                            client interface i2c_master_if i_i2c);

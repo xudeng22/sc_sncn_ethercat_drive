@@ -8,11 +8,13 @@
  * @author Synapticon GmbH <support@synapticon.com>
  */
 
+#include "version.h"
 #include <co_interface.h>
 #include <canopen_interface_service.h>
 #include <pdo_handler.h>
 #include <ethercat_service.h>
 #include <reboot.h>
+#include <string.h>
 
 #define DEBUG_CONSOLE_PRINT       0
 #define MAX_TIME_TO_WAIT_SDO      100000
@@ -24,68 +26,32 @@ port c2Xwatchdog = WD_PORT_TICK;
 port c2Xled = LED_PORT_4BIT_X_nG_nB_nR;
 #endif
 
-/* function declaration of later used functions */
-static void read_od_config(client interface i_co_communication i_co);
+#ifndef USEC_STD
+#define USEC_STD    100
+#endif
 
-/* Read most recent values for object dictionary values from flash (if existing) */
-static int initial_od_read(client interface i_co_communication i_co)
+#ifndef USEC_FAST
+#define USEC_FAST   250
+#endif
+
+static unsigned int g_app_tile_freq = USEC_STD;
+
+/*
+ * Read tile frequency
+ * This should be called before any I/O operation to the ESC is done.
+ */
+static inline void read_tile_frequency(void)
 {
-    timer t;
-    unsigned time;
-
-    /* give the other services some time to start */
-    t :> time;
-    t when timerafter(time+100000000) :> void;
-
-    printstrln("[DEBUG] start initial update dictionary");
-    i_co.od_set_object_value(DICT_COMMAND_OBJECT, 0, OD_COMMAND_READ_CONFIG);
-    enum eSdoState command_state = OD_COMMAND_STATE_IDLE;
-
-    while (command_state <= OD_COMMAND_STATE_PROCESSING) {
-        t :> time;
-        t when timerafter(time+100000) :> void;
-
-        {command_state, void, void} = i_co.od_get_object_value(DICT_COMMAND_OBJECT, 0);
-        /* TODO: error handling, if the object could not be loaded then something weired happend and the online
-         * dictionary should not be overwritten.
-         *
-         * FIXME: What happens if nothing is stored in flash?
-         */
+    /* read tile frequency
+     * this needs to be after the first call to i_torque_control
+     * so when we read it the frequency has already been changed by the torque controller
+     */
+    g_app_tile_freq = USEC_STD;
+    unsigned ctrlReadData;
+    read_sswitch_reg(get_local_tile_id(), 8, ctrlReadData);
+    if(ctrlReadData == 1) {
+        g_app_tile_freq = USEC_FAST;
     }
-
-    printstrln("[DEBUG] update dictionary complete");
-
-    return 0;
-}
-
-/* Wait until the EtherCAT enters operation mode. At this point the master
- * should have finished all client configuration. */
-static void sdo_configuration(client interface i_co_communication i_co)
-{
-    timer t;
-    unsigned int delay = MAX_TIME_TO_WAIT_SDO;
-    unsigned int time;
-
-    int sdo_configured = 0;
-
-    while (sdo_configured == 0) {
-        if (i_co.configuration_get()) {
-            printstrln("Master requests OP mode - cyclic operation is about to start.");
-            sdo_configured = 1;
-        }
-
-        i_co.configuration_done();
-        sdo_configured = 1;
-
-        t when timerafter(time+delay) :> time;
-    }
-
-    /* comment in the read_od_config() function to print the object values */
-//    read_od_config(i_coe);
-    printstrln("Configuration finished, ECAT in OP mode - start cyclic operation");
-
-    /* clear the notification before proceeding the operation */
-    i_co.configuration_done();
 }
 
 /* Test application handling pdos from EtherCat */
@@ -94,29 +60,35 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
     timer t;
     unsigned char device_in_opstate = 0;
 
-    unsigned int delay = 100000;
+    unsigned int delay = 1000; /* 1 ms update rate */
     unsigned int time = 0;
     unsigned int analog_value = 0;
     unsigned int comm_status = 0;
 
     pdo_values_t InOut = {0};
     pdo_values_t InOutOld = {0};
+
+    /* update version and application name objects */
+    uint8_t verserr = i_co.od_slave_set_object_value(0x100A, 0, (uint8_t *)APP_VERSION, strlen(APP_VERSION));
+    if (verserr != 0) {
+        printstr("ERROR setting version object"); printintln(verserr);
+    } /* FIXME don't continue as if nothing happend! */
+
+    verserr = i_co.od_slave_set_object_value(0x1008, 0, (uint8_t *)APP_DEVICENAME, strlen(APP_DEVICENAME));
+    if (verserr != 0) {
+        printstr("ERROR setting device name - "); printintln(verserr);
+    } /* FIXME don't continue as if nothing happend! */
+
     t :> time;
-
-    initial_od_read(i_co);
-    printstrln("[DEBUG] update dictionary complete");
-
-    sdo_configuration(i_co);
-    device_in_opstate = 1; /* after sdo_configuration returns we are in opstate! */
 
     printstrln("Starting PDO protocol");
     while(1)
     {
+        t :> time;
+
         device_in_opstate = i_co.in_operational_state();
         if (!device_in_opstate) {
-            t :> time;
-            t when timerafter(time+delay) :> time;
-
+            t when timerafter(time + (delay * g_app_tile_freq)) :> time;
             continue;
         }
 
@@ -235,10 +207,9 @@ static void pdo_service(client interface i_pdo_handler_exchange i_pdo, client in
 //        {value, void, error} = i_co.get_object_value(g_listarrayobjects[i], g_listarrayobjects[i+1]);
 //        printstr("Object 0x"); printhex(g_listarrayobjects[i]); printstr(":"); printhex(g_listarrayobjects[i+1]);
 //        printstr(" = "); printintln(value);
-        t :> time;
-        InOut.timestamp = time;
+        InOut.timestamp = (time / g_app_tile_freq);
 
-        t when timerafter(time+delay) :> time;
+        t when timerafter(time + (delay * g_app_tile_freq)) :> time;
     }
 
 }
@@ -266,6 +237,7 @@ int main(void) {
         /* Test application handling pdos from EtherCat */
         on tile[APP_TILE] :
         {
+            read_tile_frequency();
             pdo_service(i_pdo, i_co[1]);
         }
 

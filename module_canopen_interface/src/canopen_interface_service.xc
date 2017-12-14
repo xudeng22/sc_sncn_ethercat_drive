@@ -137,7 +137,7 @@ void canopen_interface_service(
                     unsigned value = 0;
                     size_t bitsize = 0;
                     int request_from = REQUEST_FROM_MASTER;
-                    uint8_t tmp[MAX_VALUE_BUFFER];
+                    uint8_t tmp[MAX_VALUE_BUFFER] = { 0 };
 
                     int err = sdo_entry_get_value(index_, subindex, MAX_VALUE_BUFFER, request_from, (uint8_t*)&tmp, &bitsize);
                     if (err != 0) {
@@ -194,7 +194,7 @@ void canopen_interface_service(
                     if (capacity > bytecount) {
                         error = SDO_ERROR_INSUFFICIENT_BUFFER;
                     } else {
-                        uint8_t tmpvalue[MAX_VALUE_BUFFER];
+                        uint8_t tmpvalue[MAX_VALUE_BUFFER] = { 0 };
                         memcpy(&tmpvalue, value, capacity);
                         error = sdo_entry_set_value(index_, subindex, (uint8_t *)&tmpvalue, bytecount, request_from);
                     }

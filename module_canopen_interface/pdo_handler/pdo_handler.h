@@ -1,9 +1,9 @@
 #pragma once
 
+#include <co_interface.h>
 #include <print.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "co_interface.h"
 
 /**
  * @brief Structure to store values for PDO exchange with master

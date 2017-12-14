@@ -440,30 +440,30 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
 
     /* print the output values */
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->controlword);
+    wprintw(wnd, "%6d", output->controlword);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->op_mode);
+    wprintw(wnd, "%6d", output->op_mode);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->target_position);
+    wprintw(wnd, "%6d", output->target_position);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->target_velocity);
+    wprintw(wnd, "%6d", output->target_velocity);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->target_torque);
+    wprintw(wnd, "%6d", output->target_torque);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->tuning_command);
+    wprintw(wnd, "%6d", output->tuning_command);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->user_mosi);
+    wprintw(wnd, "%6d", output->user_mosi);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->offset_torque);
+    wprintw(wnd, "%6d", output->offset_torque);
     row++; /* extra space */
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->digital_output1);
+    wprintw(wnd, "%6d", output->digital_output1);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->digital_output2);
+    wprintw(wnd, "%6d", output->digital_output2);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->digital_output3);
+    wprintw(wnd, "%6d", output->digital_output3);
     wmove(wnd, row++, output_column);
-    wprintw(wnd, "%5d", output->digital_output4);
+    wprintw(wnd, "%6d", output->digital_output4);
 
     row = 0;
 
@@ -473,43 +473,43 @@ static void display_update(WINDOW *wnd, struct _input_t *input, struct _output_t
     wprintw(wnd, "-----------");
 
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->statusword);
+    wprintw(wnd, "%6d", input->statusword);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->op_mode_display);
+    wprintw(wnd, "%6d", input->op_mode_display);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->position_value);
+    wprintw(wnd, "%6d", input->position_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->velocity_value);
+    wprintw(wnd, "%6d", input->velocity_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->torque_value);
+    wprintw(wnd, "%6d", input->torque_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->tuning_status);
+    wprintw(wnd, "%6d", input->tuning_status);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->user_miso);
+    wprintw(wnd, "%6d", input->user_miso);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->secondary_position_value);
+    wprintw(wnd, "%6d", input->secondary_position_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->secondary_velocity_value);
+    wprintw(wnd, "%6d", input->secondary_velocity_value);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->digital_input1);
+    wprintw(wnd, "%6d", input->digital_input1);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->digital_input2);
+    wprintw(wnd, "%6d", input->digital_input2);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->digital_input3);
+    wprintw(wnd, "%6d", input->digital_input3);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->digital_input4);
+    wprintw(wnd, "%6d", input->digital_input4);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->analog_input1);
+    wprintw(wnd, "%6d", input->analog_input1);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->analog_input2);
+    wprintw(wnd, "%6d", input->analog_input2);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->analog_input3);
+    wprintw(wnd, "%6d", input->analog_input3);
     wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5d", input->analog_input4);
+    wprintw(wnd, "%6d", input->analog_input4);
 
     row++;
-    wmove(wnd, row++, input_column);
-    wprintw(wnd, "%5u", input->timestamp);
+    wmove(wnd, row++, input_column-4);
+    wprintw(wnd, "%10u us", input->timestamp);
     wrefresh(wnd);
 }
 

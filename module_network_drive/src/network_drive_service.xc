@@ -851,15 +851,21 @@ void network_drive_service( client interface i_pdo_handler_exchange i_pdo,
 
 
         if (communication_active == 0) {
-            if (comm_inactive_flag == 0) {
-                comm_inactive_flag = 1;
-                t :> c_time;
-            } else if (comm_inactive_flag == 1) {
-                unsigned ts_comm_inactive;
-                t :> ts_comm_inactive;
-                if (ts_comm_inactive - c_time > 1000000*tile_usec) {
-                    state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
-                    inactive_timeout_flag = 1;
+            if (i_co.in_operational_state() || state == S_OPERATION_ENABLE) {
+                if (comm_inactive_flag == 0) {
+                    comm_inactive_flag = 1;
+                    t :> c_time;
+                } else if (comm_inactive_flag == 1) {
+                    unsigned ts_comm_inactive;
+                    t :> ts_comm_inactive;
+                    if (ts_comm_inactive - c_time > 1000000*tile_usec) {
+                        state = get_next_state(state, checklist, 0, CTRL_COMMUNICATION_TIMEOUT);
+                        inactive_timeout_flag = 1;
+                        if (opmode == OPMODE_SNCN_TUNING && tuning_mode_state.motorctrl_status != TUNING_MOTORCTRL_OFF) {
+                            i_motion_control.disable();
+                            tuning_mode_state.motorctrl_status = TUNING_MOTORCTRL_OFF;
+                        }
+                    }
                 }
             }
         } else {

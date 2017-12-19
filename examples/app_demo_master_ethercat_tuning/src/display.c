@@ -179,6 +179,12 @@ int display_tuning(WINDOW *wnd, struct _pdo_cia402_output pdo_output, struct _pd
     wmoveclr(wnd, &row);
     wprintw(wnd, "Position I lim    %5d | ", input.integral_limit_pos);
     wprintw(wnd, "Velocity I lim     %5d", input.integral_limit_velocity);
+
+    //row 12.1: show "Sensor Error" and "Error Status" in app_demo_master_ethercat screen
+    wmoveclr(wnd, &row);
+    wprintw(wnd, "Sensor Error:     %5d | ", input.sensor_error);
+    wprintw(wnd, "Error Status       %5d", input.error_status);
+
     //row 13
     wmoveclr(wnd, &row);
     wprintw(wnd, "Autotune Period    %4d | Amplitude        %7d", input.tune_period, input.tune_amplitude);

@@ -10,11 +10,16 @@
  */
 
 #include <file_service.h>
+#include <dictionary_symbols.h>
 #include <xs1.h>
 #include <string.h>
 #include <stdio.h>
 
+#define DEVICE_ALIAS_SIZE   50
+
+
 static int8_t foedata[FOE_DATA_BUFFER_SIZE];
+static char device_alias[DEVICE_ALIAS_SIZE+1] = { 0 };
 char errormsg[] = "error";
 struct _file_t file;
 int file_item = 0;
@@ -105,6 +110,7 @@ static unsigned get_configuration_from_dictionary(
     return count;
 }
 
+
 static int flash_write_od_config(
         client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
@@ -116,10 +122,29 @@ static int flash_write_od_config(
 
     if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
-    if (result == 0) {
-        // put the flash configuration into the dictionary
-        set_configuration_to_dictionary(i_canopen, &Config);
+    if (result != 0) {
+        return result;
     }
+
+    // put the flash configuration into the dictionary
+    set_configuration_to_dictionary(i_canopen, &Config);
+
+    // Special case, write config alias file
+    size_t device_alias_size = DEVICE_ALIAS_SIZE;
+    uint32_t bitlength = 0;
+    uint8_t error = 0;
+    { bitlength, error } = i_canopen.od_slave_get_object_value(DICT_ASSIGNED_NAME, 0, device_alias_size, device_alias);
+
+    int cfd = i_spiffs.open_file(CONFIG_DEVICE_ALIAS, strlen(CONFIG_DEVICE_ALIAS), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+    if (cfd < 0) {
+        return -1;
+    }
+
+    device_alias_size = i_spiffs.write(cfd, device_alias, strlen(device_alias));
+    if (device_alias_size < 0) {
+        result = - 1;
+    }
+    i_spiffs.close_file(cfd);
 
     return result;
 }
@@ -133,10 +158,31 @@ static int flash_read_od_config(
 
     if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
-    if (result == 0) {
-        // put the flash configuration into the dictionary
-        set_configuration_to_dictionary(i_canopen, &Config);
+    if (result != 0) {
+        return result;
     }
+
+    // put the flash configuration into the dictionary
+    set_configuration_to_dictionary(i_canopen, &Config);
+
+    /* Special case, read config alias file */
+    size_t device_alias_size = DEVICE_ALIAS_SIZE;
+
+    int cfd = i_spiffs.open_file(CONFIG_DEVICE_ALIAS, strlen(CONFIG_DEVICE_ALIAS), SPIFFS_RDONLY);
+    /* It cannot helped, sometimes the file does not exist. This is no error. */
+    if (cfd <= 0) {
+        return 0;
+    }
+
+    device_alias_size = i_spiffs.read(cfd, (uint8_t *)device_alias, device_alias_size);
+    if (device_alias_size > 0) {
+        result = i_canopen.od_slave_set_object_value(DICT_ASSIGNED_NAME, 0, device_alias, device_alias_size);
+    } else {
+        result = device_alias_size;
+    }
+
+    i_spiffs.close_file(cfd);
+
     return result;
 }
 

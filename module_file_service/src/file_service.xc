@@ -155,9 +155,13 @@ int get_file_list(client interface i_foe_communication i_foe, client SPIFFSInter
     strcpy(list_text, "\n");
     while ((file_list[file_item].obj_id > 0)&&(strlen(list_text) < (MAX_FOE_DATA - SPIFFS_MAX_FILENAME_SIZE)))
     {
-        sprintf(fsize_string, ", size: %u \n", file_list[file_item].size);
-        strcat(list_text, file_list[file_item].name);
-        strcat(list_text, fsize_string);
+        //hide stackinfo file
+        if (strcmp(file_list[file_item].name, STACKINFO_FILE_NAME) != 0)
+        {
+            sprintf(fsize_string, ", size: %u \n", file_list[file_item].size);
+            strcat(list_text, file_list[file_item].name);
+            strcat(list_text, fsize_string);
+        }
         file_item++;
     }
 
@@ -198,7 +202,7 @@ int process_fs_command(char cmd[], client interface i_foe_communication i_foe, c
     else
     if (strcmp(par1, "remove") == 0)
     {
-        if (par_num == 2)
+        if ((par_num == 2)&&(strcmp(par2, STACKINFO_FILE_NAME) != 0))
         {
              fd =  i_spiffs.open_file(par2, strlen(par2), SPIFFS_RDWR);
              if (fd < 0)
@@ -286,7 +290,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     {
         memset(file.filename, '\0', FOE_MAX_FILENAME_SIZE);
         i_foe.requested_filename(file.filename);
-        if (check_fw_filename(file.filename, i_spiffs) == 0)
+        if ((check_fw_filename(file.filename, i_spiffs) == 0)||(strcmp(file.filename, STACKINFO_FILE_NAME) == 0))
         {
             stat = FOE_STAT_ERROR;
             foe_error = FOE_ERROR_ACCESS_DENIED;

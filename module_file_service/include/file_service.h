@@ -71,6 +71,11 @@
  */
 #define FILE_SERVICE_INITIAL_DELAY 100000
 
+/**
+ * \brief Name of stack info file. Should be blocked for writing/deleting
+ */
+#define STACKINFO_FILE_NAME "stack_info.json"
+
 
 /**
  * \brief Status of accessing to torque array file

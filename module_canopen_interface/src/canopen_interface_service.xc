@@ -126,6 +126,9 @@ void canopen_interface_service(
                     if (bytecount == 0) {
                         error = (uint8_t)sdo_error;
                     } else {
+                        if (bytecount > sizeof(value)) {
+                            bytecount = sizeof(value);
+                        }
                         uint8_t valtmp[8];
                         memcpy(&valtmp, &value, bytecount);
                         error = sdo_entry_set_value(index_, subindex, (uint8_t *)&valtmp, bytecount, request_from);

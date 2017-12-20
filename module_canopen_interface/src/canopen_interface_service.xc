@@ -368,7 +368,7 @@ void canopen_interface_service(
 
             case i_co[int j].command_set_result(int result):
                     sdo_command_object.command = OD_COMMAND_NONE;
-                    sdo_command_object.state = result ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
+                    sdo_command_object.state = (result != 0) ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
                     sdo_entry_set_uint16(DICT_COMMAND_OBJECT, 0, sdo_command_object.state, REQUEST_FROM_APP);
                     break;
         }

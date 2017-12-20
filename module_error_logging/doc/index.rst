@@ -25,10 +25,6 @@ Types of errors:
   - ERR_ANGLE_SENSOR;
   - ERR_WATCHDOG;
 
-.. cssclass:: github
-
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/develop/module_error_logging>`_
-
 Dependent modules:
 - ``module_spiffs``
 - ``module_file_service``

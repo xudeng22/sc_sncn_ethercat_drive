@@ -19,10 +19,6 @@ Dependent modules:
     :backlinks: none
     :depth: 3
 
-.. cssclass:: github
-
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_file_service>`_
-
 The module provides access to files in the SPIFFS file system via Ethercat, downloading data into OD and uploading data from OD to the human-readable csv file using the config parser module. To read or write files use standard commands: ethercat "foe_read (<file name>)", ethercat "foe_write (<file name>)". To load and save data from OD,use a special object-command 0x2000. The file name for OD data is "config.csv". To upload data from OD to a file, use the command "download 0x2000 1". To download data from a file to OD, use the command "download 0x2000 2". Also, when the system starts and if there is a "config.csv" file in the file system, data will be loaded automatically. If there is no file, OD uses default values.
 
 **The module provides basic operations with SPIFFS using special commands via EtherCAT FoE:**

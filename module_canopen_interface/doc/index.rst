@@ -11,11 +11,6 @@ CANopen Interface Module
 This module provides a service between any communication stack and CANopen applications. This service is managing the Object Dictionary and the PDO handling. 
 This service will run automatically, when a communication stack is used.
 
-
-.. cssclass:: github
-
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/develop/module_canopen_interface>`
- 
 How to use CANopen Interface Service
 ====================================
 

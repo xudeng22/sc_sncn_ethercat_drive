@@ -11,10 +11,6 @@ This application is demonstrating the use of the tuning mode of SOMANET EtherCat
 It allows finding the commutation offset of the motor, tuning of the PID parameters and test the Position, Velocity and Torque controllers. 
 The application is given the functionnality to compensate :ref:`the cogging torque <Cogging-Torque-Feature>` of the motor, allowing a better control at low speed.
 
-.. cssclass:: github
-
-  `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_ethercat_tuning/>`_
-
 Hardware setup
 ++++++++++++++
 

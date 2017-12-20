@@ -12,10 +12,6 @@ dictionary from a linux master. After startup a automatic test which reads the
 object dictionary from the selected slave and tests the accessability of
 read/write and read only objects.
 
-.. cssclass:: github
-
- `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_object_dictionary>`_
-
 Prerequisites
 +++++++++++++
 

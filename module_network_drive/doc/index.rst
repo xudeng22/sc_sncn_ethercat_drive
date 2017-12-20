@@ -13,10 +13,6 @@ It deploys over EtherCAT all the features of the SOMANET Motor Control Library a
     :backlinks: none
     :depth: 3
 
-.. cssclass:: github
-
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_ethercat_drive>`_
- 
 How to use
 ==========
 

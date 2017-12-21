@@ -49,7 +49,7 @@
 /**
  * \brief Name of the device name alias file
  */
-#define CONFIG_DEVICE_ALIAS     "device_alias.txt"
+#define CONFIG_DEVICE_ALIAS     "_device_alias"
 
 /**
  * \brief Name of binary file to store / read torque offset

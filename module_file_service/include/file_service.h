@@ -47,6 +47,11 @@
 #define CONFIG_FILE_NAME "config.csv"
 
 /**
+ * \brief Name of the device name alias file
+ */
+#define CONFIG_DEVICE_ALIAS     "_device_alias"
+
+/**
  * \brief Name of binary file to store / read torque offset
  */
 #define TORQUE_OFFSET_FILE_NAME "cogging_torque.bin"

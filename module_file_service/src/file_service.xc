@@ -10,11 +10,15 @@
  */
 
 #include <file_service.h>
+#include <dictionary_symbols.h>
 #include <xs1.h>
 #include <string.h>
 #include <stdio.h>
 
-static int8_t foedata[FOE_DATA_BUFFER_SIZE];
+#define DEVICE_ALIAS_SIZE            50
+#define FILE_SERVICE_BUFFER_SIZE     FOE_DATA_BUFFER_SIZE
+
+static int8_t file_service_data[FOE_DATA_BUFFER_SIZE];
 char errormsg[] = "error";
 struct _file_t file;
 int file_item = 0;
@@ -105,6 +109,7 @@ static unsigned get_configuration_from_dictionary(
     return count;
 }
 
+
 static int flash_write_od_config(
         client SPIFFSInterface i_spiffs,
         client interface i_co_communication i_canopen)
@@ -116,10 +121,30 @@ static int flash_write_od_config(
 
     if ((result = write_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
-    if (result == 0) {
-        // put the flash configuration into the dictionary
-        set_configuration_to_dictionary(i_canopen, &Config);
+    if (result != 0) {
+        return result;
     }
+
+    // put the flash configuration into the dictionary
+    set_configuration_to_dictionary(i_canopen, &Config);
+
+    // Special case, write config alias file
+    size_t device_alias_size = DEVICE_ALIAS_SIZE;
+    uint32_t bitlength = 0;
+    uint8_t error = 0;
+    memset(file_service_data, '\0', FILE_SERVICE_BUFFER_SIZE);
+    { bitlength, error } = i_canopen.od_slave_get_object_value(DICT_ASSIGNED_NAME, 0, device_alias_size, (uint8_t *)file_service_data);
+
+    int cfd = i_spiffs.open_file(CONFIG_DEVICE_ALIAS, strlen(CONFIG_DEVICE_ALIAS), (SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR));
+    if (cfd < 0) {
+        return -1;
+    }
+
+    device_alias_size = i_spiffs.write(cfd, (char *)file_service_data, strlen((char *)file_service_data)+1);
+    if (device_alias_size < 0) {
+        result = - 1;
+    }
+    i_spiffs.close_file(cfd);
 
     return result;
 }
@@ -133,10 +158,34 @@ static int flash_read_od_config(
 
     if ((result = read_config(CONFIG_FILE_NAME, &Config, i_spiffs, i_canopen)) >= 0)
 
-    if (result == 0) {
-        // put the flash configuration into the dictionary
-        set_configuration_to_dictionary(i_canopen, &Config);
+    if (result != 0) {
+        return result;
     }
+
+    // put the flash configuration into the dictionary
+    set_configuration_to_dictionary(i_canopen, &Config);
+
+    /* Special case, read config alias file */
+    size_t device_alias_size = DEVICE_ALIAS_SIZE;
+
+    int cfd = i_spiffs.open_file(CONFIG_DEVICE_ALIAS, strlen(CONFIG_DEVICE_ALIAS), SPIFFS_RDONLY);
+    /* It cannot helped, sometimes the file does not exist. This is no error. */
+    if (cfd <= 0) {
+        return 0;
+    }
+
+    memset(file_service_data, '\0', FILE_SERVICE_BUFFER_SIZE);
+    device_alias_size = i_spiffs.read(cfd, (uint8_t *)file_service_data, device_alias_size);
+    if (device_alias_size > 0) {
+        result = i_canopen.od_slave_set_object_value(DICT_ASSIGNED_NAME, 0,
+                                                     (uint8_t *)file_service_data,
+                                                     strlen((char *)file_service_data));
+    } else {
+        result = device_alias_size;
+    }
+
+    i_spiffs.close_file(cfd);
+
     return result;
 }
 
@@ -276,8 +325,8 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
     enum eFoeStat stat = FOE_STAT_DATA;
     enum eFoeError foe_error = FOE_ERROR_NONE;
 
-    memset(foedata, '\0', MAX_FOE_DATA);
-    {size, packetnumber, stat} = i_foe.read_data(foedata);
+    memset(file_service_data, '\0', MAX_FOE_DATA);
+    {size, packetnumber, stat} = i_foe.read_data(file_service_data);
 
     if (stat == FOE_STAT_ERROR) {
         if (file.opened)
@@ -313,7 +362,7 @@ static int received_filechunk_from_master(struct _file_t &file, client interface
 
     if (file.opened)
     {
-        write_result = i_spiffs.write(file.cfd, (uint8_t *)foedata, size);
+        write_result = i_spiffs.write(file.cfd, (uint8_t *)file_service_data, size);
         if (write_result < 0)
         {
             if (write_result == SPIFFS_ERR_FULL)
@@ -398,8 +447,8 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
 
         if (size > 0)
         {
-            memset(foedata, '\0', MAX_FOE_DATA);
-            size = i_spiffs.read(file.cfd, (uint8_t *)foedata, size);
+            memset(file_service_data, '\0', MAX_FOE_DATA);
+            size = i_spiffs.read(file.cfd, (uint8_t *)file_service_data, size);
         }
 
         if ((size == SPIFFS_EOF)||(size == 0))
@@ -409,7 +458,7 @@ static int send_filechunk_to_master(struct _file_t &file, client interface i_foe
             stat = FOE_STAT_ERROR;
         else
         {
-            {wsize, stat} = i_foe.write_data(foedata, size, FOE_ERROR_NONE);
+            {wsize, stat} = i_foe.write_data(file_service_data, size, FOE_ERROR_NONE);
             file.current += wsize;
 
             /* If writed data size less than readed (from file) data size , we are seeking back and trying to send lost data again */

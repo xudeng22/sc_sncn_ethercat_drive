@@ -189,6 +189,26 @@ void canopen_interface_service(
                     error_out = error;
                     break;
 
+            case i_co[int j].od_slave_get_object_value(uint16_t index_, uint8_t subindex, size_t capacity, uint8_t value[]) -> { uint32_t bitlength_out, uint8_t error_out}:
+                    size_t bitsize = 0;
+                    int request_from = REQUEST_FROM_APP;
+                    uint8_t tmp[MAX_VALUE_BUFFER] = { 0 };
+
+                    int err = sdo_entry_get_value(index_, subindex, MAX_VALUE_BUFFER, request_from, (uint8_t*)&tmp, &bitsize);
+                    if (err != 0) {
+                        error_out = sdo_error;
+                        bitlength_out = 0;
+                    } else if (BYTES_FROM_BITS(bitsize) > capacity) {
+                        error_out = SDO_ERROR_INSUFFICIENT_BUFFER;
+                        bitlength_out = 0;
+                    } else {
+                        error_out = 0;
+                        bitlength_out = bitsize;
+                        memcpy(value, &tmp, BYTES_FROM_BITS(bitsize));
+                    }
+
+                    break;
+
             case i_co[int j].od_slave_set_object_value(uint16_t index_, uint8_t subindex, uint8_t value[], size_t capacity) -> { uint8_t error_out }:
                     int request_from  = REQUEST_FROM_APP;
                     int error = 0;
@@ -348,7 +368,7 @@ void canopen_interface_service(
 
             case i_co[int j].command_set_result(int result):
                     sdo_command_object.command = OD_COMMAND_NONE;
-                    sdo_command_object.state = result ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
+                    sdo_command_object.state = (result != 0) ? OD_COMMAND_STATE_ERROR : OD_COMMAND_STATE_SUCCESS;
                     sdo_entry_set_uint16(DICT_COMMAND_OBJECT, 0, sdo_command_object.state, REQUEST_FROM_APP);
                     break;
         }

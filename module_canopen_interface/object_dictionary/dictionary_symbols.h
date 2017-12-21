@@ -278,6 +278,7 @@
 #define SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_KD_1                   17
 #define SUB_POSITION_CONTROLLER_GAIN_SCHEDULING_VELOCITY_LOOP_INTEGRAL_LIMIT_1       18
 #define DICT_REAL_TIME_CLOCK                                                         0x2D02
+#define DICT_ASSIGNED_NAME                                                           0x2D00
 
 #define RPDO_MAPPING_PARAMETER       0x1600 /**<CANOpen mapping parameter index of receive PDO 0 */
 #define TPDO_MAPPING_PARAMETER       0x1A00 /**<CANOpen mapping parameter index of transmit PDO 0 */

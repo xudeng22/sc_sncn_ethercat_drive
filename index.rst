@@ -4,14 +4,6 @@ SOMANET EtherCAT Drive
 The **SOMANET EtherCAT Drive Library** offers the services and utilities required to perform BLDC/BDC Motor Control over EtherCAT using SOMANET devices.
 It implements a CiA 402-compliant Motor Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motor Control Library<somanet_motor_control>` and gives flexibility for application-specific requirements.
 
-.. cssclass:: downloadable-button 
-
-  `Download Library <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/v2.0.0.zip>`_
-
-.. cssclass:: github
-
-  `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/release_2.0.0>`_
-
 .. _ecat_drive_hw_compatibility:
 
 Hardware Compatibility
@@ -109,36 +101,10 @@ Dependencies
 To run **EtherCAT Drive applications** it is necessary to include additionally the following libraries:
 
 * :ref:`SOMANET Motor Control <somanet_motor_control>`
-
-    .. cssclass:: downloadable-button 
-
-     `Download SOMANET Motor Control Library <https://github.com/synapticon/sc_sncn_motorcontrol/archive/v2.0.0.zip>`_
-
-    .. cssclass:: github
-
-      `Visit SOMANET Motor Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol/tree/release_2.0.0>`_
-
 * :ref:`SOMANET EtherCAT <somanet_ethercat>`
-
-    .. cssclass:: downloadable-button 
-
-     `Download SOMANET EtherCAT Library  <https://github.com/synapticon/sc_sncn_ethercat/archive/v2.0.0.zip>`_
-
-    .. cssclass:: github
-
-      `Visit SOMANET EtherCAT Public Repository <https://github.com/synapticon/sc_sncn_ethercat/tree/release_2.0.0>`_
-
 * :ref:`SOMANET Base <somanet_base>`
-
-    .. cssclass:: downloadable-button 
-
-      `Download SOMANET Base Library <https://github.com/synapticon/sc_somanet-base/archive/v2.0.0.zip>`_
-
-    .. cssclass:: github
-
-      `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base/tree/release_2.0.0>`_
-
 
 .. important:: To be able to **run** EtherCAT Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
     
     Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 
+

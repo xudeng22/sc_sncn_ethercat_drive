@@ -8,12 +8,7 @@ EtherCAT PDO Handling Demo (Master)
     :backlinks: none
     :depth: 3
 
-.. cssclass:: github
-
-  `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_pdo_handling/>`_
-
-   Connecting the motor and cables to your kit
-
+Connect the motor and cables to your kit.
 
 Run the application
 +++++++++++++++++++

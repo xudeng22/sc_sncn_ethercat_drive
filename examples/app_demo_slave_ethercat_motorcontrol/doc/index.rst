@@ -13,10 +13,6 @@ The purpose of this app (app_demo_slave_ethercat_motorcontrol) is showing the us
 * **Minimum Number of Cores**: 14
 * **Minimum Number of Tiles**: 4
 
-.. cssclass:: github
-
-  `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_slave_ethercat_motorcontrol/>`_
-
 Quick How-to
 ============
 

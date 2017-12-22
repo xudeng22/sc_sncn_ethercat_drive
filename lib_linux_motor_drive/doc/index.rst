@@ -14,6 +14,3 @@ This library offers functionality to your EtherCAT Master application to drive m
             * :ref:`EtherCAT dual-node Cyclic Velocity Control Demo <EtherCAT_Master_Cyclic_Velocity_Control_with_Two_Nodes_Demo_Quickstart>`
             * :ref:`EtherCAT dual-node Cyclic Torque Control Demo <EtherCAT_Master_Cyclic_Torque_Control_with_Two_Nodes_Demo_Quickstart>`
 
-.. cssclass:: github
-
-  `See Library on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/lib_linux_motor_drive/>`_

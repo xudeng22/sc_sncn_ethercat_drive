@@ -11,10 +11,6 @@ This module provides the exchange of the current PDO values between
     :backlinks: none
     :depth: 3
 
-.. cssclass:: github
-
-  `See Module on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/module_pdo_handler>`_
-
 How to use
 ==========
 

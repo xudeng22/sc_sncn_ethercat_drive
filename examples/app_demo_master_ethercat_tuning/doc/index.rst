@@ -10,10 +10,6 @@ SOMANET EtherCat Drive Special Tuning Mode Application
 This application is demonstrating the use of the tuning mode of SOMANET EtherCat Drive.
 It allows finding the commutation offset of the motor, tuning of the PID parameters and test the Position, Velocity and Torque controllers. 
 
-.. cssclass:: github
-
-  `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_ethercat_tuning/>`_
-
 Hardware setup
 ++++++++++++++
 

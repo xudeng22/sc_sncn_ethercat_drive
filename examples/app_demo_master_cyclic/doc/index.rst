@@ -9,10 +9,6 @@ SOMANET EtherCat Drive Cyclic Position/Velocity/Torque Control Demo
 
 This simple demonstration shows how to control your motor using SOMANET EtherCAT DC-Drive kit from a Linux PC. Only Cyclic Synchronous Position, Velocity and Torque control modes (CSP, CSV, CST) are included with a simple linear profile generator. The CSP, CSV and CST control modes are designed to achieve a desired motion trajectory by using various motion profiles and closing the control loop over EtherCAT. The slave controller is taking the generated position, velocity or torque setpoints at a fixed time interval (1ms) as a controller input and will be following them. 
 
-.. cssclass:: github
-
-  `See Application on Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/tree/master/examples/app_demo_master_cyclic/>`_
-
 Hardware setup
 ++++++++++++++
 

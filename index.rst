@@ -4,14 +4,6 @@ SOMANET EtherCAT Drive Application
 The **SOMANET EtherCAT Drive Component** is an application-specific component that contains services and utilities required to perform a BLDC Motor Motion Control over EtherCAT using SOMANET IFM DC-Drive and COM-EtherCAT devices.
 It implements a CiA 402-compliant Motion Control protocol that gathers all the functionalities offered by the :ref:`SOMANET Motion Control Component <somanet_motor_control>` and gives flexibility for application-specific requirements.
 
-.. cssclass:: downloadable-button 
-
-  `Download Component <https://github.com/synapticon/sc_sncn_ethercat_drive/archive/master.zip>`_
-
-.. cssclass:: github
-
-  `Visit Public Repository <https://github.com/synapticon/sc_sncn_ethercat_drive/>`_
-
 .. _ecat_drive_hw_compatibility:
 
 Hardware Compatibility
@@ -99,36 +91,10 @@ Dependencies
 To run **EtherCAT Drive applications** it is necessary to include additionally the following libraries:
 
 * :ref:`SOMANET Motion Control <somanet_motion_control>`
-
-    .. cssclass:: downloadable-button 
-
-     `Download SOMANET Motion Control Component <https://github.com/synapticon/sc_sncn_motorcontrol/archive/master.zip>`_
-
-    .. cssclass:: github
-
-      `Visit SOMANET Motion Control Public Repository <https://github.com/synapticon/sc_sncn_motorcontrol>`_
-
 * :ref:`SOMANET EtherCAT <somanet_ethercat>`
-
-    .. cssclass:: downloadable-button 
-
-     `Download SOMANET EtherCAT Component  <https://github.com/synapticon/sc_sncn_ethercat/archive/master.zip>`_
-
-    .. cssclass:: github
-
-      `Visit SOMANET EtherCAT Public Repository <https://github.com/synapticon/sc_sncn_ethercat>`_
-
 * :ref:`SOMANET Base <somanet_base>`
-
-    .. cssclass:: downloadable-button 
-
-      `Download SOMANET Base Component <https://github.com/synapticon/sc_somanet-base/archive/master.zip>`_
-
-    .. cssclass:: github
-
-      `Visit SOMANET Base Public Repository <https://github.com/synapticon/sc_somanet-base>`_
-
 
 .. important:: To be able to **run** EtherCAT Drive Master applications in your Linux machine, you first have to install all necessary **drivers**.
     
     Visit our :ref:`IgH EtherCAT Master for Linux Documentation <ethercat_master_software_linux>` for further information. 
+

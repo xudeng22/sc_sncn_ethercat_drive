@@ -44,7 +44,7 @@ Modules
     Canopen Interface Service <module_canopen_interface/doc/index>
 
 * `Drive Module <module_network_drive/doc/index.html>`_: Provides a Service that acts as a joint for EtherCAT and Motor Control Libraries and allows driving motors over EtherCAT.
-* `Canopen Interface Service <module_canopen_interface/doc/index>`_: Provides a service to access the PDO values and accesses the object dictionary. This service is the connection point between the communication library or module, for example :ref:`SOMANET EtherCAT <somaent_ethercat>` and the user application.
+* `Canopen Interface Service <module_canopen_interface/doc/index.html>`_: Provides a service to access the PDO values and accesses the object dictionary. This service is the connection point between the communication library or module, for example :ref:`SOMANET EtherCAT <somanet_ethercat>` and the user application.
 
 
 Examples
